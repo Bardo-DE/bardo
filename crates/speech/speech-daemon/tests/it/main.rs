@@ -1,3 +1,4 @@
+//! Integration tests of `speech-daemon`.
 mod attach;
 mod cancel;
 mod config;

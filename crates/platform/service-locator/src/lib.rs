@@ -86,6 +86,10 @@
 //!   arguments, so the macOS and Windows answers are tested from whatever machine runs
 //!   `cargo test`. A rule that reads its own environment can only be checked on the machine it
 //!   was written on, which for a cross-platform agent is the one thing that must not be true.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod address;
 pub mod find;

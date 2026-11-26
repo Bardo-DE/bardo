@@ -25,6 +25,10 @@
 //! let mut frames = FrameBuffer::default();
 //! assert_eq!(frames.take(), Ok(None));
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 #[cfg(feature = "net")]
 mod client;

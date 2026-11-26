@@ -9,6 +9,10 @@
 //! enum needs no derive of this crate's.
 //! Every malformed `#[settings(...)]` is caught in `crate::attrs`, which is unit-tested
 //! directly — there is no `trybuild` in this workspace's lockfile to drive a UI test instead.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod attrs;
 mod gen_row;

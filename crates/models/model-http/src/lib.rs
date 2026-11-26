@@ -24,6 +24,10 @@
 //! };
 //! assert_eq!(endpoint.base, UrlPath("/v1".into()));
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod auth;
 mod client;

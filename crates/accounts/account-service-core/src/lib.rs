@@ -13,6 +13,10 @@
 //! ```
 //!
 //! This crate depends on no executor, so the file store lives in `account-store`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod audit;
 pub mod consent;

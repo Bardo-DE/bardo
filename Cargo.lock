@@ -2962,6 +2962,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-process"
+version = "0.1.0"
+dependencies = [
+ "rustix 1.1.6",
+]
+
+[[package]]
 name = "base-secret"
 version = "0.1.0"
 dependencies = [
@@ -4260,6 +4267,7 @@ version = "0.1.0"
 dependencies = [
  "base-ids",
  "compositor-core",
+ "compositor-egl",
  "compositor-render",
  "desktop-protocols",
  "rustix 1.1.6",
@@ -4323,6 +4331,14 @@ name = "compositor-dbus"
 version = "0.1.0"
 dependencies = [
  "zbus",
+]
+
+[[package]]
+name = "compositor-egl"
+version = "0.1.0"
+dependencies = [
+ "smithay",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -4414,6 +4430,7 @@ version = "0.1.0"
 dependencies = [
  "base-ids",
  "compositor-core",
+ "compositor-egl",
  "compositor-motion",
  "desktop-protocols",
  "image",
@@ -7340,6 +7357,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "hidraw-ioctl"
+version = "0.1.0"
+dependencies = [
+ "rustix 1.1.6",
+]
+
+[[package]]
 name = "hkdf"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7948,6 +7972,7 @@ dependencies = [
  "account-wire",
  "base-fs",
  "base-ids",
+ "base-process",
  "base-testkit",
  "base-time",
  "base-url",
@@ -8249,6 +8274,7 @@ dependencies = [
  "rustix 1.1.6",
  "tempfile",
  "thiserror 2.0.21",
+ "uinput-ioctl",
 ]
 
 [[package]]
@@ -8271,6 +8297,8 @@ dependencies = [
 [[package]]
 name = "input-linux-sys"
 version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b91b2248b0eaf0a576ef5e60b7f2107a749e705a876bc0b9fe952ac8d83a724"
 dependencies = [
  "libc",
  "nix 0.29.0",
@@ -9062,7 +9090,6 @@ dependencies = [
  "mouse-gestures-proto",
  "nix 0.31.3",
  "peniko",
- "raw-window-handle",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -9072,6 +9099,7 @@ dependencies = [
  "vello_gpu",
  "wayland-client",
  "wayland-protocols",
+ "wayland-raw-handle",
  "wgpu 30.0.2",
  "wgpu_context",
 ]
@@ -10224,6 +10252,7 @@ dependencies = [
  "base-xdg",
  "caller-identity-core",
  "caller-identity-linux",
+ "hidraw-ioctl",
  "input-broker-client",
  "input-broker-wire",
  "input-linux",
@@ -16431,6 +16460,7 @@ dependencies = [
  "wayland-backend",
  "wayland-client",
  "wayland-protocols",
+ "wayland-raw-handle",
  "wayland-scanner",
  "wayland-server",
  "webbrowser",
@@ -16720,6 +16750,13 @@ dependencies = [
  "skrifa 0.49.0",
  "ui-core",
  "ui-style",
+]
+
+[[package]]
+name = "uinput-ioctl"
+version = "0.1.0"
+dependencies = [
+ "rustix 1.1.6",
 ]
 
 [[package]]
@@ -17402,6 +17439,19 @@ dependencies = [
  "wayland-protocols",
  "wayland-scanner",
  "wayland-server",
+]
+
+[[package]]
+name = "wayland-raw-handle"
+version = "0.1.0"
+dependencies = [
+ "raw-window-handle",
+ "thiserror 2.0.21",
+ "wayland-backend",
+ "wayland-client",
+ "wgpu 30.0.2",
+ "winit-core",
+ "winit-wayland",
 ]
 
 [[package]]

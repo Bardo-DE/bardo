@@ -9,6 +9,10 @@
 //!
 //! Pure: no clock, bus, file or runtime is reached here. It names nothing of `Router` or
 //! `Seams`; `action-router` runs these steps over its seams.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod argcheck;
 pub mod brief_sheet;

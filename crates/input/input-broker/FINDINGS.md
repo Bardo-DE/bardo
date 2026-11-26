@@ -94,8 +94,9 @@ Departures from the plan, standing facts and open items. An entry names the cond
     vendor id, which wrongly caught a laptop's keyboard and kept the mouse gestures daemon's Magic Mouse clicks off
     the lock screen and consent sheets. The input broker is the only process that can create a uinput
     device (`dist/72-bardo-input-broker.rules`) and it already proves which service each device is for
-    (`policy.rs`), so it writes that into the device with `UI_SET_PHYS` (`input-linux`'s
-    `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `input_broker/pad_daemon` for the mouse gestures daemon's three kinds,
+    (`policy.rs`), so it writes that into the device with `UI_SET_PHYS` (the `uinput-ioctl` crate's
+    `set_phys`, before `UI_DEV_SETUP`; `input-linux` 0.7's `UInputHandle::set_phys` is not used, because crates.io's
+    `input-linux-sys` 0.9.0 gives `UI_SET_PHYS` a one-byte size and every call fails with `EINVAL`): `input_broker/pad_daemon` for the mouse gestures daemon's three kinds,
     `input_broker/keymap_daemon` for the key remap daemon's two. The kernel shows it in
     `/sys/class/input/<event>/device/phys`. The format is `input_broker_wire::Maker` (format and
     `parse`); every plan sets `DeviceSpec::maker` and a test pins the exact strings and the label of

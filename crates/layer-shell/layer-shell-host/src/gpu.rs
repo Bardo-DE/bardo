@@ -8,7 +8,6 @@ pub(crate) mod context_proxy;
 mod deadline;
 pub(crate) mod presenter;
 mod probe;
-pub(crate) mod raw_handle;
 pub(crate) mod rebuild;
 pub(crate) mod render;
 pub(crate) mod shm;

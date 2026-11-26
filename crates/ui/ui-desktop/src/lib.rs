@@ -5,6 +5,10 @@
 //! each as here or absent, and [`Desktop::watch`] follows the changes.
 //! Feature `dbus` does the asking (zbus, session bus, plus the system bus for `PackageKit`); without
 //! it everything is `Absent` and no D-Bus crate is linked. Feature `dioxus` adds [`use_desktop`].
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod capability;
 mod desktop;

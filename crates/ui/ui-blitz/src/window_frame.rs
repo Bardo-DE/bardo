@@ -53,14 +53,13 @@ impl WindowFrame {
 /// The window's object, if it is a Wayland window and the compositor offers the global.
 #[cfg(all(target_os = "linux", feature = "desktop"))]
 fn attach(window: &dyn Window) -> Option<crate::bardo_window::BardoWindow> {
-    use crate::{bardo_window, wayland_surface::adopt};
-    use dioxus_native::winit::platform::wayland::WindowExtWayland;
+    use crate::bardo_window;
     use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
-    let toplevel = window.xdg_toplevel()?;
+    use wayland_raw_handle::adopt;
     let display = window.display_handle().ok()?;
     let handle = window.window_handle().ok()?;
     let adopted = adopt(display, handle).ok()?;
-    bardo_window::attach(&adopted, toplevel).ok()
+    bardo_window::attach(&adopted, window).ok().flatten()
 }
 
 /// Elsewhere, or without `desktop`, there is no compositor to ask.

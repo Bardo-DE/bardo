@@ -6,6 +6,10 @@
 //!
 //! Pure data: no I/O, no runtime, no dioxus. `ShellFile` is a `settings_store::SettingsDoc`, and
 //! reading, saving, watching and publishing it belong to the daemon (`shell_app::daemon::settings`).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod bar;
 pub mod calendar;

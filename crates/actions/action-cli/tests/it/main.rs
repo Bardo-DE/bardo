@@ -1,3 +1,4 @@
+//! Integration tests of `action-cli`.
 mod ask;
 mod bus;
 mod dist;

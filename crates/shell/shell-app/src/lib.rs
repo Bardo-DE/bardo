@@ -1,5 +1,9 @@
 //! The bardo-shell daemon and command line, as a library so `crates/shell/shell-app/tests/**` can exercise its
 //! internals (`main.rs` is a thin wrapper over this crate).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod actions;
 pub mod cli;

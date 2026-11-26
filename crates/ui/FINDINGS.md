@@ -1670,7 +1670,7 @@ the decisions and what was verified:
   The compositor's `menu_source` (compositor-scope 03 section 1.11, the compositor P3-MN).
 - **The client half of `org_kde_kwin_appmenu` is not built.** The object must outlive the call that
   creates it (the compositor drops the address when it is destroyed), and
-  `wayland_surface::adopt` is a one-call borrow of winit's display and surface; a persistent
+  `wayland_raw_handle::adopt` is a one-call borrow of winit's display and surface; a persistent
   adopted connection per window needs a design of its own (who drops it before winit closes the
   display). No compositor offered such a global, so nothing could be tested; the compositor P3-MN adds the
   server side, then ui-blitz binds `org_kde_kwin_appmenu_manager` and sets the same address.

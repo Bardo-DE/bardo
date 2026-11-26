@@ -1,3 +1,4 @@
+//! Integration tests of `memory-service`.
 mod auth;
 mod closure;
 mod files;

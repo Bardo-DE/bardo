@@ -261,12 +261,12 @@ the X lock to the lift.
 `DeviceInfo` then `DeviceGone`. The `f32` fields keep `ToHost` from deriving `Eq`. A subscriber
 whose queue is full misses that message rather than delaying the reader.
 
-**`unsafe` lives in `daemon/hidioc.rs` only (2026-10-17).** The evdev and uinput ioctls (`EVIOCGABS`,
+**`unsafe` lives in the `hidraw-ioctl` crate only (2026-10-17; moved out of `daemon/hidioc.rs` into that crate in the unsafe-crates lane).** The evdev and uinput ioctls (`EVIOCGABS`,
 `EVIOCSCLOCKID`, `UI_SET_*BIT`, `UI_DEV_SETUP`, `UI_ABS_SETUP`, `UI_DEV_CREATE`, `UI_DEV_DESTROY`) used to be
 rustix `Ioctl` blocks in `daemon/sys.rs`; they now go through `input-linux` 0.7 (MIT, `default-features = false`,
 the same line as the input broker): `EvdevHandle::{absolute_info, set_clock_id}` and `UInputHandle::{set_evbit,
 set_keybit, set_relbit, set_absbit, set_propbit, create, dev_destroy}`. One site stays unsafe: `HIDIOCSFEATURE`
-(`send_feature`, moved to `daemon/hidioc.rs`, which keeps the `SAFETY` comment and an opcode test) because no
+(`send_feature`, now in the `hidraw-ioctl` crate, which keeps the `SAFETY` comment and an opcode test) because no
 safe crate has the hidraw ioctls. What changed in behaviour: a raw code is checked against its kind's range
 before the ioctl (`InvalidInput`); `UInputHandle::create` does setup, the axis setups and create in one call, so
 the axes are passed at creation, not as the bits are set, and on `EINVAL` from `UI_DEV_SETUP` (a kernel before

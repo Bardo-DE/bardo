@@ -5,6 +5,10 @@
 //! Everything here creates or opens real input devices. Nothing in the workspace's ordinary
 //! tests may call it: the device tests that do are `#[ignore]`d and assert
 //! `BARDO_KEY_REMAP_DEVICE_TESTS=1`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod client;
 mod daemon;

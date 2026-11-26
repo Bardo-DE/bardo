@@ -6,6 +6,10 @@
 //! first ([`embed_query`], the one async step) and hands the vector in, so a search never holds
 //! the index across an await. Writing the audit of a read, and every other reader, stays with
 //! whoever owns the Space.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod docs;
 mod plan;

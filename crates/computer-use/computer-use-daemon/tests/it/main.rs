@@ -1,3 +1,4 @@
+//! Integration tests of `computer-use-daemon`.
 mod binary;
 mod desk;
 mod inflight;

@@ -1,7 +1,6 @@
 //! The mouse's hidraw node: opening it, enabling multitouch, reading one report. `read_up_to`
 //! also serves the evdev node, whose reads are runs of events.
 
-use super::hidioc;
 use super::source::Purpose;
 use crate::time::Mono;
 use rustix::event::{PollFd, PollFlags, poll};
@@ -44,7 +43,7 @@ pub fn open(path: &Path, purpose: Purpose) -> io::Result<(OwnedFd, bool)> {
 
 /// Sends `F1 02 01`; the kernel sends it at probe and resume too, so repeating it is harmless.
 pub fn enable_multitouch(fd: &OwnedFd) -> io::Result<()> {
-    hidioc::send_feature(fd, ENABLE_MULTITOUCH)
+    hidraw_ioctl::send_feature(fd, &ENABLE_MULTITOUCH)
 }
 
 /// Waits up to `timeout` for one read of at most `len` bytes: `Ok(None)` when nothing came.

@@ -5,6 +5,10 @@
 //!
 //! `layer-shell-hooks` is what a component calls; `layer-shell-host` is the Wayland host that
 //! renders the surfaces. Every module is private; the curated root below is the API.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod blur;
 mod drag;

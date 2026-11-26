@@ -6,6 +6,10 @@
 //! with and names everything else by its home path; the root holds only `prelude` and the
 //! stylesheet assembly (`kits`, `stylesheet`, `component_sheets`, `KIT`, `selectors`). DESIGN.md
 //! maps each module to the design doc section it implements.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod assembly;
 pub mod components;

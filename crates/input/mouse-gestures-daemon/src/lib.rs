@@ -3,8 +3,12 @@
 //! The pure core (`sensor`, `touch`, `stamp`, `feel`, `gestures`, `tracker`, `action`,
 //! `config`, `outputs`) takes bytes and instants and returns values; `recording` and `replay`
 //! feed recorded reads through it. The daemon owns every thread, socket, device and clock, and
-//! its `hidioc` holds the only `unsafe` (one hidraw ioctl); `command::run` is the one way in to it. The socket
+//! it holds no `unsafe` (the hidraw ioctl is the `hidraw-ioctl` crate); `command::run` is the one way in to it. The socket
 //! messages are the `mouse-gestures-proto` crate.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod action;
 pub mod command;

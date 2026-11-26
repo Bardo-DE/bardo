@@ -19,6 +19,10 @@
 //! from that text with its own parser. Nothing here rewrites iCalendar, and the only part it reads is
 //! a `UID` line, to tell which event a `CalDAV` query returned. Credentials are
 //! the HTTP seam's (a relay adds them), as for every account family.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod caldav;
 mod error;

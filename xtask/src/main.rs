@@ -17,11 +17,12 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, product-words, error-names, no-mod-rs, no-prefs, test-modules and shear, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules and shear, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
   check test-modules            one test binary per crate (tests/it), every tests/it file a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check layers                  the rules in layers.toml: layer order, programs are leaves, reach, edges, source
+  check lints                   every crate takes the workspace lints; unsafe and baseline crates as layers.toml marks them
   check product-words           no retired product name in a file name or in the text of any tracked file
   check error-names             a type that implements std::error::Error has a name ending in Error
   check no-mod-rs               no mod.rs file
@@ -85,7 +86,7 @@ fn run() -> Result<bool> {
         "check" => {
             let which = parser
                 .value()
-                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, layers, product-words, error-names, no-mod-rs, no-prefs, shear or legacy")?
+                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, shear or legacy")?
                 .string()?;
             match which.as_str() {
                 "deny" => {
@@ -107,6 +108,10 @@ fn run() -> Result<bool> {
                 "layers" => {
                     reject_extra(&mut parser)?;
                     tasks::layers::run()
+                }
+                "lints" => {
+                    reject_extra(&mut parser)?;
+                    tasks::lints::run()
                 }
                 "product-words" => {
                     reject_extra(&mut parser)?;

@@ -22,9 +22,9 @@ use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle, delegate_noo
 
 use crate::error::{HostError, Result};
 use crate::gpu::context::{SURFACE_FORMAT, enumerate, with_backends};
-use crate::gpu::raw_handle::{self, WaylandDisplay};
 use crate::gpu::swapchain::{choose_alpha, choose_present};
 use blitz_embed::adapter::{AdapterFacts, request_device};
+use wayland_raw_handle::WaylandDisplay;
 
 const NAMESPACE: &str = "shell-host-adapter-probe";
 
@@ -175,7 +175,8 @@ fn present_once(
     conn: &Connection,
     surface: &WlSurface,
 ) -> std::result::Result<(), String> {
-    let target = raw_handle::create_surface(instance, conn, surface).map_err(|e| e.to_string())?;
+    let target =
+        wayland_raw_handle::wgpu_surface(instance, conn, surface).map_err(|e| e.to_string())?;
     if !adapter.is_surface_supported(&target) {
         return Err("the adapter cannot present to a Wayland surface".into());
     }

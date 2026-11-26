@@ -1,5 +1,9 @@
 //! Motion: every animation as data, the settle timers that replace `animationend`, and the
 //! state machines that decide what moves (design/05-MOTION.md, design/06-INTERACTIONS.md).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod anim;
 pub(crate) mod css;

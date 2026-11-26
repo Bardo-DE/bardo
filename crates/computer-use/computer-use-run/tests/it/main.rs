@@ -1,3 +1,4 @@
+//! Integration tests of `computer-use-run`.
 mod attempts;
 mod briefing;
 mod machine;

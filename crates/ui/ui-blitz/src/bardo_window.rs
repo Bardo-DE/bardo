@@ -1,20 +1,20 @@
 //! `bardo_window_v1` on a window that exists: the app tells the compositor that it should draw the
 //! window's shadow and clip its corners, at the radius the app's own window edge has
 //! (`set_frame(compositor_shadow, radius)`). The object is made on the app's own connection
-//! (`crate::wayland_surface`) for the window's `xdg_toplevel`, which winit reports, and it is
+//! (`wayland_raw_handle`) for the window's `xdg_toplevel`, which winit reports, and it is
 //! kept for as long as the window: the compositor forgets what an object said when it is
 //! destroyed, so dropping this destroys it and nothing sooner. A compositor without the global
 //! is `FrameError::Unsupported`, and the window is drawn as it always was.
 
-use crate::wayland_surface::{AdoptError, Adopted};
+use dioxus_native::winit::window::Window;
 use proto::client::bardo_window_manager_v1::BardoWindowManagerV1;
 use proto::client::bardo_window_v1::{BardoWindowV1, FrameMode};
-use std::ffi::c_void;
-use std::ptr::NonNull;
 use ui_components::style::tokens::shape::Radius;
 use wayland_client::globals::{BindError, GlobalError, GlobalListContents, registry_queue_init};
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::{Connection, Dispatch, EventQueue, Proxy, QueueHandle};
+use wayland_protocols::xdg::shell::client::xdg_toplevel::XdgToplevel;
+use wayland_raw_handle::{AdoptError, Adopted};
 
 mod proto;
 
@@ -62,16 +62,27 @@ impl std::fmt::Debug for BardoWindow {
     }
 }
 
-/// Make the window's `bardo_window_v1` from `toplevel`, its `xdg_toplevel` as winit reports it.
+/// Make the window's `bardo_window_v1` for its `xdg_toplevel`; `None` when winit reports none
+/// (not a Wayland window).
 pub(crate) fn attach(
     adopted: &Adopted<'_>,
-    toplevel: NonNull<c_void>,
+    window: &dyn Window,
+) -> Result<Option<BardoWindow>, FrameError> {
+    match adopted.xdg_toplevel::<XdgToplevel>(window)? {
+        Some(toplevel) => attach_toplevel(adopted, &toplevel).map(Some),
+        None => Ok(None),
+    }
+}
+
+/// Make the `bardo_window_v1` of `toplevel`, an object of the adopted connection.
+fn attach_toplevel(
+    adopted: &Adopted<'_>,
+    toplevel: &XdgToplevel,
 ) -> Result<BardoWindow, FrameError> {
-    let toplevel = adopted.toplevel(toplevel)?;
     let connection = adopted.connection().clone();
     let (globals, queue) = registry_queue_init::<Quiet>(&connection)?;
     let manager: BardoWindowManagerV1 = globals.bind(&queue.handle(), 1..=1, ())?;
-    let object = manager.get_window(&toplevel, &queue.handle(), ());
+    let object = manager.get_window(toplevel, &queue.handle(), ());
     // Objects already created stay valid, and no `quit` is heard at version 1.
     manager.destroy();
     Ok(BardoWindow {

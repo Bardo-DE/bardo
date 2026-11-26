@@ -9,6 +9,10 @@
 //! let dialect = WireDialect::OpenAiComputer;
 //! assert_eq!(dialect.tools(Size::new(Coord(1280), Coord(800))).len(), 1);
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod anthropic;
 mod args;

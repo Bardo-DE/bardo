@@ -1,3 +1,4 @@
+//! Integration tests of `action-review`.
 mod breaker;
 mod cascade;
 mod infer;

@@ -21,7 +21,6 @@ mod compositor;
 mod damage;
 mod draw_cache;
 mod element;
-mod gl_raw;
 mod lru;
 mod scene;
 mod texture_book;
@@ -46,7 +45,6 @@ pub use element::{
     IconPlace, OverviewIcon, OverviewLook, TilePreview, icon_element, icon_place, lift_last,
     shown_length, shown_outline, tile_preview_elements,
 };
-pub use gl_raw::{gles_on, surfaceless_gles};
 pub use scene::{
     ChromeLayer, CursorDraw, CursorShape, LayerDraw, OutputView, OverviewDraw, OverviewHover,
     RaisedDraw, RowDraw, output_elements,

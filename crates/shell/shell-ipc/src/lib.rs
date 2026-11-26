@@ -6,6 +6,10 @@
 //! some of its variants carry have a file each: [`show`] (panels, the companion), [`act`] (the
 //! display keys), [`status`] (what is read), [`debug`] (probes). What a status answers is a
 //! `shell-model` type, serialised.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod act;
 pub mod debug;

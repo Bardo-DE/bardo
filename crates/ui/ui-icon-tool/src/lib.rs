@@ -1,6 +1,10 @@
 //! App-icon rendering for the shipped set (design/08-ICONS.md 2, 3.7).
 //!
 //! Every function here is pure: images in, images out. Only `main.rs` reads and writes files.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod bevel;
 mod board;

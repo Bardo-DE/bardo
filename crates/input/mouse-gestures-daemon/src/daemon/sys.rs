@@ -3,7 +3,7 @@
 //! No `unsafe` lives here: the crate owns the opcodes and the argument layouts, so this module
 //! only turns the mouse gestures daemon's plain values (raw `u16` codes) into its typed ones. A handle borrows
 //! the descriptor for one call; the caller keeps ownership, and closing it still destroys a
-//! device. The one hidraw ioctl no safe crate has is in `hidioc`.
+//! device. The one hidraw ioctl no safe crate has is the `hidraw-ioctl` crate.
 
 use input_linux::{
     AbsoluteAxis, AbsoluteInfoSetup, EvdevHandle, EventKind, InputProperty, Key, RelativeAxis,

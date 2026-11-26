@@ -5,6 +5,10 @@
 //! a bus or a UI (`cargo xtask check layers`): `shell-services` carries the effects, and every
 //! transition is table-tested without a bus. The one runtime piece is tokio's channels
 //! ([`service`]): what a surface holds of a running service.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod accounts;
 pub mod actions;

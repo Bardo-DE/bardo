@@ -7,7 +7,6 @@ use crate::ctx::HostCtx;
 use crate::error::{HostError, Recovery, Result};
 use crate::gpu::context::GpuContext;
 use crate::gpu::presenter::Presenter;
-use crate::gpu::raw_handle::create_surface;
 use crate::gpu::shm::ShmBuffers;
 use crate::gpu::swapchain::Swapchain;
 use crate::handlers::render_device::RenderDevice;
@@ -60,7 +59,7 @@ fn gpu_presenter<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId) -> Result<Pres
         return Err(HostError::NoSurface(id));
     };
     let opaque = surface.role.opaque();
-    let wgpu_surface = create_surface(instance, conn, surface.role.wl_surface())?;
+    let wgpu_surface = wayland_raw_handle::wgpu_surface(instance, conn, surface.role.wl_surface())?;
     if state.gpu.is_none() {
         let compositor = state.render_device.as_ref().and_then(RenderDevice::ids);
         let pref = follow_compositor(&ctx.adapter, compositor);

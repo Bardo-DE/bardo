@@ -1,7 +1,8 @@
 //! Shared helpers for the renderer-only tests: offscreen targets on pixman and on llvmpipe
 //! GLES, one render through `render_output` and the read-back.
 
-use compositor_render::{Compositor, Rendered, SceneElement, render_output, surfaceless_gles};
+use compositor_egl::surfaceless_gles;
+use compositor_render::{Compositor, Rendered, SceneElement, render_output};
 use image::RgbaImage;
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::damage::OutputDamageTracker;

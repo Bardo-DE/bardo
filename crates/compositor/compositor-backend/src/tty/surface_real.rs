@@ -8,7 +8,7 @@
 //! and overlay planes take direct-scanout candidates when the driver accepts the test commit.
 //!
 //! A surface draws one of two ways, by the render plan's route for its device. `Direct`: the
-//! GLES renderer of the GPU that renders and scans out (`compositor_render::gles_on`, one renderer
+//! GLES renderer of the GPU that renders and scans out (`compositor_egl::gles_on`, one renderer
 //! per GPU, shared by every output: two EGL displays on one native display would terminate each
 //! other) builds the elements and the compositor draws them. `Copy`: the render GPU's renderer
 //! draws the picture into a buffer the scanout GPU allocated (`bridge_real.rs`) and the

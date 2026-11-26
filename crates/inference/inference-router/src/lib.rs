@@ -40,6 +40,10 @@
 //! assert!(check_class(DataClass::Screen).is_ok());
 //! assert!(check_class(DataClass::Mail).is_err());
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod attached;
 pub mod audio;

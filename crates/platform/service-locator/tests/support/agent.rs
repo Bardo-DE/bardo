@@ -1,9 +1,10 @@
+//! A stand-in agent program the tests and the example start.
 // The agent that `tests/across_processes.rs` drives, and the body of `examples/agent.rs`.
 // A binary target, not just the example, because nextest archives carry binaries and not examples.
 
 use std::io::{BufRead, BufReader, Write};
 
-fn main() {
+pub(crate) fn main() {
     // `Display`, not the `Debug` that returning `Err` from `main` would print: "an agent is
     // already running for this user" is the sentence a person needs, and `AlreadyRunning` is not.
     if let Err(e) = run() {

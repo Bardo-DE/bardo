@@ -15,6 +15,10 @@
 //! // A file with a missing field is refused.
 //! assert!(parse_entry("id = \"nothing-else\"").is_err());
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod capabilities;
 mod check;

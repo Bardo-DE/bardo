@@ -50,6 +50,7 @@ members = [
     "crates/compositor/compositor-backend",
     "crates/compositor/compositor-chrome",
     "crates/compositor/compositor-core",
+    "crates/compositor/compositor-egl",
     "crates/compositor/compositor-icons",
     "crates/compositor/compositor-dbus",
     "crates/compositor/compositor-ipc",
@@ -65,6 +66,7 @@ members = [
     "crates/wayland/desktop-client",
     "crates/wayland/outputs-dbus",
     "crates/wayland/shell-verbs",
+    "crates/wayland/wayland-raw-handle",
     "crates/keymap/keymap",
     "crates/keymap/keymap-gnome",
     "crates/keymap/keymap-kde",
@@ -200,6 +202,8 @@ members = [
     "crates/platform/service-locator",
     "crates/input/mouse-gestures-daemon",
     "crates/input/mouse-gestures-proto",
+    "crates/input/hidraw-ioctl",
+    "crates/input/uinput-ioctl",
     "crates/identity/caller-identity-linux",
     "crates/identity/caller-identity-dbus",
     "crates/identity/caller-identity-core",
@@ -253,6 +257,7 @@ members = [
     "crates/base/base-fs",
     "crates/base/base-ids",
     "crates/base/base-path",
+    "crates/base/base-process",
     "crates/base/base-secret",
     "crates/base/base-spawn",
     "crates/base/base-testkit",
@@ -357,7 +362,6 @@ members = [
 exclude = [
     'crates/compositor/wlcs-compositor',
     'crates/speech/speech-host-sherpa',
-    'crates/input/input-broker/vendor/input-linux-sys',
 ]
 
 [profile.dev]
@@ -549,6 +553,9 @@ overflow-checks = true
 [profile.release.package.compositor-ctl]
 overflow-checks = true
 
+[profile.release.package.compositor-egl]
+overflow-checks = true
+
 [profile.release.package.compositor-icons]
 overflow-checks = true
 
@@ -603,7 +610,6 @@ dioxus-stores = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4c
 dioxus-stores-macro = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
 generational-box = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
 glifo = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
-input-linux-sys = {path = "crates/input/input-broker/vendor/input-linux-sys"}
 lazy-js-bundle = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
 pdfrum-anyrender = {git = "https://github.com/PoHsuanLai/pdfrum", rev = "dea36b2adf11c1a53f5e92bfdafeba17cdf2b1de"}
 subsecond = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
@@ -789,6 +795,9 @@ wayland-protocols = "0.32.13"
 wayland-protocols-misc = "0.3.12"
 wayland-protocols-plasma = "0.3"
 wayland-protocols-wlr = "0.3.12"
+# The winit dioxus-native builds on, for the toplevel wayland-raw-handle asks of a window.
+winit-core = "=0.31.0-beta.4"
+winit-wayland = { version = "=0.31.0-beta.4", default-features = false }
 wayland-scanner = "0.31"
 wayland-server = "0.31"
 webbrowser = "1.0"
@@ -813,10 +822,10 @@ repository = "https://github.com/Bardo-DE/bardo"
 publish = false
 
 # Microsoft Pragmatic Rust Guidelines, M-STATIC-VERIFICATION. Opt-outs are `#[expect(lint, reason = "...")]`
-# on the item. unsafe_code is "deny" (not "forbid") until the few unsafe modules move into the dedicated
-# unsafe crates; until then those modules carry `#![allow(unsafe_code)]` with their SAFETY comments.
+# on the item. unsafe_code is "forbid": our unsafe code lives only in the small crates UNSAFE.md lists
+# (`unsafe = true` in layers.toml), whose own [lints] table is this one with "deny" in its place.
 [workspace.lints.rust]
-unsafe_code = "deny"
+unsafe_code = "forbid"
 missing_debug_implementations = "warn"
 ambiguous_negative_literals = "warn"
 redundant_imports = "warn"
@@ -824,6 +833,7 @@ redundant_lifetimes = "warn"
 trivial_numeric_casts = "warn"
 unsafe_op_in_unsafe_fn = "warn"
 unused_lifetimes = "warn"
+missing_docs = "warn"
 
 # Not the `cargo` group: its multiple_crate_versions walks the whole dependency graph again for every
 # crate it lints, minutes per crate in a workspace this size (a gate spent 23 minutes linting one

@@ -80,7 +80,7 @@ a higher one. When something needs a higher layer, move the shared piece down or
 | L2 machines and physics | `frame`, `resolve`, `grab`, `popup_keyboard`, `timers`, `clock`, `tick` (pacing), `modality`, `paste`, `input/{pointer,keysym,keycode,modifiers,capability,focus}`, `input/mouse_gestures/route`, `scroll/{config,indicator,source,suppress,wheel}` | pure, table-tested |
 | L3 shared cells and handles | `live`, `wake`, `handle`, `host_handle`, `bridge`, `root`, `lock/handle`, `scroll/{watch,wheel_feed}` | values shared with documents; no Wayland |
 | L4 documents | `dom/{document,head,shell_provider,scheme,scroll,ime_focus}`, `headless` | Blitz, through `blitz-embed` |
-| L5 GPU | `gpu/{context,context_proxy,presenter,swapchain,shm,render,probe,deadline,rebuild,raw_handle}` | effects |
+| L5 GPU | `gpu/{context,context_proxy,presenter,swapchain,shm,render,probe,deadline,rebuild}` | effects |
 | L6 Wayland effects | `state`, `surface`, `role`, `handlers/*` (`pipe_writes`, `surface_objects`, `text_input`, `surrounding` among them), `clipboard`, `cursor`, `ime` (`ime/surrounding`: what to send about the text around the caret), `input/{key,scroll,mouse_gestures}` (socket), `scroll/{surface,paint,tuning}`, `lock/active` | effects |
 | L7 orchestration | `ctx/*`, `host`, `inject` | effects; the loop and the flush |
 
@@ -222,7 +222,7 @@ neither side names the other's types. Tests for each module live in the kit agai
 | GPU device, renderer, image cache | `gpu/context` |
 | A lost GPU device, and how often it is rebuilt | `ctx/paint/recover`, `gpu/rebuild` |
 | A lock surface that failed, and when to remake it | `lock/retry`, `ctx/lock` |
-| Presenter (Wgpu, Shm), swapchain, raw handle (`unsafe`) | `gpu/presenter`, `gpu/swapchain`, `gpu/raw_handle` |
+| Presenter (Wgpu, Shm), swapchain; the wgpu surface over a `wl_surface` is `wayland_raw_handle::wgpu_surface` | `gpu/presenter`, `gpu/swapchain` |
 | Flush order | `ctx/flush::ORDER` |
 | Surface creation per role | `ctx/spawn/{layer,toplevel,popup}` |
 | Requests from handles, applied after a poll | `msg::Request`, `ctx/ops` |
@@ -232,7 +232,7 @@ neither side names the other's types. Tests for each module live in the kit agai
 | Delegate macros | `state.rs` (only file naming them) |
 | Compositor quirks (the parent keyboard lift) | `popup_keyboard` |
 | The compositor's GPU (dev_t to PCI ids) and the adapter following it | `render_gpu` (pure), `handlers/render_device` (the event) |
-| `unsafe` | `gpu/raw_handle.rs` |
+| `unsafe` | `crates/wayland/wayland-raw-handle` |
 | Ambient inputs (environment, clock, directories) | `HostConfig` and `HostClock` values passed in; no other module reads `std::env` |
 
 ## 6. Traits
@@ -376,7 +376,7 @@ session.
 
 - **Effects stay out of the pure layers.** `frame::step` returns the actions to take rather
   than arming a timer, and handlers push `TimerRequest`s rather than touching the loop.
-- **`unsafe` lives only in `gpu/raw_handle.rs`** (the raw window handle).
+- **No `unsafe` here**: the raw window handle lives in `wayland-raw-handle`.
 - **Errors:** `HostError`, each variant answering a `Recovery` (`Retry`, `Fallback`, `Degrade`,
   `Fatal`). A phase of the flush that finds the host must stop but returns nothing (the frame
   step) sets `HostCtx::failed`; the last phase returns it (`HostError::GaveUp`: the GPU device

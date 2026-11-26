@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 compositor-core = {path = "../compositor-core"}
+compositor-egl = {path = "../compositor-egl"}
 compositor-motion = {path = "../compositor-motion"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 ui-core = {path = "../../ui/ui-core", default-features = false}

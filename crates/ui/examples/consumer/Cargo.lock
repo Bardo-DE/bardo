@@ -5250,6 +5250,7 @@ dependencies = [
  "wayland-backend",
  "wayland-client",
  "wayland-protocols",
+ "wayland-raw-handle",
  "wayland-scanner",
  "webbrowser",
  "wgpu 30.0.2",
@@ -5800,6 +5801,18 @@ dependencies = [
  "wayland-client",
  "wayland-protocols",
  "wayland-scanner",
+]
+
+[[package]]
+name = "wayland-raw-handle"
+version = "0.1.0"
+dependencies = [
+ "raw-window-handle",
+ "thiserror 2.0.20",
+ "wayland-backend",
+ "wayland-client",
+ "winit-core",
+ "winit-wayland",
 ]
 
 [[package]]

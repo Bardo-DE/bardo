@@ -38,6 +38,10 @@
 //! [`AGENT_NEVER_SETTABLE`](settings_types::schema::AGENT_NEVER_SETTABLE) prefix) agent-settable is
 //! refused by [`LiveSchema::check`], which [`serve`] runs before it exports anything and
 //! `Describe` runs on every call.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod client;
 mod error;

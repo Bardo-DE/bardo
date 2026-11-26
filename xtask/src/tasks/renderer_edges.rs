@@ -24,11 +24,13 @@ const RENDERER: [&str; 6] = [
 ];
 
 /// The members that may name them: the renderer crates, the crates that run one, and the programs.
-const ALLOWED: [&str; 10] = [
+const ALLOWED: [&str; 11] = [
     // The renderer for windows: `launch`, the window loop and the Blitz document wiring.
     "ui-blitz",
     // The renderer for layer-shell surfaces: the Wayland host and its GPU device.
     "layer-shell-host",
+    // The renderers' unsafe seam: its `wgpu` feature makes the wgpu surface over a Wayland surface.
+    "wayland-raw-handle",
     // The Blitz repairs both renderers share, written against blitz-dom and wgpu.
     "blitz-embed",
     // The test driver: builds a document from the renderer's own parts, so a test runs what a window runs.

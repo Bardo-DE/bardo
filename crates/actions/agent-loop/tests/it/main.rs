@@ -1,3 +1,4 @@
+//! Integration tests of `agent-loop`.
 mod assemble;
 mod basics;
 mod guard;

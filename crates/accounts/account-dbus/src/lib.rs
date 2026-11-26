@@ -22,6 +22,10 @@
 //! names, keys and row codecs. What every daemon's interfaces share is at the root: [`Details`],
 //! the failure of a bus call. The portal
 //! shape of a sheet's answer is [`accounts::sheet`]. Who is calling is `account-callers`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod args;
 mod destination;

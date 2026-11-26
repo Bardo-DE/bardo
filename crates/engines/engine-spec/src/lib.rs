@@ -15,6 +15,10 @@
 //! assert_eq!(engine_from_disk_word("llama_cpp"), Some(EngineKind::LlamaServer));
 //! assert_eq!(ENGINES.len(), 5);
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod cache;
 mod check;

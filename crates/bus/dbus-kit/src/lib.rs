@@ -7,6 +7,10 @@
 //! - [`Call`], [`Unserved`] and [`Document`]: what `#[bus_interface]` (from `dbus-kit-macros`)
 //!   expands to, so an interface written once as the client's proxy trait also yields the server
 //!   trait and the object that serves it.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 // The macro's expansion names `::dbus_kit::Call`; this makes that path work in this crate too.
 extern crate self as dbus_kit;

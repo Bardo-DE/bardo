@@ -1,3 +1,4 @@
+//! Integration tests of `action-daemon`.
 mod acp_desk;
 mod acp_gate;
 mod audit;

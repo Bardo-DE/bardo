@@ -6,6 +6,10 @@
 //! No file, no bus, no clock: a service, a compositor or a shell that never reads a settings file
 //! can still hold, parse and print all of it. Reading and writing files is `settings-store` and
 //! `settings-store-fs`; the live bus modules are `settings-dbus`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 // `#[derive(SettingsSchema)]`'s generated code always writes `::settings_types::schema::...`, so
 // the same derive output resolves whether a consumer crate invokes it or this crate does

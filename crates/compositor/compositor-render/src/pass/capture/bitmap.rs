@@ -7,8 +7,8 @@
 //! ([`ArgbImage::fitted`]), the way the frame is.
 
 use super::shm::Layout;
-use crate::gl_raw::with_shm_pool;
 use compositor_core::geometry::{PhysicalSize, turn_point, turn_size};
+use compositor_egl::with_shm_pool;
 use desktop_protocols::vocab::Transform;
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;

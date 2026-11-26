@@ -1,3 +1,4 @@
+//! Integration tests of `computer-use-eval`.
 mod live;
 mod metrics;
 mod report;

@@ -2,6 +2,10 @@
 //! role, runs the pure machines of `speech-loop`, talks to inferd through inference-client, and
 //! records nothing. The audio device (`speech-audio`), inferd, the engine warmer and the
 //! person's consent are seams (`Seams`), so tests serve the whole daemon on a private bus with no real device.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod bus;
 mod callers;

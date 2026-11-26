@@ -21,6 +21,10 @@
 //!     ProviderError::Server(ServerStatus(503))
 //! );
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod codec;
 mod collect;

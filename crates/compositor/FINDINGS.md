@@ -221,7 +221,7 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
   has none); `output_elements` takes an `OutputView` (the frame has no output geometry);
   `CursorDraw::ClientSurface { hotspot }` replaces `Surface(WindowId)` and `ChromeLayer` gains
   `cursor_at`; `TextureBook` has builders; `Rgba8` is the quantised colour (A18); the unsafe
-  module exists (`gl_raw.rs`, A17: `surfaceless_gles`).
+  module exists (now the `compositor-egl` crate, A17: `surfaceless_gles`).
 - **compositor-backend.** `BackendKind` has no `Tty` variant until P1-Z; `FramePixels` is
   renderer-neutral (`Rgba(RgbaFrame) | Dummy`, Abgr8888 read-back, SP2); the virtual output
   grammar gains optional `transform=`, `gpu=`, `vrr=`, `edid=` fields and `text()`;
@@ -1257,7 +1257,7 @@ through the fake logind on a private bus.
   noted for the next tick. `Scanout::deadline` (the scheduler) is not used by the loop. The real surface counts vblanks
   itself (`RealScanout::next`), not the kernel's sequence, so a missed vblank is **not measured on hardware** (the fake
   presents on time by construction; the scheduler is covered by the D3 virtual-clock suite).
-- **One GLES renderer per KMS device**, shared by its outputs, made with `compositor_render::gles_on(gbm)`. The cross-GPU
+- **One GLES renderer per KMS device**, shared by its outputs, made with `compositor_egl::gles_on(gbm)`. The cross-GPU
   copy (render GPU draws, another scans out) is not wired to real devices: a second GPU's outputs are drawn by that
   GPU. `gles_on` generalizes `surfaceless_gles`'s two `unsafe` calls over any native display; **no new `unsafe` block**,
   but the signature of the one unsafe module changed.
@@ -2100,7 +2100,7 @@ the orchestrator builds.
   texel (after smithay's own `NO_ALPHA` and alpha handling) by an analytic coverage, a signed distance to the rounded rectangle
   with radius 0 above the middle and the window radius below it, `clamp(0.5 - distance, 0, 1)`, about one pixel of anti-alias.
   The shader finds its pixel by inverting smithay's texture matrix from `v_coords` (uniforms `to`, `from`, `shape`, `radius`;
-  derivation in the file header), the same formula as `ClipShape::coverage`, which carries the table test. No `gl_raw.rs` change
+  derivation in the file header), the same formula as `ClipShape::coverage`, which carries the table test. No `compositor-egl` change
   and no unsafe.
 - **Known gap.** Pixman, the dummy renderer and the multi-GPU copy path draw the window unclipped (the default of the hook), so
   the bottom corners are square there. On GLES a surface whose texture is rotated, flipped or upside down (`is_y_inverted`; a
@@ -2642,7 +2642,7 @@ Nothing here compiled or ran (the lane does not build). Closes the four "Capture
   `copy_texture`). The image is cut to the announced size (nearest neighbour, pixel centres: `ArgbImage::fitted`) and turned
   with the output. Departures: the surface's viewport crop and `buffer_transform` are not applied (a cursor with a cropped
   viewport or a rotated buffer is read as its whole buffer); a single-pixel or other non-shm, non-dma buffer fails the frame
-  (`Renderer`). The one new `unsafe` is `gl_raw::with_shm_pool`, the read-only twin of the capture write's slice.
+  (`Renderer`). The one new `unsafe` is `compositor_egl::with_shm_pool`, the read-only twin of the capture write's slice.
 - **Rotated outputs.** The image is sent turned with the frame (`ArgbImage::turned`, `compositor_core::geometry::turn_point`,
   the rule of smithay's `Transform::transform_point_in`, now one home with `turn_size`), the announced buffer size is
   `sent_image_size` (width and height swapped under a quarter turn), and the hotspot is turned inside the image so that

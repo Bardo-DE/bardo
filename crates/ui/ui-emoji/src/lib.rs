@@ -5,6 +5,10 @@
 //! their font collection to [`prefer_colour`], so one detection decides the face for both. A
 //! caller that needs only the font file, or the table directory of a font, has [`colrv1_emoji_file`]
 //! and [`table_listed`].
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod face;
 mod file;

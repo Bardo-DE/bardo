@@ -22,6 +22,10 @@
 //!   connection and no GPU surface (render tests).
 //! - `debug-inject`: per-surface debug commands on stdin and `HostCtx::inject` (acceptance
 //!   scripts; off in a shipped shell).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod clipboard;
 mod clock;

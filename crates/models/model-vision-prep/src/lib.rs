@@ -15,6 +15,10 @@
 //! assert_eq!(shown, Size::new(Coord(1288), Coord(812)));
 //! assert_eq!(image_tokens(&rule, shown), ImageTokens(1334));
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod frame_map;
 mod pixels;

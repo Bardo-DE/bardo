@@ -1,3 +1,4 @@
+//! Integration tests of `action-router`.
 mod acp_agent;
 mod acp_agent_exec;
 mod acp_agent_grants;

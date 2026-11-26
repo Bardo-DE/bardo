@@ -8,6 +8,10 @@
 //! [`Request`]s into a [`RequestQueue`] the host drains, and reads [`Live`] cells, [`FrameTicks`],
 //! a [`WheelFeed`] and a [`ScrollBoard`] the host publishes into. The vocabulary is
 //! `layer-shell-types`'s; the host is `layer-shell-host`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod drag;
 mod grab;

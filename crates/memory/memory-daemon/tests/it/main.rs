@@ -1,3 +1,4 @@
+//! Integration tests of `memory-daemon`.
 mod binary;
 mod bus;
 mod bus_members;

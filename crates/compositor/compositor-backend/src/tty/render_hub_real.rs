@@ -63,8 +63,8 @@ impl RenderHub {
             return Ok(renderer);
         }
         let made = match via {
-            Some(gbm) => compositor_render::gles_on(gbm.clone()),
-            None => compositor_render::gles_on(self.render_node_device()?),
+            Some(gbm) => compositor_egl::gles_on(gbm.clone()),
+            None => compositor_egl::gles_on(self.render_node_device()?),
         }
         .map_err(|error| KmsError::Io(io::Error::other(error.to_string())))?;
         let shared = Rc::new(RefCell::new(made));

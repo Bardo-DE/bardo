@@ -12,6 +12,10 @@
 //!
 //! This crate never reaches `dioxus` (`cargo xtask check layers`): the hooks that read these
 //! channels live in `shell-ui-kit::hooks`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod account_label;
 pub mod accounts;

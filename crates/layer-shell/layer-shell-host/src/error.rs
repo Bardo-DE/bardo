@@ -46,6 +46,9 @@ pub enum HostError {
     /// Creating or configuring a wgpu surface failed.
     #[error("GPU surface: {0}")]
     Surface(String),
+    /// A wgpu surface could not be made over a `wl_surface`.
+    #[error("GPU surface: {0}")]
+    SurfaceHandle(#[from] wayland_raw_handle::SurfaceError),
     /// Rendering a frame failed.
     #[error("render: {0}")]
     Render(String),
@@ -78,9 +81,10 @@ impl HostError {
             | HostError::Protocol(_)
             | HostError::EventLoop(_)
             | HostError::GaveUp(_) => Recovery::Fatal,
-            HostError::NoAdapter(_) | HostError::AdapterRejected { .. } | HostError::Surface(_) => {
-                Recovery::Fallback
-            }
+            HostError::NoAdapter(_)
+            | HostError::AdapterRejected { .. }
+            | HostError::Surface(_)
+            | HostError::SurfaceHandle(_) => Recovery::Fallback,
             HostError::Unsupported { .. } | HostError::NoSurface(_) | HostError::HostGone => {
                 Recovery::Degrade
             }

@@ -40,7 +40,7 @@ impl FormatSource for RealFormats {
             .open(&path)
             .map_err(refused)?;
         let gbm = GbmDevice::new(file).map_err(refused)?;
-        let renderer = compositor_render::gles_on(gbm)
+        let renderer = compositor_egl::gles_on(gbm)
             .map_err(|error| refused(std::io::Error::other(error.to_string())))?;
         Ok(renderer
             .dmabuf_formats()

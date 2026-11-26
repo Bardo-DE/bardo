@@ -1,3 +1,4 @@
+//! Integration tests of `permission-policy`.
 mod grid;
 mod layers;
 mod loading;

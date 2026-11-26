@@ -6,6 +6,10 @@
 //!
 //! No file, no watcher, no bus and no runtime: reading and writing files is
 //! `settings-store-fs`.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod codec;
 mod doc;

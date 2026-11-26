@@ -11,6 +11,10 @@
 //! (`gen_ai.system` became `gen_ai.provider.name`); every spelling below is checked against the
 //! current registry when the span macros are written (`FINDINGS.md`).
 #![forbid(unsafe_code)]
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 /// Span and metric attribute keys.
 pub mod attr {

@@ -1,3 +1,4 @@
+//! Integration tests of `permission-core`.
 mod grant_space;
 mod limits;
 mod offer;

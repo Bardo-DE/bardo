@@ -21,7 +21,8 @@ the binaries and the test kit (P0-Z2). compositor-intents joins at P4-Z, composi
 | `compositor-core` | the pure model: ids, geometry, time data (`Mono`, `VblankClock`, `TimerBook`, `VirtualClock`), apps, windows, Spaces, layers, the lock, focus and press routing, input origins, reach and bindings, output facts and policy, connection policy (I7), settings, `Event`, `Effect`, `Model::step`, invariants; from P1-Z the GPU plan (`gpu`), the frame scheduler's maths (`frame`) and the Space ids file's codec (`space::SpaceFile`) and, from P2-Z, the shell's and the desktop manager's requests and notes (`shell`, `desktop`) and, from wave 2, per-app consent for the privileged globals (`privilege`, `policy::{power_of, trusted_powers}`) | none |
 | `compositor-layout` | the `SceneLayout` seam: `SceneSpec`, `Arrangement`, `RustScene`, `spec_of(&Model)`; taffy only in `crates/compositor-layout/src/taffy_bridge/` | none |
 | `compositor-motion` | `MotionBook` of ui-motion spring legs, `retarget`, `sample` into an `Eq` `FrameScene` in 1/120 px | none |
-| `compositor-render` | the `Compositor` renderer trait, `SceneElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z); the workspace's one unsafe module `src/gl_raw.rs` (A17) | the GPU through smithay |
+| `compositor-egl` | the compositor's unsafe seam (A17): `gles_on` and `surfaceless_gles` (EGL display, GLES renderer), `with_shm_pool` and `with_shm_pool_mut` (a client's shm pool as bytes); every block carries a SAFETY comment | smithay |
+| `compositor-render` | the `Compositor` renderer trait, `SceneElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z); | the GPU through smithay |
 | `compositor-wayland` | one module per protocol: a `<Protocol>Part` (smithay's state plus our BTreeMap tables), `Part::new` behind the I7 filter, `on_*` (request to `Event`s), `apply_*` (effect to wire); `WaylandStates`, `GlobalFilter`, `ClientState`, `convert`; from P2-Z `capture_source` (window capture) and, behind the feature `shell-protocols` (default on, A8), `bardo::{desktop, shell}` (the private `bardo_desktop_manager_v1` and `bardo_shell_v1` servers) | the wire |
 | `compositor-backend` | the headless backend (virtual outputs, vblank source, render-cost model, `VirtualInput: InputBackend`), winit (a window is one output at its own size and scale, drawn flipped, and one seat whose keyboard and pointer go through the generic input conversion; no touch), the session seam, the soft-GPU pieces (`SoftPixman`, `FixedUdmabuf`, A4); from P1-Z the tty seams (`tty::{Kms, KmsOpener, ScanoutSurface, TtySession, DeviceSource}`, `input::InputFeed`, `gpu::{RenderNodes, FormatSource}`), `TtyBackend` over them, and their thin real adapters (`*_real.rs`) compiled only under the features `tty` and `libinput` (off by default; A2) | devices under the features, none headless |
 | `compositor-agent` | the privileged-connection hand-out (`connection_role`, `hand_out`: the role check on what the bus thread proved, and the socket pair; P2-Z types, P2-Q2 bodies), agent seat, EIS, masked capture, trusted surface, kill (P4); from P2-T3 `eis` (the remote EIS server for the RemoteDesktop portal: `open`, `RemoteEisSource`, `RemoteInput`, `portal_may_connect`, by the role the caller proved; every event tagged `Origin::Remote`) | sockets |
@@ -55,7 +56,7 @@ A1 and A4):
 
 Every crate: no agent-tier or shell crate (B12), no text stack outside compositor-chrome (B15), no
 `HashMap`/`HashSet` in wayland, render, layout and motion (B17), no `unsafe` outside
-`crates/compositor-render/src/gl_raw.rs` (B18), no clock outside `crates/compositor/src/time/` (B8,
+`crates/compositor/compositor-egl` (B18), no clock outside `crates/compositor/src/time/` (B8,
 A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Timer`), no
 `UdmabufAllocator::create_buffer` (A4), and the release binary enables neither `testing` nor
 `debug-inject` (B10). Comment lines are not code to these rows; B20 checks comments too.
@@ -108,7 +109,7 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | springs, velocity, motion level | ui-motion and ui-style |
 | a renderer and what it can do | `compositor-render::Compositor`, `EffectSupport` |
 | colours handed to a renderer (whole steps of 1/255, A18) | `compositor-render::Rgba8` |
-| the one `unsafe` (EGL display, GLES renderer: A17) | `compositor-render/src/gl_raw.rs` |
+| the one `unsafe` (EGL display, GLES renderer, a client's shm pool: A17) | `compositor-egl` |
 | a protocol's state and its request and effect functions | `compositor-wayland::<protocol>` |
 | which globals a client sees (the filter that wraps I7) | `compositor-wayland::GlobalFilter` |
 | a client's key, role and identity | `compositor-wayland::ClientState` (inserted by `compositor::clients::insert_client`) |
@@ -627,9 +628,10 @@ nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU 
   (`bardo::desktop`, `bardo::shell`) and their fields in `WaylandStates`. `compositor` turns it on
   explicitly; a consumer that wants the standard protocol set alone takes the crate with
   `default-features = false`. `bardo_window` stays outside the feature for now (FINDINGS, p2-z).
-- `unsafe_code = "deny"` at the workspace. The one unsafe module is
-  `crates/compositor-render/src/gl_raw.rs`: exactly `EGLDisplay::new` and `GlesRenderer::new`
-  (A17). Another `unsafe` block there needs a reviewed interface ask showing a GL pass smithay's
+- `unsafe_code = "deny"` at the workspace. The unsafe code is
+  in `crates/compositor/compositor-egl` (its `unsafe_code` is `deny` with an `expect` per module):
+  `EGLDisplay::new` and `GlesRenderer::new` (A17), and the two blocks over a client's shm pool.
+  Another `unsafe` block there needs a reviewed interface ask showing a GL pass smithay's
   safe API cannot express.
 - `missing_docs` warns at the workspace, so every public item says what it means.
 - Sibling repos are path dependencies (`../bardo`, `../accounts`, `../wayland/desktop-protocols`); a lane

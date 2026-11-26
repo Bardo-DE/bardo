@@ -1,3 +1,4 @@
+//! Integration tests of `memory-dbus`.
 // The wire samples live in memory-core's test support.
 #[path = "../../../memory-core/tests/it/support.rs"]
 mod support;

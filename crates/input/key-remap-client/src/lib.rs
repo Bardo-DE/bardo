@@ -9,6 +9,10 @@
 //!   resolution stays in each app, through keymap.
 //!
 //! No keymap noun is defined here; every action, chord and keymap is the chord keymap's.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod bounded;
 mod connection;

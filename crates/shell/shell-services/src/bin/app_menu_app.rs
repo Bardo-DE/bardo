@@ -17,6 +17,10 @@
 //! Log lines: `Event <id> <event>`, `AboutToShow <id>`.
 //!
 //! Usage: `cargo run -p shell-services --bin app_menu_app -- <bus address> <log file> <bus name> [--handshake]`
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 use std::collections::HashMap;
 use std::io::Write;

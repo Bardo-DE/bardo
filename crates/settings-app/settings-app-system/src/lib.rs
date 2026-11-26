@@ -4,6 +4,10 @@
 //! (zbus proxies, wire decoding, error to `Absence`) and an in-memory fake under the `testing`
 //! feature. Pure rules found while reading the wire live in `settings-app-model`; nothing here
 //! draws.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod accounts;
 pub mod bluetooth;

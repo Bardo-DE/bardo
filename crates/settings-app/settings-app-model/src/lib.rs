@@ -1,6 +1,10 @@
 //! The Settings app's pure model: which schemas exist, which pages and sections they make, which
 //! control draws each key, and what a search finds. No I/O, no renderer, no runtime: the schemas
 //! come scanned (`settings-app-files` reads the folders), and [`admit_scans`] checks them.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod absence;
 mod accounts;

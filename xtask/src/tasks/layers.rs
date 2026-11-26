@@ -213,6 +213,19 @@ struct Row {
     kind: Option<String>,
     #[serde(default)]
     program: bool,
+    /// `"baseline"` or `"full"`: read by `check lints`.
+    #[expect(
+        dead_code,
+        reason = "check lints reads it; the layers check only accepts it"
+    )]
+    lints: Option<String>,
+    /// An unsafe crate: read by `check lints`.
+    #[serde(default, rename = "unsafe")]
+    #[expect(
+        dead_code,
+        reason = "check lints reads it; the layers check only accepts it"
+    )]
+    is_unsafe: bool,
 }
 
 #[derive(Debug, Deserialize)]

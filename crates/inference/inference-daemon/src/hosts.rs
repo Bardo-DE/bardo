@@ -273,7 +273,7 @@ impl EngineHost for ProcessHost {
             .stderr(Stdio::piped())
             .process_group(0)
             .kill_on_drop(true);
-        group::die_with_parent(&mut command);
+        base_process::die_with_parent(command.as_std_mut());
         let mut child = command.spawn().map_err(|e| {
             self.diagnostics.refuse(
                 id,

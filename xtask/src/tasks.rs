@@ -6,6 +6,7 @@ pub mod gate;
 pub mod install;
 pub mod layers;
 pub mod legacy;
+pub mod lints;
 pub mod no_mod_rs;
 pub mod no_prefs;
 pub mod product_words;

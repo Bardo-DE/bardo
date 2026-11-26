@@ -9,6 +9,10 @@
 //! - [`MemoryProvider`]: `org.bardo.Memory`, the actions the planner reaches memory through, as an
 //!   `IntentProvider` over a memory service `Memory`.
 //! - [`AuditState`]: draining the queue into memory, Space by Space, with retry accounting.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod audit;
 mod cursor_cache;

@@ -1,3 +1,4 @@
+//! Integration tests of `action-core`.
 mod budget;
 mod checkpoint;
 mod compact;

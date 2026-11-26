@@ -180,6 +180,9 @@ pub enum BackendError {
     /// The GLES renderer refused.
     #[error("gles renderer: {0}")]
     Gles(#[from] GlesError),
+    /// No EGL display or GLES context could be made.
+    #[error("{0}")]
+    Egl(#[from] compositor_egl::EglError),
     /// The pixman renderer refused.
     #[error("pixman renderer: {0}")]
     Pixman(#[from] PixmanError),

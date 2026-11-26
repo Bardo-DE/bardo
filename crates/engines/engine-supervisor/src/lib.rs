@@ -39,6 +39,10 @@
 //! let verdict = budget(&want, &[], gpu, MiB(500), MonoMs(0), Duration::from_secs(5));
 //! assert_eq!(verdict, BudgetVerdict::Fits);
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod budget;
 mod host;

@@ -46,10 +46,16 @@ forbid-src = ['\bstd::fs\b', '\bstd::net\b', '\bstd::process\b', '\bstd::thread\
 
 # Every workspace crate, by folder. kind: types, core, proto, io, client, service, ui,
 # test-support or unclassified (until its domain is refactored).
+#
+# Two lint flags (`cargo xtask check lints`): `lints = "baseline"` marks a crate that does not document
+# all its public items yet (it carries `#![expect(missing_docs, reason)]` at its target roots, and
+# flips to the default "full" when its domain is refactored); `unsafe = true` marks one of the small
+# crates that hold our unsafe code (UNSAFE.md), the only ones that opt out of `unsafe_code`.
 
 # accounts
 [crate.account-calendar]
 kind = "unclassified"
+lints = "baseline"
 [crate.account-callers]
 kind = "unclassified"
 [crate.account-capability]
@@ -70,6 +76,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.account-dbus]
 kind = "unclassified"
+lints = "baseline"
 [crate.account-discover]
 kind = "unclassified"
 [crate.account-fake]
@@ -116,6 +123,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.account-service-core]
 kind = "unclassified"
+lints = "baseline"
 [crate.account-service-grants]
 kind = "unclassified"
 [crate.account-settings]
@@ -138,6 +146,7 @@ kind = "unclassified"
 # actions
 [crate.action-accept]
 kind = "unclassified"
+lints = "baseline"
 [crate.action-checkpoint]
 kind = "unclassified"
 [crate.action-checkpoint-git]
@@ -162,6 +171,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.action-gate]
 kind = "unclassified"
+lints = "baseline"
 [crate.action-gate-wire]
 kind = "unclassified"
 [crate.action-host]
@@ -238,6 +248,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.companion-memory]
 kind = "unclassified"
+lints = "baseline"
 [crate.companion-memory-core]
 kind = "unclassified"
 [crate.companion-model]
@@ -284,6 +295,9 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.base-path]
 kind = "unclassified"
+[crate.base-process]
+kind = "unclassified"
+unsafe = true
 [crate.base-secret]
 kind = "unclassified"
 [crate.base-spawn]
@@ -304,12 +318,15 @@ kind = "unclassified"
 # blitz-embed
 [crate.blitz-embed]
 kind = "unclassified"
+lints = "baseline"
 [crate.blitz-embed-types]
 kind = "unclassified"
+lints = "baseline"
 
 # bus
 [crate.dbus-kit]
 kind = "unclassified"
+lints = "baseline"
 [crate.dbus-kit-macros]
 kind = "unclassified"
 
@@ -328,6 +345,9 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.compositor-dbus]
 kind = "unclassified"
+[crate.compositor-egl]
+kind = "unclassified"
+unsafe = true
 [crate.compositor-icons]
 kind = "unclassified"
 [crate.compositor-ipc]
@@ -370,6 +390,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.computer-use-fake]
 kind = "unclassified"
+lints = "baseline"
 [crate.computer-use-host]
 kind = "unclassified"
 [crate.computer-use-run]
@@ -392,8 +413,10 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.engine-spec]
 kind = "unclassified"
+lints = "baseline"
 [crate.engine-supervisor]
 kind = "unclassified"
+lints = "baseline"
 
 # files
 [crate.files]
@@ -436,6 +459,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.inference-dbus]
 kind = "unclassified"
+lints = "baseline"
 [crate.inference-fs]
 kind = "unclassified"
 [crate.inference-probe]
@@ -444,6 +468,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.inference-router]
 kind = "unclassified"
+lints = "baseline"
 [crate.inference-settings]
 kind = "unclassified"
 [crate.inference-tailnet]
@@ -452,6 +477,12 @@ kind = "unclassified"
 kind = "unclassified"
 
 # input
+[crate.hidraw-ioctl]
+kind = "unclassified"
+unsafe = true
+[crate.uinput-ioctl]
+kind = "unclassified"
+unsafe = true
 [crate.input-broker-client]
 kind = "unclassified"
 [crate.input-broker-daemon]
@@ -460,20 +491,27 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.key-remap-client]
 kind = "unclassified"
+lints = "baseline"
 [crate.key-remap-core]
 kind = "unclassified"
+lints = "baseline"
 [crate.key-remap-daemon]
 kind = "unclassified"
 [crate.key-remap-devtest]
 kind = "unclassified"
+lints = "baseline"
 [crate.key-remap-evdev]
 kind = "unclassified"
+lints = "baseline"
 [crate.key-remap-proto]
 kind = "unclassified"
+lints = "baseline"
 [crate.mouse-gestures-daemon]
 kind = "unclassified"
+lints = "baseline"
 [crate.mouse-gestures-proto]
 kind = "unclassified"
+lints = "baseline"
 
 # keymap
 [crate.keymap]
@@ -486,10 +524,13 @@ kind = "unclassified"
 # layer-shell
 [crate.layer-shell-hooks]
 kind = "unclassified"
+lints = "baseline"
 [crate.layer-shell-host]
 kind = "unclassified"
+lints = "baseline"
 [crate.layer-shell-types]
 kind = "unclassified"
+lints = "baseline"
 [crate.fake-input]
 kind = "unclassified"
 
@@ -524,6 +565,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.memory-search]
 kind = "unclassified"
+lints = "baseline"
 [crate.memory-service]
 kind = "unclassified"
 [crate.memory-settings]
@@ -538,38 +580,52 @@ kind = "unclassified"
 # models
 [crate.computer-use-action]
 kind = "unclassified"
+lints = "baseline"
 [crate.computer-use-parse]
 kind = "unclassified"
+lints = "baseline"
 [crate.computer-use-parse-fuzz]
 kind = "unclassified"
 [crate.computer-use-session]
 kind = "unclassified"
+lints = "baseline"
 [crate.computer-use-vendors]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-fuzz]
 kind = "unclassified"
 [crate.model-catalog]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-extract]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-genai-names]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-http]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-http-reqwest]
 kind = "unclassified"
 [crate.model-openai-compat]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-provider]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-replay]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-vision-prep]
 kind = "unclassified"
+lints = "baseline"
 [crate.model-wire]
 kind = "unclassified"
+lints = "baseline"
 [crate.speech-provider]
 kind = "unclassified"
+lints = "baseline"
 
 # network
 [crate.bluez-proxy]
@@ -584,6 +640,7 @@ kind = "unclassified"
 # platform
 [crate.service-locator]
 kind = "unclassified"
+lints = "baseline"
 
 # plugin
 [crate.plugin-host]
@@ -620,8 +677,10 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.settings-app-model]
 kind = "unclassified"
+lints = "baseline"
 [crate.settings-app-system]
 kind = "unclassified"
+lints = "baseline"
 [crate.settings-app-testkit]
 kind = "unclassified"
 [crate.settings-app-ui]
@@ -630,70 +689,91 @@ kind = "unclassified"
 # settings
 [crate.settings-dbus]
 kind = "unclassified"
+lints = "baseline"
 [crate.settings-store]
 kind = "unclassified"
+lints = "baseline"
 [crate.settings-store-fs]
 kind = "unclassified"
 [crate.settings-types]
 kind = "unclassified"
+lints = "baseline"
 [crate.settings-types-macros]
 kind = "unclassified"
+lints = "baseline"
 
 # shell
 [crate.shell-app]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-bar]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-dbus]
 kind = "unclassified"
 [crate.shell-desktop-fs]
 kind = "unclassified"
 [crate.shell-dock]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-host-config]
 kind = "unclassified"
 [crate.shell-ipc]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-kit]
 kind = "unclassified"
 [crate.shell-launcher]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-launcher-ui]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-model]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-notify-ui]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-overlays]
 kind = "unclassified"
 [crate.shell-search]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-services]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-settings]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-testkit]
 kind = "unclassified"
+lints = "baseline"
 [crate.shell-ui-kit]
 kind = "unclassified"
+lints = "baseline"
 
 # speech
 [crate.speech-audio]
 kind = "unclassified"
 [crate.speech-daemon]
 kind = "unclassified"
+lints = "baseline"
 [crate.speech-dbus]
 kind = "unclassified"
 [crate.speech-host]
 kind = "unclassified"
+lints = "baseline"
 [crate.speech-host-client]
 kind = "unclassified"
+lints = "baseline"
 [crate.speech-loop]
 kind = "unclassified"
 [crate.speech-pipewire]
 kind = "unclassified"
 [crate.speech-vad]
 kind = "unclassified"
+lints = "baseline"
 [crate.speech-wire]
 kind = "unclassified"
 
@@ -714,6 +794,7 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.sync-bus]
 kind = "unclassified"
+lints = "baseline"
 [crate.sync-core]
 kind = "unclassified"
 [crate.sync-daemon]
@@ -752,16 +833,21 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.ui-blitz]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-components]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-conformance]
 kind = "unclassified"
 [crate.ui-core]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-desktop]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-emoji]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-extensions]
 kind = "unclassified"
 [crate.ui-gallery]
@@ -774,20 +860,24 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.ui-icon-tool]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-intents]
 kind = "unclassified"
 [crate.ui-lint]
 kind = "unclassified"
 [crate.ui-motion]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-settings]
 kind = "unclassified"
 [crate.ui-settings-page]
 kind = "unclassified"
+lints = "baseline"
 [crate.ui-shell]
 kind = "unclassified"
 [crate.ui-style]
 kind = "unclassified"
+lints = "baseline"
 
 # updater
 [crate.updater-core]
@@ -808,6 +898,9 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.shell-verbs]
 kind = "unclassified"
+[crate.wayland-raw-handle]
+kind = "unclassified"
+unsafe = true
 
 # xtask
 [crate.xtask]
@@ -3066,9 +3159,9 @@ tests = true
 
 [[source]]
 path = "crates/compositor/compositor-*"
-except = ["crates/compositor/compositor-render/src/gl_raw.rs"]
+except = ["crates/compositor/compositor-egl"]
 pattern = '\bunsafe\b'
-why = "B18 no unsafe outside compositor-render/src/gl_raw.rs"
+why = "B18 no unsafe outside compositor-egl"
 tests = true
 
 # --- computer-use (from crates/computer-use/scripts/check-boundary.sh)
@@ -5741,7 +5834,7 @@ crate = "ui-blitz"
 features = "all"
 exactly = ["base-fs", "base-time", "base-xdg", "blitz-embed", "blitz-embed-types", "caller-identity-dbus",
   "dbus-kit", "keymap", "keymap-gnome", "keymap-kde", "ui-components", "ui-desktop", "ui-emoji",
-  "ui-host-hooks"]
+  "ui-host-hooks", "wayland-raw-handle"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]

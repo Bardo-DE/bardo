@@ -1,3 +1,4 @@
+//! Integration tests of `agent-session`.
 mod backend;
 mod checkpoints;
 mod codec;

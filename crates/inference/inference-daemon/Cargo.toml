@@ -30,6 +30,7 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 base-fs = {path = "../../base/base-fs"}
+base-process = {path = "../../base/base-process"}
 account-callers = {path = "../../accounts/account-callers"}
 account-dbus = {path = "../../accounts/account-dbus"}
 # The AI keys are accountd's: inferd asks it through account-client (`broker`).

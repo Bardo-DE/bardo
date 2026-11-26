@@ -1,4 +1,4 @@
-//! `cargo xtask gate`: the workspace-deps, renderer-edges, layers, product-words, error-names, no-mod-rs,
+//! `cargo xtask gate`: the workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs,
 //! no-prefs and test-modules checks, then fmt, clippy and tests on the affected set, then a compile
 //! of every workspace of its own.
 
@@ -23,6 +23,9 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         return Ok(finish("gate", false));
     }
     if !super::layers::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::lints::run()? {
         return Ok(finish("gate", false));
     }
     if !super::product_words::run()? {

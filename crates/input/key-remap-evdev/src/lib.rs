@@ -2,6 +2,10 @@
 //! evdev and uinput ioctls behind safe handles (`sys`), and reading a nonblocking event node
 //! until it has nothing queued (`drain`). No `unsafe`, no key remap daemon concepts: raw codes and bytes
 //! in, `io::Error` out.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod drain;
 mod sys;

@@ -18,6 +18,10 @@
 //! assert!(provider.misses().is_empty());
 //! # Ok::<(), Box<dyn std::error::Error>>(())
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod canon;
 mod cassette;

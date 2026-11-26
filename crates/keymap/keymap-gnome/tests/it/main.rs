@@ -1,3 +1,4 @@
+//! Integration tests of `keymap-gnome`.
 use std::path::PathBuf;
 
 use keymap::{

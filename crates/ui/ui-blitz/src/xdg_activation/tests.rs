@@ -3,13 +3,14 @@
 
 use super::fake_compositor::{Activated, Fake, Offer};
 use super::{ActivationError, activate};
-use crate::wayland_surface::{AdoptError, Adopted, Foreign, adopt};
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 use wayland_client::globals::{GlobalListContents, registry_queue_init};
 use wayland_client::protocol::wl_compositor::WlCompositor;
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::protocol::wl_surface::WlSurface;
 use wayland_client::{Connection, Dispatch, EventQueue, Proxy, QueueHandle};
+use wayland_raw_handle::testing::Foreign;
+use wayland_raw_handle::{AdoptError, Adopted, adopt};
 
 /// The client the app is: a connection, and the surface of its one window.
 struct App {
@@ -79,12 +80,12 @@ impl App {
         self.queue.roundtrip(&mut Windowless).expect("a roundtrip");
     }
 
-    fn window(&self) -> Foreign {
+    fn window(&self) -> Foreign<'_> {
         Foreign::of(&self.connection, &self.surface).expect("the system libwayland")
     }
 }
 
-fn adopted(window: &Foreign) -> Adopted<'_> {
+fn adopted<'a>(window: &'a Foreign<'_>) -> Adopted<'a> {
     adopt(
         window.display_handle().expect("a display handle"),
         window.window_handle().expect("a window handle"),
@@ -154,5 +155,5 @@ fn an_object_that_is_not_a_surface_is_not_adopted() {
         window.window_handle().expect("a window handle"),
     );
 
-    assert!(matches!(adopted.err(), Some(AdoptError::DeadSurface(_))));
+    assert!(matches!(adopted.err(), Some(AdoptError::DeadObject { .. })));
 }

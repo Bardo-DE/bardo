@@ -41,8 +41,9 @@ pub(crate) fn raise(window: &dyn Window, token: Option<String>) {
 
 #[cfg(all(target_os = "linux", feature = "desktop"))]
 fn activate(window: &dyn Window, token: &str) -> Result<(), ActivateError> {
-    use crate::{wayland_surface::adopt, xdg_activation};
+    use crate::xdg_activation;
     use raw_window_handle::HasWindowHandle;
+    use wayland_raw_handle::adopt;
     let adopted = adopt(window.display_handle()?, window.window_handle()?)?;
     Ok(xdg_activation::activate(&adopted, token)?)
 }
@@ -60,7 +61,7 @@ enum ActivateError {
     Handle(#[from] raw_window_handle::HandleError),
     #[cfg(all(target_os = "linux", feature = "desktop"))]
     #[error(transparent)]
-    Adopt(#[from] crate::wayland_surface::AdoptError),
+    Adopt(#[from] wayland_raw_handle::AdoptError),
     #[cfg(all(target_os = "linux", feature = "desktop"))]
     #[error(transparent)]
     Activation(#[from] crate::xdg_activation::ActivationError),

@@ -6,6 +6,10 @@
 //!
 //! This is its own crate because the page needs `ui-components` (the rows and controls) and
 //! `settings-types` (the schema types) together, and the UI kit does not name the settings schema.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod control;
 mod edit;

@@ -1,3 +1,4 @@
+//! Integration tests of `memory-core`.
 mod admit;
 mod companion;
 mod desktop;

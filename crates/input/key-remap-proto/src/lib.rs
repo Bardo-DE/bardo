@@ -5,6 +5,10 @@
 //! on every connection is `Hello`, whose `version` a client checks before reading anything
 //! else; an incompatible change bumps `PROTOCOL_VERSION` and `MIN_PROTOCOL_VERSION` with it,
 //! because nothing is released and nothing older is read.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod keymap;
 mod message;

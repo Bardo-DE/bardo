@@ -1,3 +1,4 @@
+//! Integration tests of `memory-fake`.
 mod apply;
 mod edits;
 mod forget_revert;

@@ -16,6 +16,10 @@
 //! assert!(parsed.dropped.is_empty());
 //! # Ok::<(), computer_use_parse::ParseError>(())
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod chord;
 mod common;

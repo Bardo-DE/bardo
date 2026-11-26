@@ -8,6 +8,10 @@
 //! - [`FakePdp`] is the router's gate as a table; [`MemoryEvents`] keeps the event log and the
 //!   `provenance::Message` reports a run sends; [`FixedClock`] moves only when told;
 //! - [`run_harness`] drives a run over all of them.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod a11y;
 mod capture;

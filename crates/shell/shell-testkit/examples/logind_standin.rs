@@ -14,6 +14,10 @@
 //! `sent <command>`.
 //!
 //! Usage: `cargo run -p shell-testkit --example logind_standin -- <bus address>`
+#![allow(
+    missing_docs,
+    reason = "the zbus interface macro generates its signal senders without docs, outside the impl it annotates"
+)]
 
 use std::io::Write;
 use std::sync::{Arc, Mutex};
@@ -127,6 +131,7 @@ impl Manager {
         "ignore".to_owned()
     }
 
+    /// Sends `PrepareForSleep`: `start` is true before a suspend and false after the wake.
     #[zbus(signal)]
     async fn prepare_for_sleep(emitter: &SignalEmitter<'_>, start: bool) -> zbus::Result<()>;
 }
@@ -153,6 +158,7 @@ impl Session {
         SESSION_ID.to_owned()
     }
 
+    /// Sends the session's `Lock`, as logind does when it asks the session to lock.
     #[zbus(signal)]
     async fn lock(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 }

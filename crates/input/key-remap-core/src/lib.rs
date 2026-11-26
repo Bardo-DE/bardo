@@ -7,6 +7,10 @@
 //! Nothing here opens a file, a device or a socket and nothing reads a clock: time arrives as a
 //! `Mono` argument, config arrives as strings. The daemon crate `key_remap` adds those, and a
 //! compositor can link this crate alone. `cargo xtask check layers` holds that.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 #[macro_use]
 mod names;

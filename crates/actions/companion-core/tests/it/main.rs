@@ -1,3 +1,4 @@
+//! Integration tests of `companion-core`.
 mod answers;
 mod conclude;
 mod desk;

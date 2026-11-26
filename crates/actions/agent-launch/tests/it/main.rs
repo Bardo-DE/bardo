@@ -1,3 +1,4 @@
+//! Integration tests of `agent-launch`.
 mod config;
 mod confine;
 mod e2e;

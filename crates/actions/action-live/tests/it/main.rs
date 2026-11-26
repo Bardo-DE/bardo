@@ -1,3 +1,4 @@
+//! Integration tests of `action-live`.
 mod acp_cli;
 mod acp_engine;
 mod acp_judge;

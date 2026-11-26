@@ -647,6 +647,7 @@ version = "0.1.0"
 dependencies = [
  "base-ids",
  "compositor-core",
+ "compositor-egl",
  "compositor-render",
  "desktop-protocols",
  "rustix 1.1.5",
@@ -693,6 +694,14 @@ name = "compositor-dbus"
 version = "0.1.0"
 dependencies = [
  "zbus",
+]
+
+[[package]]
+name = "compositor-egl"
+version = "0.1.0"
+dependencies = [
+ "smithay",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -776,6 +785,7 @@ version = "0.1.0"
 dependencies = [
  "base-ids",
  "compositor-core",
+ "compositor-egl",
  "compositor-motion",
  "desktop-protocols",
  "smithay",

@@ -14,14 +14,13 @@
 //! - inferd exits normally (returns, or unwinds): `ProcessHost`'s drop kills every group still
 //!   running;
 //! - inferd is killed (`SIGKILL`, the OOM killer): nothing of inferd runs. The kernel kills the
-//!   direct child (`PR_SET_PDEATHSIG`, [`die_with_parent`]), which reaches no grandchild; those
+//!   direct child (`PR_SET_PDEATHSIG`, `base_process::die_with_parent`), which reaches no grandchild; those
 //!   are left to the cgroup of the unit inferd runs in (`KillMode=control-group` in
 //!   `dist/bardo-inferd.service`). Outside a unit (tests, harnesses) a grandchild of a killed inferd
 //!   lives on.
 
 use rustix::process::{Pid, Signal, kill_process_group, test_kill_process_group};
 use std::time::Duration;
-use tokio::process::Command;
 use tokio::time::Instant;
 
 /// How often a group that is going is looked at.
@@ -62,21 +61,4 @@ pub async fn end(group: Pid, grace: Duration) {
         tokio::time::sleep(LOOK).await;
     }
     sweep(group);
-}
-
-/// Makes the kernel send the child `SIGKILL` when the process that started it dies. It covers the
-/// child only, not its children; the group does that where inferd lives to run [`end`].
-#[expect(
-    unsafe_code,
-    reason = "`pre_exec` is unsafe; the closure makes one async-signal-safe `prctl` call"
-)]
-pub fn die_with_parent(command: &mut Command) {
-    // SAFETY: the closure makes one system call (`prctl`) between fork and exec, which is
-    // async-signal-safe, and allocates nothing.
-    unsafe {
-        command.pre_exec(|| {
-            rustix::process::set_parent_process_death_signal(Some(Signal::KILL))
-                .map_err(std::io::Error::from)
-        });
-    }
 }

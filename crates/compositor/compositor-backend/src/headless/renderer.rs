@@ -129,7 +129,7 @@ impl SoftRenderer {
             SoftRenderer::Pixman => PixmanRenderer::new()
                 .map(|renderer| Box::new(renderer) as Box<dyn HeadlessRenderer>)
                 .map_err(BackendError::from),
-            SoftRenderer::Llvmpipe => compositor_render::surfaceless_gles()
+            SoftRenderer::Llvmpipe => compositor_egl::surfaceless_gles()
                 .map(|renderer| Box::new(renderer) as Box<dyn HeadlessRenderer>)
                 .map_err(BackendError::from),
         }

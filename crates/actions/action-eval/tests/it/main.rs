@@ -1,3 +1,4 @@
+//! Integration tests of `action-eval`.
 mod attack;
 mod attack_place;
 mod check;

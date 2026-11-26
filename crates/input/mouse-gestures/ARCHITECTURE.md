@@ -33,7 +33,7 @@ daemon, `sys` and the CLI verbs are `pub(crate)`; the one public entry to them i
 | `crates/mouse_gestures/src/protocol.rs` | `crates/mouse-gestures-protocol/src/lib.rs` split into `message.rs` (`ToHost`, `ToDaemon`, `Filter`, `Topic`, `DeviceInfo`), `vocab.rs` (`GestureId`, `Phase`, `Axis`, `TapKind`, `ActiveTouch`, `Over`), `wire.rs` (`encode`, `decode`, `Compat`, `compat`, constants), `tests.rs` |
 | `crates/mouse_gestures/src/lib.rs` re-export `pub use protocol::{ToDaemon, ToHost}` | deleted; callers import `mouse_gestures_protocol` |
 | `outputs/uinput.rs` | `daemon/uinput/` (`caps`, `direct`, `emitter`, `route`, `probe`) |
-| `sys.rs` | `daemon/sys.rs` (safe evdev and uinput ioctls) and `daemon/hidioc.rs` (the one `unsafe` module: `HIDIOCSFEATURE`) |
+| `sys.rs` | `daemon/sys.rs` (safe evdev and uinput ioctls); the hidraw ioctl is the `hidraw-ioctl` crate |
 | `main.rs` verbs (`record_cmd`, `replay_cmd`, `check_uinput`, usage, arguments) | `command/{mod.rs (Command, parse, run), record.rs, replay.rs, probe.rs}`; `main.rs` is `fn main() -> ExitCode { mouse_gestures::command::run(std::env::args()) }` |
 | `gestures/live.rs`, the seven `gestures.live_workspace_*` keys | deleted (section 8) |
 | `tests/socket.rs`, `tests/latency.rs` | unit tests beside `daemon/socket.rs` and `daemon/latency.rs` |
@@ -51,7 +51,7 @@ daemon, `sys` and the CLI verbs are `pub(crate)`; the one public entry to them i
 | L4 tracker and actions | `tracker` (`Tracker::step`, `Out`), `action` (`Gesture`, `Action`, `plan`) | pure composition: `Tracker::step(self, &Frame, now) -> (Self, Vec<Out>)` | `pub` |
 | L5 outputs model | `outputs` (`Emitter`, `RecordingEmitter`, `pad`, `events`) | the seam and the models of what is written | `pub` |
 | L6 tools | `recording`, `replay` (`replay`, `feed`, `outs`) | pure: feed recorded reads through the core | `pub` |
-| L7 effects | `daemon` (`reader`, `socket`, `discover`, `hidraw`, `evdev`, `devices`, `dispatch`, `record`, `latency`, `source`, `uinput`, `sys`, `hidioc`) | threads, sockets, nodes, clocks, uinput, ioctls | `pub(crate)` |
+| L7 effects | `daemon` (`reader`, `socket`, `discover`, `hidraw`, `evdev`, `devices`, `dispatch`, `record`, `latency`, `source`, `uinput`, `sys`) | threads, sockets, nodes, clocks, uinput, ioctls | `pub(crate)` |
 | L8 entry | `command` | argument parsing, one `run(args)`; reads `std::env` once into `daemon::Env` | `pub` (one fn) |
 
 `recording` and `replay` stay public because the acceptance suite and the `mouse_gestures replay`
@@ -111,7 +111,7 @@ out the effects it gets back.
 | The virtual devices: what each is, asking the input service for them, the direct fallback | `daemon::uinput::{caps, emitter, direct, route}` |
 | When to rebuild the devices after a cut, and when to give up | `daemon::devices::{model, step}` (the pure lifecycle); `devices::io` holds the emitter and the factory |
 | evdev and uinput ioctls | `daemon::sys` (through `input-linux`, no `unsafe`) |
-| the hidraw feature ioctl and all `unsafe` | `daemon::hidioc` |
+| the hidraw feature ioctl and all `unsafe` | the `hidraw-ioctl` crate |
 | Environment, clock, directories | `daemon::Env`, built once in `command::run` |
 | Command-line verbs | `command` |
 
@@ -170,7 +170,7 @@ environment (`daemon::Env`); it is a plain struct until a fake exists.
    (`outputs/mod.rs`), with its `Emitted` variant and the `RecordingEmitter` arm.
 2. `outputs/<name>.rs`: the pure model and its event encoding (tested by tables).
 3. `daemon/uinput/emitter.rs` (or `daemon/<backend>.rs` for another backend): the implementor of
-   `Emitter`; the kernel calls go through `daemon/sys.rs` (`daemon/hidioc.rs` for hidraw).
+   `Emitter`; the kernel calls go through `daemon/sys.rs` (the `hidraw-ioctl` crate for hidraw).
 4. `daemon/dispatch.rs`: the `Out` arm that calls the emitter; `daemon/devices/` when the
    device is created lazily.
 5. Tests: encode tables; a replay test asserting the `RecordingEmitter`'s `Emitted` list. No
@@ -234,7 +234,7 @@ node for writing, or reads a real config directory or a running daemon.
   subscribers, packets per pass, queued messages; a subscriber is known by id, never by position.
 - **Only `daemon` owns threads, sockets, devices, clocks and the environment.** When the core
   seems to need an effect, it returns an `Out` for the daemon to carry out.
-- **`unsafe` lives only in `daemon/hidioc.rs`** (`HIDIOCSFEATURE`), with a `SAFETY` comment. The evdev and
+- **This crate has no `unsafe`**: `HIDIOCSFEATURE` is in the `hidraw-ioctl` crate, with a `SAFETY` comment. The evdev and
   uinput ioctls in `daemon/sys.rs` go through `input-linux`'s safe handles.
 - **Units:** the core computes on an integer grid fixed in millimetres (the Magic Mouse 2's own,
   26 units/mm across, 70 along), in newtypes (`Um`, `Ms`, `Fraction`, `GestureId`), so every

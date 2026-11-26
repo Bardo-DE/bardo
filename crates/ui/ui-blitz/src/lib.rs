@@ -11,6 +11,10 @@
 //! forbids it to `ds`): `launch` owns the process-wide runtime (`launch::runtime`), so the
 //! `ui_host_hooks::TokioSpawner` it hands `ui_settings::use_environment` has a runtime to run its
 //! portal and file-watch tasks on, and `enter_runtime` lends it to a test driver.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod app_handle;
 mod app_id;
@@ -95,8 +99,6 @@ mod startup_token;
 mod texture_layer;
 #[cfg(any(test, feature = "pdf", feature = "testing"))]
 mod wake;
-#[cfg(all(target_os = "linux", feature = "desktop"))]
-mod wayland_surface;
 pub mod window;
 mod window_activate;
 mod window_build;

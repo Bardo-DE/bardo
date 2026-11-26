@@ -9,6 +9,10 @@
 //! parallel runs and a real player never collide), implements `org.mpris.MediaPlayer2` and
 //! `.Player` enough for `now_playing::live` to find it, and answers `PlayPause` by toggling
 //! `PlaybackStatus` and emitting `PropertiesChanged`. Runs until killed.
+#![allow(
+    missing_docs,
+    reason = "the zbus interface macro generates its signal senders without docs, outside the impl it annotates"
+)]
 
 use std::collections::HashMap;
 use std::process::ExitCode;
@@ -156,6 +160,7 @@ impl Player {
         true
     }
 
+    /// Sends `Seeked` with the new position, in microseconds.
     #[zbus(signal)]
     async fn seeked(emitter: &SignalEmitter<'_>, position: i64) -> zbus::Result<()>;
 }

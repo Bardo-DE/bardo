@@ -19,7 +19,9 @@ wayland-client = { workspace = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 calloop = { workspace = true }
 calloop-wayland-source = { workspace = true }
-raw-window-handle = { workspace = true }
+# A wgpu surface over a `wl_surface`, and the `wl_display` as the instance's display handle (the one
+# place that writes `unsafe`).
+wayland-raw-handle = {features = ["wgpu"], path = "../../wayland/wayland-raw-handle"}
 keyboard-types = {workspace = true}
 cursor-icon = { workspace = true }
 # `bardo_window_v1`'s client bindings and the wire vocab (`handlers::bardo_window`).

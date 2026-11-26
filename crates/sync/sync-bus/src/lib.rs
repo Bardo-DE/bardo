@@ -3,6 +3,10 @@
 //! paths and keys that go with them. Each interface is written once under account-dbus's
 //! `#[bus_interface]`, which makes its proxy, the trait the daemon implements and the object that
 //! serves it; the checked-in `dbus/*.xml` must equal the introspection (`tests/it/introspection.rs`).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod interface;
 mod names;

@@ -10,6 +10,10 @@
 //! `settings::SettingsFeed` from the root context with `layer_shell_hooks::use_watch`. Nothing
 //! here passes a Dioxus signal through `Root::context` (a review rule), styles a
 //! `.ds-*` class, or writes raw `button`/`input`/menu markup (coherence rules 1-2).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod app_icons;
 pub mod app_menu;

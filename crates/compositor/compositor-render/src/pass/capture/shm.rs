@@ -1,11 +1,11 @@
 //! Writing a captured frame into a client's `wl_shm` buffer.
 //!
-//! smithay lends a pool as a raw pointer (the client may map it too); `gl_raw::with_shm_pool_mut`,
-//! the workspace's one unsafe module, turns it into a slice. Everything here is safe and tested on
+//! smithay lends a pool as a raw pointer (the client may map it too);
+//! `compositor_egl::with_shm_pool_mut`, that crate turns it into a slice. Everything here is safe and tested on
 //! plain byte slices.
 
 use super::CapturedFrame;
-use crate::gl_raw::with_shm_pool_mut;
+use compositor_egl::with_shm_pool_mut;
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
 use smithay::wayland::shm::{BufferAccessError, BufferData};

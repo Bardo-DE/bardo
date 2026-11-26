@@ -3,10 +3,8 @@
 //! without the global is told nothing and nothing fails.
 
 use super::fake_compositor::{Fake, Frame, Log, Mode, Offer};
-use super::{FrameError, attach, window_radius};
-use crate::wayland_surface::{Adopted, Foreign, adopt};
+use super::{BardoWindow, FrameError, attach_toplevel, window_radius};
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
-use std::ptr::NonNull;
 use wayland_client::globals::{GlobalListContents, registry_queue_init};
 use wayland_client::protocol::wl_compositor::WlCompositor;
 use wayland_client::protocol::wl_registry::WlRegistry;
@@ -15,6 +13,8 @@ use wayland_client::{Connection, Dispatch, EventQueue, Proxy, QueueHandle};
 use wayland_protocols::xdg::shell::client::xdg_surface::XdgSurface;
 use wayland_protocols::xdg::shell::client::xdg_toplevel::XdgToplevel;
 use wayland_protocols::xdg::shell::client::xdg_wm_base::XdgWmBase;
+use wayland_raw_handle::testing::Foreign;
+use wayland_raw_handle::{Adopted, adopt};
 
 /// The client the app is: a connection, and the surface and toplevel of its one window.
 struct App {
@@ -78,17 +78,21 @@ impl App {
         self.queue.roundtrip(&mut Windowless).expect("a roundtrip");
     }
 
-    fn window(&self) -> Foreign {
+    fn window(&self) -> Foreign<'_> {
         Foreign::of(&self.connection, &self.surface).expect("the system libwayland")
-    }
-
-    /// The pointer winit reports as the window's `xdg_toplevel`.
-    fn toplevel_ptr(&self) -> NonNull<std::ffi::c_void> {
-        NonNull::new(self.toplevel.id().as_ptr().cast()).expect("a live toplevel")
     }
 }
 
-fn adopted(window: &Foreign) -> Adopted<'_> {
+/// What `attach` does with the toplevel winit reports, given the app's own toplevel.
+fn attach_shared(window: &Foreign<'_>, toplevel: &XdgToplevel) -> Result<BardoWindow, FrameError> {
+    let adopted = adopted(window);
+    let toplevel = adopted
+        .share(toplevel)
+        .expect("the toplevel is on the window's display");
+    attach_toplevel(&adopted, &toplevel)
+}
+
+fn adopted<'a>(window: &'a Foreign<'_>) -> Adopted<'a> {
     adopt(
         window.display_handle().expect("a display handle"),
         window.window_handle().expect("a window handle"),
@@ -102,7 +106,7 @@ fn the_compositor_is_told_to_draw_the_shadow_at_the_window_radius() {
     let mut app = App::connect(stream);
     let window = app.window();
 
-    let mut told = attach(&adopted(&window), app.toplevel_ptr()).expect("the object is made");
+    let mut told = attach_shared(&window, &app.toplevel).expect("the object is made");
     told.set_radius(window_radius()).expect("sent");
     app.settle();
 
@@ -129,7 +133,7 @@ fn the_object_lives_until_the_window_lets_go_of_it() {
     let mut app = App::connect(stream);
     let window = app.window();
 
-    let mut told = attach(&adopted(&window), app.toplevel_ptr()).expect("the object is made");
+    let mut told = attach_shared(&window, &app.toplevel).expect("the object is made");
     told.set_radius(window_radius()).expect("sent");
     app.settle();
     assert_eq!(compositor.log().destroyed, 0);
@@ -145,7 +149,7 @@ fn a_radius_is_sent_again_only_when_it_changes() {
     let mut app = App::connect(stream);
     let window = app.window();
 
-    let mut told = attach(&adopted(&window), app.toplevel_ptr()).expect("the object is made");
+    let mut told = attach_shared(&window, &app.toplevel).expect("the object is made");
     told.set_radius(10).expect("sent");
     told.set_radius(10).expect("skipped");
     told.set_radius(26).expect("sent");
@@ -166,7 +170,7 @@ fn a_compositor_without_the_global_is_told_nothing_and_nothing_fails() {
     let mut app = App::connect(stream);
     let window = app.window();
 
-    let error = attach(&adopted(&window), app.toplevel_ptr()).expect_err("nothing to bind");
+    let error = attach_shared(&window, &app.toplevel).expect_err("nothing to bind");
     app.settle();
 
     assert!(matches!(error, FrameError::Unsupported(_)), "{error}");

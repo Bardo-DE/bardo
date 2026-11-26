@@ -1,14 +1,14 @@
 //! `xdg_activation_v1` on a window that exists: `activate(token, surface)` with the token a
 //! launcher, a notification click or a D-Bus activation handed to the running app. winit offers
 //! the token only at window creation, so the request is made on the app's own connection
-//! (`crate::wayland_surface`) and the compositor decides, from the token, whether the window
+//! (`wayland_raw_handle`) and the compositor decides, from the token, whether the window
 //! takes the keyboard.
 
-use crate::wayland_surface::Adopted;
 use wayland_client::globals::{BindError, GlobalError, GlobalListContents, registry_queue_init};
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::{Connection, Dispatch, QueueHandle};
 use wayland_protocols::xdg::activation::v1::client::xdg_activation_v1::XdgActivationV1;
+use wayland_raw_handle::Adopted;
 
 /// Why an activation was not sent.
 #[derive(Debug, thiserror::Error)]

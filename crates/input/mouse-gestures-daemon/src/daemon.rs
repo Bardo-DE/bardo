@@ -6,7 +6,6 @@ pub mod discover;
 pub mod dispatch;
 mod env;
 pub mod evdev;
-pub mod hidioc;
 pub mod hidraw;
 pub mod latency;
 pub mod reader;

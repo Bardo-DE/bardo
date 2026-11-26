@@ -8,4 +8,9 @@
 //! It is also what `tests/across_processes.rs` drives, because the crate's central claim — that
 //! a killed agent locks nobody out — is about *processes*, and cannot be shown inside one.
 
-include!("../tests/support/agent.rs");
+#[path = "../tests/support/agent.rs"]
+mod agent;
+
+fn main() {
+    agent::main();
+}

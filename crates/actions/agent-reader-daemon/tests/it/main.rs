@@ -1,3 +1,4 @@
+//! Integration tests of `agent-reader-daemon`.
 mod binary;
 mod callers;
 mod inferd_link;

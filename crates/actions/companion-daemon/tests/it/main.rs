@@ -1,3 +1,4 @@
+//! Integration tests of `companion-daemon`.
 mod act;
 mod binary;
 mod companion;

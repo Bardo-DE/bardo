@@ -18,7 +18,7 @@ use wgpu_context::DeviceHandle;
 use crate::error::{HostError, Result};
 use crate::gpu::adapter;
 use crate::gpu::context_proxy::ContextProxy;
-use crate::gpu::raw_handle::WaylandDisplay;
+use wayland_raw_handle::WaylandDisplay;
 
 /// Every surface renders in this format (what `vello_gpu`'s own window renderer uses).
 pub(crate) const SURFACE_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
@@ -54,7 +54,7 @@ pub(crate) struct GpuContext {
 
 impl GpuContext {
     /// A wgpu instance for `conn`: Vulkan, then GL (overridable with `WGPU_BACKEND`), with the
-    /// display handle in the descriptor (GL needs it; `raw_handle::WaylandDisplay`).
+    /// display handle in the descriptor (GL needs it; `WaylandDisplay`).
     pub(crate) fn instance(conn: &Connection) -> wgpu::Instance {
         let desc = match WaylandDisplay::new(conn) {
             Some(display) => wgpu::InstanceDescriptor::new_with_display_handle(Box::new(display)),

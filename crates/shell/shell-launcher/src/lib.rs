@@ -4,6 +4,10 @@
 //! `tokio` and `libpulse-binding` out of this crate. Providers that need the system live in
 //! `shell-services::providers` and implement [`Provider`] from there; the clock is always an
 //! argument ([`UnixTime`]).
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod actions;
 pub mod activation;

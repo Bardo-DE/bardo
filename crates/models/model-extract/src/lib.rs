@@ -13,6 +13,10 @@
 //!
 //! A repair prompt names the field and the expected shape and never echoes the model's output: it
 //! may hold untrusted text, and the reader is quarantined.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod mode;
 mod repair;

@@ -24,6 +24,10 @@
 //! assert_eq!(decode("data:text/plain;base64,aGk=").as_deref(), Some(&b"hi"[..]));
 //! assert_eq!(decode("https://example.com/a.png"), None);
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 #[cfg(feature = "adapter")]
 pub mod adapter;

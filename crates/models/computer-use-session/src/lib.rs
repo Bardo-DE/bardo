@@ -35,6 +35,10 @@
 //! assert_eq!(session.remembered(), 0);
 //! assert_eq!(session.repairs_left(), RepairBudget(1));
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod answer;
 mod calls;

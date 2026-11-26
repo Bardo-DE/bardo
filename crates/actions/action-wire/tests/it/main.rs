@@ -1,3 +1,4 @@
+//! Integration tests of `action-wire`.
 mod checkpoint;
 mod episodes;
 mod records;

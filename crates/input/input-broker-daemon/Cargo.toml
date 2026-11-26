@@ -32,6 +32,7 @@ rustix = {workspace = true, features = ["event", "fs", "net", "std"]}
 input-broker-wire = {path = "../input-broker-wire"}
 thiserror = { workspace = true }
 input-linux = { workspace = true }
+uinput-ioctl = {path = "../uinput-ioctl"}
 listenfd = { workspace = true }
 libc = { workspace = true }
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}

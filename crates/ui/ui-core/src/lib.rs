@@ -1,6 +1,10 @@
 //! The base layer of the design system: vocabulary, geometry, time, errors, colour and encodings,
 //! plain data and maths with no renderer and no Dioxus, so a crate that only reads settings or
 //! services can use it.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 pub mod base64;
 pub mod colour;

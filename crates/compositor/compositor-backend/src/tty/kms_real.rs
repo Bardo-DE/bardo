@@ -224,7 +224,7 @@ impl RealKms {
             if let (Some(hub), Some(OutputRoute::Direct { .. })) = (&self.hub, self.route()) {
                 hub.renderer(Some(self.gbm()?))?
             } else {
-                let renderer = compositor_render::gles_on(self.gbm()?.clone())
+                let renderer = compositor_egl::gles_on(self.gbm()?.clone())
                     .map_err(|error| KmsError::Io(io::Error::other(error.to_string())))?;
                 Rc::new(RefCell::new(renderer))
             };

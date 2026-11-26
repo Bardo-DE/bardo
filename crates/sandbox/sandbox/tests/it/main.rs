@@ -1,3 +1,4 @@
+//! Integration tests of `sandbox`.
 mod agent;
 mod apparmor;
 mod egress;

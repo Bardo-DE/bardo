@@ -19,6 +19,10 @@
 //! let back: HostIn = decode_frame(&frame[4..4 + len]).unwrap();
 //! assert_eq!(back, HostIn::End);
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod audio;
 mod caps;

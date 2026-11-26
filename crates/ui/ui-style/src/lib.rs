@@ -3,6 +3,10 @@
 //! the `Kit` seam other crates add theirs through, and the tasks a scope owns (`task`, `busy`),
 //! over `ui-core` and nothing else of ours. Feature `dioxus` adds what needs Dioxus (`scope`,
 //! `scale`, `task`, `busy`, `icon::render::Glyph`); without it the crate is plain data.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 // `#[derive(Token)]` names `::ui_style::tokens`, so inside this crate `ui_style` is the crate
 // itself.

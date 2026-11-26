@@ -1,3 +1,4 @@
+//! Integration tests of `memory-tidy`.
 mod change;
 mod draft;
 mod fact;

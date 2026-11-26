@@ -14,6 +14,10 @@
 //! let error = ProviderError::PaymentRequired(ProviderDetail::new(402, "can only afford 367 tokens"));
 //! assert_eq!(error.retry_class(), RetryClass::Never);
 //! ```
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod caps;
 mod control;

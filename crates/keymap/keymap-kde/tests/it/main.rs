@@ -1,3 +1,4 @@
+//! Integration tests of `keymap-kde`.
 use std::path::PathBuf;
 
 use keymap::{

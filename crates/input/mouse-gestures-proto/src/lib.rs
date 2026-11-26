@@ -8,6 +8,10 @@
 //! Scroll deltas are `f32` px in **finger direction** with every gain applied; the host applies
 //! natural scrolling (11.3.13). These are the only floats in the mouse gestures daemon's public types, because
 //! a sub-pixel delta is the whole point of the stream.
+#![expect(
+    missing_docs,
+    reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
+)]
 
 mod message;
 mod vocab;
