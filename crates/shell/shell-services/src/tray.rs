@@ -3,7 +3,7 @@
 //!
 //! `TrayService` (in `shell_model::tray`) and its backend do the effect (a
 //! `system_tray::client::Client` on the session bus). Neither reaches `dioxus`, `ds` or
-//! `layer-shell-host` (`scripts/check-boundary.sh`): the bar reads this module only through
+//! `layer-shell-host` (`cargo xtask check layers`): the bar reads this module only through
 //! `shell_model::tray`, via `use_service::<TrayService>`; the art of an icon is the bar's own
 //! (`shell_bar::bar::tray_icon`).
 

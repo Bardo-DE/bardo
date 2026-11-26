@@ -40,13 +40,13 @@ trait), section 6 (copy the recipe).
 | `speech-host-client` | `SpeechHostClient: SpeechToText` over the host's Unix socket | yes (the socket, when filled) |
 | `bardo-speech-host` | the STT engine binary: sherpa-onnx (built without TTS) behind a Unix socket; **excluded from the workspace**, runs only as a confined engine unit | the runtime and the socket |
 
-`scripts/check-boundary.sh` holds a LAYERS table: every crate is **P** (pure: no `std::fs`/`env`/`process`/`net`,
+`cargo xtask check layers` holds a layer table (the rules are in `layers.toml` at the bardo root): every crate is **P** (pure: no `std::fs`/`env`/`process`/`net`,
 no clock reads, no sleeps, no `tokio`, `hyper`, `reqwest`, `zbus` or `rustix`, no UI words), **C** (client/IO: may
 do IO, no `Label`, `Help`, `Sheet` or `SettingRow`) or **A** (wiring). A crate depends on its own tier or below.
-Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `bardo-speech-host`
-(C) and `speech-host-sherpa` (A). `model-http` is P with KNOWN rows: its feature-gated reqwest client (reqwest and tokio in
-the source) is the one violation, removed when the client moves to its own crate (plan lane T1.2). `--self-test` seeds a `std::fs` call in a P crate and
-checks the script fails; `--long-files` reports source files over 500 lines.
+Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `speech-host`
+(C) and the fuzz target `computer-use-parse-fuzz` (A). `model-http` is P with no exception: the reqwest
+client moved to `model-http-reqwest`, so its source names neither `reqwest` nor `tokio`. The tiers and the
+source bans are in `layers.toml`.
 
 The direct edges in use (documentation; dev-dependencies are outside it):
 
@@ -87,9 +87,8 @@ never reaches the second half of that list (a bus, a compositor, a database, an 
 crate reaches an audio device crate (`pipewire`, `libpulse-binding`, `libpulse-simple-binding`,
 `cpal`: capture and playback belong to the actions service's `voiced`) or a TTS stack with a GPL grapheme
 step (`espeak-rs`, `espeak-ng`, `espeak-ng-sys`, `piper-rs`): text to speech is a separate engine
-process (Kokoro-FastAPI), and `bardo-speech-host` links sherpa-onnx built without TTS. The two
-excluded crates are not workspace members; `check-boundary.sh` checks them from their own
-manifests (their direct edges and the same lists), and they alone may reach `ort` and `sherpa-onnx`.
+process (Kokoro-FastAPI), and `bardo-speech-host` links sherpa-onnx built without TTS. The excluded
+crate `speech-host-sherpa` is not a workspace member, so `cargo xtask check layers` does not read it; it alone may reach `ort` and `sherpa-onnx`.
 
 Downstream, the accounts service's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
@@ -324,7 +323,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 `model-provider`; a pure codec (`ChatCodec` and its `ChatDecoder`, `ErrorWire::classify`, and
 `EmbedCodec` if it embeds) tested against wire fixtures in `fixtures/<name>/` recorded at the
 `Transport` by a dev script; the provider is `Driver<YourCodec, HttpClient>`; its row in
-`scripts/check-boundary.sh` (RULES and LAYERS) and in section 1; its variant in the accounts service's
+`layers.toml` (the reach rules and the layers) and in section 1; its variant in the accounts service's
 `inferd::AdapterModel`.
 
 **Add a dialect**: the variant in `computer-use-action::dialect` (`TextDialect`, `ToolDialect` or
@@ -409,7 +408,7 @@ three `vram` fields and the sandbox gets no GPU; a vLLM entry may not.
 
 **Add a speech backend**: an impl of `SpeechToText` or `TextToSpeech` in its own crate or module,
 a variant of `SttBackend` or `TtsBackend` in the accounts service's inferd, a row in section 1 and in
-`scripts/check-boundary.sh`; no GPL code is linked, so a TTS engine is a separate process with a
+`layers.toml`; no GPL code is linked, so a TTS engine is a separate process with a
 catalog engine profile.
 
 **Add a resize rule**: its `ResizeRule` variant; its arms in `fit` and `image_tokens` with rows
@@ -437,7 +436,7 @@ run by hand against the user's own engine.
   cargo fmt --all --check
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --all-features
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   cargo deny check licenses
   ```
 

@@ -542,7 +542,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   player tests. The peek, UI and binary tests reach them by path.
 - **cargo-deny sees crates, not programs.** `deny.toml` holds no exception: no crate of the tree binds a codec
   library. Distribution builds of libav and libmpv are GPL (Fedora: `libavcodec-free` GPL-3.0-or-later, `mpv-libs`
-  GPL-2.0-or-later), which is why nothing links them: `check-boundary.sh` forbids `rsmpv`, `rsmpv-sys`,
+  GPL-2.0-or-later), which is why nothing links them: `cargo xtask check layers` forbids `rsmpv`, `rsmpv-sys`,
   `ffmpeg-next` and `ffmpeg-sys-next` in every crate and in `Cargo.lock`, and `dev/no-linked-codecs.sh` reads
   `ldd` of the built binary. What the person runs is theirs: mpv, ffmpeg and ffprobe.
 - **Which encoders this machine has is the plugin's greeting.** The FFmpeg plugin asks its `ffmpeg -encoders`

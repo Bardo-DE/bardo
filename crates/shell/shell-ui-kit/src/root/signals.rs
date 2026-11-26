@@ -1,7 +1,7 @@
 //! Bridges layer-shell-host's raw seat modality and surface scale into the UI kit's `ui_components::prelude::HostSignals`, the
 //! root context `Ds` reads to stamp `data-modality` (and so decide whether the focus ring shows)
 //! and to size the pixel tokens. layer-shell-host cannot name the UI kit's `ds` crate
-//! (`scripts/check-boundary.sh`), so bardo-shell republishes: [`use_host_signals`] reads layer-shell-host's
+//! (`cargo xtask check layers`), so bardo-shell republishes: [`use_host_signals`] reads layer-shell-host's
 //! `use_input_modality()` (one value per seat, shared by every surface) and `use_surface_scale()`
 //! and provides them as `ui_components::prelude::HostSignals` with a `use_effect` (layer-shell-host README, "Consuming:
 //! input modality (focus rings)"). It runs once per document root: in `mount` and `mount_lock`

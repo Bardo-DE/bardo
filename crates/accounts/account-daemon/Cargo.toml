@@ -68,7 +68,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 # processes outside service cgroups, and `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes it read that file as
 # the system caller table, because a jail cannot write /etc/bardo. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
-# check-boundary.sh checks it too.
+# `cargo xtask check layers` checks it too.
 test-proc-root = ["account-callers/test-proc-root", "test-system-callers"]
 # Test builds only, never default and never in dist: `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes the binary read that file as the
 # system caller table, so no test reads this computer's `/etc/bardo`. A release build ignores the variable and says so once.
@@ -77,7 +77,7 @@ test-system-callers = []
 # Test builds only, never default and never in dist: `BARDO_ACCOUNTD_KEYS=file:<absolute path>` keeps
 # credentials in one 0600 plain-text JSON file (account-secrets' `FileSecrets`) instead of the
 # Secret Service, for private-bus and scratch runs with no keyring. A release build ignores the
-# variable and says so once. tests/dist.rs and check-boundary.sh fail if this feature is default.
+# variable and says so once. tests/dist.rs and `cargo xtask check layers` fail if this feature is default.
 test-keys = ["account-secrets/test-keys"]
 
 [lints]

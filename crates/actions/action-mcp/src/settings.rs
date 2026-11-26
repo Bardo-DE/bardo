@@ -5,7 +5,7 @@
 //! The reading is `action-settings`' (lenient as design/22 section 2 asks): a missing file, a
 //! missing key or a value that is not `true` is off, never an error. A switch
 //! that cannot be read is a switch that is not on. This crate may not link a file watcher
-//! (`scripts/check-boundary.sh`), so the edge reads the file again whenever it is asked whether it
+//! (`cargo xtask check layers`), so the edge reads the file again whenever it is asked whether it
 //! is on: a change in the Settings app applies to the next request.
 
 use action_settings::{AgentSettings, read};

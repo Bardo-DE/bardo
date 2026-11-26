@@ -149,7 +149,7 @@ pub struct RowState {
 /// A percentage, 0 to 100, clamped on construction: `IdleDim`'s `level` (design/22-SETTINGS.md
 /// section 3.24 `idle.dim_level_pct`).
 ///
-/// `ds` may not depend on `ui-settings` (`scripts/check-boundary.sh`), so the two `Percent` types
+/// `ds` may not depend on `ui-settings` (`cargo xtask check layers`), so the two `Percent` types
 /// agree by shape, not by sharing a definition; a caller already holding `settings_types::Percent`
 /// passes its `.0`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

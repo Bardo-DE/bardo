@@ -688,7 +688,7 @@ scroller becomes elastic), `data-keys="capture"`.
 - Blitz hit-tests page coordinates; the host sets page = client + viewport scroll.
 - `get_client_bounding_rect` subtracts the element's own scroll offset along with its
   ancestors'; `dom::scroll::area` adds it back for the thumb.
-- Blitz's overlay scrollbars (the `scrollbars` feature) are off; `scripts/check-boundary.sh`
+- Blitz's overlay scrollbars (the `scrollbars` feature) are off; `cargo xtask check`
   fails if it is ever enabled.
 - Blitz has no keyboard scroll action, and raw writes fire no `onscroll`: `use_scroll` is the
   notification.

@@ -11,8 +11,8 @@ frame model (`space/frame_vars.rs`, `ground_css.rs`, `root/chrome.rs` `FrameTint
 phase)** to delete or reshape; the design docs, not these rows, are the target. Moved sections
 keep a "moved to" stub in their old file, so a section number here still resolves.
 
-The design system's crates each name only the ones below them (`scripts/check-boundary.sh`
-holds the allowed edges); `ui-settings`, `ui-blitz`, `ui-harness`, `ui-conformance` and
+The design system's crates each name only the ones below them (`layers.toml` at the bardo root
+holds the allowed edges, checked by `cargo xtask check layers`); `ui-settings`, `ui-blitz`, `ui-harness`, `ui-conformance` and
 `ui-gallery` sit beside and above them (the last table). The layers: `ui-core` (vocabulary, geometry units, time, errors, text, colour, PNG
 and base64, the `Spawner` trait: plain data and maths with no Dioxus), `ui-style` (appearance,
 tokens, materials, Space palettes, fonts, icons, the stylesheet's sections, the scope a component

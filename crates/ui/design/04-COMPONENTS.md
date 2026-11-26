@@ -3706,7 +3706,7 @@ in the lock prompt; the letter's beat).
 never rasterises anything itself.
 
 **Split.** `ds::prelude::PdfThumb` draws a page it is handed (`PdfPage`) and reads no file: ds stays
-renderer-free and effect-free (`scripts/check-boundary.sh`), and pdfrum's CPU rasteriser is a
+renderer-free and effect-free (`cargo xtask check layers`), and pdfrum's CPU rasteriser is a
 renderer. `ui_blitz::PdfFileThumb` (cargo feature `pdf`, off by default so an app that
 shows no PDF builds no PDF reader) takes the path, reads and rasterises page 1 with pdfrum 0.4's
 `VelloCpuBackend` on a worker thread, caches the result by (path, modification time, device

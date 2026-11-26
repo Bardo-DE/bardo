@@ -68,5 +68,5 @@ unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 # The caller-identity library: which program is calling the update service (the service only; the root programs never link it,
-# scripts/check-boundary.sh).
+# `cargo xtask check layers`).
 allow-git = []

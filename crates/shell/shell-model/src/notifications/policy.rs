@@ -1,5 +1,5 @@
 //! How a notification is presented: the daemon's settings and focus mode as plain values (this
-//! crate does not read `shell-settings`: `scripts/check-boundary.sh`), and the pure decisions
+//! crate does not read `shell-settings`: `cargo xtask check layers`), and the pure decisions
 //! they drive.
 //!
 //! The daemon sends a [`NotificationsPolicy`] at start and whenever `notifications.*` or the

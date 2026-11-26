@@ -2,7 +2,7 @@
 //! commands, events and effects with the pure `step` that is the only place its state changes.
 //!
 //! Nothing here does I/O beyond reading the process's own directories ([`dirs::Dirs`]) or reaches
-//! a bus or a UI (`scripts/check-boundary.sh`): `shell-services` carries the effects, and every
+//! a bus or a UI (`cargo xtask check layers`): `shell-services` carries the effects, and every
 //! transition is table-tested without a bus. The one runtime piece is tokio's channels
 //! ([`service`]): what a surface holds of a running service.
 

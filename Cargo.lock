@@ -18823,6 +18823,8 @@ dependencies = [
  "anyhow",
  "cargo_metadata",
  "lexopt",
+ "regex",
+ "serde",
  "toml",
 ]
 

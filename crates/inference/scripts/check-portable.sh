@@ -3,7 +3,7 @@
 # not the bus or the daemon build without the desktop. Each core below must `cargo check` with the
 # features named, and its normal dependency tree must reach no D-Bus (zbus, zvariant).
 #
-# Called from check-boundary.sh, which the lane gate runs. Output says each check and each
+# Run by the lane gate (it was called from the boundary script, now replaced by `cargo xtask check layers`). Output says each check and each
 # tree; the exit status is the verdict.
 set -uo pipefail
 cd "$(dirname "$0")/.."

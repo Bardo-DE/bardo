@@ -13,8 +13,8 @@ the resolver. `CONVENTIONS.md` points to the shared style guides,
 | `keymap-gnome` | `crates/keymap-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `keymap` |
 
 Edges: every source crate depends on `keymap` (and a file-reading one on `base-fs`); `keymap` depends on no
-workspace crate. The core is I/O-free by design and the boundary script keeps it so.
-`scripts/check-boundary.sh` asserts the core reaches no I/O, runtime, bus,
+workspace crate. The core is I/O-free by design and `cargo xtask check layers` keeps it so (rules in `layers.toml` at the bardo root).
+`cargo xtask check layers` asserts the core reaches no I/O, runtime, bus,
 file-watching or plist crate (nor `base-fs`). The only file reads are in `KdeSource::load` and
 `GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. Our desktop's source is not here: the key remap daemon implements
 `KeymapSource` in its own repo.
@@ -67,7 +67,7 @@ settings file with `keymap_file::read_text(path, SETTINGS_FILE_LIMIT)`, never `s
 ## 5. Repo rules
 
 - Gate: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`,
-  `cargo test --workspace --all-features`, `./scripts/check-boundary.sh`.
+  `cargo test --workspace --all-features`, `cargo xtask check layers`.
 - No `unsafe` anywhere (`unsafe_code = "forbid"`).
 - Deviation from the usual closed-enum style: `StandardAction` and `Action` are `#[non_exhaustive]`,
   because the standard set grows and a consumer outside this crate must not break on a new meaning.

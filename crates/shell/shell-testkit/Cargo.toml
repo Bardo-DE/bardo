@@ -13,7 +13,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 zbus = {workspace = true, features = ["tokio"]}
 
 # The stand-ins in `examples/` speak bardo-shell's own protocols and reuse its types. Only examples
-# name these: the library reaches no bardo-shell crate (scripts/check-boundary.sh).
+# name these: the library reaches no bardo-shell crate (cargo xtask check layers).
 [dev-dependencies]
 account-dbus = {path = "../../accounts/account-dbus"}
 shell-desktop-fs = {path = "../shell-desktop-fs"}

@@ -67,10 +67,10 @@ depends on `memory-client` with `default-features = false, features = ["in_proce
 builds are unchanged. `scripts/check-portable.sh` checks the left column (including
 `memory-local`): `cargo check --no-default-features` on each, no `zbus`, `inotify`, `notify`,
 `landlock`, `oo7` or `secret-service` in its `cargo tree`, and a `cargo check --target` for each
-installed macOS/Windows rustup target. `check-boundary.sh` checks `memory-client`'s boundary rule
+installed macOS/Windows rustup target. `cargo xtask check layers` checks `memory-client`'s boundary rule
 without its defaults (the rule is about what an app without the desktop switch links).
 
-Every crate is one tier (`LAYERS` in `scripts/check-boundary.sh`, which checks them):
+Every crate is one tier (the `[[tiers]]` entry, checked by `cargo xtask check layers`; the rules are in `layers.toml` at the bardo root):
 
 - **P (pure):** no `std::fs/env/process/net`, no clock reads, no sleeps, no tokio, hyper, reqwest, zbus or rustix, no UI words (`Help`, `Sheet`, `SettingRow`, `ui-settings`).
 - **C (client/IO):** may do IO; no UI words.
@@ -82,13 +82,13 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 | --- | --- |
 | P | `memory-core`, `memory-seal`, `memory-store`, `memory-files-format`, `memory-settings`, `memory-tidy`, `memory-search`, `memory-service` |
 | C | `memory-keyfile`, `memory-host`, `memory-eventlog`, `memory-files`, `memory-recall`, `memory-watch`, `memory-infer`, `memory-dbus`, `memory-dbus`, `memory-client`, `memory-fake`, `memory-local` |
-| A | `memoryd` |
+| A | `memory-daemon` |
 
-The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
+The tiers are one `[[tiers]]` entry in `layers.toml`, and the bans above are `[[source]]` rules there (the pure tier's, the UI words for the pure and client tiers, and `env::var` outside `main.rs` and `src/bin/` for the program). `cargo xtask check layers` does not report long files and has no self-test; the old `KNOWN` list of allowed violations is gone (it was empty).
 
 The memory service never depends on the model layer, the actions service or computer use: their payloads (policy, consent, computer-use
-steps, sessions) are `EventBody::Area` in their owners' serde form, and `check-boundary.sh`
-fails if any of their crates enters the tree. Other crates reach the accounts service's names through
+steps, sessions) are `EventBody::Area` in their owners' serde form, and `cargo xtask check layers`
+fails if any of their crates enters the tree of a memory crate (dev-dependencies included), and if a memory crate names `model-provider` directly. Other crates reach the accounts service's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
 
 External boundaries (default features): `memory-core` never reaches `zbus zvariant tokio
@@ -391,7 +391,7 @@ the fakes.
   cargo fmt --all --check
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --all-features
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   cargo deny check licenses
   echo "GATE GREEN"
   ```

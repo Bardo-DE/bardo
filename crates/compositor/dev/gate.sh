@@ -15,7 +15,7 @@ step() { dev/lib/step.sh "$run" "$@"; }       # times, writes summary.json, appl
 jail=("${BARDO_COMPOSITOR_JAIL:-../../packaging/harness/jail.sh}" --fabricate-gpus 2 --bind "$PWD/../.." --bind "$CARGO_TARGET_DIR" --)
 step preflight  dev/preflight.sh
 step fmt        cargo fmt --all --check
-step boundary   ./scripts/check-boundary.sh
+step boundary   cargo xtask check layers
 step coverage   ./scripts/check-protocol-coverage.sh
 step doc-paths  ./scripts/check-doc-paths.sh
 case "$tier" in

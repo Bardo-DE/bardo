@@ -18,7 +18,7 @@ settings read as a settings file's `[scroll]` table). Without `blitz` the crate 
 and the `adapter` feature (`units` and `element_id` are the sibling crate `blitz-embed-types`, plain data a layer with no renderer takes): a layer below Blitz (a media host) takes
 `default-features = false, features = ["adapter"]` for the ranking and `adapter::opening` with only
 std, `wgpu` and `serde`.
-`scripts/check-boundary.sh` forbids every `ds*`, `dioxus*`, `wayland*` and `smithay*`
+`cargo xtask check layers` forbids every `ds*`, `dioxus*`, `wayland*` and `smithay*`
 crate, Bardo, the shell, layer-shell-host and mouse_gestures. Consumers depend on it by path.
 
 | Module | Holds |
@@ -79,7 +79,7 @@ consumer.
 ## 3. Repo rules
 
 - Gate: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D
-  warnings`, `cargo test --workspace --all-features`, `./scripts/check-boundary.sh`,
+  warnings`, `cargo test --workspace --all-features`, `cargo xtask check layers`,
   `cargo deny check licenses`.
 - The pinned dependency block in the root `Cargo.toml` is copied verbatim from layer-shell-host's
   (source of truth: Bardo's `docs/workspace-deps.toml`); the kit never bumps it alone.

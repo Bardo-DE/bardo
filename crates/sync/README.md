@@ -34,7 +34,7 @@ The accounts are accountd's (the accounts service). The sync service reaches the
 it needs (accountd's consent sheet shows the first time a sync switch is turned on for an account,
 and its answer is kept), reads its own grants, and opens the streams to an account's servers that
 accountd has signed in. syncd holds no account, no token and no password of its own, and
-`scripts/check-boundary.sh` fails if a crate here builds on the accounts service's account stack.
+`cargo xtask check layers` fails if a crate here builds on the accounts service's account stack.
 
 ## Install
 
@@ -52,7 +52,7 @@ checks the real folder by hand.
 ## Working on the sync service
 
     cargo test --workspace        # the tests that start a private session bus are meant to run in a jail; .github/workflows/ci.yml says which packages
-    scripts/check-boundary.sh     # the crate boundaries, mechanically
+    cargo xtask check layers   # the crate boundaries, mechanically (rules: layers.toml at the bardo root)
     scripts/check-features.sh     # the feature sets the programs build in, each warning-free
     cargo deny check licenses
 

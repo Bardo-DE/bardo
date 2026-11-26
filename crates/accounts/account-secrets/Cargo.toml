@@ -32,7 +32,7 @@ windows-native-keyring-store = { workspace = true, optional = true }
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 # The crate's own tests need the file store; shipped builds never see it (only dev builds and the
-# daemons' own `test-keys` features turn it on, and check-boundary.sh checks the normal tree).
+# daemons' own `test-keys` features turn it on, and `cargo xtask check layers` checks the normal tree).
 account-secrets = { path = ".", features = ["testing", "keyring", "test-keys"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
@@ -44,7 +44,7 @@ account-secrets = { path = ".", features = ["oo7"] }
 testing = []
 # `FileSecrets`, one 0600 JSON file of plain-text credentials, for private-bus and scratch runs.
 # TEST ONLY: never default, never in a release or dist build (a daemon's `test-keys` and this crate's
-# own tests turn it on; check-boundary.sh and the daemons' tests/dist.rs fail if a default build
+# own tests turn it on; `cargo xtask check layers` and the daemons' tests/dist.rs fail if a default build
 # gets it). `keysel`
 # (with the `oo7` feature) is how a daemon chooses between this file and the Secret Service.
 test-keys = []

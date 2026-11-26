@@ -1,7 +1,7 @@
 //! `SheetView` to the UI kit's `ui-shell::accounts` props: the one place the accounts service's sheet values become
 //! what the drawn parts take (PLAN §2.4, design/31 §5.1). It stands in `shell-overlays`, not
 //! `shell-model`: the props are the UI kit's (they name `MarkProvider` and the `Word` enums of
-//! `ui-shell`), and `shell-model` may reach no design system (`scripts/check-boundary.sh`).
+//! `ui-shell`), and `shell-model` may reach no design system (`cargo xtask check layers`).
 //! Plain values in, plain values out; the draft supplies what the person has typed.
 //!
 //! | `SheetView`          | drawn as                                             |

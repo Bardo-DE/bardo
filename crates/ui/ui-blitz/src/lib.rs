@@ -7,7 +7,7 @@
 //! driver lives in `ui-harness`, which builds its document from the parts in `seam` (feature
 //! `testing`).
 //!
-//! It is also the only UI kit crate that may depend on `tokio` (`scripts/check-boundary.sh`
+//! It is also the only UI kit crate that may depend on `tokio` (`cargo xtask check layers`
 //! forbids it to `ds`): `launch` owns the process-wide runtime (`launch::runtime`), so the
 //! `ui_host_hooks::TokioSpawner` it hands `ui_settings::use_environment` has a runtime to run its
 //! portal and file-watch tasks on, and `enter_runtime` lends it to a test driver.

@@ -13,7 +13,7 @@ backend (see `dist/bardo-portals.conf`).
 | `bardo-portal` | the six D-Bus interfaces (zbus), the seams and their real and fake implementations, `serve`, the binary | D-Bus, Wayland, PipeWire, files |
 
 `portal-core` depends on `thiserror` only. It reaches no zbus, tokio, pipewire, wayland, image
-or tracing (row T1 of `scripts/check-boundary.sh`) and reads no clock, environment or file (T5).
+or tracing (row T1 of the portal rules in `layers.toml`, checked by `cargo xtask check layers`) and reads no clock, environment or file (T5).
 
 Inside `bardo-portal` only these modules name the heavy crates: `capture/` the Wayland crates (T2),
 `screencast/pipewire.rs` the PipeWire crate (T3), `screenshot.rs` the image encoder (T4); only
@@ -32,7 +32,6 @@ crates/bardo-portal/src/{lib, main, error, link, peers, table, dev_rows (feature
 dist/   bardo.portal  bardo-portals.conf  org.freedesktop.impl.portal.desktop.bardo.service  bardo-portal.service
 scripts/install.sh   installs the binary, the unit, the D-Bus file and the portal file (standalone; --prefix, --destdir, --bin-dir)
 dev/    up.sh down.sh lib/{jail,chain}.sh accept/*.sh        (the jailed portal chain)
-scripts/check-boundary.sh
 ```
 
 ## 3. The seams

@@ -61,7 +61,7 @@ Installed by the script (under the prefix, `/usr` by default):
     cargo fmt --all --check
     cargo clippy --workspace --all-targets --all-features -- -D warnings
     cargo deny check licenses
-    scripts/check-boundary.sh
+    cargo xtask check layers
     scripts/check-features.sh
 
 ## Licence

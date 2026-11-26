@@ -18,7 +18,7 @@ The input broker         rustix,       Daemon, serve, Session, policy; seams: Ba
                   caller_identity
 ```
 
-`scripts/check-boundary.sh` keeps the graph honest: the wire links no socket, device or identity
+`cargo xtask check layers` keeps the graph honest: the wire links no socket, device or identity
 library; the client links no bus, async runtime or identity crate; the root service never links the
 bus or an async runtime.
 

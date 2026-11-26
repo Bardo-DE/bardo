@@ -38,7 +38,7 @@ and the programs) that names `layer-shell-host`, `ui-blitz`, `blitz-dom`, `blitz
 
 Forbidden for `layer-shell-host`: `zbus`,
 `libpulse-binding`, every UI kit crate, the shell, and the `mouse_gestures` daemon crate.
-`scripts/check-boundary.sh` checks this list, and that Blitz's own scrollbars stay off (the host
+`cargo xtask check layers` checks this list (the rules are in `layers.toml` at the bardo root), and that Blitz's own scrollbars stay off (the host
 paints the thumb). `blitz-embed` forbids `smithay-client-toolkit`, `wayland-*`, `dioxus*`, every
 The UI kit crate and the shell; its own repo carries the same script. Sibling repos are path
 dependencies, as the shell's are on layer-shell-host.
@@ -403,7 +403,7 @@ session.
   cargo fmt --all --check
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --all-features
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   cargo deny check licenses
   ```
 
@@ -419,7 +419,7 @@ step as an API they use.
    `tests/host_fonts.rs` move to the kit.
 3. `mouse-gestures-proto` exists (the mouse gestures daemon step 1) (done); layer-shell-host depends on it and deletes
    `input/mouse_gestures/wire.rs`; `tests/scroll_mouse_gestures.rs` reads the crate's fixtures. Update
-   `check-boundary.sh`.
+   `layers.toml`.
 4. Bools to enums (done): `Modifier::of`, `LockKey::of`, `pick`, `elastic`, `requested`,
    `set_ime_enabled`.
 5. Splits by concept (done) (section 2 table), one file per commit, tests moving with their code:

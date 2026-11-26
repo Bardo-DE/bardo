@@ -11,7 +11,7 @@ what, and where each concept lives. `CONVENTIONS.md` points to the style guides 
 ## 1. Crates and allowed edges
 
 Layers go lowest first. A crate names only crates in a lower layer, and
-`scripts/check-boundary.sh` enforces the edges and the external boundaries below.
+`cargo xtask check layers` enforces the edges and the external boundaries below (the rules are in `layers.toml` at the bardo root).
 
 | Layer | Crate | Purpose |
 | --- | --- | --- |
@@ -53,7 +53,7 @@ No crate turns a heavy dependency on by default: a default build of a library is
 | `anyview-peek` | `media` | recordings' facts and an audio cover |
 
 
-### External boundaries (`scripts/check-boundary.sh`)
+### External boundaries (`layers.toml`)
 
 | Crate | Never reaches |
 | --- | --- |
@@ -79,7 +79,7 @@ oniguruma), `pulldown-cmark`, `csv`, `serde_json`, `serde`, `encoding_rs`, `unic
 `ui-blitz` (feature `pdf`) and `dioxus`. Outside `card/` (and the PDF raster that feeds it) no module names a type of
 `ds` or dioxus: the PDF page is the peek's own `PageLook` and `PageTrouble`, and the card converts them to Bardo's
 `PdfPage` at its boundary (`card/page.rs`). The headless tree has no dioxus, `ui-motion` or `ui-style`, and
-`scripts/check-boundary.sh` fails if one returns. `wgpu` is not an exception to its rule so much as a fact of `ui-blitz`: `TextureLayer` and the PDF
+`cargo xtask check layers` fails if one returns. `wgpu` is not an exception to its rule so much as a fact of `ui-blitz`: `TextureLayer` and the PDF
 thumbnail cache both live there, the launcher is a Blitz window and already links the renderer, and the
 pane reaches the device only through `ui_blitz::use_gpu`, never by naming a `wgpu` type (FINDINGS, "The pane
 and `wgpu`").

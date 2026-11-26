@@ -1,7 +1,7 @@
 //! The `display.*` settings as this crate sees them.
 //!
 //! `shell-settings` owns the file and its schema but brings `dioxus` with it, which this crate may
-//! not reach (`scripts/check-boundary.sh`), so the daemon translates `DisplaySettings` into a
+//! not reach (`cargo xtask check layers`), so the daemon translates `DisplaySettings` into a
 //! [`DisplayPolicy`] and sends it with `DisplaysCommand::Policy`.
 
 use base_words::Word;

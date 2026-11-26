@@ -1,7 +1,7 @@
 //! PDF thumbnails from a path (the `pdf` feature; design/04-COMPONENTS.md section 45).
 //!
 //! `ui_components::prelude::PdfThumb` draws a page it is handed and never reads a file: ds stays renderer-free and
-//! effect-free (`scripts/check-boundary.sh` forbids it pdfrum and every renderer). Reading the
+//! effect-free (`cargo xtask check layers` forbids it pdfrum and every renderer). Reading the
 //! file and rasterising its first page are effects, and pdfrum's CPU rasteriser (`vello_cpu`) is a
 //! renderer, so both live here, in the UI kit's one host crate, behind a feature so an app that shows
 //! no PDF builds no PDF reader. [`PdfFileThumb`] is what a consumer places: a path and a size in,

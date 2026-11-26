@@ -86,7 +86,7 @@ tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "r
 # processes outside service cgroups, and `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes it read that file as
 # the system caller table, because a jail cannot write /etc/bardo. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
-# check-boundary.sh checks it too.
+# `cargo xtask check layers` checks it too.
 test-proc-root = ["account-callers/test-proc-root", "test-system-callers"]
 # Test builds only, never default and never in dist: `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes the binary read that file as the
 # system caller table, so no test reads this computer's `/etc/bardo`. A release build ignores the variable and says so once.

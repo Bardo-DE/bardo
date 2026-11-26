@@ -79,7 +79,7 @@ These two need a sign-in client id registered with the company. Google's has to 
 ## Working on the accounts service
 
     cargo test --workspace        # the tests that start a private session bus are meant to run in a jail (no real session, devices or network); .github/workflows/ci.yml says which packages
-    scripts/check-boundary.sh     # the crate boundaries, mechanically
+    cargo xtask check layers   # the crate boundaries, mechanically (rules: layers.toml at the bardo root)
     scripts/check-features.sh     # the feature sets that programs building the accounts service use, each warning-free
     cargo deny check licenses
 

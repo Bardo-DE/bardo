@@ -15,7 +15,7 @@ updater, a root input service) then say which roles a method accepts.
 | `caller-identity-dbus` | async adapter | `BusPeers`: credentials, the manager's unit facts (`UnitSource`, `ManagerLink`), `require`, `owner_of`, `watch_owner`, `Offload` | the caller-identity library, caller-identity-core, zbus 5, futures-timer, thiserror |
 
 `caller-identity-core` reaches no bus, system-call layer, runtime or executor; `caller_identity` reaches no bus or
-executor (`scripts/check-boundary.sh`). Every crate sets `unsafe_code = "forbid"`: the pidfd comes
+executor (`cargo xtask check layers`). Every crate sets `unsafe_code = "forbid"`: the pidfd comes
 from rustix.
 
 ## 2. Layout
@@ -24,7 +24,7 @@ from rustix.
 caller-identity-core/src/{lib, ids, cgroup, procinfo, facts, standing, requirement, table, judge, error, roles}.rs
 caller_identity/src/{lib, pin, unix, procfs, probe, walk, tablefile, error, fixture, fake}.rs
 caller-identity-dbus/src/{lib, who, owner, manager, offload, timeout, error}.rs
-dist/desktop-callers.toml   scripts/check-boundary.sh   deny.toml   .github/workflows/ci.yml
+dist/desktop-callers.toml   deny.toml   .github/workflows/ci.yml
 ```
 
 `fixture.rs` and `fake.rs` exist only with feature `fake`.

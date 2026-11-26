@@ -15,7 +15,7 @@ publish.workspace = true
 test-keys = ["dep:memory-keyfile"]
 # `BARDO_MEMORYD_PROC_ROOT=<dir>` makes the daemon read `<dir>/<pid>/cgroup` for its callers instead of
 # `/proc/<pid>/cgroup`, so an acceptance run can present its test processes as units. TEST ONLY:
-# off by default, never in a release or dist build (check-boundary.sh fails if a default build
+# off by default, never in a release or dist build (`cargo xtask check layers` fails if a default build
 # has it); without it the variable is ignored.
 test-proc-root = ["account-callers/test-proc-root"]
 

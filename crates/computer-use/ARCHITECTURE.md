@@ -27,7 +27,7 @@ picture), section 6 (copy the recipe).
 | `computer-use-capture` | `Frame`, `PixelBuf`, `MaskReport`, `apply_masks`, `FrameDigest`, `settle`, `pixel_diff`, the `WindowCapture` and `CaptureSession` seams. | none |
 | `computer-use-seat-input` | `InputOp`, `Keymap`, `SeatCaps`, `plan`, `InputReceipt`, `region`, the `AgentSeat` seam. | none |
 | `computer-use-a11y-tree` | `A11ySnapshot`, `A11yNode`, `prune`, `render`, `diff`, `secret_rects`, selectors, the `A11ySource` seam. | none |
-| `computer-use-bus` | what crosses the bus and the log, serde bodies over the vocabulary crates memory-core, action-core, account-core, inference-core, prov and computer-use-action (no capability crate is linked; the leaf types come from `computer-use-types`; `scripts/check-boundary.sh` ONLY pins this list): the `Start` body (`ComputerUseTask`), `RunStateSlug`, `ComputerUseOutcome`, `ModeSupport`, `ComputerUseRecord`, `ActionResult`, `RunBudget`, `ControlRefusal`, `permits`, `report_draft` | none |
+| `computer-use-bus` | what crosses the bus and the log, serde bodies over the vocabulary crates memory-core, action-core, account-core, inference-core, prov and computer-use-action (no capability crate is linked; the leaf types come from `computer-use-types`; `cargo xtask check layers` ONLY pins this list): the `Start` body (`ComputerUseTask`), `RunStateSlug`, `ComputerUseOutcome`, `ModeSupport`, `ComputerUseRecord`, `ActionResult`, `RunBudget`, `ControlRefusal`, `permits`, `report_draft` | none |
 | `computer-use-run` | the pure run machine (`Run`, `RunTrack`, `RunPhase`, `RunInput`, `RunEffect`), `Observation`, `shortcut_hint` (the desktop's shortcut chords as one line for the model, read from a chord keymap `Keymap`; `Exec::with_hints` hands it to the model's session), `classify_effect`, `window_class_of`, `window_sensitivity` (a sensitive window makes the run ask before input even when the router says run), `mode_support`, `choose_mode`, `LeaseBook`, `stalled`, `turn` and `note_of`, `ComputerUseConfig`, `ComputerUseModel`, the seams a run is carried out against (`Seams`, `Clock`, `GateLink`, `RecordSink`, `MessageLink`), and `Exec`, which carries a run's effects out against them (it awaits nothing but seam futures, so it needs no runtime) | none |
 | `computer-use-dbus` | `org.bardo.ComputerUse1` (`Manager`, `Run`) as zbus proxies and skeletons, `introspection`, `ComputerUseError`, bus names and paths | zbus |
 | `computer-use-fake` | test only: `FakeSeat`, `FakeEis`, `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel`, `FakePdp`, `MemoryEvents`, `FixedClock`, `FakeSeams`, `run_harness`, and `scene` (a window, frames, a world, a task) | none (`FakeEis`: reis, tokio) |
@@ -40,8 +40,8 @@ picture), section 6 (copy the recipe).
 | `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CompositorDesktop` (the compositor's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdComputerUseModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
 | `bardo-computer-use` | the daemon and its library: `run` (the start-up: `main` passes the arguments and environment in), `ComputerUseProvider` (`org.bardo.ComputerUse`), `reach_json` and `follow_settings` (`org.bardo.IntentReach1` beside the provider: `Reach()` says `{"computeruse.run.start": "offered"}` while `computer_use.enabled` is on, else `hidden`, and `ReachChanged` is emitted when the settings watch changes it; bardo-actiond lays that over the installed manifest, which declares the action hidden; a local mirror of action-dbus's interface until the next the actions pin), `serve`, `serve_on` and `serve_on_with` (who is calling is the process behind the connection, named by `computer-use-callers.toml` through action-dbus's `Identity`; never a bus name), `classify`, `desktop_keymap` (the keymap built once at start: the chord keymap's conventions, plus the person's key remap daemon overrides with the `key_remap` feature). The binary serves both bus names; the person's settings: `SettingsWatch` (the directory watch on `computer-use/settings.toml`), `computer-use-host`'s names re-exported, `SCHEMA` (`dist/settings/computer-use.settings.toml`), and `--write-schema` | everything |
 
-Tiers (the LAYERS table of `scripts/check-boundary.sh`; a crate depends on its own tier or a
-lower one, and the script bans source patterns per tier):
+Tiers (the `[[tiers]]` and source rows for these crates in `layers.toml` at the bardo root, checked by `cargo xtask check layers`; a crate depends on its own tier or a
+lower one, and source patterns are banned per tier):
 
 - **P (pure):** `computer-use-desktop`, `computer-use-types`, `computer-use-capture`, `computer-use-seat-input`, `computer-use-a11y-tree`, `computer-use-bus`,
   `computer-use-run`. No `std::fs/env/process/net`, clock reads, sleeps, tokio, hyper, reqwest, zbus,
@@ -52,8 +52,7 @@ lower one, and the script bans source patterns per tier):
 - **A (app/daemon):** `bardo-computer-use`, `computer-use-eval`, `computer-use-eval-cloud`. Wiring; their libraries read no
   environment variable outside `main.rs`.
 
-`scripts/check-boundary.sh --long-files` reports source files over 500 lines and `--self-test`
-seeds violations and asserts each is caught. Of the direct edges below, only `computer-use-bus`'s list is checked exactly (ONLY in the script); the rest
+Of the direct edges below, only `computer-use-bus`'s list is checked exactly (an `[[edges]]` row in `layers.toml`); the rest
 is a description (dev-dependencies are outside it):
 
 | Crate | May depend on |
@@ -96,7 +95,7 @@ hints it tells the model come from the chord keymap's conventional keymap (with 
 bindings). `desktop_keymap` treats a source it cannot open as absent, with no error output; only a
 bad line in a keymap file that did open is reported.
 
-External boundaries: see `scripts/check-boundary.sh`. `zbus` is behind `computer-use-dbus` and `bardo-computer-use`
+External boundaries: see `layers.toml` at the bardo root (checked by `cargo xtask check layers`). `zbus` is behind `computer-use-dbus` and `bardo-computer-use`
 only; the pure set never reaches an effect crate; `wayland-client` is behind `computer-use-capture-wayland`, `reis` behind `computer-use-seat-ei` (and `computer-use-fake`'s `FakeEis`), `atspi` behind `computer-use-a11y-atspi`.
 
 ## 2. Modules
@@ -288,7 +287,7 @@ action it leads to is gated like any other.
   cargo fmt --all --check
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --all-features
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   cargo deny check licenses
   echo "GATE GREEN"
   ```

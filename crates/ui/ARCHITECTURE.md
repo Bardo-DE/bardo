@@ -70,7 +70,7 @@ anyview, `examples/consumer`) depend on `ds` (+ `ui-shell` for the account and h
 `ui-harness` as dev-dependencies); they never name `ui-core`, `ui-style` or `ui-motion` because
 `ds` re-exports what they need (section 6).
 
-### External boundaries (`scripts/check-boundary.sh`)
+### External boundaries (`layers.toml`, checked by `cargo xtask check layers`)
 
 | Crate | Never reaches |
 | --- | --- |
@@ -868,7 +868,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 
 ## 9. Repo rules
 
-- **Effect boundary** (`scripts/check-boundary.sh`): the tables in section 1. The script has three
+- **Effect boundary** (%s, rules in `layers.toml` at the bardo root): the tables in section 1. The rules have three
   parts: the external-dependency table, the allowed-edges table (every workspace crate's
   `cargo metadata` dependency list against section 1), and the in-crate layer order of section 2
   (a file names only its own module and those below it, doc links included). A pure crate that
@@ -879,7 +879,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
   cargo fmt --all --check
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --all-features
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   ./scripts/check-portable.sh .
   ./scripts/check-consumer.sh
   ./scripts/check-release-features.sh

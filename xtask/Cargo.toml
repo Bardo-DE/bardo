@@ -10,6 +10,8 @@ description = "Repository tasks: `cargo xtask gate`, `cargo xtask check ...`."
 anyhow.workspace = true
 cargo_metadata.workspace = true
 lexopt.workspace = true
+regex = { workspace = true, features = ["std", "unicode"] }
+serde = { workspace = true, features = ["derive"] }
 toml.workspace = true
 
 [lints]

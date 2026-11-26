@@ -16,7 +16,7 @@
 //! ```
 //!
 //! This crate is separate from account-core because the file calls run on tokio's blocking pool,
-//! and account-core depends on no executor (`scripts/check-boundary.sh` holds it to that).
+//! and account-core depends on no executor (`cargo xtask check layers` holds it to that).
 
 mod file;
 

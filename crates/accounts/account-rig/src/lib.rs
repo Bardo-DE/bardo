@@ -1,5 +1,5 @@
 //! The rig a jailed scenario drives the accounts service with (test tooling: `publish = false`, never
-//! installed, never in `dist/`; check-boundary lists it so nothing shipped depends on it).
+//! installed, never in `dist/`; `cargo xtask check layers` lists it so nothing shipped depends on it).
 //!
 //! Three binaries, built on the modules here:
 //!

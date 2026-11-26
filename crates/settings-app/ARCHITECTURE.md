@@ -43,7 +43,7 @@ style guides every repo follows; this file is the Settings app's map and rules, 
 
 | 6 | `bardo-settings` | The binary: flags, the environment read once, the intents service on the process-wide runtime, `ui_blitz::launch`; the `Outbox` of `settings_app_model::inbox()` goes to the provider and its `Inbox` to the window's `Env` | `settings-app-ui`, `settings-app-client`, `settings-app-intents`, `settings-app-model`, `settings-app-files`, `ui-blitz`, `ui-settings`; `settings-app-callers` (only with the `dev-callers` feature); clap, tokio |
 
-`scripts/check-boundary.sh` keeps this table exact (`EDGES`) and checks that `settings-app-model` and
+`cargo xtask check layers` keeps this table exact (the `[[edges]]` rows in `layers.toml` at the bardo root) and checks that `settings-app-model` and
 `settings-app-files` reach none of dioxus, tokio, blitz-dom, ds, ui-blitz, ui-harness, ui-lint, and that
 `settings-app-system` and `settings-app-client` reach none of dioxus, blitz-dom, ds, ui-blitz, ui-harness, ui-lint. zbus is not
 in that list: `ui-settings` builds it (FINDINGS "ui-settings drags zbus into a pure crate").
@@ -54,8 +54,8 @@ in that list: `ui-settings` builds it (FINDINGS "ui-settings drags zbus into a p
 `settings_app_model::external`: the ids and enums of the accounts service, the actions service, the memory service and the chord keymap that the facts
 are made of, plus `toml::Value`, named once there) and bardo. Its `[dependencies]` cannot name
 `settings-app-files`, `settings-app-system`, `accounts-*`, `memory-*`, `actions-*` or `zbus`, so a view cannot
-read a file or call a service; `scripts/check-boundary.sh` enforces it (`DIRECT`, and the exact
-`EDGES` row). What a view needs from the files is `settings-app-client`: the settings, agents, places and
+read a file or call a service; `cargo xtask check layers` enforces it (the exact
+`[[edges]]` row; the old `DIRECT` check on naming `zbus` directly is not a layers rule). What a view needs from the files is `settings-app-client`: the settings, agents, places and
 keymap files and the style and program scans are re-exported or wrapped there (`files.rs`), and the
 work that blocks (the assistants' download, the program scan, the style files) is a `Client`
 command that runs on a blocking thread.
@@ -228,7 +228,7 @@ a `params` list even when empty), add its arm in `settings-app-intents/src/ask.r
 ## 5. Repo rules
 
 - Gate: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D
-  warnings`, `cargo test --workspace`, `./scripts/check-boundary.sh`, `cargo deny check licenses`, and `./scripts/check-intents.sh` (actions's
+  warnings`, `cargo test --workspace`, `cargo xtask check layers`, `cargo deny check licenses`, and `./scripts/check-intents.sh` (actions's
   conformance check: a `.desktop` file needs a valid manifest; it builds `agent-eval` from `../actions`).
   Check every exit code.
 - No `unsafe` anywhere (`unsafe_code = "deny"`).

@@ -38,7 +38,7 @@ Layers, bottom up: `compositor-core` ← `compositor-layout` ← `compositor-mot
 because smithay's traits and `State` meet only there) ← `compositor-testkit`. `compositor-testclient`
 sits beside the stack on the client side.
 
-Allowed edges (checked by `scripts/check-boundary.sh`, rows B1 to B20 of the plan's §2.4, plus
+Allowed edges (checked by `cargo xtask check layers`, rows B1 to B20 of the plan's §2.4, plus
 A1 and A4):
 
 | Crate | May reach |
@@ -555,8 +555,7 @@ global in `Part::new`, adds the `globals.txt` row and un-ignores the tests.
 **Add a seam with its fake.**
 1. The trait beside its types in the crate that drives it, with `Debug` as a supertrait, typed
    errors (thiserror, typed sources) and no `bool`s. Real I/O goes in a `*_real.rs` adapter, behind
-   a feature when it needs system libraries (A2); a new adapter joins `ADAPTERS` in
-   `scripts/check-boundary.sh`.
+   a feature when it needs system libraries (A2); a new adapter joins the `except` list of the B7 source rule in `layers.toml` at the bardo root (`cargo xtask check layers`).
 2. The fake in `crates/compositor-testkit/src/fakes/` as a cloneable shared handle (`Arc<Mutex<…>>`):
    the compositor holds one clone, the test the other, and the test asserts on what the fake
    recorded. Export it from `fakes/mod.rs`.
@@ -608,7 +607,7 @@ nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU 
 
 - The gate: `dev/gate.sh fast -p <crate>...` for a lane, `dev/gate.sh merge` for a merge,
   `dev/gate.sh phase` at a phase exit (20-FREEZE-PLAN §6.2). Steps: preflight, `cargo fmt --all
-  --check`, `./scripts/check-boundary.sh`, `./scripts/check-protocol-coverage.sh`, clippy with
+  --check`, `cargo xtask check layers`, `./scripts/check-protocol-coverage.sh`, clippy with
   `-D warnings`, the nextest archive built outside and run inside the jail (profiles `fast`,
   `merge`, `phase` in `.config/nextest.toml`); merge and phase add `cargo deny check licenses`,
   doc tests and `dev/accept.sh`; phase adds wlcs and the KMS fixtures. Each step is timed against

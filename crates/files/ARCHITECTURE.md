@@ -3,7 +3,7 @@
 ## 1. Layers
 
 Every crate is a library except `files`, the binary, which parses its arguments, builds the one
-runtime, adapts the desktop crate to the window's seams and launches the window. Dependencies point down; `scripts/check-boundary.sh` holds the table
+runtime, adapts the desktop crate to the window's seams and launches the window. Dependencies point down; `cargo xtask check layers` holds the table (the rules are in `layers.toml` at the bardo root)
 below and fails on any edge it does not allow, or on a crate it does not list.
 
 | Layer | Crate | Holds |

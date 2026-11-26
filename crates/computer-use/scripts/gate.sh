@@ -6,6 +6,6 @@ cd "$(dirname "$0")/.."
 cargo fmt --all --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
-./scripts/check-boundary.sh
+cargo xtask check layers
 cargo deny check licenses
 echo "GATE GREEN"

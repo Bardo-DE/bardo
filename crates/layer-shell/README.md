@@ -5,7 +5,7 @@ overlays), xdg popups and xdg toplevels, all sharing one GPU device and one rend
 blur (`ext-background-effect-v1`), fractional scale, input regions that follow DOM elements
 (where they paint, transforms included), IME, clipboard and a frame machine that is idle at zero
 wakeups. It is portable to any Wayland compositor with layer-shell; it never depends on
-compositor-specific crates (`scripts/check-boundary.sh`). The shell (the shell) and every bundled app are built on it.
+compositor-specific crates (`cargo xtask check layers`). The shell (the shell) and every bundled app are built on it.
 
 `FINDINGS.md` records the standing facts about Blitz, the compositors and the protocols that the
 code relies on and the items still open (module docs cite them by number), `ARCHITECTURE.md`
@@ -144,7 +144,7 @@ Tab in one surface and a popup opened by a key both show the ring. `SurfaceHandl
 current_input_modality()` reads it without subscribing. It is what a `:focus-visible`-like ring
 follows (Blitz never matches `:focus-visible`).
 
-layer-shell-host cannot name the UI kit's `ds::HostModality` (`scripts/check-boundary.sh`), so the shell
+layer-shell-host cannot name the UI kit's `ds::HostModality` (`cargo xtask check layers`), so the shell
 bridges it once in each surface's root component, above its `Ds`:
 
 ```rust
@@ -177,7 +177,7 @@ its own subtree; the bridge sees every key the seat delivers to any surface.
 ## Consuming: fonts
 
 layer-shell-host bundles no faces of its own (it never depends on a design system,
-`scripts/check-boundary.sh`) and its `FontContext` is built from `SharedFonts::system()` alone:
+`cargo xtask check layers`) and its `FontContext` is built from `SharedFonts::system()` alone:
 fontconfig's system fonts, plus Blitz's own list-bullet glyph. A shell's design-system faces
 (the UI kit's Inter, Inter Display, Space Mono, Bricolage Grotesque, Karla, Noto Serif) reach every
 document only through `HostConfig::fonts: FontFaces`, a `Vec<&'static [u8]>` of each face's raw
@@ -222,6 +222,6 @@ land in `scripts/dev/out/accept-demo/<compositor>/<item>.{log,json,png}`; exit 0
 cargo fmt --all --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
-./scripts/check-boundary.sh
+cargo xtask check layers
 cargo deny check licenses
 ```

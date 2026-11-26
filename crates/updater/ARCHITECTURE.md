@@ -18,7 +18,7 @@ and can be rolled back. The behaviour follows macOS Software Update.
 `updater-core` reaches no network, bus, runtime or archive crate. `updater-root` may read archives (`tar`,
 `zstd`) but reaches no network client, TLS, bus or async runtime (`rustls`, `zbus`, `tokio`):
 the programs that run with administrator rights link only `updater-core`, `thiserror`, `semver`, `toml`,
-`rustix`, `tar` and `zstd` (and what those bring). `scripts/check-boundary.sh` checks both edges: `updater-core`
+`rustix`, `tar` and `zstd` (and what those bring). `cargo xtask check layers` checks both edges: `updater-core`
 reaches none of the network, bus, runtime or archive crates, and the whole tree of `updater-root` (normal and build
 dependencies) holds none of the user-level program, the caller-identity library, the network client and TLS, the bus,
 the async runtime and its building blocks, or `tracing`, and its direct dependencies are exactly the seven above. `bardo-updater`
@@ -39,7 +39,7 @@ crates/bardo-updater/src/{lib, main, config, dirs, state, clock, elevate, proble
                    service/{mod, context, engine, object, notify, run, status}.rs
                    cli/{mod, args, client, wait, confirm, recover}.rs
 dist/   bardo-updater.service  org.bardo.updater.policy  org.bardo.Updates1.service
-scripts/install.sh  scripts/check-boundary.sh
+scripts/install.sh
 .github/workflows/ci.yml  deny.toml
 ```
 

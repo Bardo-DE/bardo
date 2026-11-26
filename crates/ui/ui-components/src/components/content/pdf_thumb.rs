@@ -1,7 +1,7 @@
 //! `PdfThumb`: a PDF's first page as a thumbnail (design/04-COMPONENTS.md section 45; bardo-shell M9's
 //! launcher preview, and design/20 section 2.4's Quick Look later).
 //!
-//! ds draws; it never reads a file or rasterises (it is renderer-free, `scripts/check-boundary.sh`).
+//! ds draws; it never reads a file or rasterises (it is renderer-free, `cargo xtask check layers`).
 //! The caller hands it the page as a [`PdfPage`]: a Blitz app uses `ui_blitz::PdfFileThumb`,
 //! which takes a path, rasterises off the UI thread and caches, and feeds this component. The
 //! page is a paper sheet (`--foreign-ground`, white in both schemes) with a hairline edge, fitted

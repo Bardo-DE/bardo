@@ -3,7 +3,7 @@
 //!
 //! [`BadgesService`] and `live` do the effect (a session-bus match rule, zbus 5 on tokio);
 //! `model` is the pure reducer. Neither reaches `dioxus`, `ds` or `layer-shell-host`
-//! (`scripts/check-boundary.sh`): the bar and dock read this module only through [`Badges`] and
+//! (`cargo xtask check layers`): the bar and dock read this module only through [`Badges`] and
 //! [`BadgesCommand`], via `use_service::<BadgesService>`.
 
 mod backend;

@@ -3,7 +3,7 @@
 //! `ModelExchange`, in memory (`MemoryTap`) or appended to a file (`Tap::trace_file`).
 //!
 //! It writes prompts to disk, which is why it is its own crate: no shipped crate lists it
-//! (`scripts/check-boundary.sh` checks every manifest), so a release daemon has no code that
+//! (`cargo xtask check layers` checks every manifest), so a release daemon has no code that
 //! could do so.
 
 mod exchange;

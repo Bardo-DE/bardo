@@ -17,7 +17,7 @@ One crate, `desktop-protocols`, in three layers:
 | vocab | `src/vocab/` | always (default features) | serde, thiserror |
 | bindings | `src/client.rs`, `src/server.rs` | features `client`, `server` | wayland-scanner, wayland-backend, wayland-client or wayland-server, wayland-protocols, bitflags |
 
-Allowed edges (checked by `scripts/check-boundary.sh`):
+Allowed edges (rules in `layers.toml` at the bardo root, checked by `cargo xtask check layers`):
 
 - With default features the crate reaches none of `wayland-*`, calloop, smithay, zbus or tokio,
   through any path. Its direct dependencies are exactly serde and thiserror.
@@ -152,7 +152,7 @@ holds the frozen interface as tables (every message with its arguments, every er
   cargo clippy -p desktop-client --all-targets -- -D warnings
   cargo clippy -p desktop-client --all-targets --features client,fake -- -D warnings
   cargo test -p desktop-client --features client,fake
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   cargo deny check licenses
   ```
 - **No `unsafe`** in our source (`unsafe_code = "deny"`); the bindings' `unsafe` is
@@ -168,7 +168,7 @@ holds the frozen interface as tables (every message with its arguments, every er
 - **`bardo-agent-v1.xml` came from computer use byte for byte**; `tests/it/xml_introspection.rs` pins its
   bytes. A change to it updates the pin in the same commit.
 - **Clean room:** the XML is written from our own design notes; every interface here is ours
-  (`check-boundary.sh` row 5).
+  (`cargo xtask check layers`, `layers.toml`).
 - **Licence:** MIT OR Apache-2.0; every XML `<copyright>` carries the notice.
 
 ## 8. `desktop-client` (second package, `desktop-client/`)

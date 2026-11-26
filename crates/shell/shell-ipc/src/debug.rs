@@ -4,7 +4,7 @@
 //! A made-up input is the real `shell-model` value the service would have received (a `Posting`, a
 //! `FakeRequest`, a `FakeVerdict`). The names of surfaces, points and buttons are this wire's own
 //! words for layer-shell-host's: this crate may not depend on layer-shell-host
-//! (`scripts/check-boundary.sh`).
+//! (`cargo xtask check layers`).
 
 use std::path::PathBuf;
 

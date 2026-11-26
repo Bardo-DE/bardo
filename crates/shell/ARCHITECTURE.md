@@ -29,7 +29,7 @@ Consumers of Bardo import `ds::prelude::*` plus the named crate for anything out
 
 Layers, lowest first. A crate depends only on the crates listed for it; every other edge is
 forbidden and Cargo enforces it (a surface crate that does not list another cannot name it).
-`scripts/check-boundary.sh` keeps the table exact: its `EDGES` rows are each crate's direct normal
+`cargo xtask check layers` keeps the table exact: its `[[edges]]` rows in `layers.toml` are each crate's direct normal
 and build path dependencies, the shell and Bardo and layer-shell-host alike; dev dependencies are not
 listed except where noted.
 
@@ -59,8 +59,8 @@ type arguments of `use_service`, are `shell-model`'s, beside the state they publ
 place that starts the services. Surface crates never depend on one another, and none depends on
 `bardo-shell`.
 
-Boundary script (`scripts/check-boundary.sh`; `RULES` check the output of `cargo tree -i`, never
-its status, and `EDGES` compare each crate's direct path dependencies with the table above):
+Boundary rules (`layers.toml` at the bardo root, checked by `cargo xtask check layers`; the `[[reach]]` rows check the output of `cargo tree -i`, never
+its status, and the `[[edges]]` rows compare each crate's direct path dependencies with the table above):
 
 | Crates | Reach none of (through any path) |
 | --- | --- |
@@ -651,8 +651,8 @@ Each ends with its tests. Name the concept once and use it in every file name be
 
 ### Add a surface
 
-1. Choose the crate from the surfaces table below (a new crate is a new row of section 1 and of
-   `EDGES` in `scripts/check-boundary.sh`). The surface lives in that crate, in `src/<name>/` with
+1. Choose the crate from the surfaces table below (a new crate is a new row of section 1 and an `[[edges]]` row in
+   `layers.toml`). The surface lives in that crate, in `src/<name>/` with
    the roles in "The one shape of a surface": `mod.rs`, `surface.rs`, `model.rs`, `step.rs`,
    `io.rs`, `view.rs`, `style.css`, `tests.rs` (and `layer.rs` only when no `LayerPreset` fits).
    `lib.rs` declares `pub mod <name>` and re-exports the marker type; `mod.rs` re-exports the
@@ -1021,7 +1021,7 @@ which publishes an empty view off Bardo arm; only a test calls it.
   cargo fmt --all --check
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --features shell/debug
-  ./scripts/check-boundary.sh
+  cargo xtask check layers
   ./scripts/check-intents.sh   # every .desktop file has a valid intents manifest (actions's check)
   cargo deny check licenses bans sources
   cargo deny check advisories   # needs the advisory database: wherever the network does

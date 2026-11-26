@@ -10,7 +10,7 @@
 //! live in `shell-model`, so every transition is table-tested without a bus or a socket. Shared
 //! data travels on `tokio::sync::watch`, never as a Dioxus signal.
 //!
-//! This crate never reaches `dioxus` (`scripts/check-boundary.sh`): the hooks that read these
+//! This crate never reaches `dioxus` (`cargo xtask check layers`): the hooks that read these
 //! channels live in `shell-ui-kit::hooks`.
 
 mod account_label;

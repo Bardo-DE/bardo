@@ -10,7 +10,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo nextest run --workspace --all-features --profile default
 cargo test --workspace --all-features --doc
 cargo test -p permission-policy -p action-eval-core -p action-eval
-./scripts/check-boundary.sh
+cargo xtask check layers
 ./scripts/check-portable.sh
 cargo deny check licenses advisories bans sources
 echo "GATE GREEN"

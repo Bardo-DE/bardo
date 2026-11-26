@@ -4,7 +4,7 @@
 //! icon resolves to in the installed theme, with what design/08-ICONS.md §1.5 can tell from
 //! the name alone (step 1: a freedesktop `*-symbolic` icon is symbolic). The chroma test for the
 //! rest (step 2) is the UI kit's `ui_components::style::icon::classify::classify_with`, which the bar runs on the PNG bytes: this
-//! crate does not reach `ds` (`scripts/check-boundary.sh`). The URL itself is the UI kit's too
+//! crate does not reach `ds` (`cargo xtask check layers`). The URL itself is the UI kit's too
 //! (`IconUrl::png` does the base64, `IconUrl::file` the path).
 
 use std::path::{Path, PathBuf};

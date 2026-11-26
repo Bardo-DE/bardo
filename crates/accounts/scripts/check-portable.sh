@@ -5,7 +5,7 @@
 # account-client build an accounts-only consumer uses (no features) must also reach no inference:
 # no model layer.
 #
-# Called from check-boundary.sh, which the lane gate runs. Output says each check and each
+# Nothing calls this script now that the old boundary script is gone (it moves to another xtask check); run it by hand. Output says each check and each
 # tree; the exit status is the verdict.
 set -uo pipefail
 cd "$(dirname "$0")/.."

@@ -54,7 +54,7 @@ base-testkit = {path = "../../../base/base-testkit", features = ["dbus"]}
 tempfile = { workspace = true }
 
 # The agent tests stand in for actiond with a fixture /proc, which action-dbus reads only with
-# `fixture-callers`: a test build's feature, never a shipped one (check-boundary.sh).
+# `fixture-callers`: a test build's feature, never a shipped one (`cargo xtask check layers`).
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 action-dbus = {features = ["fixture-callers"], path = "../../../actions/action-dbus"}
 

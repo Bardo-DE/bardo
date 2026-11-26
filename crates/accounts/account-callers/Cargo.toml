@@ -27,7 +27,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 file = ["dep:toml"]
 # TEST ONLY, never default and never in dist: `ProcCallers::with_proc_root` and `caller_of_pid` read a
 # directory tree standing for /proc (the caller-identity library's `fake` seams: a process that is only a claim). A daemon
-# turns it on through its own `test-proc-root` feature; check-boundary.sh checks that no default build
+# turns it on through its own `test-proc-root` feature; `cargo xtask check layers` checks that no default build
 # has it.
 test-proc-root = ["caller-identity-linux/fake"]
 

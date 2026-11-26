@@ -6,7 +6,7 @@
 //!
 //! Nothing here opens a file, a device or a socket and nothing reads a clock: time arrives as a
 //! `Mono` argument, config arrives as strings. The daemon crate `key_remap` adds those, and a
-//! compositor can link this crate alone. `scripts/check-boundary.sh` holds that.
+//! compositor can link this crate alone. `cargo xtask check layers` holds that.
 
 #[macro_use]
 mod names;

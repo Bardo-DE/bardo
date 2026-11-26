@@ -3,7 +3,7 @@ name = "updater-root"
 description = "The three programs that run as root (install, roll back, health record) and the code only they need"
 
 # These programs run with the administrator's rights, so what they link is kept short and is checked by
-# scripts/check-boundary.sh: no network client, no bus, no async runtime, no logging framework.
+# `cargo xtask check layers`: no network client, no bus, no async runtime, no logging framework.
 version.workspace = true
 edition.workspace = true
 license.workspace = true
