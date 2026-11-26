@@ -145,10 +145,10 @@ is `desktop`, mapped by implication: a crate with a D-Bus client has
 switch; its `inferd` feature names a transport, not the desktop). A portable build is
 `--no-default-features`.
 
-`scripts/check-portable.sh` is the mechanical form: `cargo check --no-default-features` on exactly
-the portable list, a `cargo tree` grep for the forbidden crates, and `cargo check --target` for
-every cross target rustup already has. `cargo xtask check layers` holds the rows (the portable
-rows never list a bus). The seams that have no portable answer yet are the "what is still
+`cargo xtask check features` is the mechanical form: `cargo hack check --no-default-features
+--all-targets` on exactly the portable list (the table in `xtask/src/tasks/features.rs`), and with
+`--cross` a `cargo check --target` for every cross target rustup already has. `cargo xtask check
+layers` holds the rows, including the forbidden crates (the portable rows never list a bus). The seams that have no portable answer yet are the "what is still
 missing" list in `FINDINGS.md` (portable-core).
 
 ## 2. Modules
@@ -227,7 +227,7 @@ missing" list in `FINDINGS.md` (portable-core).
 | standing grants ("allow always" for an editor or an ACP agent): the key (`StandingScope`: files = action + path prefix, terminal = command prefix + cwd, outbound = action + recipient or domain; `GrantCaller::{Editor, AcpAgent}`), the match, the never-grantable rule and the offer (`may_offer`, `blocker`), the list codec | `permission-core::{standing, standing_match, standing_offer}` (pure). Held in the consent store (`GrantStore::standing`, `add_standing`, `revoke_standing`: `FileGrants` in `standing.json` beside `grants.json`, `FileGrantStore` in `<file>.standing`), read afresh on every call. `Who::grant_caller` names an editor's calls `GrantCaller::Editor(ClientName)` from the app behind the editor's connection (`Who::editor`: the app of the session's latest `Caller::editor` turn, or the connection itself for the `Editor` role); a later launcher turn in the session ends it. An editor's typed turn derives the task policy as a launcher's does (only a prompt field's turn is capped to its app plus reads) The router reads the facts (`standing_facts`), lifts the ask (`standing::StandingCtx::lifted`), audits (`StandingGranted`, `StandingUsed`, `StandingRevoked`) and serves `.Control.StandingGrants` / `.RevokeStandingGrant` (Control role) |
 | `bardo-do`: the command grammar, the parameter mapping, the exit codes | `action-cli` (`args`, `params`, `exit`); a terminal's arguments are labelled `Untrusted, Source::Cli` by the router, never by the client |
 | who is calling a daemon: `Identity` (the accounts service's `ProcCallers` on the daemon's connection and callers table), `Standing` (the app and role a method asks of its caller), `require`, the callers files (`/etc/bardo/<daemon>-callers.toml` under the person's own; only the system's gives a fixed role) | `action-dbus::callers`; the shipped files are `dist/<daemon>-callers.toml`, read by each daemon's `callers` module; no daemon decides standing from a bus name it owns, `GetNameOwner` or a uid |
-| the conformance check of every app repo | `agent-eval --check-app` and `scripts/check-intents.sh` (cli.md section 6) |
+| the conformance check of every app repo | `agent-eval --check-app`, run on every shipped app by `action-eval`'s `tests/it/shipped_apps.rs` (cli.md section 6) |
 | the planner's view and its builders: the view type | `action-core::planner`; the one builder, `planner_view`, and the `HandleTable`, `action-context::handles` |
 | the handles of the planner's view: a thing's own handle (`EntityLine::handle`, minted by `action-context::handles::line` from `mint_entity` under the app's label), the stable numbering of texts and things within a task (`HandleTable::reveal` / `try_mint_text` dedupe by words, label and source; `begin_view` and `MAX_VIEW_TEXTS` bound the context's texts by evicting the oldest one the current view does not use), the compact context line and the handle section of the prompt (`agent-planner::context_text`, `render`), the target schema constrained to the held handles of its kind (`Catalogue::declaration_for`), and the typed `wrong_type` hint for a target (`step_text::target_hint`) | `action-context::handles`, `agent-planner` (conventions item 13) |
 | the options of a dynamic parameter (`ParamType::Dynamic`): before each planner turn `Companion::offer_choices` asks each such parameter of the offered actions once (`Suggest`, nothing typed, two seconds) and hands the answers to the planner as `ParamChoices` data; the planner crate reaches no bus. With 1 to 32 plain keys (letters, digits, `.`, `_`, `-`) back, the tool schema lists them as `{"type":"string","enum":[...]}` (the same `OneOf::narrow` the helper names use); with none, too many, or no answer it stays a plain string. The list is advice: a key outside it is not refused, and the value stays `Value::Text` (`args_from_json`), which a provider reads with a `Choice` or `Entity` | `agent-planner::choices`, `companion-tasks::choices` |
@@ -383,7 +383,7 @@ for its interface; run `cargo test -p action-dbus`, which prints the new XML; re
 strictly against `policy/bardo.cedarschema`; add the row to `permission-policy/tests/it/grid.rs`. A rule
 that tightens only is a forbid; the assistant and administrator directories may only forbid (the loader refuses a permit there).
 
-**Add an action to every face.** Declare it in the app's manifest (recipe above) and implement it in the app's `IntentProvider`. That is all: `bardo-do <app> <action>` (`action-cli`), the MCP tool (`bardo-actions-mcp`) and the D-Bus `Run.Perform` are generated from the declaration. An app's menu command or shortcut that is the face of the action names it in `<AppName>.ui.toml`; `scripts/check-intents.sh` fails the app's gate for a menu command with no action that is not listed UI-only.
+**Add an action to every face.** Declare it in the app's manifest (recipe above) and implement it in the app's `IntentProvider`. That is all: `bardo-do <app> <action>` (`action-cli`), the MCP tool (`bardo-actions-mcp`) and the D-Bus `Run.Perform` are generated from the declaration. An app's menu command or shortcut that is the face of the action names it in `<AppName>.ui.toml`; `action-eval`'s `shipped_apps` test fails for a menu command with no action that is not listed UI-only.
 
 **Declare a relation.** A planner never reads untrusted content, so when an action needs a thing of
 another kind than the one it holds (the sender of a thread, the owner of a file) the app declares it
@@ -469,7 +469,7 @@ every type `Serialize + Eq`, a table test, and the effects carried out by a daem
 ## 7. Repo rules
 
 - Licence `MIT OR Apache-2.0`; edition 2024; `unsafe_code = "deny"`; `rust-toolchain.toml` pins
-  1.98.1 and `deny.toml` is the licence gate.
+  1.98.1 and the root `deny.toml` is the licence gate.
 - Cross-repo dependencies are git dependencies at pinned revs (the accounts service, the memory service, the model layer, Bardo), so a plain
   clone builds with no sibling checkout. The pins use the same URL and rev as the other repos' pins of the
   same crates, or cargo links two copies. Local cross-repo work overrides a pin with a `[patch]` (FINDINGS.md).
@@ -478,18 +478,8 @@ every type `Serialize + Eq`, a table test, and the effects carried out by a daem
   (round trips, pinned JSON, introspection, tables) pass.
 - Tests never touch the real system: no real bus, no real apps, no GPU, no real engine, no network.
   bardo-actiond, bardo-companiond, bardo-readerd and bardo-voiced serve; the first three have a binary test on a private bus, and bardo-voiced's `start` is tested on one over a scripted device (the real PipeWire device is `dev/voice-capture-try.sh`, by hand).
-- The gate, with every exit code checked (`scripts/gate.sh` runs exactly this):
-
-  ```bash
-  set -euo pipefail
-  cargo fmt --all --check
-  cargo clippy --workspace --all-targets --all-features -- -D warnings
-  cargo test --workspace --all-features
-  cargo test -p permission-policy -p action-eval-core -p action-eval
-  cargo xtask check layers
-  cargo deny check licenses
-  echo "GATE GREEN"
-  ```
+- The gate is `cargo xtask gate` (fmt, clippy, tests, layers, lints, deny, ...); `cargo xtask check features` checks the feature combinations.
+  The eval crates' own tests run with `cargo test -p permission-policy -p action-eval-core -p action-eval`.
 
   No crate is excluded: every crate builds and tests without hardware or network. (`speech-pipewire`
   links libpipewire but opens no device in a test, so

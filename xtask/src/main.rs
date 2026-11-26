@@ -17,8 +17,9 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules and shear, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules, shear and deny, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
+  check features [--cross]      each package built alone, per feature (clippy) and without default features (portable core); --cross adds macOS and Windows targets (needs cargo-hack)
   check test-modules            one test binary per crate (tests/it), every tests/it file a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check layers                  the rules in layers.toml: layer order, programs are leaves, reach, edges, source
@@ -29,7 +30,6 @@ commands:
   check no-prefs                no identifier ending in Prefs
   check renderer-edges          only the renderer crates and the programs depend on the renderer
   check shear                   no crate declares a dependency it does not use (needs cargo-shear)
-  check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
   install [<part>...]           build and install the desktop (every part, or just these)
   install --build [<part>...]   build as you, install nothing
   install --check               what this machine lacks, with the line that installs it
@@ -83,70 +83,73 @@ fn run() -> Result<bool> {
             }
             tasks::install::run(&request)
         }
-        "check" => {
-            let which = parser
-                .value()
-                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, shear or legacy")?
-                .string()?;
-            match which.as_str() {
-                "deny" => {
-                    reject_extra(&mut parser)?;
-                    tasks::deny::run()
-                }
-                "test-modules" => {
-                    reject_extra(&mut parser)?;
-                    tasks::test_modules::run()
-                }
-                "workspace-deps" => {
-                    reject_extra(&mut parser)?;
-                    tasks::workspace_deps::run()
-                }
-                "renderer-edges" => {
-                    reject_extra(&mut parser)?;
-                    tasks::renderer_edges::run()
-                }
-                "layers" => {
-                    reject_extra(&mut parser)?;
-                    tasks::layers::run()
-                }
-                "lints" => {
-                    reject_extra(&mut parser)?;
-                    tasks::lints::run()
-                }
-                "product-words" => {
-                    reject_extra(&mut parser)?;
-                    tasks::product_words::run()
-                }
-                "error-names" => {
-                    reject_extra(&mut parser)?;
-                    tasks::error_names::run()
-                }
-                "no-mod-rs" => {
-                    reject_extra(&mut parser)?;
-                    tasks::no_mod_rs::run()
-                }
-                "no-prefs" => {
-                    reject_extra(&mut parser)?;
-                    tasks::no_prefs::run()
-                }
-                "shear" => {
-                    reject_extra(&mut parser)?;
-                    tasks::shear::run()
-                }
-                "legacy" => {
-                    let mut only = None;
-                    while let Some(arg) = parser.next()? {
-                        match arg {
-                            Value(v) if only.is_none() => only = Some(v.string()?),
-                            other => return Err(other.unexpected().into()),
-                        }
-                    }
-                    tasks::legacy::run(only.as_deref())
-                }
-                other => bail!("unknown check `{other}`\n{USAGE}"),
-            }
-        }
+        "check" => check(&mut parser),
         other => bail!("unknown command `{other}`\n{USAGE}"),
+    }
+}
+
+/// Runs `cargo xtask check <name>`.
+fn check(parser: &mut lexopt::Parser) -> Result<bool> {
+    let which = parser
+        .value()
+        .context("`check` needs a name: deny, features, test-modules, workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs or shear")?
+        .string()?;
+    match which.as_str() {
+        "deny" => {
+            reject_extra(parser)?;
+            tasks::deny::run()
+        }
+        "features" => {
+            let mut cross = false;
+            while let Some(arg) = parser.next()? {
+                match arg {
+                    Long("cross") => cross = true,
+                    other => return Err(other.unexpected().into()),
+                }
+            }
+            tasks::features::run(cross)
+        }
+        "test-modules" => {
+            reject_extra(parser)?;
+            tasks::test_modules::run()
+        }
+        "workspace-deps" => {
+            reject_extra(parser)?;
+            tasks::workspace_deps::run()
+        }
+        "renderer-edges" => {
+            reject_extra(parser)?;
+            tasks::renderer_edges::run()
+        }
+        "layers" => {
+            reject_extra(parser)?;
+            tasks::layers::run()
+        }
+        "lints" => {
+            reject_extra(parser)?;
+            tasks::lints::run()
+        }
+        "product-words" => {
+            reject_extra(parser)?;
+            tasks::product_words::run()
+        }
+        "error-names" => {
+            reject_extra(parser)?;
+            tasks::error_names::run()
+        }
+        "no-mod-rs" => {
+            reject_extra(parser)?;
+            tasks::no_mod_rs::run()
+        }
+        "no-prefs" => {
+            reject_extra(parser)?;
+            tasks::no_prefs::run()
+        }
+        "shear" => {
+            reject_extra(parser)?;
+            tasks::shear::run()
+        }
+        other => bail!("unknown check `{other}`\n{USAGE}"),
     }
 }
 

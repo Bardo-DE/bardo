@@ -1,7 +1,7 @@
 //! The portable path: an app hosts the service itself over `InProcess`, with no daemon and no
 //! bus. Writes, recalls, forgets and seals against a Space. Runs with
 //! `cargo test -p memory-client --no-default-features --features in_process`, which links
-//! neither zbus nor the Secret Service (`scripts/check-portable.sh` checks that).
+//! neither zbus nor the Secret Service (`cargo xtask check features` and the `layers.toml` rows check that).
 #![cfg(feature = "in_process")]
 
 use memory_client::{InProcess, Memory, Recorded};

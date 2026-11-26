@@ -5,7 +5,7 @@
 //! keyboard daemon's unit. The release lists each such file by its exact destination, the file travels
 //! in the bundle under `system/` at the same path, and the helper copies it.
 //!
-//! The policy is per file, not per folder: a destination is accepted only when [`ALLOWED_SYSTEM_FILES`]
+//! The policy is per file, not per folder: a destination is accepted only when [`allowed_system_files`]
 //! names it. A folder alone would let a compromised build step add `/etc/polkit-1/rules.d/00-all.rules`
 //! to a signed release; with this list that release is refused whole. The cost is deliberate: the helper
 //! is installed by hand, not by a release, so a new system file needs a new helper.
@@ -13,6 +13,7 @@
 use super::error::ReleaseError;
 use crate::path::BundlePath;
 use serde::Deserialize;
+use std::sync::OnceLock;
 
 /// The folder inside the bundle the system files travel in; their destination follows it.
 pub const SYSTEM_TREE: &str = "system";
@@ -44,96 +45,68 @@ pub struct SystemRule {
     pub name: NameRule,
 }
 
-const fn rule(dir: &'static str, name: NameRule) -> SystemRule {
-    SystemRule { dir, name }
+/// The rules, as `release/system-files.list` of the desktop's packaging tree writes them: one per line,
+/// `FOLDER exact|ending NAME`, with `#` comment lines and blank lines. The release tooling
+/// (`packaging/release/release.py`) reads the same file, so there is one list.
+const LIST: &str = include_str!("../../../../../packaging/release/system-files.list");
+
+/// What is wrong with a line of the list.
+#[derive(Debug, PartialEq, Eq)]
+struct ListError {
+    line: usize,
+    text: String,
+}
+
+fn parse_rules(list: &'static str) -> Result<Vec<SystemRule>, ListError> {
+    let mut rules = Vec::new();
+    for (index, line) in list.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let bad = || ListError {
+            line: index + 1,
+            text: line.to_owned(),
+        };
+        let mut words = line.split_whitespace();
+        let (Some(dir), Some(kind), Some(name), None) =
+            (words.next(), words.next(), words.next(), words.next())
+        else {
+            return Err(bad());
+        };
+        let name = match kind {
+            "exact" => NameRule::Exact(name),
+            "ending" => NameRule::Ending(name),
+            _ => return Err(bad()),
+        };
+        if !dir.starts_with('/') || dir.ends_with('/') {
+            return Err(bad());
+        }
+        rules.push(SystemRule { dir, name });
+    }
+    Ok(rules)
 }
 
 /// Every file a release may place, and nothing else.
-pub const ALLOWED_SYSTEM_FILES: [SystemRule; 19] = [
-    // The shell's login service.
-    rule("/etc/pam.d", NameRule::Exact("bardo-shell")),
-    // Brightness over the monitor's own bus.
-    rule(
-        "/etc/udev/rules.d",
-        NameRule::Exact("60-bardo-shell-ddc.rules"),
-    ),
-    rule(
-        "/etc/modules-load.d",
-        NameRule::Exact("bardo-shell-ddc.conf"),
-    ),
-    // The keyboard daemon: its unit (in the vendor folder, /etc stays the administrator's), its device
-    // rule, the rule that lets the person restart it and the modules it needs.
-    rule(
-        "/usr/lib/systemd/system",
-        NameRule::Exact("bardo-key-remap.service"),
-    ),
-    rule(
-        "/etc/udev/rules.d",
-        NameRule::Exact("70-bardo-key-remap.rules"),
-    ),
-    rule(
-        "/etc/polkit-1/rules.d",
-        NameRule::Exact("bardo-key-remap.polkit.rules"),
-    ),
-    rule(
-        "/etc/modules-load.d",
-        NameRule::Exact("bardo-key-remap.conf"),
-    ),
-    // The desktop's vendor defaults for the keyboard daemon (the Caps Lock rule), read under the
-    // administrator's file. /etc/bardo/key-remap stays the administrator's: no release places a file there.
-    rule(
-        "/usr/lib/bardo/key-remap",
-        NameRule::Exact("key-remap.toml"),
-    ),
-    // The input service that owns the virtual keyboard device: its two units (socket-activated), the
-    // rule that takes the device node away from the person's session, and the module it needs.
-    rule(
-        "/usr/lib/systemd/system",
-        NameRule::Exact("bardo-input-broker.socket"),
-    ),
-    rule(
-        "/usr/lib/systemd/system",
-        NameRule::Exact("bardo-input-broker.service"),
-    ),
-    rule(
-        "/etc/udev/rules.d",
-        NameRule::Exact("72-bardo-input-broker.rules"),
-    ),
-    rule(
-        "/etc/modules-load.d",
-        NameRule::Exact("bardo-input-broker.conf"),
-    ),
-    // The touchpad daemon (a system service, as the keyboard daemon is): its device rule, its module
-    // options and its unit in the vendor folder.
-    rule(
-        "/etc/udev/rules.d",
-        NameRule::Exact("70-bardo-mouse-gestures.rules"),
-    ),
-    rule(
-        "/etc/modprobe.d",
-        NameRule::Exact("99-bardo-mouse-gestures.conf"),
-    ),
-    rule(
-        "/usr/lib/systemd/system",
-        NameRule::Exact("bardo-mouse-gestures.service"),
-    ),
-    // The desktop's own user units, and the portal frontend's drop-in, as plain files owned by root:
-    // a link into the release (what an export is) reads as a file anyone could change to the unit
-    // manager's judge, so a unit that must prove its standing cannot be one. The units' own
-    // protections travel inside the unit file, not as drop-ins.
-    rule("/usr/lib/systemd/user", NameRule::Ending(".service")),
-    rule(
-        "/usr/lib/systemd/user/xdg-desktop-portal.service.d",
-        NameRule::Exact("10-bardo.conf"),
-    ),
-    // Who may call each daemon: the machine's caller tables.
-    rule("/etc/bardo", NameRule::Ending("-callers.toml")),
-    // The desktop's system-wide default settings (the XDG config folder, read below the person's own).
-    rule("/etc/xdg/bardo", NameRule::Ending(".toml")),
-];
+///
+/// # Panics
+///
+/// When `release/system-files.list` is malformed; a test reads it, so a bad list never ships.
+#[must_use]
+pub fn allowed_system_files() -> &'static [SystemRule] {
+    static RULES: OnceLock<Vec<SystemRule>> = OnceLock::new();
+    RULES.get_or_init(|| {
+        parse_rules(LIST).unwrap_or_else(|e| {
+            panic!(
+                "release/system-files.list line {}: expected FOLDER exact|ending NAME, got {:?}",
+                e.line, e.text
+            )
+        })
+    })
+}
 
 /// A file the release places on the system: `path` is its absolute destination, one of
-/// [`ALLOWED_SYSTEM_FILES`]; its contents are the bundle file `system/<path>`.
+/// [`allowed_system_files`]; its contents are the bundle file `system/<path>`.
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
 pub struct SystemFile {
     /// Where the file goes on the system.
@@ -157,7 +130,7 @@ pub fn is_allowed_system_path(path: &str) -> bool {
         return false;
     };
     plain_name(name)
-        && ALLOWED_SYSTEM_FILES
+        && allowed_system_files()
             .iter()
             .any(|rule| rule.dir == dir && rule.name.accepts(name))
 }
@@ -179,6 +152,45 @@ impl SystemFile {
             Ok(())
         } else {
             Err(ReleaseError::BadSystemPath(self.path.clone()))
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_shipped_list_reads() {
+        let rules = allowed_system_files();
+        assert!(rules.contains(&SystemRule {
+            dir: "/etc/pam.d",
+            name: NameRule::Exact("bardo-shell"),
+        }));
+        assert!(rules.contains(&SystemRule {
+            dir: "/etc/bardo",
+            name: NameRule::Ending("-callers.toml"),
+        }));
+    }
+
+    #[test]
+    fn a_malformed_line_names_its_number() {
+        for list in [
+            "/etc exact",
+            "/etc exact a b",
+            "/etc maybe a",
+            "etc exact a",
+            "/etc/ exact a",
+        ] {
+            let text: &'static str = Box::leak(format!("# comment\n\n{list}\n").into_boxed_str());
+            let found = parse_rules(text);
+            assert_eq!(
+                found,
+                Err(ListError {
+                    line: 3,
+                    text: list.to_owned()
+                })
+            );
         }
     }
 }

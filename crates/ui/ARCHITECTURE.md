@@ -336,7 +336,7 @@ The single place a concept lives. Extend it; never write a second one.
 | Changing one key of a settings file in place | `ui-settings::SettingsWriter::patch` |
 | A key's range, enforced on load and reported | `ui-settings::{Limits, ClampedKey}` through `SettingsDoc::limits` |
 | The 12 or 24 hour clock | `ui-settings::{HourCycle, ResolvedHours, time_locale}`; `Environment::hours` |
-| The key tables of design/22 | generated from the schema: `scripts/gen-doc-keys.sh` (`scripts/check-doc-keys.sh` checks) |
+| The key tables of design/22 | generated from the schema: `scripts/gen-doc-keys.sh` (the `doc_tables` test in ui-settings checks) |
 | Live (D-Bus) settings modules: schema, skeleton, proxy | `ui-settings::live` (feature `live`; the daemon owns the state) |
 | Desktop preferences (portal) | `ui-settings::portal::SystemPrefsSource` |
 | Test driver, document queries | `ui-harness::Harness` |
@@ -880,24 +880,21 @@ the components the design holds under `--s-8`, each with its reason; an app adds
   cargo clippy --workspace --all-targets --all-features -- -D warnings
   cargo test --workspace --all-features
   cargo xtask check layers
-  ./scripts/check-portable.sh .
-  ./scripts/check-consumer.sh
-  ./scripts/check-release-features.sh
+  cargo xtask check features
   cargo deny check licenses bans sources
   ```
 
-  `check-portable.sh .` builds `cargo check --workspace --no-default-features` and fails when a
-  file outside `.portable-allow` names zbus: ui-settings, ui-helpers and ui-blitz keep their
+  `cargo xtask check features` builds each UI crate with `cargo hack check --no-default-features`,
+  so a use of zbus that is not behind `desktop` fails to build: ui-settings, ui-helpers and ui-blitz keep their
   desktop integration (portal, live modules, PackageKit, xdg-activation, print portal, menus)
   behind `desktop` (default on), and each workspace member forwards it.
 
-  `check-consumer.sh` builds, clippies (`-D warnings`) and tests `examples/consumer`, its own
-  cargo workspace that `--workspace` does not reach, so `CONSUMING.md`'s snippets and coherence
-  rules stay true to the public API.
+  `examples/consumer` is a member of the root workspace, so the workspace build, clippy and test
+  runs reach it and `CONSUMING.md`'s snippets and coherence rules stay true to the public API.
 
-  `check-release-features.sh` fails when `ui-blitz/debug-probe` or `testing` is on in a normal
-  build of that consumer (features unify across a build, so one dependent that turns them on
-  ships them in every release binary). `cargo deny check advisories` runs wherever the advisory
+  `layers.toml` fails `cargo xtask check layers` when `ui-blitz/debug-probe`, `ui-blitz/testing` or
+  `ui-core/testing` is on in a normal build of a shipped program that links the UI kit (features unify
+  across a build, so one dependent that turns them on ships them in every release binary). `cargo deny check advisories` runs wherever the advisory
   database is reachable (a RUSTSEC entry or a yanked crate in the tree fails it).
 
 - **No `unsafe` in this crate.** Borrowing a window's display and surface from winit's handles is

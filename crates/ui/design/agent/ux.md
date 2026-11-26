@@ -667,7 +667,7 @@ Fakes and fixtures:
   - `ui-shell/src/{confirm,tokens/glow.rs}`;
   - `ui-settings/src/schema/key.rs` (`Page::Intelligence`).
 
-  It does **not** touch TextField or CommandPalette yet. Verify: Bardo gate (`cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --all-features; ./scripts/check-boundary.sh; ./scripts/check-consumer.sh; cargo deny check licenses`).
+  It does **not** touch TextField or CommandPalette yet. Verify: Bardo gate (`cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --all-features; ./scripts/check-boundary.sh; cargo deny check licenses`).
 - **F2 the shell** (after F1's `Page` and vocab land, since these are path deps). Owns:
   - `shell-launcher/src/{ids,subject,preview,activation}.rs` and the new `companion.rs`;
   - `shell-ipc/src/show.rs`;

@@ -267,6 +267,7 @@ members = [
     "crates/base/base-words-macros",
     "crates/base/base-xdg",
     "crates/provenance/provenance",
+    "crates/ui/examples/consumer",
     "crates/ui/ui-components",
     "crates/ui/ui-behaviour",
     "crates/ui/ui-blitz",

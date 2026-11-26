@@ -33,8 +33,8 @@ To work on Bardo or blitz-embed at the same time, check them out beside this rep
 your own copy of `Cargo.toml`; do not commit it.
 
 Checks: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`,
-`cargo test --workspace`, `cargo xtask check layers`, `dev/no-linked-codecs.sh`, `scripts/check-deny.sh`
-(needs `cargo-deny`).
+`cargo test --workspace`, `cargo xtask check layers`, `dev/no-linked-codecs.sh`, `cargo deny check`
+(needs `cargo-deny`); `cargo xtask gate` runs the first four and deny.
 
 ### Without the Linux desktop's services
 
@@ -52,7 +52,7 @@ uses a per-user socket for single instance, opens links and shows files in their
 opener (`xdg-open`, `open`, `explorer`), and has no Share, Print, desktop file chooser or
 now-playing entry: those actions are not offered (the palette, the menus, the buttons and their keys leave them out). Until the UI kit's own portable build lands
 the dependency tree still holds the UI kit's `zbus` and Wayland crates; this is about the viewer's own code.
-Check the portable build with `scripts/check-portable.sh` (the UI kit's two rules: the workspace builds without the feature and no core module names `crate::desktop` or zbus, plus the platform crate's own zbus check).
+Check the portable build with `cargo xtask check features` (`anyview-peek` headless and with `media`, and `anyview-platform`, each built with no default features); `cargo xtask check layers` holds the rule that the platform crate reaches no zbus.
 
 ## Install and uninstall
 

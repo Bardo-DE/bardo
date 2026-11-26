@@ -1,8 +1,0 @@
-# The D-Bus clients of bardo (see scripts/check-portable.sh). Each file below reaches zbus by design
-# and is compiled only under its crate's `desktop` feature (or, for ui-desktop, `dbus`); the
-# rest of every crate, and every other crate, names no zbus and builds with --no-default-features.
-^\./crates/ui-settings/src/portal/bus\.rs$
-^\./crates/ui-settings/src/live/(client|error|link|module|readers|skeleton|value)\.rs$
-^\./crates/ui-helpers/src/installer/(packagekit|transaction)\.rs$
-^\./crates/ui-blitz/src/(menus\.rs|menus/(permit|service|shell_only|wire)\.rs|print/portal\.rs)$
-^\./crates/ui-desktop/src/(probe|watch|outputs_live)\.rs$

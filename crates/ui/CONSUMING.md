@@ -10,7 +10,7 @@ Citations below follow `design/README.md#3-citation-convention`:
 `design/<file>.md#<heading-anchor>`.
 
 **Every snippet here is compiled.** A block fenced `rust` is a doc test of `examples/consumer`
-(`cargo test --manifest-path examples/consumer/Cargo.toml`, run by `scripts/check-consumer.sh`).
+(`cargo test -p consumer`, part of the workspace test run).
 A fragment that needs an app around it (`YourApp`, `YourPage`, a handler you own) is fenced
 `rust,ignore` and has its compiled twin in `examples/consumer/tests/it/guide.rs`, under a doc
 comment naming the section. Change a snippet and its twin together.
@@ -260,12 +260,12 @@ owned by this doc). If you also run on Blitz (`ui-blitz`), your own crate that c
 `dioxus_native::*` directly (rare — most consumers only call `ui_blitz::launch`) needs the
 `dioxus-native`/`blitz-*` lines too, exactly as pinned, never a different revision.
 
-**If your own crate sits inside a Cargo workspace tree it does not own** (as `examples/consumer`
-does, under the UI kit's own directory), give it an empty `[workspace]` table so Cargo does not treat
-it as an orphaned member of the workspace above it. A workspace root is also the only place
-`[patch.crates-io]` applies, so a consumer that builds a renderer copies the UI kit's root patch block
-(the vello and anyrender forks) verbatim into its own root manifest, as `examples/consumer/Cargo.toml`
-does; `scripts/check-consumer.sh` builds, lints and tests that example in the gate.
+**If your own crate sits inside a Cargo workspace tree it does not own**, give it an empty
+`[workspace]` table so Cargo does not treat it as an orphaned member of the workspace above it. A
+workspace root is also the only place `[patch.crates-io]` applies, so a consumer that builds a
+renderer copies the UI kit's root patch block (the vello and anyrender forks) verbatim into its own
+root manifest. (`examples/consumer` is a member of this repository's workspace, so it takes the
+root's patches and needs neither.)
 
 ## 2. The `Ds` root
 
@@ -2183,8 +2183,8 @@ is the rule and the table of who is what). Three things follow for a consumer.
 - **Feature.** Put desktop integration in a `desktop/` module behind a `desktop` feature,
   default on for Linux (`[target.'cfg(target_os = "linux")'.dependencies]` or a `default`
   entry your packaging sets). Core modules never import `crate::desktop` or zbus, and
-  `cargo check --workspace --no-default-features` must pass. Run
-  `bardo/scripts/check-portable.sh <your-workspace-dir>` from your lane gate to check both.
+  `cargo check --workspace --no-default-features` must pass. Run that command from your lane
+  gate to check it.
 - **Probe.** `ui-desktop` (features `dbus`, `dioxus`) answers `Capability::{Intents, Accounts,
   Memory, Companion, Appearance, Materials, Peek, Share, Helpers}` as `Presence::{Here,
   Absent}`. `Desktop::probe().await` once, `Desktop::watch()` to follow services starting and

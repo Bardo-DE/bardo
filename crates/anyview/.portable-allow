@@ -1,3 +1,0 @@
-# Files that name zbus outside a `desktop/` module (scripts/check-portable.sh): the test rigs that drive
-# the D-Bus implementations. They exist only with `desktop` (see testing/mod.rs).
-^\./crates/anyview-platform/src/testing/(bus|mpris_client)\.rs$

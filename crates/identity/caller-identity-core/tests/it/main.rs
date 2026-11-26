@@ -2,6 +2,8 @@
 
 mod cgroup;
 mod common;
+#[cfg(feature = "desktop")]
+mod desktop_files;
 mod dev;
 mod ids;
 mod judge;

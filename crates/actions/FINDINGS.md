@@ -150,7 +150,7 @@ Built, with tests against `action-fake` (the router in process) and a private bu
   a terminal), stdin `-`, `describe` through `Shape::to_json_schema`, the exit-code table, `__complete` and the
   completion files in `dist/completions`. `bardo-do undo` and `undo --last` reach only the rows of the
   terminal's own acts (the router cuts `Run.Undo` and `Control.Journal` for the role).
-- **Conformance.** `action-eval --check-app <dir>` and `scripts/check-intents.sh` fail an app that ships a
+- **Conformance.** `action-eval --check-app <dir>` (and the `shipped_apps` test) fail an app that ships a
   `.desktop` file and no valid intents manifest, and a menu command or shortcut in `<AppName>.ui.toml` that
   names no action and is not UI-only with a reason.
 

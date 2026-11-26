@@ -3,13 +3,12 @@
 #   exact   the file is named exactly NAME
 #   ending  any plain name that ends in NAME and is longer than it
 #
-# A committed copy of updater-core's ALLOWED_SYSTEM_FILES (crates/updater/updater-core/src/release/system.rs), in the same
-# order. release.py reads it for pack and verify, so `system/` holding a path no rule here names fails the pack, and
-# release/check-system-list.sh compares it with bardo-updater's source (the workflow runs that). bardo-updater's privileged helper
+# This is the one list: updater-core includes this file (crates/updater/updater-core/src/release/system.rs, `allowed_system_files`)
+# and release.py reads it for pack and verify, so `system/` holding a path no rule here names fails the pack. bardo-updater's privileged helper
 # is installed by hand and is not replaced by a release, so a file added here also needs a new helper on every
 # computer: change this list only together with bardo-updater, never alone. The four input-service rules are bardo-updater's
-# input-service change (its FINDINGS 25, commit c36aaa0): until the pinned bardo-updater has them, `check-system-list.sh`
-# fails against that pin, so this file and the pin move in the same step. /usr/lib/bardo/key-remap/key-remap.toml is the
+# input-service change (its FINDINGS 25, commit c36aaa0): a helper installed before them refuses a release that holds one,
+# so this file and the pin move in the same step. /usr/lib/bardo/key-remap/key-remap.toml is the
 # desktop's vendor defaults for the keyboard daemon (bardo-updater's 18th rule); /etc/bardo/key-remap stays the administrator's and
 # no release places a file there. bardo-mouse-gestures.service is the touchpad daemon's system unit (owner decision 2026-10-17: a system
 # service like the key remap daemon), and the two /usr/lib/systemd/user rules are how a user unit named by a row of

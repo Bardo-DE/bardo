@@ -6,6 +6,7 @@ use std::fmt::Write as _;
 
 const SAMPLING: &str = r#"sampling = { reasoning_on = { temperature = 600, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_off = { temperature = 0, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_default = "off" }"#;
 
+/// The catalog entry of the test chat model, served by llama-server.
 #[must_use]
 pub fn chat() -> String {
     format!(
@@ -51,6 +52,7 @@ weights = { kind = "gguf", v = { model = "e.gguf", mmproj = "" } }
     .to_string()
 }
 
+/// The catalog entry of the test computer-use model, served by vLLM.
 #[must_use]
 pub fn computer_use() -> String {
     format!(

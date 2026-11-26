@@ -64,10 +64,10 @@ rename: `memory-client` `desktop = ["dbus"]`, default on. No other the memory cr
 alias: `memory-dbus`, `memory-dbus`, `memoryd` are the desktop itself, `memory-watch` and `memory-seal` hold no
 D-Bus client (their platform features are what a non-Linux OS lacks). An app on macOS or Windows
 depends on `memory-client` with `default-features = false, features = ["in_process"]`. Default
-builds are unchanged. `scripts/check-portable.sh` checks the left column (including
-`memory-local`): `cargo check --no-default-features` on each, no `zbus`, `inotify`, `notify`,
-`landlock`, `oo7` or `secret-service` in its `cargo tree`, and a `cargo check --target` for each
-installed macOS/Windows rustup target. `cargo xtask check layers` checks `memory-client`'s boundary rule
+builds are unchanged. `cargo xtask check features` checks the left column (including
+`memory-local`): `cargo hack check --no-default-features --all-targets` on each, and with `--cross`
+a `cargo check --target` for each installed macOS/Windows rustup target. The forbidden crates
+(`zbus`, `inotify`, `notify`, `landlock`, `oo7`, `secret-service`) are `layers.toml` rows. `cargo xtask check layers` checks `memory-client`'s boundary rule
 without its defaults (the rule is about what an app without the desktop switch links).
 
 Every crate is one tier (the `[[tiers]]` entry, checked by `cargo xtask check layers`; the rules are in `layers.toml` at the bardo root):

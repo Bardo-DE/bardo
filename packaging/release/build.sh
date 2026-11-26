@@ -291,7 +291,7 @@ build_portal() {
 build_input-broker() {
   local d; d=$(repo_dir input-broker)
   # The root service that makes the mouse-gestures and key-remap programs' virtual input devices. Only the daemon is built (-p input-broker-daemon,
-  # no feature: its `fake` kernel and identity are for its tests and never ship; gate/check-no-fake.sh). The program is
+  # no feature: its `fake` kernel and identity are for its tests and never ship; `layers.toml` forbids the feature in every shipped program). The program is
   # exported to /usr/local/bin/bardo-input-broker (exports.toml), which the unit starts as shipped. The four files are system
   # files (the updater's list has them): the socket and the
   # service in the vendor folder, the rule that makes /dev/uinput root-only and takes the `uaccess` tag off it, and the

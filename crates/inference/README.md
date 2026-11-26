@@ -62,7 +62,7 @@ Installed by the script (under the prefix, `/usr` by default):
     cargo clippy --workspace --all-targets --all-features -- -D warnings
     cargo deny check licenses
     cargo xtask check layers
-    scripts/check-features.sh
+    cargo xtask check features
 
 ## Licence
 

@@ -9,7 +9,9 @@
     unused_mut,
     clippy::derivable_impls,
     clippy::needless_return,
-    clippy::redundant_closure
+    clippy::redundant_closure,
+    clippy::unchecked_time_subtraction,
+    reason = "the guide's fragments, compiled as the guide writes them: parts of an app, not a whole one"
 )]
 
 use dioxus::prelude::*;

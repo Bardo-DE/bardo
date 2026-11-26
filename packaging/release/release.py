@@ -48,8 +48,7 @@ AUTO_EXPORT_DIRS = (
     "share/applications", "share/bardo", "share/fonts",
 )
 # The tree of files bardo-updater-apply copies (not links) to a system folder. A file is accepted only when a rule of
-# system-files.list names it: that file is a committed copy of updater-core's ALLOWED_SYSTEM_FILES
-# (release/system.rs), checked against bardo-updater's source by check-system-list.sh.
+# system-files.list names it: updater-core includes that same file (release/system.rs), so there is one list.
 SYSTEM_TREE = "system"
 SYSTEM_LIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "system-files.list")
 SYSTEM_NAME = re.compile(r"^[A-Za-z0-9+@_-][A-Za-z0-9._+@-]*$")
@@ -461,32 +460,6 @@ def check_installed(directory, root, base="/"):
     print(f"installed {doc['version']}: {len(doc.get('export', []))} exports and {len(doc.get('system', []))} system files in place")
 
 
-def updater_system_rules(source):
-    """The rules of updater-core's ALLOWED_SYSTEM_FILES in the text of release/system.rs, as (folder, kind, name)."""
-    block = re.search(r"ALLOWED_SYSTEM_FILES[^=]*=\s*\[(.*?)\n\];", source, re.S)
-    if not block:
-        raise Refused("ALLOWED_SYSTEM_FILES is not in that file")
-    code = re.sub(r"//[^\n]*", "", block.group(1))
-    found = re.findall(r'rule\(\s*"([^"]+)",\s*NameRule::(Exact|Ending)\(\s*"([^"]+)"\s*\),?\s*\)', code)
-    if not found or code.count("rule(") != len(found):
-        raise Refused("could not read every rule of ALLOWED_SYSTEM_FILES")
-    return tuple((folder, kind.lower(), name) for folder, kind, name in found)
-
-
-def check_system_list(source_path):
-    """Fails unless system-files.list holds exactly the rules of bardo-updater's source, in the same order."""
-    with open(source_path, encoding="utf-8") as f:
-        theirs = updater_system_rules(f.read())
-    if theirs != SYSTEM_RULES:
-        ours, other = set(SYSTEM_RULES), set(theirs)
-        extra = sorted(" ".join(r) for r in ours - other)
-        missing = sorted(" ".join(r) for r in other - ours)
-        raise Refused("release/system-files.list differs from bardo-updater's ALLOWED_SYSTEM_FILES: "
-                      f"only here: {extra or 'nothing'}; only in bardo-updater: {missing or 'nothing'}"
-                      + ("" if ours != other else " (same rules, different order)"))
-    print(f"system-files.list matches bardo-updater's ALLOWED_SYSTEM_FILES ({len(theirs)} rules)")
-
-
 def main(argv):
     cmd, rest = argv[0], argv[1:]
     try:
@@ -497,8 +470,6 @@ def main(argv):
             verify(rest[0], rest[1])
         elif cmd == "installed":
             check_installed(*rest)
-        elif cmd == "system-list":
-            check_system_list(rest[0])
         else:
             raise Refused(f"unknown command {cmd}")
     except Refused as e:

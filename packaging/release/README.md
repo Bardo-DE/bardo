@@ -14,8 +14,7 @@ reads `.github/workflows/release.yml` at its end and fails without it.
 | `build.sh` | builds each component from this tree (`cargo build --release --locked -p ...`, run from `/` with `--manifest-path` so the system linker is used, into one target directory; see `install/cargo.sh`) and installs it under `/opt/bardo/current` into a staging root |
 | `pack.sh` | stage -> `release.toml` (digests, modes, components, exports), `bundle.tar.zst` (deterministic), `release.toml.minisig` |
 | `verify.sh` | checks a packed release the way bardo-updater will; the CI runs it before publishing |
-| `system-files.list` | the system files a release may place, one rule each (a committed copy of bardo-updater's `ALLOWED_SYSTEM_FILES`); `release.py` reads it, so `pack` and `verify` refuse a `system/` path no rule names |
-| `check-system-list.sh` | fails unless that list equals bardo-updater's own (the workflow runs it; the bardo-updater crate is in this tree) |
+| `system-files.list` | the system files a release may place, one rule each (bardo-updater's own list: `updater-core` includes this file); `release.py` reads it, so `pack` and `verify` refuse a `system/` path no rule names |
 | `check-helpers.sh` | fails unless bardo-updater's own install is complete: `bardo-updater-apply`, `bardo-updater-rollback` and `bardo-updater-health` in `/usr/libexec`, and the one polkit file with its three actions (installing and the good-start note need no password at the keyboard, going back asks for the administrator's); `smoke.sh` and `bootstrap.sh` run it |
 | `health-scenarios.sh` | two scenarios with bardo-updater's real programs on a throwaway computer: two logins that run `recover` and `confirm` keep the newest release, and restarts that never confirm put the previous release back on the third; the workflow's `health` job runs it in a privileged container, and publishing waits for it |
 | `selftest.sh` | packs a fake stage with a throwaway key, verifies it, and checks that hostile releases are refused; a SKIP (exit 2) without minisign; run by `gate/desktop-gate.sh --self` |
@@ -49,11 +48,11 @@ password, so no release can add one (bardo-updater's own comes from its `scripts
 `[[system]]` (`path`): a file bardo-updater's helper copies, as root, to an absolute path on the computer. Its
 contents are the bundle file `system/<path>` (so `system/etc/pam.d/bardo-shell` lands at `/etc/pam.d/bardo-shell`); every
 file under `system/` must be listed and every listed path needs its file. The path must be named by a rule of
-`system-files.list`, which is bardo-updater's `ALLOWED_SYSTEM_FILES` word for word: nineteen rules, each a folder and either an
+`system-files.list`, which `updater-core` includes as its list of allowed system files: nineteen rules, each a folder and either an
 exact file name or a name ending (`/etc/bardo/*-callers.toml`, `/etc/xdg/bardo/*.toml`). A path no rule names
 refuses the whole release, at `pack`, at `verify` and in the helper. Because the helper is installed by hand and is
-never replaced by a release, adding a system file means changing bardo-updater's list, installing the new helper on every
-computer, and changing `system-files.list` in the same step (`check-system-list.sh` fails the build if the two differ).
+never replaced by a release, adding a system file means changing `system-files.list`, installing the new helper on every
+computer, in the same step (there is one list, so the two cannot differ).
 `build.sh` stages bardo-key-remap's unit and polkit rule (no device rule and no module list of its own: the input service owns `/dev/uinput`),
 the input service's `bardo-input-broker.socket`, `bardo-input-broker.service`, `72-bardo-input-broker.rules` (the node becomes root-only and loses the `uaccess` tag)
 and `bardo-input-broker.conf` (loads `uinput`), with its `/usr/local/bin/bardo-input-broker` export (`exports.toml`), the table of the desktop's own programs
@@ -152,7 +151,7 @@ a release that lists a file its rule list does not name, so **everyone re-runs b
 `cargo build ... -p updater-root && sudo sh -c 'umask 022 && crates/updater/scripts/install.sh ...'` lines above, with a bardo-updater that has the four rules and, in
 `apply/settle.rs`, the step that reloads systemd and the device rules and starts `bardo-input-broker.socket`). A computer that skips it keeps working
 at the version it has: the release is refused whole and says why. `release/system-files.list` and the bardo-updater crate of this tree move in
-the same step; until then `release/check-system-list.sh` fails against the old pin, on purpose.
+the same step; until then a release with those files is refused by the old helper, on purpose.
 
 Carried by a release: `/usr/lib/bardo/key-remap/key-remap.toml` (Caps Lock switches the input method), bardo-key-remap's vendor file. `/etc/bardo/key-remap/key-remap.toml` stays the
 administrator's and no release or install writes it; bardo-key-remap lays it over the vendor file. The updater's list gained the rule after the first release that

@@ -1,7 +1,6 @@
 //! The conformance check over app repositories built in a scratch directory: a `.desktop` file
 //! with no manifest fails, a manifest that is not valid fails, a menu command or shortcut with no
-//! action fails unless it is UI-only with a reason; and the binary and `scripts/check-intents.sh`
-//! say so with their exit codes.
+//! action fails unless it is UI-only with a reason; and the binary says so with its exit codes.
 
 use action_eval::{Level, check_app};
 use action_fake::MAIL_MANIFEST;
@@ -279,39 +278,6 @@ fn the_binary_exits_0_1_or_2() {
     assert_eq!(missing.status.code(), Some(2));
     let usage = Command::new(binary()).output().expect("runs");
     assert_eq!(usage.status.code(), Some(2));
-}
-
-#[test]
-fn the_script_runs_the_binary_and_passes_its_exit_code_on() {
-    let script = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../scripts/check-intents.sh");
-    let good = tempfile::tempdir().expect("dir");
-    put(good.path(), "dist/mailo.desktop", DESKTOP);
-    put(
-        good.path(),
-        "dist/intents/org.bardo.Mail.toml",
-        MAIL_MANIFEST,
-    );
-    let bad = tempfile::tempdir().expect("dir");
-    put(bad.path(), "dist/mailo.desktop", DESKTOP);
-    let run = |dir: &Path| {
-        Command::new("bash")
-            .arg(&script)
-            .arg(dir)
-            .env("BARDO_ACTIONS_EVAL", binary())
-            .output()
-            .expect("runs")
-    };
-    assert_eq!(run(good.path()).status.code(), Some(0));
-    assert_eq!(run(bad.path()).status.code(), Some(1));
-    let nowhere = Command::new("bash")
-        .arg(&script)
-        .arg(good.path())
-        .env_remove("BARDO_ACTIONS_EVAL")
-        .env("BARDO_ACTIONS_DIR", good.path().join("no-actions-here"))
-        .output()
-        .expect("runs");
-    assert_eq!(nowhere.status.code(), Some(2));
-    assert!(String::from_utf8_lossy(&nowhere.stderr).contains("no actions checkout"));
 }
 
 // ---- --check-skills ----

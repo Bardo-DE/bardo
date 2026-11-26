@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # The compositor's gate (20-FREEZE-PLAN §6.2): `dev/gate.sh fast -p <crate>… | merge | phase`.
-# Every exit code checked; never piped, never tailed.
+# Every exit code checked; never piped, never tailed. fmt, clippy, deny and the layer rules are
+# `cargo xtask gate`'s; this gate is the jail, the tests inside it, acceptance and wlcs.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 : "${CARGO_TARGET_DIR:=$PWD/../../target}"; export CARGO_TARGET_DIR
@@ -14,18 +15,11 @@ step() { dev/lib/step.sh "$run" "$@"; }       # times, writes summary.json, appl
 # command line as an array.
 jail=("${BARDO_COMPOSITOR_JAIL:-../../packaging/harness/jail.sh}" --fabricate-gpus 2 --bind "$PWD/../.." --bind "$CARGO_TARGET_DIR" --)
 step preflight  dev/preflight.sh
-step fmt        cargo fmt --all --check
-step boundary   cargo xtask check layers
-step coverage   ./scripts/check-protocol-coverage.sh
-step doc-paths  ./scripts/check-doc-paths.sh
 case "$tier" in
   fast)
-    step clippy   cargo clippy "$@" --all-targets --all-features -- -D warnings
     step archive  cargo nextest archive "$@" --all-features --archive-file "dev/out/$run/tests.tar.zst"
     step test     "${jail[@]}" cargo-nextest nextest run --profile gate --archive-file "dev/out/$run/tests.tar.zst" --workspace-remap "$PWD" ;;
   merge|phase)
-    step clippy   cargo clippy --workspace --all-targets --all-features -- -D warnings
-    step deny     cargo deny check licenses
     step doc      cargo test --doc --workspace --all-features
     step archive  cargo nextest archive --workspace --all-features --archive-file "dev/out/$run/tests.tar.zst"
     step test     "${jail[@]}" cargo-nextest nextest run --profile gate --archive-file "dev/out/$run/tests.tar.zst" --workspace-remap "$PWD"
@@ -34,6 +28,5 @@ case "$tier" in
 esac
 if [ "$tier" = phase ]; then
   step wlcs        "${jail[@]}" dev/wlcs/run.sh --phase
-  step hw-fixtures dev/check-kms-fixtures.sh       # fixtures parse and replay; never touches hardware
 fi
 echo "GATE GREEN ($tier) $run"

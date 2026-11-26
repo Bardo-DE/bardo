@@ -1311,7 +1311,7 @@ unchanged.
 
 The key tables of sections 3.1, 3.3 and 3.32 are generated from the schema between
 `<!-- keys:begin <domain> -->` and `<!-- keys:end <domain> -->` (`scripts/gen-doc-keys.sh`;
-`scripts/check-doc-keys.sh` and `ui-settings`' `doc_tables` test fail when the doc differs). A
+`ui-settings`' `doc_tables` test fails when the doc differs). A
 program's own sections move onto the same markers when its schema is passed with `--schema`.
 
 ## 7. Open decisions

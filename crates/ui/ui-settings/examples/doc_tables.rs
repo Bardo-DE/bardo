@@ -1,8 +1,7 @@
-//! `cargo run -p ui-settings --example doc_tables -- [--check] [--schema <file>]... <doc.md>`:
+//! `cargo run -p ui-settings --example doc_tables -- [--schema <file>]... <doc.md>`:
 //! rewrites the key tables of design/22-SETTINGS.md (the ones between `keys:begin <domain>` and
 //! `keys:end <domain>` comment lines) from the UI kit's own schema and any `<app>.settings.toml` named
-//! with `--schema`. With `--check` it writes nothing and fails when the doc is out of date.
-//! `scripts/check-doc-keys.sh` runs it that way.
+//! with `--schema`. The `doc_tables` test of this crate fails when the doc differs from the schema.
 
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -14,26 +13,19 @@ use ui_settings::bardo_schema;
 struct Request {
     doc: PathBuf,
     schemas: Vec<PathBuf>,
-    check: bool,
 }
 
 fn request(args: &[String]) -> Option<Request> {
     let mut doc = None;
     let mut schemas = Vec::new();
-    let mut check = false;
     let mut args = args.iter();
     while let Some(arg) = args.next() {
         match arg.as_str() {
-            "--check" => check = true,
             "--schema" => schemas.push(PathBuf::from(args.next()?)),
             other => doc = Some(PathBuf::from(other)),
         }
     }
-    Some(Request {
-        doc: doc?,
-        schemas,
-        check,
-    })
+    Some(Request { doc: doc?, schemas })
 }
 
 fn load(path: &Path) -> Result<Schema, String> {
@@ -52,19 +44,13 @@ fn run(request: &Request) -> Result<(), String> {
     if new == old {
         return Ok(());
     }
-    if request.check {
-        return Err(format!(
-            "{} is out of date: run scripts/gen-doc-keys.sh",
-            request.doc.display()
-        ));
-    }
     std::fs::write(&request.doc, new).map_err(|e| format!("{}: {e}", request.doc.display()))
 }
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let Some(request) = request(&args) else {
-        eprintln!("usage: doc_tables [--check] [--schema <file>]... <doc.md>");
+        eprintln!("usage: doc_tables [--schema <file>]... <doc.md>");
         return ExitCode::FAILURE;
     };
     match run(&request) {

@@ -24,7 +24,7 @@ from rustix.
 caller-identity-core/src/{lib, ids, cgroup, procinfo, facts, standing, requirement, table, judge, error, roles}.rs
 caller_identity/src/{lib, pin, unix, procfs, probe, walk, tablefile, error, fixture, fake}.rs
 caller-identity-dbus/src/{lib, who, owner, manager, offload, timeout, error}.rs
-dist/desktop-callers.toml   deny.toml   .github/workflows/ci.yml
+dist/desktop-callers.toml   .github/workflows/ci.yml
 ```
 
 `fixture.rs` and `fake.rs` exist only with feature `fake`.

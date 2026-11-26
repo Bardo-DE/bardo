@@ -8,7 +8,7 @@
 //!
 //! To regenerate, extract every `<mapZone other="..." territory="001" type="..."/>` pair from a
 //! newer copy of that file and sort by the Windows name (byte order), which the lookup needs.
-//! `windows-timezones` carries the same data under `Unicode-DFS-2016`, which `deny.toml` does not
+//! `windows-timezones` carries the same data under `Unicode-DFS-2016`, which the root `deny.toml` does not
 //! allow, so the table is kept here.
 //!
 //! ```

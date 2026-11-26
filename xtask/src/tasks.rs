@@ -2,10 +2,10 @@
 
 pub mod deny;
 pub mod error_names;
+pub mod features;
 pub mod gate;
 pub mod install;
 pub mod layers;
-pub mod legacy;
 pub mod lints;
 pub mod no_mod_rs;
 pub mod no_prefs;

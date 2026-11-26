@@ -9,7 +9,7 @@ pub use error::ReleaseError;
 pub use export::{ALLOWED_LINK_DIRS, Export};
 pub use file::FileEntry;
 pub use system::{
-    ALLOWED_SYSTEM_FILES, NameRule, SYSTEM_TREE, SystemFile, SystemRule, is_allowed_system_path,
+    NameRule, SYSTEM_TREE, SystemFile, SystemRule, allowed_system_files, is_allowed_system_path,
 };
 
 use crate::digest::Sha256Hex;

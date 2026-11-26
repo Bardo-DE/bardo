@@ -541,7 +541,7 @@ ones, which is how the test kit's `Fixture` gets its fakes.
    `delegates.rs` needs nothing more: `delegate_dispatch2!` routes every global.
 4. A `GlobalKind` variant and its row in the `GLOBALS` table (compositor-core: tier, sandbox
    yes or no, and a power or none, decided on purpose), `crates/compositor-testkit/tests/it/protocol/<p>.rs` with its
-   `mod` line in `tests/it/protocol/mod.rs` (`scripts/check-protocol-coverage.sh`), a testclient
+   `mod` line in `tests/it/protocol/mod.rs`, a testclient
    helper module, and for a private request a fuzz op.
 
 **Declare a protocol before its lane fills it (a delta freeze).** Everything in "Add a protocol",
@@ -607,11 +607,8 @@ nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU 
 ## 6. Repo rules
 
 - The gate: `dev/gate.sh fast -p <crate>...` for a lane, `dev/gate.sh merge` for a merge,
-  `dev/gate.sh phase` at a phase exit (20-FREEZE-PLAN §6.2). Steps: preflight, `cargo fmt --all
-  --check`, `cargo xtask check layers`, `./scripts/check-protocol-coverage.sh`, clippy with
-  `-D warnings`, the nextest archive built outside and run inside the jail (profiles `fast`,
-  `merge`, `phase` in `.config/nextest.toml`); merge and phase add `cargo deny check licenses`,
-  doc tests and `dev/accept.sh`; phase adds wlcs and the KMS fixtures. Each step is timed against
+  `dev/gate.sh phase` at a phase exit (20-FREEZE-PLAN §6.2). fmt, clippy, deny and the layer rules are `cargo xtask gate`'s. Steps: preflight, the nextest archive built outside and run inside the jail (profiles `fast`,
+  `merge`, `phase` in `.config/nextest.toml`); merge and phase add doc tests and `dev/accept.sh`; phase adds wlcs. Each step is timed against
   `dev/gate/budgets.toml` (over twice its budget fails with exit 4); exit 2 (a SKIP) fails unless
   `dev/gate/expected-skips.toml` lists it; exit 5 (a jail breach) stops the gate. It prints
   `GATE GREEN (<tier>) <run>`; `dev/out/<run>/summary.json` records every step. Every exit code

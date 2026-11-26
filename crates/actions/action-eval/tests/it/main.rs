@@ -5,5 +5,6 @@ mod check;
 mod fail_closed;
 mod hostile;
 mod props;
+mod shipped_apps;
 mod suite;
 mod trace;

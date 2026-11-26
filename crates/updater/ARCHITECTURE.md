@@ -40,7 +40,7 @@ crates/bardo-updater/src/{lib, main, config, dirs, state, clock, elevate, proble
                    cli/{mod, args, client, wait, confirm, recover}.rs
 dist/   bardo-updater.service  org.bardo.updater.policy  org.bardo.Updates1.service
 scripts/install.sh
-.github/workflows/ci.yml  deny.toml
+.github/workflows/ci.yml
 ```
 
 `bardo-updater` re-exports `layout`, `fsutil` and `keys` from `updater-root`, and `report` adds the logging of a
@@ -54,7 +54,7 @@ cargo as root: the build is a step of its own, as the person (`--build-only`), a
 `rust-toolchain.toml`, so it links with the computer's own linker and never needs clang or mold. If the person
 cannot write where the files go, the script says so and prints the `sudo` line. `.github/workflows/ci.yml` runs
 format, clippy, the boundary check, the tests and `cargo deny check licenses`, `advisories`, `bans` and `sources`
-(the `deny` job also weekly); `deny.toml` ignores no advisory and allows crates.io plus the caller-identity library repository.
+(the `deny` job also weekly).
 
 ## 3. The release format (frozen with the CI lane)
 
@@ -72,7 +72,7 @@ validates all of it: simple paths only (no absolute, `..`, empty or backslash pa
 `.bardo-updater/`), unique files with none inside another, modes that are plain permission bits readable
 by the owner and not writable by anyone else, no setuid; export links only under the ten allowed
 directories (`ALLOWED_LINK_DIRS`, each named, no wildcards; never polkit's actions folder, which could grant root without a password), unique, each pointing at a file the bundle lists
-(not a folder); system files only at a path `ALLOWED_SYSTEM_FILES` names (a folder and an exact name or a name ending), unique, each with
+(not a folder); system files only at a path `allowed_system_files()` names (a folder and an exact name or a name ending), unique, each with
 its contents at `system<path>` in the bundle, and nothing else under `system/`. Limits: `release.toml`
 24 MiB, 100000 files, notes 16 KiB, bundle 8 GiB, 16 GiB unpacked. Folders in the bundle are made
 `0755` whatever the helper's umask. `release/release.py` in the desktop repository packs to exactly
@@ -115,7 +115,7 @@ directory.
 System files: some things work only as a real root-owned file in a system folder (a udev rule, a polkit
 rule, a login service, the keyboard daemon's unit). The bundle carries them under `system/<absolute
 path>`, `release.toml` lists each destination in `[[system]]`, and `SyncSystem` copies the verified file
-from the new release's tree (atomic rename, the listed mode). The destination must be a path `ALLOWED_SYSTEM_FILES` names:
+from the new release's tree (atomic rename, the listed mode). The destination must be a path `allowed_system_files()` names:
 a folder and either one exact name or any plain name with a given ending. Today that is `/etc/pam.d/bardo-shell`,
 `/etc/udev/rules.d/{60-shell-ddc,70-bardo-key-remap,70-bardo-mouse-gestures}.rules`, `/etc/modules-load.d/{shell-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/bardo/key-remap` is the administrator's and is not on the list),
 `/etc/modprobe.d/99-bardo-mouse-gestures.conf`, `/usr/lib/systemd/system/{key_remap,input_broker,mouse_gestures}.service`,

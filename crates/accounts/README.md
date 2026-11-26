@@ -80,7 +80,7 @@ These two need a sign-in client id registered with the company. Google's has to 
 
     cargo test --workspace        # the tests that start a private session bus are meant to run in a jail (no real session, devices or network); .github/workflows/ci.yml says which packages
     cargo xtask check layers   # the crate boundaries, mechanically (rules: layers.toml at the bardo root)
-    scripts/check-features.sh     # the feature sets that programs building the accounts service use, each warning-free
+    cargo xtask check features    # each package built alone: clippy per feature, and the portable core without default features (needs cargo-hack)
     cargo deny check licenses
 
 ## Licence

@@ -69,6 +69,7 @@ python3 -I "$HERE/release.py" installed "$release" "$root"
 
 step "libraries resolve here"
 "$HERE/check-ldd.sh" --stage "$root/current"
+"$HERE/check-glibc.sh" --stage "$root/current"
 
 step "the same version again is refused"
 set +e

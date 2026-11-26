@@ -441,8 +441,7 @@ run by hand against the user's own engine.
   ```
 
 - **No `unsafe`** anywhere (`unsafe_code = "deny"`).
-- **Excluded crates**: `bardo-speech-host` (the `speech-host-sherpa` crate) is a workspace `exclude` and a
-  `deny.toml` `[graph] exclude`, so the gate's clippy and test never build it (the runtimes
+- **Excluded crates**: `bardo-speech-host` (the `speech-host-sherpa` crate) is a workspace `exclude`, so the gate's clippy and test never build it (the runtimes
   they need are not in the pinned block). Build it by hand with
   `cargo build --manifest-path crates/<name>/Cargo.toml`; their `Cargo.lock` and `target/` stay
   untracked. They join the workspace if the runtime joins the pinned block and the gate can

@@ -271,7 +271,7 @@ action it leads to is gated like any other.
 ## 7. Repo rules
 
 - Licence `MIT OR Apache-2.0`; edition 2024; `unsafe_code = "deny"`; `rust-toolchain.toml` pins
-  1.98.1 and `deny.toml` is the licence gate.
+  1.98.1 and the root `deny.toml` is the licence gate.
 - Cross-repo dependencies are git dependencies at pinned revs (the model layer, the accounts service, the memory service, the actions service,
   desktop-protocols), so a plain clone builds with no sibling checkout; the URLs and revs match the
   other repos' pins of the same crates, or cargo links two copies. External versions are copied from Bardo's `docs/workspace-deps.toml`, never chosen here;
@@ -280,17 +280,7 @@ action it leads to is gated like any other.
   (round trips, pinned JSON, introspection, tables) pass.
 - Tests never touch the real system: no real seat, no real capture, no real compositor, no real
   bus, no real engine. The daemon's binary is tested on a private bus with a cleared environment.
-- The gate, with every exit code checked (`scripts/gate.sh` runs exactly this):
-
-  ```bash
-  set -euo pipefail
-  cargo fmt --all --check
-  cargo clippy --workspace --all-targets --all-features -- -D warnings
-  cargo test --workspace --all-features
-  cargo xtask check layers
-  cargo deny check licenses
-  echo "GATE GREEN"
-  ```
+- The gate is `cargo xtask gate` (fmt, clippy, tests, layers, lints, deny, ...); `cargo xtask check features` checks the feature combinations.
 
   No crate is excluded: every crate builds and tests without hardware or a live compositor (the
   `computer-use-capture-wayland`, `computer-use-seat-ei` and `computer-use-a11y-atspi` backends are exercised only through fakes; the live checks are the dev scripts).

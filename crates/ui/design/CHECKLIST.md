@@ -164,7 +164,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
       guardrails, printed by `assert_clean`) are read, and each is fixed or listed for the
       consumer before the rule turns Strict (`27-HIG-PARITY.md` section 7).
 - [ ] `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`,
-      `cargo test --workspace`, `cargo xtask check layers`, `./scripts/check-consumer.sh`, `cargo deny check licenses`,
+      `cargo test --workspace`, `cargo xtask check layers`, `cargo deny check licenses`,
       in the gate worktree with its own `CARGO_TARGET_DIR`.
 
 ## 11. Review artefacts

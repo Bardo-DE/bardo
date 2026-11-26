@@ -1,6 +1,7 @@
 //! `cargo xtask gate`: the workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs,
-//! no-prefs and test-modules checks, then fmt, clippy and tests on the affected set, then a compile
-//! of every workspace of its own.
+//! no-prefs, test-modules, shear and deny checks, then fmt, clippy and tests on the affected set, then a
+//! compile of every workspace of its own. With `--all`, the per-package feature builds (`check features`)
+//! run last.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -44,6 +45,9 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         return Ok(finish("gate", false));
     }
     if !super::shear::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::deny::run()? {
         return Ok(finish("gate", false));
     }
     let ws = Workspace::load()?;
@@ -91,9 +95,8 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
             return Ok(finish("gate", false));
         }
     }
-    // The workspaces of their own (the UI kit's outside consumer, the perf benches, the wlcs
-    // shim) are built by nothing else, so a change to a crate they use is compiled against them
-    // here.
+    // The workspaces of their own (the compositor's perf benches and its wlcs shim) are built by nothing
+    // else, so a change to a crate they use is compiled against them here.
     for (file, _) in super::workspace_deps::nested_manifests(&ws.root)? {
         let mut cmd = Command::new("cargo");
         cmd.args([
@@ -111,6 +114,10 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         if !run_logged_within(&ws.root, &mut cmd, Duration::from_secs(20 * MINUTE))? {
             return Ok(finish("gate", false));
         }
+    }
+    // Many builds, one per package and feature: only on a whole-workspace gate.
+    if all && !super::features::run(false)? {
+        return Ok(finish("gate", false));
     }
     Ok(finish("gate", true))
 }

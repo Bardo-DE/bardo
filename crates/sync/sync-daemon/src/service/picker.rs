@@ -168,6 +168,10 @@ impl<C: Callers, D: PickerDesk> PhotosPickerServer for PickerObject<C, D> {
 
 /// Serves `org.bardo.Photos1.Picker` beside `Sync1` on `connection`: `desk` has the Pickers,
 /// `owners` is who may call (the Photos app), `callers` says who the senders are.
+///
+/// # Errors
+///
+/// Returns the bus error when the object cannot be served at its path.
 pub async fn serve_picker<C: Callers, D: PickerDesk>(
     connection: &Connection,
     desk: D,

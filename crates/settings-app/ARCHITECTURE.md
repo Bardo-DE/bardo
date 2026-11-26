@@ -12,7 +12,7 @@ style guides every repo follows; this file is the Settings app's map and rules, 
 | Repo | What the Settings app takes from it |
 | --- | --- |
 | Bardo (`../bardo`, path deps) | `ds` (components, `Ds`, `ds::prelude`), `ui-settings` (schema types, `discover`, `Loaded`, `use_environment`), `ui-blitz` (`launch`), `ui-helpers` (`Family`, `OsRelease`: the distro and its release, for an install line; `read_text_capped`, `write_atomic`: the one reader and writer of a person's file; no PackageKit), `base-time` (`deadline::{Deadline, within}`: a deadline for every call to another process), `ui-extensions` (the Extensions scan, `choices_for`, `ExtensionsSettings::with`: taken by `settings-app-files` only), `ui-lint` and `ui-harness` (dev only) |
-| The actions service (`../actions`, path deps; a private repo, which the Settings app may name) | `action-provider` with its `dbus` feature (`IntentProvider`, `serve_on`), `action-core` (manifest and call types), `action-dbus` (the bus connection type), `action-settings` (the assistant's places: `Places`, `read_places`, `write_places`; the outside agents: `read_agents`, `write_agent_choice`), `agent-registry` (`AgentsDir`) and `bardo-agents` (its `store`: what is installed there), named by `settings-app-files` only; `prov` and `account-core` from `../accounts`, the label and name types those signatures use. Used by `settings-app-intents`, and `action-settings` by the model, the files and the window. Its `scripts/check-intents.sh` is run on this repo |
+| The actions service (`../actions`, path deps; a private repo, which the Settings app may name) | `action-provider` with its `dbus` feature (`IntentProvider`, `serve_on`), `action-core` (manifest and call types), `action-dbus` (the bus connection type), `action-settings` (the assistant's places: `Places`, `read_places`, `write_places`; the outside agents: `read_agents`, `write_agent_choice`), `agent-registry` (`AgentsDir`) and `bardo-agents` (its `store`: what is installed there), named by `settings-app-files` only; `prov` and `account-core` from `../accounts`, the label and name types those signatures use. Used by `settings-app-intents`, and `action-settings` by the model, the files and the window. |
 | The memory service (`../memory`, path dep) | `memory-core` (`Removal`, `MemoryFate`, `HistoryFate`: the Space-removal choice and the JSON memory reads; `WaitingSetting`: one looser memory setting that waits for the person) |
 | The accounts service (`../accounts`, path deps) | `account-core` (`Tier`), `account-dbus` (accountd's bus vocabulary), `account-wire` (`names`: the bus names and object paths of accountd and inferd, `ParentWindow`, `Refusal`), `account-client` (`AccountClient<T>` and its handles: `accounts().add`, `spaces().{list, remove}`; `AccountsError`, `SpacesError`, `LinkError`) over `account-client-dbus` (`Bus::over(..).accounts_at(owner)`: every call to the owner that was confirmed). `settings-app-intents` also takes `prov` from here |
 | The sync service (`../sync`, path dep) | `sync-bus` (syncd's bus names, object paths and proxy: `SyncProxy`, `SYNC_BUS`, `SYNC_PATH`, `SYNC_ERROR_*`, `STATUS_KEY_QUOTA`) |
@@ -174,8 +174,7 @@ A new fixed page is a variant of `ui_settings::schema::Page` (Bardo first), then
 
 **An action is added.** Declare it in `dist/intents/org.bardo.Settings.toml` (every field written,
 a `params` list even when empty), add its arm in `settings-app-intents/src/ask.rs` and in
-`SettingsProvider::perform`, and a test on the private bus (`settings-app-intents/tests`). Run
-`../actions/scripts/check-intents.sh`; the installer (`scripts/install.sh`) already ships the file.
+`SettingsProvider::perform`, and a test on the private bus (`settings-app-intents/tests`). The conformance test in `action-eval` (`tests/it/shipped_apps.rs`) checks the manifest; the installer (`scripts/install.sh`) already ships the file.
 
 ## 4. Tests
 
@@ -228,8 +227,8 @@ a `params` list even when empty), add its arm in `settings-app-intents/src/ask.r
 ## 5. Repo rules
 
 - Gate: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D
-  warnings`, `cargo test --workspace`, `cargo xtask check layers`, `cargo deny check licenses`, and `./scripts/check-intents.sh` (actions's
-  conformance check: a `.desktop` file needs a valid manifest; it builds `agent-eval` from `../actions`).
+  warnings`, `cargo test --workspace`, `cargo xtask check layers`, `cargo deny check licenses`; the `action-eval` test
+  `shipped_apps` is the conformance check (a `.desktop` file needs a valid manifest).
   Check every exit code.
 - No `unsafe` anywhere (`unsafe_code = "deny"`).
 - No widget is drawn locally. A kind the UI kit has no component for is shown read-only with an "Edit in

@@ -4,9 +4,8 @@
 //! A version or git revision written in a member drifts from the others and is missed when the
 //! pin moves.
 //!
-//! A few crates are workspaces of their own on purpose (the UI kit's outside consumer, the
-//! compositor's perf benches and its wlcs shim): the gate never builds them, so this check keeps
-//! them sound. Such a manifest cannot inherit (`workspace = true` there names its own, empty
+//! A few crates are workspaces of their own on purpose (the compositor's perf benches and its
+//! wlcs shim): the gate never builds them, so this check keeps them sound. Such a manifest cannot inherit (`workspace = true` there names its own, empty
 //! table), its lock file must still resolve, and a `[patch]` it repeats from the root must be the
 //! root's.
 

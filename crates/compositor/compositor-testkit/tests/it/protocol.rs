@@ -1,4 +1,4 @@
-//! One file per protocol module (`scripts/check-protocol-coverage.sh`):
+//! One file per protocol module:
 //! bind every version, happy paths, every protocol error, destruction order. Every test drives
 //! the real `State` through the `Fixture`. `sandbox` is
 //! the one table that is not a protocol: the globals a sandboxed client never sees (I7).

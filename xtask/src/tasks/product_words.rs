@@ -4,7 +4,8 @@
 //! name (`Porter`, `porter_core`, `PORTER_DIR`), in the text of any tracked file (a `.rs` file, a
 //! `.md`, `.toml`, `.sh`, unit file, XML, script or fixture; binary files and `Cargo.lock` are not read)
 //! or in a file or directory name. `require` or `acquire` is not a hit: only whole parts count. A
-//! name made of the parts `blitz` and `kit` next to each other is a hit too. URLs of external
+//! name made of the parts `blitz` and `kit` next to each other is a hit too. The names in
+//! `INSIDE_WORDS` are a hit anywhere inside a name (`libcosmic`). URLs of external
 //! repositories are skipped, but a `github.com/Bardo-DE/` URL is read: a retired repository named there
 //! is a hit. `THIRD-PARTY-NOTICES.md` holds other people's license texts word for word (the Mozilla
 //! license names its "steward"), so its text is not read; its file name still is.
@@ -49,12 +50,21 @@ const WORDS: [&str; 25] = [
     "memfiles",
 ];
 
+/// The file whose `[[absent]]` rule names the retired crates of `INSIDE_WORDS`, so those words are
+/// not read in its text (every other word is).
+const ABSENT_LIST: &str = "layers.toml";
+
 /// The file whose text is other people's license texts, copied word for word.
 const LICENSE_TEXTS: &str = "THIRD-PARTY-NOTICES.md";
 
 /// Words that are also plain English where they are not the product: a mouse wheel's `detent`.
 /// They are not checked inside the text of a file (a file name is still checked).
 const ENGLISH_IN_TEXT: [&str; 1] = ["detent"];
+
+/// Retired names of the removed compositor stack and its maker (owner decision 2026-10-14). They are
+/// found anywhere inside a name, in any case: `libcosmic`, `System76` and `cctk` are not split into
+/// parts (`system76` holds digits), so the whole-part rule would miss them.
+const INSIDE_WORDS: [&str; 3] = ["cosmic", "system76", "cctk"];
 
 /// The retired name made of two parts: `blitz-kit`, `blitz_kit`, `BlitzKit`.
 const PAIR: (&str, &str) = ("blitz", "kit");
@@ -143,6 +153,12 @@ fn hits(text: &str, in_text: bool) -> Vec<(String, &'static str)> {
             }
             found.push((name.to_owned(), *word));
         }
+        let lower = name.to_ascii_lowercase();
+        for word in INSIDE_WORDS {
+            if lower.contains(word) {
+                found.push((name.to_owned(), word));
+            }
+        }
         if parts
             .windows(2)
             .any(|pair| pair[0] == PAIR.0 && pair[1] == PAIR.1)
@@ -166,6 +182,9 @@ fn file_problems(file: &str, text: &str) -> Vec<String> {
     for (number, line) in text.lines().enumerate() {
         let plain = without_urls(line);
         for (name, word) in hits(&plain, true) {
+            if file == ABSENT_LIST && INSIDE_WORDS.contains(&word) {
+                continue;
+            }
             out.push(format!("{file}:{}: `{word}` (in `{name}`)", number + 1));
         }
     }
@@ -238,6 +257,14 @@ mod tests {
     }
 
     #[test]
+    fn the_removed_compositor_names_are_hits_inside_a_name() {
+        assert_eq!(words("use libcosmic::Theme;", true), ["cosmic"]);
+        assert_eq!(words("System76 and cctk", true), ["system76", "cctk"]);
+        assert_eq!(words("cosmic-comp COSMIC_DIR", true), ["cosmic", "cosmic"]);
+        assert!(words("a cosmos of cosmetics", true).is_empty());
+    }
+
+    #[test]
     fn a_longer_word_is_not_a_hit() {
         assert!(
             words(
@@ -291,6 +318,15 @@ mod tests {
             1
         );
         assert!(file_problems("crates/x/README.md", "a wheel detent").is_empty());
+        assert!(file_problems("layers.toml", "names = [\"cosmic-*\"]").is_empty());
+        assert_eq!(
+            file_problems("layers.toml", "forbid = [\"porter\"]").len(),
+            1
+        );
+        assert_eq!(
+            file_problems("crates/x/a.toml", "names = [\"cosmic-*\"]").len(),
+            1
+        );
     }
 
     #[test]

@@ -1,6 +1,6 @@
 use crate::support::{Doc, f};
 use std::collections::BTreeMap;
-use updater_core::release::{ALLOWED_SYSTEM_FILES, NameRule, is_allowed_system_path};
+use updater_core::release::{NameRule, allowed_system_files, is_allowed_system_path};
 use updater_core::{
     Placement, Release, ReleaseError, Sha256Hex, SystemAction, SystemFound, placements,
     plan_system, vendor_copies,
@@ -129,7 +129,7 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
 
 #[test]
 fn the_allowed_system_files_are_listed_by_name() {
-    for rule in ALLOWED_SYSTEM_FILES {
+    for rule in allowed_system_files() {
         assert!(
             rule.dir.starts_with("/etc/") || rule.dir.starts_with("/usr/lib/"),
             "{}",
@@ -145,11 +145,11 @@ fn the_allowed_system_files_are_listed_by_name() {
         };
         assert!(!text.contains('/') && !text.contains('*'), "{text}");
     }
-    let unique: std::collections::BTreeSet<_> = ALLOWED_SYSTEM_FILES
+    let unique: std::collections::BTreeSet<_> = allowed_system_files()
         .iter()
         .map(|r| (r.dir, format!("{:?}", r.name)))
         .collect();
-    assert_eq!(unique.len(), ALLOWED_SYSTEM_FILES.len());
+    assert_eq!(unique.len(), allowed_system_files().len());
 }
 
 #[test]

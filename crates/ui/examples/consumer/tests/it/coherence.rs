@@ -106,7 +106,10 @@ fn the_sent_badge_times_out_on_ds_motions_own_clock() {
         SystemSettings::default(),
     );
     let hold = settle(Anim::Fade, resolved.motion);
-    harness.advance(hold - std::time::Duration::from_millis(10));
+    harness.advance(
+        hold.checked_sub(std::time::Duration::from_millis(10))
+            .expect("the hold is longer than 10 ms"),
+    );
     assert_eq!(
         shown(&harness).as_deref(),
         Some("shown"),

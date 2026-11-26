@@ -776,7 +776,7 @@ cargo test --workspace --all-features
 cargo deny check licenses
 ```
 
-In Bardo, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not a gate).
+In Bardo, after the design/31 edit: `dev/doc-paths.sh` (a hand tool, not a gate).
 
 **Fill wave W1 (pure; the model agents own one crate each, plus one the accounts agent):**
 - W1a model-vision-prep plus `dev/smart-resize-vectors.py` (run in the `~/vllm` uv environment).

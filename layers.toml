@@ -468,7 +468,6 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.inference-router]
 kind = "unclassified"
-lints = "baseline"
 [crate.inference-settings]
 kind = "unclassified"
 [crate.inference-tailnet]
@@ -829,6 +828,9 @@ kind = "unclassified"
 kind = "unclassified"
 
 # ui
+[crate.consumer]
+kind = "unclassified"
+program = true
 [crate.ui-behaviour]
 kind = "unclassified"
 [crate.ui-blitz]
@@ -1005,8 +1007,8 @@ why = "crate stays free of what its table row forbids (bus, runtime, HTTP client
 
 [[reach]]
 crate = "account-client"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "account-dbus", "account-callers", "account-service", "account-service-core", "account-service-accounts", "account-service-grants", "account-secrets", "account-provider", "base-fs"]
-why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "account-dbus", "account-callers", "account-service", "account-service-core", "account-service-accounts", "account-service-grants", "account-secrets", "account-provider", "base-fs", "computer-use-action", "inference-*", "model-*"]
+why = "an accounts-only client reaches no bus, runtime, HTTP client, keyring or settings, and no inference or model layer"
 
 [[reach]]
 crate = "account-client-dbus"
@@ -1015,8 +1017,8 @@ why = "crate stays free of what its table row forbids (bus, runtime, HTTP client
 
 [[reach]]
 crate = "account-client-inproc"
-forbid = ["zbus", "zvariant", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "account-dbus"]
-why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
+forbid = ["zbus", "zvariant", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "account-dbus", "computer-use-action", "inference-*", "model-*"]
+why = "an accounts-only client reaches no bus, runtime, HTTP client, keyring or settings, and no inference or model layer"
 
 [[reach]]
 crate = "account-sheets"
@@ -1760,72 +1762,72 @@ why = "test-only caller fixtures are never in a daemon's normal dependency tree"
 
 [[reach]]
 crate = "action-vocab"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-manifest"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "permission-core"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "companion-model"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-core"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-gate-wire"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-wire"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "permission-policy"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-review"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-context"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-gate"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-router"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "agent-skills"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "Skills are read through a folder the caller injects: no bus, runtime, network or Cedar."
 
 [[reach]]
 crate = "agent-skills-disk"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The real-disk skill folder: files only, no bus, runtime, network or Cedar."
 
 [[reach]]
@@ -1835,17 +1837,17 @@ why = "Disk and timers under the pure core: files, threads and futures; no bus, 
 
 [[reach]]
 crate = "action-tools"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "The tools an outside agent is offered, as pure data: shared by the MCP edge and the ACP host."
 
 [[reach]]
 crate = "companion-wire"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "companion-core"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "The companion's decisions as values: the helper board's outcomes, the desks' typed refusals, the routines' due and event rules, the timer text and the caller policy. No bus, runtime, network, Cedar or toml."
 
 [[reach]]
@@ -1855,22 +1857,22 @@ why = "Installs agents from the registry: reads files and runs curl and npm as p
 
 [[reach]]
 crate = "agent-registry"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The registry values and the two small records as text: no disk, bus, runtime, network or Cedar."
 
 [[reach]]
 crate = "agent-loop"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "agent-planner"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The planner is portable: it asks any inference-client Transport (inference-client without its `dbus` and `socket` features reaches no runtime), so inferd over D-Bus is companiond's choice of transport, never the planner's."
 
 [[reach]]
 crate = "companion-tasks"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The task model is portable: the companion's tasks over any router link and any `Planner`, a clock and a surface that are passed in; no bus, no runtime (the daemon's surface is the one that holds tokio)."
 
 [[reach]]
@@ -1880,17 +1882,17 @@ why = "The helpers' runner: the hub, the desks and the routines' scheduler over 
 
 [[reach]]
 crate = "agent-native"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The durable-session backend over the task model: the same portable rules, no bus or runtime."
 
 [[reach]]
 crate = "agent-session"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "The durable session is portable and pure: no bus, runtime, HTTP, Cedar or toml; the log is a seam."
 
 [[reach]]
 crate = "action-checkpoint"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "Restore points: the rules and the store seam, pure; the git store is another crate (a process)."
 
 [[reach]]
@@ -1905,7 +1907,7 @@ why = "Our own ACP rules, pure: no runtime, bus, HTTP, Cedar or toml; the connec
 
 [[reach]]
 crate = "agent-acp-server"
-forbid = ["zbus", "zvariant", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The ACP server edge: the lib is portable; no bus, HTTP, Cedar or MCP SDK. The protocol's types and the JSON-RPC connection come from agent-client-protocol."
 
 [[reach]]
@@ -1920,7 +1922,7 @@ why = "Starts the external agents: the bus is the `dbus` feature's, the runtime 
 
 [[reach]]
 crate = "action-host"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "The host side of a confirm sheet: values, a oneshot channel and the session seam; no bus, runtime, network or toml."
 
 [[reach]]
@@ -1935,37 +1937,37 @@ why = "The bardo-agent-acp process (and `bardo-agent`, the host of an external c
 
 [[reach]]
 crate = "agent-models"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The models, the quarantined reader and the memory seam are portable too (moved out of actiond and readerd): they ask any inference-client or memory-client Transport, never a bus or a runtime; memory-client hosts its service only behind `in_process` (a dev-dependency here) and reaches the bus only behind `dbus`. companion-memory no longer sits on the router (the memory seam is in action-core), so Cedar is not below it either."
 
 [[reach]]
 crate = "agent-reader"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "companion-memory"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "companion-memory-core"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "The audit records as the memory service events and the bounded queue: values only, no client, bus or runtime."
 
 [[reach]]
 crate = "speech-wire"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "speech-loop"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "speech-audio"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "The audio device seam as values and traits: no runtime, bus or audio stack (futures-util only, for the expiry race)."
 
 [[reach]]
@@ -1986,7 +1988,7 @@ why = "zbus lives in action-dbus, and in action-client only behind its `dbus` fe
 [[reach]]
 crate = "action-client"
 features = "none"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "toml", "inotify", "landlock", "libspa"]
 why = "A client never links the router: `InProcess` (feature `in_process`) is the one way in."
 
 [[reach]]
@@ -1996,7 +1998,7 @@ why = "The app side of Intents1: the traits an app implements; zbus only behind 
 
 [[reach]]
 crate = "action-fake"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
@@ -2006,12 +2008,12 @@ why = "The model tap: the watch seam in action-dbus (so zbus comes with it) and 
 
 [[reach]]
 crate = "action-eval"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "inotify", "landlock", "libspa"]
 why = "what this crate reaches through any path is limited to its tier"
 
 [[reach]]
 crate = "action-eval-core"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "inotify", "landlock", "libspa"]
 why = "The suite as values: the case and attack formats, the judgement, the scores and the summary. No router, so no Cedar; no bus, runtime or network."
 
 [[reach]]
@@ -2544,14 +2546,14 @@ why = "codecs and copyleft libraries run as separate plugin processes and are ne
 [[reach]]
 crate = "anyview-peek"
 features = "none"
-forbid = ["ui-components", "ui-motion", "ui-style", "dioxus", "dioxus-core", "ui-blitz", "wgpu", "pdfrum", "blitz-dom", "anyrender", "rav1e", "ravif", "img-parts", "zbus", "wayland-client"]
-why = "the headless peek (no pane, no media) links no renderer, window system, dioxus or encoder"
+forbid = ["ui-components", "ui-motion", "ui-style", "dioxus", "dioxus-core", "ui-blitz", "wgpu", "pdfrum", "blitz-dom", "anyrender", "rav1e", "ravif", "img-parts", "zbus", "wayland-client", "ashpd", "action-provider", "action-core", "account-core"]
+why = "the headless peek (no pane, no media) links no renderer, window system, dioxus or encoder, and none of the desktop services (bus, actions, accounts)"
 
 [[reach]]
 crate = "anyview-peek"
 features = ["media"]
-forbid = ["rav1e", "ravif", "img-parts"]
-why = "with only the media feature the peek still links no image encoder"
+forbid = ["rav1e", "ravif", "img-parts", "zbus", "ashpd", "action-provider", "action-core", "account-core"]
+why = "with only the media feature the peek still links no image encoder and none of the desktop services (bus, actions, accounts)"
 
 # Only anyview-platform names the bus and the freedesktop formats. The old script looped over every crate
 # of the folder except anyview-platform and the binary; this is that loop spelled out for the crates that exist today.
@@ -2605,8 +2607,8 @@ why = "only anyview-platform may name the bus or the freedesktop formats"
 [[reach]]
 crate = "anyview-platform"
 features = "none"
-forbid = ["zbus", "ashpd", "freedesktop-desktop-entry", "memfd"]
-why = "the platform crate reaches the bus and desktop-entry readers only through its desktop feature"
+forbid = ["zbus", "ashpd", "freedesktop-desktop-entry", "memfd", "action-provider", "action-core", "account-core"]
+why = "the platform crate reaches the bus, desktop-entry readers and the actions and accounts services only through its desktop feature"
 
 # The exact lists of workspace dependencies (direct, normal and build, all features).
 
@@ -4193,12 +4195,12 @@ why = "the host paints the scroll thumb itself, so Blitz's own scrollbars must s
 
 [[reach]]
 crate = "memory-core"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "notify", "toml", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "wayland-server", "reis", "atspi", "rmcp", "cedar-policy"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "notify", "toml", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "wayland-server", "reis", "atspi", "rmcp", "cedar-policy", "inotify", "landlock", "libspa", "secret-service"]
 why = "portable and light enough for computer-use-bus to depend on: no bus, runtime, network, keyring, storage, file watch or toml"
 
 [[reach]]
 crate = "memory-seal"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "reaches the keyring only through its oo7 feature; no bus, runtime, network, storage or file watch (default features)"
 
 [[reach]]
@@ -4208,57 +4210,57 @@ why = "portable crate: no bus, runtime, network, keyring, storage or file watch"
 
 [[reach]]
 crate = "memory-store"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "the seam traits and types the service stands on reach no storage, runtime or bus"
 
 [[reach]]
 crate = "memory-eventlog"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "storage is its job (rusqlite allowed); no bus, runtime, network, keyring or file watch"
 
 [[reach]]
 crate = "memory-files"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "portable crate: no bus, runtime, network, keyring, SQL storage or file watch"
 
 [[reach]]
 crate = "memory-files-format"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "no storage, runtime, bus or file watch"
 
 [[reach]]
 crate = "memory-recall"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "storage is its job (rusqlite allowed); no bus, runtime, network, keyring or file watch"
 
 [[reach]]
 crate = "memory-settings"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "no storage, runtime, bus or file watch"
 
 [[reach]]
 crate = "memory-tidy"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "no storage, runtime, bus or file watch"
 
 [[reach]]
 crate = "memory-search"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "no storage, runtime, bus or file watch"
 
 [[reach]]
 crate = "memory-service"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "reaches no storage at all: no SQL engine, SQLCipher, OpenSSL, file writer, runtime or bus"
 
 [[reach]]
 crate = "memory-host"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "libsqlite3-sys", "openssl-sys", "openssl", "atomic-write-file", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "no storage, runtime, bus or file watch"
 
 [[reach]]
 crate = "memory-watch"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "landlock", "libspa", "secret-service"]
 why = "the file watch is its job (notify allowed); no bus, runtime, network, keyring or SQL storage"
 
 [[reach]]
@@ -4274,7 +4276,7 @@ why = "the bus and tokio (through zbus's tokio feature) are its job; no HTTP, ke
 [[reach]]
 crate = "memory-client"
 features = ["in_process"]
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "openssl-sys", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "rusqlite", "openssl-sys", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "without its desktop default, hosting the service in process (in_process): no bus, runtime, network, keyring, SQLite or OpenSSL"
 
 [[reach]]
@@ -4284,7 +4286,7 @@ why = "portable crate: no bus, runtime, network, keyring or file watch"
 
 [[reach]]
 crate = "memory-local"
-forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "notify"]
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "ort", "fastembed", "notify", "inotify", "landlock", "libspa", "secret-service"]
 why = "portable crate: no bus, runtime, network, keyring or file watch"
 
 [[reach]]
@@ -6266,6 +6268,228 @@ path = "crates/wayland/shell-verbs/src"
 pattern = '\bunsafe\b'
 why = "no unsafe in shell-verbs"
 
+# --- release builds carry no test switch (from crates/ui/scripts/check-release-features.sh and
+# packaging/gate/check-no-fake.sh)
+#
+# `forbid-features` reads the resolved feature set of a program's normal and build tree (dev-dependencies
+# are not followed: a test may turn a switch on, and cargo does not carry it into a build of the program).
+
+[[reach]]
+crate = "consumer"
+forbid = []
+forbid-features = ["ui-blitz/debug-probe", "ui-blitz/testing", "ui-core/testing"]
+why = "the example of an outside app that takes the toolkit: what such an app builds has neither the debug probe nor the test seams"
+
+[[reach]]
+crate = "shell-app"
+forbid = []
+forbid-features = ["ui-blitz/debug-probe", "ui-blitz/testing", "ui-core/testing"]
+why = "a release build never writes every control's text to files (the debug probe) or opens the test seams that carry no stability promise"
+
+[[reach]]
+crate = "settings-app"
+forbid = []
+forbid-features = ["ui-blitz/debug-probe", "ui-blitz/testing", "ui-core/testing"]
+why = "a release build never writes every control's text to files (the debug probe) or opens the test seams that carry no stability promise"
+
+[[reach]]
+crate = "files"
+forbid = []
+forbid-features = ["ui-blitz/debug-probe", "ui-blitz/testing", "ui-core/testing"]
+why = "a release build never writes every control's text to files (the debug probe) or opens the test seams that carry no stability promise"
+
+[[reach]]
+crate = "compositor-app"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "compositor-ctl"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "shell-app"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "account-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "inference-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "sync-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "drive-mount-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "engine-install"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "memory-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "action-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "companion-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "agent-reader-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "action-mcp"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "action-cli"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "agent-acp-bin"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "computer-use-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "settings-app"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "files"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "portal-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "input-broker-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "key-remap-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "mouse-gestures-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "updater-daemon"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+[[reach]]
+crate = "updater-root"
+forbid = []
+forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
+
+# The scripts that build or install the desktop never switch a stand-in on or ask for every feature. A line
+# that runs cargo (or the install helpers that call it) names neither `fake`, `dev-rows` nor `--all-features`;
+# a `#` comment after the command is not read. The release self-test packs a made-up release, so its word
+# "fake" is not a cargo feature.
+
+[[source]]
+path = "packaging/install.sh"
+pattern = '^[^#]*\b(cargo|cargo_in|build_tree|build_parts)\b[^#]*(\bfake\b|\bdev-rows\b|--all-features)'
+except = ["packaging/release/selftest.sh", "packaging/release/selftest-forge.py", "packaging/release/health-scenarios.sh"]
+files = "all"
+why = "no command that builds what the desktop ships may turn on a stand-in feature or every feature"
+
+[[source]]
+path = "packaging/install"
+pattern = '^[^#]*\b(cargo|cargo_in|build_tree|build_parts)\b[^#]*(\bfake\b|\bdev-rows\b|--all-features)'
+except = ["packaging/release/selftest.sh", "packaging/release/selftest-forge.py", "packaging/release/health-scenarios.sh"]
+files = "all"
+why = "no command that builds what the desktop ships may turn on a stand-in feature or every feature"
+
+[[source]]
+path = "packaging/release"
+pattern = '^[^#]*\b(cargo|cargo_in|build_tree|build_parts)\b[^#]*(\bfake\b|\bdev-rows\b|--all-features)'
+except = ["packaging/release/selftest.sh", "packaging/release/selftest-forge.py", "packaging/release/health-scenarios.sh"]
+files = "all"
+why = "no command that builds what the desktop ships may turn on a stand-in feature or every feature"
+
+[[source]]
+path = "packaging/harness"
+pattern = '^[^#]*\b(cargo|cargo_in|build_tree|build_parts)\b[^#]*(\bfake\b|\bdev-rows\b|--all-features)'
+except = ["packaging/release/selftest.sh", "packaging/release/selftest-forge.py", "packaging/release/health-scenarios.sh"]
+files = "all"
+why = "no command that builds what the desktop ships may turn on a stand-in feature or every feature"
+
+# --- crates of the removed compositor stack stay out of the lock file (from
+# packaging/gate/check-legacy-free.sh; the retired words in text are in xtask's product-words check)
+
+[[absent]]
+names = ["cosmic", "cosmic-*", "libcosmic", "cctk", "system76-*"]
+why = "the removed compositor stack and its maker's crates are never a dependency again (owner decision 2026-10-14)"
+
+# --- portable memory watch
+
+[[reach]]
+crate = "memory-watch"
+features = "none"
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "oo7", "secret-service", "notify", "inotify", "landlock", "libspa"]
+why = "without its `linux` feature the watch keeps only the seam and the pure `join`: no file-watch backend, bus, runtime or keyring, so an app on macOS or Windows can host the memory service"
+
 # --- known violations
 #
 # Findings the workspace has today, each from a landed change that the never-gated scripts did not catch.
@@ -6309,6 +6533,9 @@ findings = [
   "layers.toml computer-use-host reaches notify:",
   "layers.toml memory-host reaches notify:",
   "layers.toml memory-local reaches notify:",
+  "layers.toml agent-acp-server reaches inotify:",
+  "layers.toml memory-host reaches inotify:",
+  "layers.toml memory-local reaches inotify:",
 ]
 why = "notify (file watches) comes in through settings-store-fs: memory-host, computer-use-host and the actions edges take the watched settings store; a watch seam they are given removes these"
 

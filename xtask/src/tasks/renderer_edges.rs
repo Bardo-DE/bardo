@@ -24,7 +24,7 @@ const RENDERER: [&str; 6] = [
 ];
 
 /// The members that may name them: the renderer crates, the crates that run one, and the programs.
-const ALLOWED: [&str; 11] = [
+const ALLOWED: [&str; 12] = [
     // The renderer for windows: `launch`, the window loop and the Blitz document wiring.
     "ui-blitz",
     // The renderer for layer-shell surfaces: the Wayland host and its GPU device.
@@ -41,6 +41,8 @@ const ALLOWED: [&str; 11] = [
     "anyview-peek",
     // The program that runs the shell: it picks the host and the window renderer.
     "shell-app",
+    // The toolkit's example of an outside app: an app picks the window renderer, as any app does.
+    "consumer",
     // The program of the file manager: it opens the window.
     "files",
     // The program of the Settings app: it opens the window and serves the app.

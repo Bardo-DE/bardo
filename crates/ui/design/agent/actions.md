@@ -914,7 +914,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
    - Writes `design/33-ACTIONS.md` (this spec, settled parts marked).
    - Edits 31 §4.5 (`space` in `GrantKey`, generic grants) and §5.5 (MCP hosting moves to bardo-actions-mcp, C4).
    - Does not touch `ds`.
-   - Verify: `scripts/check-doc-paths.sh`.
+   - Verify: `dev/doc-paths.sh` (a hand tool).
 2. **the accounts agent.** Owns `crates/account-core/src/{space.rs, consent/*, lib.rs}` and `tests/round_trip.rs` rows. Updates every caller of `GrantKey`/`Grant` in the same change (account-service, account-fake). Verify with the accounts service's gate:
    ```bash
    cargo fmt --all --check

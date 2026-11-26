@@ -20,8 +20,8 @@
 # row, for Settings started by a launcher), `updater_cli`, `sandbox_launcher` and `manager` have such a row.
 # `exe` is required, every path is absolute, and a `*` stands for any run of characters inside one path segment.
 #
-# Role names are the constants of caller-identity-core's `roles` module (feature `desktop`); gate/check-callers-table.sh
-# checks that every one has a row here and that every row is a role. One row per role is the rule; `settings`
+# Role names are the constants of caller-identity-core's `roles` module (feature `desktop`); a test in caller-identity-core
+# (tests/it/desktop_files.rs) checks that every one has a row here and that every row is a role. One row per role is the rule; `settings`
 # has two on purpose.
 
 # The shell: draws the desktop and asks the person on behalf of other programs.
