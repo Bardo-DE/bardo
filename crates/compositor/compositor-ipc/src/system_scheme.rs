@@ -102,7 +102,7 @@ async fn follow(
     mut stopped: oneshot::Receiver<()>,
 ) {
     if let SchemeSource::Fixed { dark } = source {
-        drop(tell(dark));
+        let _ = tell(dark);
         return;
     }
     let spawner = InRuntime(tokio::runtime::Handle::current());
