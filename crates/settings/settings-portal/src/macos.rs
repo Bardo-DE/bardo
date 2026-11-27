@@ -1,4 +1,4 @@
-//! The portal's stand-in on macOS: the same two entry points as `portal/bus.rs`, answered from the
+//! The portal's stand-in on macOS: the same two entry points as `bus.rs`, answered from the
 //! user's preferences. Dark is the global domain's `AppleInterfaceStyle`, which the system sets to
 //! `Dark` while the Mac is dark (Auto included) and removes while it is light; reduced motion and
 //! higher contrast are `com.apple.universalaccess`'s `reduceMotion` and `increaseContrast`.
@@ -7,7 +7,7 @@
 //! on a run loop; this crate owns no run loop, so the watch reads the preferences again every
 //! [`EVERY`] and publishes only what changed. A read is three lookups in `cfprefsd`'s cache.
 
-use super::SystemSettings;
+use super::PortalPrefs;
 use base_spawn::Spawner;
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
@@ -15,8 +15,6 @@ use objc2_core_foundation::{
 };
 use settings_store::latest::{self, Receiver, Sender};
 use std::time::Duration;
-use ui_style::appearance::system::Contrast;
-use ui_style::appearance::theme::Scheme;
 
 /// How often the watch reads the preferences again.
 const EVERY: Duration = Duration::from_secs(1);
@@ -30,23 +28,17 @@ const KEY_REDUCE_MOTION: &str = "reduceMotion";
 const KEY_INCREASE_CONTRAST: &str = "increaseContrast";
 
 /// `AppleInterfaceStyle`: `Dark` is dark; anything else, or no value, is light.
-fn scheme_from_style(style: Option<&str>) -> Scheme {
-    match style {
-        Some(style) if style.eq_ignore_ascii_case("dark") => Scheme::Dark,
-        _ => Scheme::Light,
-    }
+fn dark_from_style(style: Option<&str>) -> bool {
+    style.is_some_and(|style| style.eq_ignore_ascii_case("dark"))
 }
 
 /// The three answers, as the portal's tables would give them.
-fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> SystemSettings {
-    SystemSettings::default()
-        .with_scheme(scheme_from_style(style))
-        .with_reduced_motion(reduce_motion)
-        .with_contrast(if increase_contrast {
-            Contrast::High
-        } else {
-            Contrast::Normal
-        })
+fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> PortalPrefs {
+    PortalPrefs {
+        dark: dark_from_style(style),
+        reduced_motion: reduce_motion,
+        high_contrast: increase_contrast,
+    }
 }
 
 /// `key` in `domain`, as it is now.
@@ -70,7 +62,7 @@ fn flag(key: &str, domain: &CFString) -> bool {
 
 /// The preferences as the user's defaults hold them now; a domain written by another process
 /// since the last read is read afresh.
-fn read() -> SystemSettings {
+fn read() -> PortalPrefs {
     let global = CFString::from_static_str(GLOBAL);
     let accessibility = CFString::from_static_str(ACCESSIBILITY);
     CFPreferencesAppSynchronize(&global);
@@ -85,12 +77,12 @@ fn read() -> SystemSettings {
 }
 
 /// Every preference, once.
-pub(super) async fn read_all() -> Option<SystemSettings> {
+pub(super) async fn read_all() -> Option<PortalPrefs> {
     Some(read())
 }
 
 /// Read again every [`EVERY`] and publish a change, until the receiver is gone.
-async fn follow(tx: Sender<SystemSettings>) {
+async fn follow(tx: Sender<PortalPrefs>) {
     loop {
         futures_timer::Delay::new(EVERY).await;
         let now = read();
@@ -101,7 +93,7 @@ async fn follow(tx: Sender<SystemSettings>) {
 }
 
 /// The preferences now and every change after, the watch running on `spawn`.
-pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<SystemSettings> {
+pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<PortalPrefs> {
     let (tx, changes) = latest::channel(read());
     spawn.spawn(Box::pin(follow(tx)));
     changes
@@ -113,36 +105,41 @@ mod tests {
 
     #[test]
     fn the_style_and_the_switches_map_as_the_portal_s_tables_do() {
-        let cases: &[(&str, Option<&str>, bool, bool, SystemSettings)] = &[
+        let cases: &[(&str, Option<&str>, bool, bool, PortalPrefs)] = &[
             (
                 "light: no style",
                 None,
                 false,
                 false,
-                SystemSettings::default(),
+                PortalPrefs::default(),
             ),
             (
                 "dark",
                 Some("Dark"),
                 false,
                 false,
-                SystemSettings::default().with_scheme(Scheme::Dark),
+                PortalPrefs {
+                    dark: true,
+                    ..PortalPrefs::default()
+                },
             ),
             (
                 "an unknown style is light",
                 Some("Graphite"),
                 false,
                 false,
-                SystemSettings::default(),
+                PortalPrefs::default(),
             ),
             (
                 "both switches on",
                 None,
                 true,
                 true,
-                SystemSettings::default()
-                    .with_reduced_motion(true)
-                    .with_contrast(Contrast::High),
+                PortalPrefs {
+                    dark: false,
+                    reduced_motion: true,
+                    high_contrast: true,
+                },
             ),
         ];
         for (name, style, motion, contrast, want) in cases {

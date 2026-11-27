@@ -25,7 +25,8 @@ use inference_daemon::{Inference, serve_with_settings};
 use inference_dbus::inference::InferenceProxy;
 use inference_dbus::inference::{INFERENCE_BUS, INFERENCE_PATH, INFERENCE_SETTINGS_PATH};
 use inference_turns::audit::Memory;
-use settings_dbus::{AnyOwner, LiveClient, LiveError, LiveSchema};
+use settings_dbus::{AnyOwner, LiveClient, LiveError};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     AgentSetting, ChoicePlace, ChoiceWord, Exposure, KeyKind, KeyPath, Page,
 };

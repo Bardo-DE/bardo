@@ -31,7 +31,7 @@ impl GhostLook {
     /// The look of a root drawn from `environment` on a Space of `look`.
     pub fn of(environment: &Environment, look: SpaceLook) -> Self {
         GhostLook {
-            appearance: environment.settings.appearance.appearance(),
+            appearance: (&environment.settings.appearance).into(),
             system: environment.system,
             look,
         }

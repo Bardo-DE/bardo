@@ -25,6 +25,7 @@ mod scene_layout;
 mod spec;
 mod taffy_bridge;
 
+pub use appearance_settings::{Theme, Transparency};
 pub use arrangement::{
     Arrangement, BackdropTarget, ConfigureNeed, DividerTarget, LayoutReport, OverviewSlot,
     SlotKind, SpaceTarget, SpaceThumb, WindowTarget,
@@ -42,6 +43,5 @@ pub use spec::{
     OutputSpec, OverviewKind, SceneMode, SceneSpec, SpaceArrangement, SpaceSpec, StackIndex,
     WindowPlacement, WindowSpec,
 };
-pub use ui_style::appearance::theme::{Scheme, Theme};
-pub use ui_style::appearance::transparency::Transparency;
+pub use ui_style::appearance::theme::Scheme;
 pub use ui_style::tokens::chrome::GroupHover;

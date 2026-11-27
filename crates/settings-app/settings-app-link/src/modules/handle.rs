@@ -3,7 +3,8 @@
 
 use crate::bus::{Rows, read};
 use settings_app_model::{Absence, Described, Work};
-use settings_dbus::{LiveClient, LiveError, LiveSchema};
+use settings_dbus::{LiveClient, LiveError};
+use settings_proto::LiveSchema;
 use settings_types::schema::{KeyKind, KeyPath, KeySpec};
 use std::fmt::Debug;
 use std::sync::Arc;

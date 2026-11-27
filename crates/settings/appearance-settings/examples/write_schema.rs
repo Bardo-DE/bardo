@@ -1,12 +1,12 @@
-//! `cargo run -p ui-settings --example write_schema -- --write-schema <dir>`: writes
+//! `cargo run -p appearance-settings --example write_schema -- --write-schema <dir>`: writes
 //! `bardo.settings.toml`, the schema of `bardo/appearance.toml`, the way `bardo-shell --write-schema`
 //! writes bardo-shell's (design/22-SETTINGS.md section 9.2). The UI kit has no app binary, so this example
 //! is its `--write-schema`.
 
 use std::process::ExitCode;
 
+use appearance_settings::bardo_schema;
 use settings_store_fs::maybe_write_schema;
-use ui_settings::bardo_schema;
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();

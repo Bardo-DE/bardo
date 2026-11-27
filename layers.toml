@@ -693,9 +693,15 @@ kind = "unclassified"
 kind = "unclassified"
 
 # settings
+[crate.appearance-settings]
+kind = "unclassified"
 [crate.settings-dbus]
 kind = "unclassified"
 lints = "baseline"
+[crate.settings-portal]
+kind = "unclassified"
+[crate.settings-proto]
+kind = "unclassified"
 [crate.settings-store]
 kind = "unclassified"
 lints = "baseline"
@@ -1429,7 +1435,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-settings"
 features = "all"
-exactly = ["account-capability", "account-core", "account-provider", "account-service-core", "account-sheet", "base-ids", "base-time", "settings-dbus", "settings-types"]
+exactly = ["account-capability", "account-core", "account-provider", "account-service-core", "account-sheet", "base-ids", "base-time", "settings-dbus", "settings-proto", "settings-types"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1597,7 +1603,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-daemon"
 features = "all"
-exactly = ["account-callers", "account-capability", "account-core", "account-daemon-support", "account-dbus", "account-families", "account-family-oauth", "account-identities", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-settings", "account-sheet", "account-sheets", "account-spaces", "account-store", "account-tailscale", "account-wire", "base-fs", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "settings-dbus", "settings-types", "base-clock"]
+exactly = ["account-callers", "account-capability", "account-core", "account-daemon-support", "account-dbus", "account-families", "account-family-oauth", "account-identities", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-settings", "account-sheet", "account-sheets", "account-spaces", "account-store", "account-tailscale", "account-wire", "base-fs", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "settings-dbus", "settings-proto", "settings-types", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -2859,86 +2865,98 @@ forbid = ["action-*", "agent-*", "companion-*", "permission-*", "computer-use-*"
   "model-*", "engine-supervisor", "model-vision-prep", "speech-provider"]
 why = "B12 no compositor crate reaches the agent tier or a shell crate"
 
-# B13 ui-settings only in compositor-ipc and compositor-app (and compositor-testkit, through the crate it
-# drives): every other member reaches none.
+# B13 no compositor crate reaches ui-settings: the compositor reads `appearance-settings` and
+# `settings-portal`, which name no toolkit.
+
+[[reach]]
+crate = "compositor-app"
+build = false
+forbid = ["ui-settings"]
+why = "B13 no compositor crate reaches ui-settings"
+
+[[reach]]
+crate = "compositor-ipc"
+build = false
+forbid = ["ui-settings"]
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-agent"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-backend"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-chrome"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-core"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-ctl"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-dbus"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-icons"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-layout"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-motion"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-privacy"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-render"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-testclient"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 [[reach]]
 crate = "compositor-wayland"
 build = false
 forbid = ["ui-settings"]
-why = "B13 only the IPC crate and the compositor reach ui-settings"
+why = "B13 no compositor crate reaches ui-settings"
 
 # B15 only compositor-chrome reaches the text stack (its one consumer is the compositor, which the test kit drives).
 
@@ -4877,7 +4895,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "settings-app-link"
 features = "all"
 exactly = ["settings-app-model", "account-tailscale", "account-wire", "compositor-dbus",
-  "inference-dbus", "memory-core", "settings-dbus", "settings-types", "sync-bus", "base-time"]
+  "inference-dbus", "memory-core", "settings-dbus", "settings-proto", "settings-types", "sync-bus", "base-time"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -4932,6 +4950,7 @@ exactly = [
     "settings-app-link",
     "settings-app-model",
     "settings-dbus",
+    "settings-proto",
     "settings-types",
     "shell-dbus",
     "sync-bus",
@@ -5231,6 +5250,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "shell-ui-kit"
 features = "all"
 exactly = [
+    "appearance-settings",
     "account-capability",
     "account-core",
     "action-core",
@@ -5346,7 +5366,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-app"
 features = "all"
-exactly = ["base-words", "base-xdg", "layer-shell-hooks", "layer-shell-host", "layer-shell-types",
+exactly = ["appearance-settings", "base-words", "base-xdg", "layer-shell-hooks", "layer-shell-host", "layer-shell-types",
   "provenance", "service-locator", "settings-store", "settings-store-fs", "settings-types",
   "shell-bar", "shell-desktop-fs", "shell-dock", "shell-host-config", "shell-ipc", "shell-kit",
   "shell-launcher", "shell-launcher-ui", "shell-model", "shell-notify-ui", "shell-overlays",
@@ -5684,7 +5704,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-daemon"
 features = "all"
-exactly = ["account-callers", "account-capability", "account-client", "account-client-dbus", "account-core", "account-dbus", "account-match", "account-wire", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "drive-fs", "drive-fuse", "settings-dbus", "settings-types", "sync-bus", "sync-core", "sync-driver", "sync-engine", "sync-photos", "sync-pim-mirror", "sync-storage", "sync-xdg", "base-clock"]
+exactly = ["account-callers", "account-capability", "account-client", "account-client-dbus", "account-core", "account-dbus", "account-match", "account-wire", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "drive-fs", "drive-fuse", "settings-dbus", "settings-proto", "settings-types", "sync-bus", "sync-core", "sync-driver", "sync-engine", "sync-photos", "sync-pim-mirror", "sync-storage", "sync-xdg", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -5964,7 +5984,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-style"
 features = "all"
-exactly = ["base-ids", "base-machine", "base-time", "base-words", "base-words-macros", "settings-store", "ui-core", "base-clock"]
+exactly = ["appearance-settings", "base-ids", "base-machine", "base-time", "base-words", "base-words-macros", "settings-store", "ui-core", "base-clock"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5994,7 +6014,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-components"
 features = "all"
-exactly = ["base-ids", "base-machine", "base-spawn", "base-words", "keymap", "ui-core", "ui-intents", "ui-motion",
+exactly = ["appearance-settings", "base-ids", "base-machine", "base-spawn", "base-words", "keymap", "ui-core", "ui-intents", "ui-motion",
   "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -6007,7 +6027,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-settings"
 features = "all"
-exactly = ["base-fs", "base-spawn", "base-time", "base-xdg", "settings-store", "settings-store-fs", "settings-types",
+exactly = ["appearance-settings", "base-fs", "base-spawn", "base-xdg", "settings-portal", "settings-store", "settings-store-fs", "settings-types",
   "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -6053,7 +6073,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-gallery"
 features = "all"
-exactly = ["base-machine", "keymap", "ui-blitz", "ui-components", "ui-core", "ui-harness", "ui-lint", "ui-settings",
+exactly = ["appearance-settings", "base-machine", "keymap", "ui-blitz", "ui-components", "ui-core", "ui-harness", "ui-lint",
   "ui-shell"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 

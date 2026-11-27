@@ -1,7 +1,7 @@
-use settings_dbus::{LiveSchema, LiveSchemaError};
+use settings_proto::{LiveSchema, LiveSchemaError};
 use settings_types::schema::{AgentSetting, Control, KeyKind, KeyPath, is_never_settable};
 
-use crate::module::{TOGGLE, schema, spec};
+use crate::fixture::{TOGGLE, schema, spec};
 
 #[test]
 fn describe_json_round_trips() {

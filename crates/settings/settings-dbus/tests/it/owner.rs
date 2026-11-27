@@ -5,11 +5,12 @@ use std::collections::HashSet;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 
-use settings_dbus::limits::{CHOICES_MAX, KEYS_MAX, TEXT_MAX, VALUE_ITEMS_MAX, VALUE_TEXT_MAX};
 use settings_dbus::{
-    Access, AnyOwner, Caller, LiveClient, LiveError, LiveModule, LiveSchema, OwnerAnswer,
-    OwnerCheck, SenderName, Verdict, serve,
+    Access, AnyOwner, Caller, LiveClient, LiveError, LiveModule, OwnerAnswer, OwnerCheck,
+    SenderName, Verdict, serve,
 };
+use settings_proto::LiveSchema;
+use settings_proto::limits::{CHOICES_MAX, KEYS_MAX, TEXT_MAX, VALUE_ITEMS_MAX, VALUE_TEXT_MAX};
 use settings_types::schema::{KeyKind, KeyPath};
 
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};

@@ -13,7 +13,8 @@ use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use settings_app_link::bus::Daemon;
 use settings_app_model::ModuleId;
 use settings_app_system::modules::FakeModules;
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Served, Verdict, serve};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Page, Section,

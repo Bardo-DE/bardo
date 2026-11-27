@@ -2,7 +2,7 @@
 //! sections, and the custom properties those sections declare for themselves.
 
 use super::model::{Kit, KitRank, Section, Vocabulary};
-use crate::appearance::{accent::Accent, theme::Scheme};
+use crate::appearance::theme::Scheme;
 use crate::css::{
     RESET,
     accents_css::{accents_css, swatch_var},
@@ -47,6 +47,7 @@ use crate::tokens::{
     type_voice::VoiceToken,
     widget_paint::WidgetPaint,
 };
+use appearance_settings::Accent;
 use base_words::Word;
 use std::borrow::Cow;
 

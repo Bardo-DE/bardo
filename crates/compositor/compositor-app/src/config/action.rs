@@ -1,4 +1,4 @@
-//! A binding's action as the document spells it: one list of words, a single value to ui-settings'
+//! A binding's action as the document spells it: one list of words, a single value to the settings store's
 //! key-by-key reader (a table would be read, and refused, a key at a time).
 //!
 //! ```text

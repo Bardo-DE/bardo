@@ -1,49 +1,27 @@
-//! The desktop's preferences from the settings portal:
-//! `org.freedesktop.portal.Settings.ReadAll(["org.freedesktop.appearance"])` and
-//! `SettingChanged`, mapped to [`ui_components::prelude::SystemSettings`]. The mappings are pure tables, tested
-//! against a fake `ReadAll`/`SettingChanged` payload with no bus involved; only
-//! [`SystemSettingsSource::Portal`] touches `zbus`, and only on Linux with feature `desktop`
-//! (`portal/bus.rs`). On macOS the same answers come from the user's defaults (`portal/macos.rs`).
-//! A desktop without the portal, or a build for a platform or feature set that has neither
-//! (`portal/absent.rs`), simply answers [`ui_components::prelude::SystemSettings::default`].
+//! The desktop's preferences from the settings portal (`settings-portal`), mapped to
+//! [`ui_style::appearance::system::SystemSettings`]. The portal answers plain values; this is the
+//! adapter to the toolkit's types. A desktop without the portal, or a build for a platform or
+//! feature set that has none, answers [`SystemSettings::default`].
 
 use base_spawn::Spawner;
-use settings_store::latest::{self, Receiver};
-use ui_style::appearance::system::Contrast;
-use ui_style::appearance::system::SystemSettings;
+use settings_portal::PortalPrefs;
+use ui_style::appearance::system::{Contrast, SystemSettings};
 use ui_style::appearance::theme::Scheme;
 
-// The half that reaches `zbus`, the Mac's defaults, or a stand-in, with the same two entry points.
-#[cfg_attr(all(target_os = "linux", feature = "desktop"), path = "portal/bus.rs")]
-#[cfg_attr(target_os = "macos", path = "portal/macos.rs")]
-#[cfg_attr(
-    not(any(all(target_os = "linux", feature = "desktop"), target_os = "macos")),
-    path = "portal/absent.rs"
-)]
-mod bus;
-
-/// `color-scheme`: 0 no preference, 1 prefer dark, 2 prefer light. No preference is light.
-#[must_use]
-pub fn scheme_from_portal(value: u32) -> Scheme {
-    match value {
-        1 => Scheme::Dark,
-        _ => Scheme::Light,
-    }
-}
-
-/// `reduced-motion`: 0 no preference, 1 reduce.
-#[must_use]
-pub fn reduced_motion_from_portal(value: u32) -> bool {
-    value == 1
-}
-
-/// `contrast`: 0 no preference, 1 higher contrast.
-#[must_use]
-pub fn contrast_from_portal(value: u32) -> Contrast {
-    match value {
-        1 => Contrast::High,
-        _ => Contrast::Normal,
-    }
+/// The toolkit's form of what the portal answered.
+fn settings_from(prefs: PortalPrefs) -> SystemSettings {
+    SystemSettings::default()
+        .with_scheme(if prefs.dark {
+            Scheme::Dark
+        } else {
+            Scheme::Light
+        })
+        .with_reduced_motion(prefs.reduced_motion)
+        .with_contrast(if prefs.high_contrast {
+            Contrast::High
+        } else {
+            Contrast::Normal
+        })
 }
 
 /// Where the desktop's preferences come from.
@@ -62,7 +40,7 @@ impl SystemSettingsSource {
     pub async fn read(&self) -> SystemSettings {
         match self {
             SystemSettingsSource::Fixed(prefs) => *prefs,
-            SystemSettingsSource::Portal => bus::read_all().await.unwrap_or_default(),
+            SystemSettingsSource::Portal => settings_from(settings_portal::read().await),
         }
     }
 }
@@ -70,80 +48,75 @@ impl SystemSettingsSource {
 /// A subscription to the desktop's appearance preferences.
 #[derive(Debug)]
 pub struct SystemSettingsWatch {
-    changes: Receiver<SystemSettings>,
+    inner: Inner,
+}
+
+#[derive(Debug)]
+enum Inner {
+    /// A fixed answer: it never fires.
+    Fixed(SystemSettings),
+    Portal(settings_portal::Watch),
 }
 
 impl SystemSettingsWatch {
     /// Subscribe to `source` and then read it, the subscription's task running on `spawn`. A
     /// [`SystemSettingsSource::Fixed`] watch, a desktop without the portal and a build without the
-    /// portal client never fire after their first answer. A portal that does not answer within
-    /// [`Deadline::START`](base_time::deadline::Deadline::START) is the defaults, so this returns in a few
-    /// seconds at worst; a caller that must not wait at all starts it beside its other work
+    /// portal client never fire after their first answer. A portal that does not answer in a few
+    /// seconds is the defaults, so this returns in a few seconds at worst; a caller that must not wait at all starts it beside its other work
     /// (`use_environment` does).
     pub async fn start(source: &SystemSettingsSource, spawn: &dyn Spawner) -> Self {
-        let changes = match source {
-            SystemSettingsSource::Fixed(prefs) => latest::channel(*prefs).1,
-            SystemSettingsSource::Portal => bus::start(spawn).await,
+        let inner = match source {
+            SystemSettingsSource::Fixed(prefs) => Inner::Fixed(*prefs),
+            SystemSettingsSource::Portal => {
+                Inner::Portal(settings_portal::Watch::start(spawn).await)
+            }
         };
-        SystemSettingsWatch { changes }
+        SystemSettingsWatch { inner }
     }
 
     /// The preferences as last read.
     #[must_use]
     pub fn current(&self) -> SystemSettings {
-        self.changes.latest()
+        match &self.inner {
+            Inner::Fixed(prefs) => *prefs,
+            Inner::Portal(watch) => settings_from(watch.current()),
+        }
     }
 
-    /// Wait for the next change. `None` once the bus connection is gone.
+    /// Wait for the next change. `None` once the bus connection is gone, and at once for a fixed
+    /// source.
     pub async fn changed(&mut self) -> Option<SystemSettings> {
-        self.changes.changed().await
+        match &mut self.inner {
+            Inner::Fixed(_) => None,
+            Inner::Portal(watch) => watch.changed().await.map(settings_from),
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{contrast_from_portal, reduced_motion_from_portal, scheme_from_portal};
-
-    use super::SystemSettingsSource;
-    use ui_style::appearance::system::Contrast;
-    use ui_style::appearance::system::SystemSettings;
+    use super::{PortalPrefs, SystemSettingsSource, settings_from};
+    use ui_style::appearance::system::{Contrast, SystemSettings};
     use ui_style::appearance::theme::Scheme;
 
     #[test]
-    fn the_scheme_table_matches_the_portal_spec() {
-        const CASES: &[(u32, Scheme)] = &[
-            (0, Scheme::Light),
-            (1, Scheme::Dark),
-            (2, Scheme::Light),
-            (99, Scheme::Light),
-        ];
-        for &(value, want) in CASES {
-            assert_eq!(scheme_from_portal(value), want, "color-scheme {value}");
-        }
-    }
-
-    #[test]
-    fn the_reduced_motion_table_matches_the_portal_spec() {
-        const CASES: &[(u32, bool)] = &[(0, false), (1, true), (7, false)];
-        for &(value, want) in CASES {
-            assert_eq!(
-                reduced_motion_from_portal(value),
-                want,
-                "reduced-motion {value}"
-            );
-        }
-    }
-
-    #[test]
-    fn the_contrast_table_matches_the_portal_spec() {
-        const CASES: &[(u32, Contrast)] = &[
-            (0, Contrast::Normal),
-            (1, Contrast::High),
-            (5, Contrast::Normal),
-        ];
-        for &(value, want) in CASES {
-            assert_eq!(contrast_from_portal(value), want, "contrast {value}");
-        }
+    fn the_portal_values_map_to_the_toolkit_settings() {
+        assert_eq!(
+            settings_from(PortalPrefs::default()),
+            SystemSettings::default()
+        );
+        let all = PortalPrefs {
+            dark: true,
+            reduced_motion: true,
+            high_contrast: true,
+        };
+        assert_eq!(
+            settings_from(all),
+            SystemSettings::default()
+                .with_scheme(Scheme::Dark)
+                .with_reduced_motion(true)
+                .with_contrast(Contrast::High)
+        );
     }
 
     #[tokio::test]

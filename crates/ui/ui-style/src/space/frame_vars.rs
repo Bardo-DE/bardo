@@ -127,10 +127,11 @@ fn grain_opacity(grain: Grain, scheme: Scheme) -> String {
 #[cfg(test)]
 mod tests {
     use super::{FrameVars, grain_opacity};
-    use crate::appearance::theme::{Scheme, Theme};
+    use crate::appearance::theme::Scheme;
     use crate::space::look::{Grain, SpaceLook};
     use crate::space::palette::NEUTRAL_DOT;
     use crate::space::presets::PRESETS;
+    use appearance_settings::Theme;
 
     #[test]
     fn grain_is_a_fraction_of_the_scheme_ceiling() {
@@ -157,7 +158,7 @@ mod tests {
         let look = SpaceLook {
             dots: vec![NEUTRAL_DOT],
             grain: Grain(35),
-            theme: crate::appearance::theme::Theme::System,
+            theme: appearance_settings::Theme::System,
         };
         let vars = FrameVars::of(&look, Scheme::Light);
         let style = vars.style_attr();

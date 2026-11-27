@@ -1,5 +1,5 @@
 //! The person's light or dark scheme and their Reduce transparency choice, read from Bardo's
-//! `appearance.toml` through ui-settings and followed while the compositor runs.
+//! `appearance.toml` through appearance-settings and followed while the compositor runs.
 //!
 //! The transparency is Bardo's `appearance.transparency` (`system` or `reduced`; a file without it
 //! is `system`), the one desktop-wide setting the shell reads too: `reduced` draws every blur as
@@ -16,8 +16,9 @@
 //! directory (a test, a jail) uses a fixed answer and never touches a bus.
 
 use crate::State;
+use appearance_settings::AppearanceFile;
 use base_spawn::Spawner;
-use compositor_ipc::system_scheme::SchemeWatch;
+use compositor_ipc::system_scheme::{SchemeSource, SchemeWatch};
 use compositor_layout::{Scheme, Theme, Transparency, reduced_stand_in, scheme_of};
 use compositor_render::{BlurFinish, Rgba8};
 use settings_store_fs::{ConfigRoot, Store};
@@ -29,7 +30,6 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Wake, Waker};
 use std::thread::Thread;
-use ui_settings::{AppearanceFile, SystemSettingsSource};
 
 /// The appearance store of `home`: the real config tree, or a stand-in directory (a test or a
 /// jail never reaches the machine's own file).
@@ -98,24 +98,25 @@ pub fn blur_finish(transparency: Transparency, scheme: Scheme) -> BlurFinish {
 }
 
 /// Where the desktop's scheme is read from for `home`: the session bus for the real config tree,
-/// a fixed answer (the defaults) for a stand-in directory, so a test never reaches a bus.
+/// a fixed answer (light) for a stand-in directory, so a test never reaches a bus.
 ///
 /// ```
 /// use compositor_app::appearance::system_source;
-/// use ui_settings::SystemSettingsSource;
+/// use compositor_ipc::system_scheme::SchemeSource;
 ///
-/// assert_eq!(system_source(None), SystemSettingsSource::Portal);
+/// assert_eq!(system_source(None), SchemeSource::Portal);
 /// ```
 #[must_use]
-#[expect(
-    clippy::default_trait_access,
-    reason = "compositor-app has no dependency on ui-style, so `SystemSettings` cannot be named here"
-)]
-pub fn system_source(home: Option<&Path>) -> SystemSettingsSource {
+pub fn system_source(home: Option<&Path>) -> SchemeSource {
     match home {
-        None => SystemSettingsSource::Portal,
-        Some(_) => SystemSettingsSource::Fixed(Default::default()),
+        None => SchemeSource::Portal,
+        Some(_) => SchemeSource::Fixed { dark: false },
     }
+}
+
+/// The scheme the desktop reports: dark, or light (no preference is light).
+fn scheme_of_dark(dark: bool) -> Scheme {
+    if dark { Scheme::Dark } else { Scheme::Light }
 }
 
 /// The scheme a `theme` paints given the desktop's `system` scheme: only `system` follows it.
@@ -180,11 +181,8 @@ impl Heard {
 
 /// Starts following the desktop's scheme from `source`, its answers sent as `Input::System`. A
 /// watcher that cannot start is logged and `system` stays Light.
-fn follow_desktop(
-    source: SystemSettingsSource,
-    sender: channel::Sender<Input>,
-) -> Option<SchemeWatch> {
-    let tell = move |scheme: Scheme| match sender.send(Input::System(scheme)) {
+fn follow_desktop(source: SchemeSource, sender: channel::Sender<Input>) -> Option<SchemeWatch> {
+    let tell = move |dark: bool| match sender.send(Input::System(scheme_of_dark(dark))) {
         Ok(()) => ControlFlow::Continue(()),
         Err(_) => ControlFlow::Break(()),
     };
@@ -242,7 +240,7 @@ pub(crate) fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate
         .map_err(|error| crate::StartError::Loop(error.to_string()))
 }
 
-/// Runs each task on a thread of its own, parked between wake-ups: ui-settings' watch is an
+/// Runs each task on a thread of its own, parked between wake-ups: the settings store's watch is an
 /// async task and the compositor runs no async runtime.
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct ThreadSpawner;
@@ -423,17 +421,13 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::default_trait_access,
-        reason = "compositor-app has no dependency on ui-style, so `SystemSettings` cannot be named here"
-    )]
     fn a_stand_in_home_never_reaches_a_bus() {
         let jail = Path::new("/nonexistent/compositor-jail");
         assert_eq!(
             system_source(Some(jail)),
-            SystemSettingsSource::Fixed(Default::default())
+            SchemeSource::Fixed { dark: false }
         );
-        assert_eq!(system_source(None), SystemSettingsSource::Portal);
+        assert_eq!(system_source(None), SchemeSource::Portal);
     }
 
     #[test]

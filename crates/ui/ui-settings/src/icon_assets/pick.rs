@@ -1,9 +1,9 @@
 //! Which file draws an app at a size and a style (design/08-ICONS.md 2.11).
 
 use super::lookup::{Presence, a_file, apps_dir};
+use appearance_settings::IconStyle;
 use settings_types::Px;
 use std::path::{Path, PathBuf};
-use ui_style::icon::retint::IconStyle;
 
 /// The sizes every app ships in every style, each drawn directly (design/08 2.11): the freedesktop
 /// sizes, their `@2` up to 256@2, and the 1.5x sizes 36, 48, 72, 96.
@@ -84,9 +84,9 @@ pub fn app_icon_path(app: &str, size: Px, style: IconStyle) -> Option<PathBuf> {
 mod tests {
     use super::{APP_ICON_PX, AppIconName, find_app_icon, sizes_to_try};
     use crate::icon_assets::lookup::{Presence, a_file};
+    use appearance_settings::IconStyle;
     use settings_types::Px;
     use std::path::{Path, PathBuf};
-    use ui_style::icon::retint::IconStyle;
 
     #[test]
     fn the_exact_size_then_the_nearest_larger_then_the_largest_smaller() {

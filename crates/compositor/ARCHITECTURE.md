@@ -51,7 +51,7 @@ A1 and A4):
 | `compositor-wayland` | smithay's wayland frontend and desktop; names no device backend, reaches neither drm nor gbm (B6) |
 | `compositor-backend` | smithay's renderers, EGL, session and winit; names no `compositor_wayland` and no `smithay::wayland` module but dmabuf (B5); only its thin adapters name the device crates (B7), and they compile only under the features `tty` and `libinput` (A2) |
 | `compositor-testclient` | wayland-client and the protocol crates; no smithay (B9) |
-| `compositor-ipc`, `compositor` | ui-settings (B13; the test kit reaches it only through `compositor` and names none of it) |
+| `compositor-ipc`, `compositor` | no `ui-settings`: they read `appearance-settings` (`compositor`) and `settings-portal` (`compositor-ipc`), which name no toolkit (B13; the test kit reaches them only through `compositor` and names none of it) |
 | `compositor-privacy` | compositor-core, desktop-protocols, ui-helpers (no features: no bus), thiserror, tracing; reads no clock (the date is an argument) and no environment (the folders are arguments) |
 
 Every crate: no agent-tier or shell crate (B12), no text stack outside compositor-chrome (B15), no
@@ -513,7 +513,7 @@ ones, which is how the test kit's `Fixture` gets its fakes.
 **Add a settings key.**
 1. Add the typed field to the section in `crates/compositor-core/src/settings/` with its default
    in that section's `defaults()` (03 §1.17's value where one exists).
-2. Add the stored key to the ui-settings document and its conversion (the compositor's config module).
+2. Add the stored key to the settings document and its conversion (the compositor's config module).
 3. Extend `crates/compositor-core/src/settings/tests.rs`.
 
 **Add a layout strategy.**

@@ -1,10 +1,10 @@
 //! The one writer of `bardo/appearance.toml`: a view asks, this function writes, and the
 //! daemon's watch of the file then publishes the change to every surface.
 
+use appearance_settings::AppearanceFile;
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use ui_components::prelude::Appearance;
-use ui_settings::AppearanceFile;
 
 /// Write `next`'s theme, accent and motion into `bardo/appearance.toml`, keeping everything else
 /// in the file. A file that cannot be written leaves the appearance as it was, which the picker
@@ -29,8 +29,8 @@ fn with_appearance(file: AppearanceFile, next: Appearance) -> AppearanceFile {
 #[cfg(test)]
 mod tests {
     use super::with_appearance;
+    use appearance_settings::AppearanceFile;
     use ui_components::prelude::*;
-    use ui_settings::AppearanceFile;
 
     #[test]
     fn a_pick_changes_only_the_three_fields() {
@@ -41,7 +41,7 @@ mod tests {
             ..Appearance::default()
         };
         let file = with_appearance(AppearanceFile::default(), next);
-        assert_eq!(file.appearance.appearance(), next);
+        assert_eq!(Appearance::from(&file.appearance), next);
         assert_eq!(file.icons, AppearanceFile::default().icons);
     }
 }

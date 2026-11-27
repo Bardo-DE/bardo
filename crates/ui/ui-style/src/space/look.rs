@@ -2,7 +2,7 @@
 //! design/03-COLOR.md section 18). The accent is the desktop's, never a Space's.
 
 use super::palette::{Dot, NEUTRAL_DOT};
-use crate::appearance::theme::Theme;
+use appearance_settings::Theme;
 use serde::{Deserialize, Serialize};
 
 /// How loud the frame's grain is, 0 to 100.

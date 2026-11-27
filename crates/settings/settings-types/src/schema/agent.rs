@@ -94,7 +94,7 @@ pub const fn is_never_settable(path: &str) -> bool {
 /// [`AGENT_NEVER_SETTABLE`] prefix, if any.
 ///
 /// The one check behind [`Schema::from_toml`] and a live module's schema
-/// (`settings_dbus::LiveSchema::check`), so a file schema and a D-Bus-served one are refused
+/// (`settings_proto::LiveSchema::check`), so a file schema and a D-Bus-served one are refused
 /// for the same reason.
 ///
 /// [`Schema::from_toml`]: super::Schema::from_toml

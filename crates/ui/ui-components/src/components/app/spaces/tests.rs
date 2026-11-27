@@ -3,9 +3,9 @@ use super::menu_link::{DesktopSpace, LinkChange, Linking};
 use super::menu_pick::{SpacePick, Then, apply, delete_words, rows};
 use super::open_menu::Showing;
 use crate::components::menus::item::item::MenuItem;
+use appearance_settings::Theme;
 use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::{Desktop, Platform};
-use ui_style::appearance::theme::Theme;
 use ui_style::space::look::SpaceLook;
 
 fn key(text: &str) -> Key {

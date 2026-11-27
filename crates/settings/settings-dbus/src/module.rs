@@ -1,7 +1,8 @@
 //! What a daemon implements to serve a live module. The daemon owns the state; this crate only
 //! carries the calls (the stateless-library rule of Bardo refactor).
 
-use super::{LiveError, LiveSchema, Snapshot};
+use super::{LiveError, snapshot_from_reads};
+use settings_proto::{LiveSchema, Snapshot};
 use settings_types::schema::KeyPath;
 
 pub use dbus_kit::caller::{SenderName, Verdict};
@@ -54,7 +55,7 @@ pub trait LiveModule: Send + Sync + 'static {
             for spec in &schema.key {
                 reads.push((spec.path.clone(), self.get(&spec.path).await));
             }
-            Snapshot::from_reads(schema, reads)
+            snapshot_from_reads(schema, reads)
         }
     }
 

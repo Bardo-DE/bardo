@@ -16,8 +16,8 @@ use std::path::{Path, PathBuf};
 use base_fs::{NewFileMode, ReadCap, ReadError, read_capped};
 use image::imageops::FilterType;
 use image::{ImageFormat, ImageReader, Limits, RgbaImage};
+use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
-use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::icon::retint::retint_in;
 
@@ -216,8 +216,8 @@ mod tests {
     };
     use crate::app_icons::size::AssetPx;
     use std::path::PathBuf;
+    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
 
     fn temp(tag: &str) -> PathBuf {

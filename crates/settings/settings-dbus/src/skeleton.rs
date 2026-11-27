@@ -9,7 +9,8 @@ use zbus::{Connection, interface};
 
 use super::readers::{Readers, addressed};
 use super::value::{from_wire, to_wire};
-use super::{Access, Caller, INTERFACE, LiveError, LiveModule, SenderName, Verdict};
+use super::{Access, Caller, LiveError, LiveModule, SenderName, Verdict};
+use settings_proto::INTERFACE;
 use settings_types::schema::KeyPath;
 
 /// The object `org.bardo.SettingsModule1` is exported from: the module and nothing else (the
@@ -190,7 +191,7 @@ impl Served {
 
 /// Exports `module` as `org.bardo.SettingsModule1` at `path` on `connection`.
 ///
-/// The module's schema is checked first ([`LiveSchema::check`](super::LiveSchema::check)): a
+/// The module's schema is checked first ([`LiveSchema::check`](settings_proto::LiveSchema::check)): a
 /// module that marks a never-settable key agent-settable is not exported. The caller still
 /// requests its well-known bus name.
 ///
@@ -231,7 +232,8 @@ pub async fn serve<M: LiveModule>(
 #[cfg(test)]
 mod tests {
     use super::{Readers, Skeleton};
-    use crate::{Access, Caller, INTROSPECTION_XML, LiveError, LiveModule, LiveSchema, Verdict};
+    use crate::{Access, Caller, LiveError, LiveModule, Verdict};
+    use settings_proto::{INTROSPECTION_XML, LiveSchema};
     use settings_types::schema::KeyPath;
     use zbus::object_server::Interface;
 

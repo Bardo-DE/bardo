@@ -6,7 +6,8 @@ use settings_app_link::bus::{BusSource, Daemon, Vouch};
 use settings_app_link::modules::{Followed, ModulesLink};
 use settings_app_model::Absence;
 use settings_app_system::modules::OnBus;
-use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, Verdict, serve};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };

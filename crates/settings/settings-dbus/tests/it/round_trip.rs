@@ -2,7 +2,8 @@
 
 use std::pin::Pin;
 
-use settings_dbus::{AnyOwner, Change, INTERFACE, LiveClient, LiveError, serve};
+use settings_dbus::{AnyOwner, Change, LiveClient, LiveError, serve};
+use settings_proto::INTERFACE;
 use settings_types::schema::{AgentSetting, KeyKind, KeyPath};
 use zbus::export::futures_core::Stream;
 
@@ -236,7 +237,7 @@ impl settings_dbus::LiveModule for Shared {
     ) -> settings_dbus::Verdict {
         self.0.permit(caller, access).await
     }
-    async fn describe(&self) -> settings_dbus::LiveSchema {
+    async fn describe(&self) -> settings_proto::LiveSchema {
         self.0.describe().await
     }
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {

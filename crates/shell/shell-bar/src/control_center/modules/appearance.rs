@@ -19,7 +19,7 @@ use shell_ui_kit::hooks::use_appearance;
 #[component]
 pub fn AppearanceModule() -> Element {
     let environment = use_appearance()();
-    let value = environment.settings.appearance.appearance();
+    let value = Appearance::from(&environment.settings.appearance);
     let system = environment.system.scheme;
     let hint = match (value.theme, system) {
         (Theme::System, scheme) => Some(scheme.label().to_owned()),

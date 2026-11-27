@@ -16,8 +16,8 @@ use shell_model::wallpaper::WallpaperService;
 use shell_ui_kit::hooks::{use_appearance, use_map_when_shown, use_service};
 use shell_ui_kit::links::{SpacesBarFeed, SpacesBarLink};
 use ui_components::prelude::{
-    BarLayout as DrawnBar, BarSpaceKey, DropState, ImageSource, Rect, Scheme, SpaceLook, SpaceTile,
-    resolve,
+    Appearance, BarLayout as DrawnBar, BarSpaceKey, DropState, ImageSource, Rect, Scheme,
+    SpaceLook, SpaceTile, resolve,
 };
 
 use crate::wallpaper::url_for;
@@ -74,7 +74,7 @@ fn use_wallpaper_url(name: Option<String>) -> Memo<Option<String>> {
     let environment = use_appearance();
     use_memo(move || {
         let environment = environment();
-        let appearance = environment.settings.appearance.appearance();
+        let appearance = Appearance::from(&environment.settings.appearance);
         let scheme: Scheme =
             resolve(appearance, SpaceLook::default().theme, environment.system).scheme;
         let on = name.clone().map(OutputName);

@@ -52,7 +52,7 @@ impl PopupRoom {
 pub fn use_popup_look() -> PopupLook {
     let environment = use_appearance()();
     PopupLook {
-        appearance: environment.settings.appearance.appearance(),
+        appearance: (&environment.settings.appearance).into(),
         system: environment.system,
     }
 }

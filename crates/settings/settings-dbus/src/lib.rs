@@ -7,6 +7,8 @@
 //! - the daemon implements [`LiveModule`] over its own state and hands it to [`serve`];
 //! - the Settings app talks to it through [`LiveClient`] (or the raw [`SettingsModule1Proxy`]).
 //!
+//! The types both sides name ([`LiveSchema`](settings_proto::LiveSchema), [`Snapshot`](settings_proto::Snapshot), the limits, the timeouts, the interface text) live in `settings-proto`.
+//!
 //! The wire interface is frozen; `org.bardo.SettingsModule1.xml` beside this file is its
 //! introspection XML and a test keeps the skeleton equal to it:
 //!
@@ -23,20 +25,20 @@
 //! (a peer that called `Describe`, `Get` or `Snapshot`, or [`LiveClient::changes`]), by unique
 //! name; a peer it refused hears nothing. A client takes a signal only from the module it asked
 //! (the proxy filters on the module's unique name), and every call a client makes has a
-//! deadline ([`Timeouts`], [`LiveError::Timeout`]).
+//! deadline ([`Timeouts`](settings_proto::Timeouts), [`LiveError::Timeout`]).
 //!
 //! Who owns the name: a well-known name goes to whoever asks first, so [`LiveClient`] takes an
 //! [`OwnerCheck`] and asks it about the name's owner before the first read or `Set`, and again
 //! whenever the owner is another connection. A refused owner is [`LiveError::NotTheService`] and
 //! nothing is sent to it, so a typed secret never reaches a squatter; the client then speaks to the
-//! owner that passed by its unique name. What a module's replies may carry is capped ([`limits`]).
+//! owner that passed by its unique name. What a module's replies may carry is capped (`settings_proto::limits`).
 //!
 //! Values travel as `b` (bool), `x` (integer), `s` (string) or `as` (list of strings); see
 //! [`value`].
 //!
 //! Agent-never-settable (section 9.7): a schema that marks an `accounts.`, `ai.`, `privacy.`, `network.` or `security.` key (or any
 //! [`AGENT_NEVER_SETTABLE`](settings_types::schema::AGENT_NEVER_SETTABLE) prefix) agent-settable is
-//! refused by [`LiveSchema::check`], which [`serve`] runs before it exports anything and
+//! refused by [`LiveSchema::check`](settings_proto::LiveSchema::check), which [`serve`] runs before it exports anything and
 //! `Describe` runs on every call.
 #![expect(
     missing_docs,
@@ -45,15 +47,13 @@
 
 mod client;
 mod error;
-pub mod limits;
+mod limits;
 mod link;
 mod module;
 mod owner;
 mod readers;
-mod schema;
 mod skeleton;
 mod snapshot;
-mod timeouts;
 pub mod value;
 
 pub use base_time::deadline::Deadline;
@@ -63,13 +63,5 @@ pub use module::{Access, Caller, LiveModule, SenderName, Verdict};
 #[cfg(feature = "testing")]
 pub use owner::AnyOwner;
 pub use owner::{OwnerAnswer, OwnerCheck};
-pub use schema::{LiveSchema, LiveSchemaError};
 pub use skeleton::{Served, serve};
-pub use snapshot::Snapshot;
-pub use timeouts::Timeouts;
-
-/// The D-Bus interface name.
-pub const INTERFACE: &str = "org.bardo.SettingsModule1";
-
-/// The introspection XML of [`INTERFACE`], the frozen wire form.
-pub const INTROSPECTION_XML: &str = include_str!("org.bardo.SettingsModule1.xml");
+pub use snapshot::snapshot_from_reads;

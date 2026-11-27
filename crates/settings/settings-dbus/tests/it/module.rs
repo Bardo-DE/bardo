@@ -4,7 +4,8 @@
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Verdict};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Page, Section,

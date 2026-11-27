@@ -11,7 +11,7 @@ use calloop::channel::Channel;
 use compositor_core::policy::Power;
 use compositor_core::privilege::{Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict};
 use compositor_dbus::BUS_NAME;
-use settings_dbus::LiveSchema;
+use settings_proto::LiveSchema;
 use settings_types::schema::{KeyKind, KeySpec};
 use zbus::zvariant::{OwnedValue, Value};
 

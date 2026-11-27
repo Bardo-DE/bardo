@@ -3,10 +3,8 @@
 
 use std::collections::BTreeMap;
 
-use settings_dbus::{
-    Access, AnyOwner, Caller, INTERFACE, LiveClient, LiveError, LiveModule, LiveSchema, Snapshot,
-    Verdict, serve,
-};
+use settings_dbus::{Access, AnyOwner, Caller, LiveClient, LiveError, LiveModule, Verdict, serve};
+use settings_proto::{INTERFACE, LiveSchema, Snapshot};
 use settings_types::schema::KeyPath;
 use zbus::interface;
 use zbus::zvariant::Value;
@@ -121,7 +119,7 @@ async fn a_key_removed_between_describe_and_get_is_dropped_from_schema_and_value
 #[tokio::test]
 async fn another_get_failure_fails_the_snapshot() {
     let reads = [(key(TOGGLE), Err(LiveError::Failed("disk".to_owned())))];
-    match Snapshot::from_reads(schema(), reads) {
+    match settings_dbus::snapshot_from_reads(schema(), reads) {
         Err(LiveError::Failed(_)) => {}
         other => panic!("expected Failed, got {other:?}"),
     }

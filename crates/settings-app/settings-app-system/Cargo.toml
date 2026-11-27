@@ -36,6 +36,7 @@ settings-app-link = {path = "../settings-app-link"}
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
 md-5 = { workspace = true }
 engine-install = {path = "../../engines/engine-install"}

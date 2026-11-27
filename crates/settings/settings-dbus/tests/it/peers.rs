@@ -4,9 +4,9 @@ use std::pin::Pin;
 use std::time::{Duration, Instant};
 
 use settings_dbus::{
-    Access, AnyOwner, Caller, Deadline, INTERFACE, LiveClient, LiveError, LiveModule, LiveSchema,
-    Timeouts, Verdict, serve,
+    Access, AnyOwner, Caller, Deadline, LiveClient, LiveError, LiveModule, Verdict, serve,
 };
+use settings_proto::{INTERFACE, LiveSchema, Timeouts};
 use settings_types::schema::KeyPath;
 use zbus::export::futures_core::Stream;
 use zbus::message::Type;

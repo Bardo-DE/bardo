@@ -77,7 +77,7 @@ fn the_raw_import_and_the_payload_fixup_run_and_a_change_is_saved() {
     assert_eq!(spaces.current().payload.folder, "x!");
     assert_eq!(
         spaces.current().look.theme,
-        ui_style::appearance::theme::Theme::Dark
+        appearance_settings::Theme::Dark
     );
     let SpacesLoad::Stored(saved) = disk.load_spaces::<Note, String>(|_| {}) else {
         panic!("the fix-up was written back");

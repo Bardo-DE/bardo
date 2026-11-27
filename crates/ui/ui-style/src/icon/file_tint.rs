@@ -7,12 +7,13 @@
 //! properties on the icon (`--file-tab-l` ... `--file-mark`), which it reads under the root's
 //! `data-theme` as a tinted plate's are.
 
-use super::retint::{IconStyle, Tint, recolour};
+use super::retint::{Tint, recolour};
 use super::tone_band::Tone;
 use crate::appearance::theme::Scheme;
 use crate::tokens::file_icon::FileIconColour;
 use crate::tokens::hex::Hex;
 use crate::tokens::name::VarName;
+use appearance_settings::IconStyle;
 use base_words::Word;
 use std::fmt::Write as _;
 

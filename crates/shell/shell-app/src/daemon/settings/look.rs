@@ -10,6 +10,7 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
+use appearance_settings::AppearanceFile;
 use layer_shell_host::HostHandle;
 use notify::{RecursiveMode, Watcher};
 use settings_store_fs::{Store, WatchState};
@@ -19,7 +20,6 @@ use tokio::sync::mpsc;
 use ui_components::style::kit::LookStyle;
 use ui_extensions::{Capability, ExtensionsFile, Search, look};
 use ui_host_hooks::TokioSpawner;
-use ui_settings::AppearanceFile;
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;

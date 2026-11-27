@@ -9,4 +9,4 @@
 # ui-settings fails when the doc differs from the schema, and this script is the fix.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-exec cargo run --quiet -p ui-settings --example doc_tables -- "$@" design/22-SETTINGS.md
+exec cargo run --quiet -p appearance-settings --example doc_tables -- "$@" design/22-SETTINGS.md

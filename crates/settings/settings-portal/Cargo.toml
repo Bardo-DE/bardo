@@ -1,0 +1,33 @@
+[package]
+name = "settings-portal"
+description = "The desktop's appearance preferences (dark, reduced motion, higher contrast) from the settings portal on Linux and from the user's defaults on a Mac, as plain values."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-spawn = { path = "../../base/base-spawn" }
+# The deadline the portal client runs its calls under.
+base-time = { path = "../../base/base-time" }
+settings-store = { path = "../settings-store" }
+zbus = { workspace = true, features = ["default"], optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# The system's appearance and accessibility preferences (`macos.rs`), read from the user's
+# defaults through safe bindings, and the timer the watch reads them again on.
+futures-timer = { workspace = true }
+objc2-core-foundation = { workspace = true, features = ["std", "CFBase", "CFString", "CFNumber", "CFPreferences", "CFPropertyList"] }
+
+[features]
+default = ["desktop"]
+# Our desktop's integration: the settings portal client (`bus.rs`). Without it the answers are
+# the defaults and never change; no D-Bus client is built.
+desktop = ["dep:zbus"]
+# Drive zbus on the tokio runtime the program already runs (see the workspace zbus note).
+tokio = ["desktop", "zbus/tokio"]
+
+[lints]
+workspace = true

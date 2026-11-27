@@ -129,7 +129,7 @@ pub(crate) fn launcher(output: OutputInfo) -> Element {
     let environment = use_appearance()();
     let hours = use_hours();
     let look = use_active_look(&output);
-    let appearance = environment.settings.appearance.appearance();
+    let appearance = Appearance::from(&environment.settings.appearance);
     let icons = RowIcons {
         look: icon_look(
             &environment.settings.icons,

@@ -20,6 +20,7 @@ settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 ui-settings = { path = "../../ui/ui-settings", features = ["tokio"] }
+appearance-settings = { path = "../../settings/appearance-settings" }
 ui-extensions = {path = "../../ui/ui-extensions"}
 notify = { workspace = true }
 shell-kit = {path = "../shell-kit"}

@@ -2,37 +2,47 @@
 //!
 //! A thread at the binary's edge that reads the scheme once and then tells the compositor each time
 //! it changes, as `sleep` and `signals` do for their buses. The compositor names no bus type: the
-//! one D-Bus crate is this one (A4). The scheme is `ui_style`'s own `Scheme` (no preference is
-//! light).
+//! one D-Bus crate is this one (A4). The scheme is told as whether it is dark (no preference is
+//! light); the compositor maps it to its own scheme type.
 //!
-//! The source is a seam: [`SystemSettingsSource::Portal`] reaches the session bus; a test passes
-//! [`SystemSettingsSource::Fixed`] and never does.
+//! The source is a seam: [`SchemeSource::Portal`] reaches the session bus; a test passes
+//! [`SchemeSource::Fixed`] and never does.
 //!
 //! ```
-//! use compositor_ipc::system_scheme::SchemeWatch;
-//! use ui_settings::SystemSettingsSource;
-//! use ui_style::appearance::theme::Scheme;
+//! use compositor_ipc::system_scheme::{SchemeSource, SchemeWatch};
 //! use std::ops::ControlFlow;
 //! use std::sync::mpsc;
 //!
 //! let (tx, rx) = mpsc::channel();
-//! let _watch = SchemeWatch::start(SystemSettingsSource::Fixed(Default::default()), move |scheme| {
-//!     match tx.send(scheme) {
+//! let _watch = SchemeWatch::start(SchemeSource::Fixed { dark: false }, move |dark| {
+//!     match tx.send(dark) {
 //!         Ok(()) => ControlFlow::Continue(()),
 //!         Err(_) => ControlFlow::Break(()),
 //!     }
 //! })
 //! .expect("a thread starts");
-//! assert_eq!(rx.recv(), Ok(Scheme::Light));
+//! assert_eq!(rx.recv(), Ok(false));
 //! ```
 
 use crate::stop_on_drop::StopOnDrop;
 use base_spawn::Spawner;
+use settings_portal::Watch;
 use std::ops::ControlFlow;
 use std::pin::Pin;
 use tokio::sync::oneshot;
-use ui_settings::{SystemSettingsSource, SystemSettingsWatch};
-use ui_style::appearance::theme::Scheme;
+
+/// Where the desktop's scheme is read from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SchemeSource {
+    /// The settings portal on the session bus. A desktop without it answers light and never
+    /// changes.
+    Portal,
+    /// This answer, forever: a test, or a stand-in config home that never reaches a bus.
+    Fixed {
+        /// Whether the fixed scheme is dark.
+        dark: bool,
+    },
+}
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
@@ -58,16 +68,16 @@ pub struct SchemeWatch {
 }
 
 impl SchemeWatch {
-    /// Reads `source`'s colour scheme and passes it to `tell` (from the watcher's thread), then
-    /// passes each change. `tell` returning `Break` ends the watch. A desktop without the portal
-    /// is the default scheme once and never a change.
+    /// Reads `source`'s colour scheme and passes whether it is dark to `tell` (from the watcher's
+    /// thread), then passes each change. `tell` returning `Break` ends the watch. A desktop
+    /// without the portal is light once and never a change.
     ///
     /// # Errors
     ///
     /// Returns [`SchemeError::Thread`] when the watcher's thread cannot be started.
     pub fn start(
-        source: SystemSettingsSource,
-        tell: impl FnMut(Scheme) -> ControlFlow<()> + Send + 'static,
+        source: SchemeSource,
+        tell: impl FnMut(bool) -> ControlFlow<()> + Send + 'static,
     ) -> Result<SchemeWatch, SchemeError> {
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -85,14 +95,19 @@ impl SchemeWatch {
 }
 
 /// The first answer, then every change, until `tell` breaks, the portal goes or `stopped` fires.
+/// A fixed source answers once.
 async fn follow(
-    source: SystemSettingsSource,
-    mut tell: impl FnMut(Scheme) -> ControlFlow<()>,
+    source: SchemeSource,
+    mut tell: impl FnMut(bool) -> ControlFlow<()>,
     mut stopped: oneshot::Receiver<()>,
 ) {
+    if let SchemeSource::Fixed { dark } = source {
+        drop(tell(dark));
+        return;
+    }
     let spawner = InRuntime(tokio::runtime::Handle::current());
-    let mut watch = SystemSettingsWatch::start(&source, &spawner).await;
-    if tell(watch.current().scheme).is_break() {
+    let mut watch = Watch::start(&spawner).await;
+    if tell(watch.current().dark).is_break() {
         return;
     }
     loop {
@@ -100,7 +115,7 @@ async fn follow(
             _ = &mut stopped => return,
             next = watch.changed() => match next {
                 Some(prefs) => {
-                    if tell(prefs.scheme).is_break() {
+                    if tell(prefs.dark).is_break() {
                         return;
                     }
                 }
@@ -114,21 +129,10 @@ async fn follow(
 mod tests {
     use super::*;
     use std::sync::mpsc;
-    use ui_settings::scheme_from_portal;
 
-    /// A fixed source preferring the portal's `color-scheme` `code`.
-    fn fixed(code: u32) -> SystemSettingsSource {
-        let mut source =
-            SystemSettingsSource::Fixed(ui_style::appearance::system::SystemSettings::default());
-        if let SystemSettingsSource::Fixed(prefs) = &mut source {
-            prefs.scheme = scheme_from_portal(code);
-        }
-        source
-    }
-
-    fn watching(source: SystemSettingsSource) -> (SchemeWatch, mpsc::Receiver<Scheme>) {
+    fn watching(source: SchemeSource) -> (SchemeWatch, mpsc::Receiver<bool>) {
         let (tx, rx) = mpsc::channel();
-        let watch = SchemeWatch::start(source, move |scheme| match tx.send(scheme) {
+        let watch = SchemeWatch::start(source, move |dark| match tx.send(dark) {
             Ok(()) => ControlFlow::Continue(()),
             Err(_) => ControlFlow::Break(()),
         })
@@ -138,16 +142,16 @@ mod tests {
 
     #[test]
     fn a_fixed_source_answers_its_scheme_and_never_touches_the_bus() {
-        for code in [0, 1, 2] {
-            let (_watch, rx) = watching(fixed(code));
-            assert_eq!(rx.recv(), Ok(scheme_from_portal(code)), "code {code}");
+        for dark in [false, true] {
+            let (_watch, rx) = watching(SchemeSource::Fixed { dark });
+            assert_eq!(rx.recv(), Ok(dark));
         }
     }
 
     #[test]
     fn a_fixed_source_never_changes() {
-        let (watch, rx) = watching(fixed(1));
-        assert_eq!(rx.recv(), Ok(Scheme::Dark));
+        let (watch, rx) = watching(SchemeSource::Fixed { dark: true });
+        assert_eq!(rx.recv(), Ok(true));
         drop(watch);
         assert!(rx.recv().is_err(), "nothing more, and the thread is gone");
     }

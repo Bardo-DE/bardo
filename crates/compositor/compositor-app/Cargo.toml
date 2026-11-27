@@ -44,7 +44,7 @@ ui-core = {path = "../../ui/ui-core", default-features = false}
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
-ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["desktop"] }
+appearance-settings = { path = "../../settings/appearance-settings" }
 keymap = {path = "../../keymap/keymap"}
 key-remap-client = {path = "../../input/key-remap-client"}
 # A14's feature list, the union the binary links (xwayland off until the Q-C5 gate). The device

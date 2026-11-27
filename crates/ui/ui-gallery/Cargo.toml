@@ -15,7 +15,7 @@ ui-core = {path = "../ui-core"}
 ui-components = {path = "../ui-components"}
 ui-shell = {path = "../ui-shell"}
 ui-lint = {path = "../ui-lint"}
-ui-settings = { path = "../ui-settings", default-features = false }
+appearance-settings = { path = "../../settings/appearance-settings" }
 # `pdf`: so a workspace build compiles and tests `PdfFileThumb` (its tests need it).
 ui-blitz = {path = "../ui-blitz", default-features = false, features = ["pdf", "spell"]}
 ui-harness = {path = "../ui-harness", default-features = false}
@@ -29,7 +29,7 @@ dioxus-ssr = { workspace = true }
 [features]
 default = ["desktop"]
 # Desktop integration of UI kit crates this one uses (design/36 section 1).
-desktop = ["ui-settings/desktop", "ui-blitz/desktop"]
+desktop = ["ui-blitz/desktop"]
 
 [lints]
 workspace = true

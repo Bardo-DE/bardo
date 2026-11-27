@@ -1,17 +1,13 @@
 //! The keys `appearance.toml` holds (design/22-SETTINGS.md sections 3.1-3.3 and 4.3-4.4).
 //!
-//! Every struct is `#[serde(default)]` and read through [`settings_store_fs::Store`], so a bad value costs
+//! Every struct is `#[serde(default)]` and read through the settings store, so a bad value costs
 //! only its own key; a key a struct does not read is reported on load and dropped on save.
 
 use serde::{Deserialize, Serialize};
 use settings_types::RegionSettings;
 use settings_types::schema::{Page, Provided};
-use ui_style::appearance::accent::Accent;
-use ui_style::appearance::appearance::Appearance;
-use ui_style::appearance::motion::Motion;
-use ui_style::appearance::theme::Theme;
-use ui_style::appearance::transparency::Transparency;
-pub use ui_style::icon::retint::IconStyle;
+
+use crate::{Accent, IconStyle, Motion, Theme, Transparency};
 
 /// `appearance.*`: what every surface resolves its look from.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
@@ -102,24 +98,11 @@ impl Default for AppearanceSettings {
     }
 }
 
-impl AppearanceSettings {
-    /// The choices a `ui_components::prelude::Ds` root resolves.
-    #[must_use]
-    pub fn appearance(&self) -> Appearance {
-        Appearance {
-            theme: self.theme,
-            accent: self.accent,
-            motion: self.motion_level,
-            transparency: self.transparency,
-        }
-    }
-}
-
 /// `icons.*`: how our app icons are drawn (design/08-ICONS.md section 2.10).
 ///
 /// Only `style` is a setting. The plate's inset and glyph shares are the `--plate-*` tokens
-/// (`ui_style::icon::family::PlateShare`), the symbolic chroma limit is
-/// `ChromaLimit::PROPOSED`, and a Monochrome icon takes its hue from the Space (design/08).
+/// (the UI kit's `PlateShare`), the symbolic chroma limit is
+/// the UI kit's `ChromaLimit::PROPOSED`, and a Monochrome icon takes its hue from the Space (design/08).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "bardo/appearance.toml", domain = "icons", page = Page::Appearance)]

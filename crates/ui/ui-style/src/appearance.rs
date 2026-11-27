@@ -1,7 +1,6 @@
 //! The appearance vocabulary: what a person picks (theme, accent, motion, transparency), what the
 //! desktop says (system preferences), and what the two resolve to on a `.ds` root.
 
-pub mod accent;
 #[allow(
     clippy::module_inception,
     reason = "the layout names the file for its one concept"
@@ -14,4 +13,3 @@ pub mod peek;
 pub mod resolve;
 pub mod system;
 pub mod theme;
-pub mod transparency;

@@ -5,7 +5,7 @@
 //!
 //! No file, no bus, no clock: a service, a compositor or a shell that never reads a settings file
 //! can still hold, parse and print all of it. Reading and writing files is `settings-store` and
-//! `settings-store-fs`; the live bus modules are `settings-dbus`.
+//! `settings-store-fs`; the live bus modules are `settings-proto` (the types) and `settings-dbus` (the bus).
 #![expect(
     missing_docs,
     reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"

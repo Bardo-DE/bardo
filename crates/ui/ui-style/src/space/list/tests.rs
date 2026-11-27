@@ -1,7 +1,7 @@
 use super::*;
-use crate::appearance::theme::Theme;
 use crate::space::look::Grain;
 use crate::space::palette::Dot;
+use appearance_settings::Theme;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 

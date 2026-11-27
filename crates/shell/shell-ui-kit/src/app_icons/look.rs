@@ -4,10 +4,10 @@
 //! Space's hue), and the scheme the surface paints (in the dark, Muted and Monochrome lift a raster
 //! into the UI kit's tone band, design/29 §11 F3). Pure.
 
+use appearance_settings::IconsSettings;
+use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
-use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
-use ui_settings::IconsSettings;
 
 /// The style and the tint every app icon on a surface is drawn in.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -58,13 +58,13 @@ pub fn icon_look(icons: &IconsSettings, space: &SpaceLook, scheme: Scheme) -> Ic
 #[cfg(test)]
 mod tests {
     use super::{IconLook, icon_look};
+    use appearance_settings::IconsSettings;
+    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
     use ui_components::style::space::presets::default_look;
-    use ui_settings::IconsSettings;
 
-    fn icons(style: ui_settings::IconStyle) -> IconsSettings {
+    fn icons(style: appearance_settings::IconStyle) -> IconsSettings {
         IconsSettings { style }
     }
 
@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn colour_and_muted_ignore_the_tint() {
-        use ui_settings::IconStyle as S;
+        use appearance_settings::IconStyle as S;
         let work = default_look(0, Grain(35));
         for (style, want) in [(S::Colour, IconStyle::Colour), (S::Muted, IconStyle::Muted)] {
             let look = icon_look(&icons(style), &work, Scheme::Light);
@@ -92,7 +92,7 @@ mod tests {
     /// Monochrome follows the workspace's preset: Work near 268, Home near 152.
     #[test]
     fn monochrome_takes_the_spaces_hue() {
-        use ui_settings::IconStyle::Monochrome;
+        use appearance_settings::IconStyle::Monochrome;
         let work = default_look(0, Grain(35));
         let home = default_look(1, Grain(55));
         let at = |space| icon_look(&icons(Monochrome), space, Scheme::Light);
@@ -110,7 +110,7 @@ mod tests {
     /// Colour draws every icon as it comes, so it keys on the light rule whatever the scheme.
     #[test]
     fn only_a_retinted_style_keys_on_the_scheme() {
-        use ui_settings::IconStyle as S;
+        use appearance_settings::IconStyle as S;
         let work = default_look(0, Grain(35));
         let cases = [
             (S::Colour, Scheme::Light),

@@ -152,10 +152,10 @@ impl settings_store::SettingsDoc for SpaceStore {
 #[cfg(test)]
 mod tests {
     use super::{SpaceDefaults, SpaceStore, Workspace, WorkspaceId, WorkspaceIndex};
-    use crate::appearance::theme::Theme;
     use crate::space::look::{Grain, SpaceLook};
     use crate::space::palette::Dot;
     use crate::space::presets::PRESETS;
+    use appearance_settings::Theme;
 
     fn look(hue: f32) -> SpaceLook {
         SpaceLook {

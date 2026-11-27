@@ -56,7 +56,7 @@ pub fn App() -> Element {
     use_context_provider(|| icons);
     rsx! {
         Ds {
-            appearance: now.settings.appearance.appearance(),
+            appearance: (&now.settings.appearance).into(),
             system: now.system,
             material: Material::Window,
             extent: RootExtent::Window,

@@ -8,7 +8,8 @@ use compositor_core::window::{
     FrameColour, FrameLook, FrameMetrics, FrameStyle, Light, LightDraw, ShadowLayer,
 };
 
-use ui_style::appearance::theme::{Scheme, Theme};
+use appearance_settings::Theme;
+use ui_style::appearance::theme::Scheme;
 use ui_style::tokens::chrome::light_hue::{Light as HueLight, light_hue};
 use ui_style::tokens::chrome::{ChromeToken, GroupHover, LightFill, LightState, light_state};
 use ui_style::tokens::colour::ColourToken;

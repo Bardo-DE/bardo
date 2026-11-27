@@ -16,6 +16,7 @@ inference-dbus = {path = "../../inference/inference-dbus"}
 memory-core = {path = "../../memory/memory-core"}
 settings-app-model = {path = "../settings-app-model"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
 sync-bus = {path = "../../sync/sync-bus"}
 tokio = {workspace = true, features = ["rt", "sync"]}

@@ -2,7 +2,7 @@
 
 use base_time::deadline::Deadline;
 
-/// How long each call to a live module may take before it is [`LiveError::Timeout`](super::LiveError::Timeout).
+/// How long each call to a live module may take before it is a timeout error.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Timeouts {
     /// `Describe`, `Get`, `Snapshot` and the subscription: the module reads its own state.

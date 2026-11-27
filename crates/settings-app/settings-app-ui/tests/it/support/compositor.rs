@@ -3,7 +3,8 @@
 //! (`privacy.<power>.<id>` with `.forget` beside a person's answer, a read-out for an
 //! administrator's) and writing down what it was asked.
 
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Verdict};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Note, Page, Section,

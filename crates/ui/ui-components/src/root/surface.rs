@@ -2,11 +2,12 @@
 //! same root. No stylesheet of its own.
 
 use super::chrome::{Ground, RootChrome};
+use appearance_settings::Accent;
 use base_words::Word;
 use dioxus::prelude::*;
 use ui_style::appearance::blur::blur_word;
 use ui_style::appearance::material::Material;
-use ui_style::appearance::{accent::Accent, resolve::Resolved, theme::Scheme};
+use ui_style::appearance::{resolve::Resolved, theme::Scheme};
 use ui_style::scope::{Scope, use_scope, use_scope_provider};
 use ui_style::tokens::accent_band::text_grounds::{TextOn, text_on};
 use ui_style::tokens::shape::Corner;

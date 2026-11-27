@@ -34,7 +34,8 @@ use account_wire::ParentWindow;
 use account_wire::names::ACCOUNTS_SETTINGS_PATH;
 use base_fs::atomic::AtomicFile;
 use caller_role_types::CallerRole;
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Verdict, serve};
+use settings_proto::{LiveSchema, Snapshot};
 use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use zbus::Connection;
@@ -245,7 +246,7 @@ impl<H: Host, C: Callers> LiveModule for AccountsSettings<H, C> {
             .iter()
             .map(|spec| (spec.path.clone(), self.value_in(&view, &spec.path)))
             .collect();
-        Snapshot::from_reads(schema, reads)
+        settings_dbus::snapshot_from_reads(schema, reads)
     }
 
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {

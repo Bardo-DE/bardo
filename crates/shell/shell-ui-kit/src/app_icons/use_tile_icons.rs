@@ -16,7 +16,7 @@ use crate::root::use_host_scale;
 pub fn use_tile_icons(output: &OutputInfo, side: LogicalPx) -> TileIcons {
     let environment = use_appearance()();
     let look = use_active_look(output);
-    let appearance = environment.settings.appearance.appearance();
+    let appearance = Appearance::from(&environment.settings.appearance);
     let resolved = resolve(appearance, look.theme, environment.system);
     TileIcons {
         cx: IconContext {

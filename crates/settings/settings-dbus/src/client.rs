@@ -12,7 +12,8 @@ use zbus::zvariant::{OwnedValue, Value};
 
 use super::link::Link;
 use super::value::{from_wire, to_wire};
-use super::{LiveError, LiveSchema, OwnerCheck, Snapshot, Timeouts, limits};
+use super::{LiveError, OwnerCheck, limits, snapshot_from_reads};
+use settings_proto::{LiveSchema, Snapshot, Timeouts};
 use settings_types::schema::KeyPath;
 
 /// The raw proxy of `org.bardo.SettingsModule1`: the frozen signatures, no conversion.
@@ -90,7 +91,7 @@ impl LiveClient {
 
     /// The module's schema (checked: a schema that breaks the never-settable rule is refused here
     /// too, so a misbehaving daemon cannot hand the Settings app an agent-settable `accounts.` key;
-    /// a schema over the [`limits`] is refused as well).
+    /// a schema over the limits of `settings_proto::limits` is refused as well).
     ///
     /// # Errors
     ///
@@ -226,7 +227,7 @@ async fn parts_on(proxy: &SettingsModule1Proxy<'static>) -> Result<Snapshot, Liv
     for spec in &schema.key {
         reads.push((spec.path.clone(), get_on(proxy, &spec.path).await));
     }
-    Snapshot::from_reads(schema, reads)
+    snapshot_from_reads(schema, reads)
 }
 
 /// Whether the peer answered that it has no such method (a module built before `Snapshot`).

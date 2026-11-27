@@ -3,8 +3,8 @@
 
 use crate::support;
 
+use appearance_settings::Theme;
 use support::Scratch;
-use ui_style::appearance::theme::Theme;
 use ui_style::space::look::Grain;
 use ui_style::space::store::{SpaceStore, WorkspaceId};
 

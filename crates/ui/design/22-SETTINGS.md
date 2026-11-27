@@ -1044,7 +1044,7 @@ GSettings ships schemas. The file is TOML, one `[[key]]` table per `KeySpec`, pl
 `file` and `version`. Developers run `cargo run -p <app> -- --write-schema <dir>` for a local
 install. The UI kit's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
 `bardo/appearance.toml`) has no app binary, so it is written by the `ui-settings` example
-`write_schema` (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`). A schema without a program (a stale file) is skipped with a warning.
+`write_schema` (`cargo run -p appearance-settings --example write_schema -- --write-schema <dir>`). A schema without a program (a stale file) is skipped with a warning.
 
 A settings file can hold tables the program owns that are not settings (inferd's `[engines]`,
 `[probe]`, `[callers]`). The schema names them in an optional top-level `foreign = ["engines",

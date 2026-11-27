@@ -17,6 +17,7 @@ account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}
 account-service-core = {path = "../account-service-core"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
 toml = { workspace = true }
 

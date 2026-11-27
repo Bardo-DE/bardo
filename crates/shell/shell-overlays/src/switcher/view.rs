@@ -39,7 +39,7 @@ pub const SWITCHER_CSS: &str = include_str!("style.css");
 pub(super) fn switcher(output: OutputInfo) -> Element {
     let environment = use_appearance()();
     let look = use_active_look(&output);
-    let appearance = environment.settings.appearance.appearance();
+    let appearance = Appearance::from(&environment.settings.appearance);
     let resolved = resolve(appearance, look.theme, environment.system);
     let level = resolved.motion;
     let icons = TileIcons {

@@ -3,9 +3,9 @@
 
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::text_runs::TextLine;
+use appearance_settings::Accent;
 use base_words::Word;
 use ui_core::vocab::Availability;
-use ui_style::appearance::accent::Accent;
 use ui_style::css::accents_css::swatch_var;
 
 /// One option: the value it stands for, its label, an optional image and whether it can be
@@ -134,7 +134,7 @@ mod tests {
 
     #[test]
     fn an_accent_choice_is_its_own_colour_circle() {
-        use ui_style::appearance::accent::Accent;
+        use appearance_settings::Accent;
         let choice = Choice::accent(Accent::Red);
         assert_eq!(choice.swatch.as_deref(), Some("--swatch-red"));
         assert_eq!(choice.value, Accent::Red);

@@ -73,7 +73,7 @@ fn Stage(
 ) -> Element {
     let environment = use_appearance()();
     let root = use_root_style();
-    let appearance = environment.settings.appearance.appearance();
+    let appearance = Appearance::from(&environment.settings.appearance);
     let scheme = resolve(appearance, SpaceLook::default().theme, environment.system).scheme;
     rsx! {
         Ds {

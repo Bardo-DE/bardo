@@ -3,13 +3,14 @@
 //! section 8). Like the other watches, the task sends each settled value to the host thread,
 //! which publishes it.
 
+use appearance_settings::AppearanceFile;
 use layer_shell_host::{HostEvent, HostHandle};
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
 use ui_host_hooks::TokioSpawner;
-use ui_settings::{AppearanceFile, Environment, SystemSettingsSource, SystemSettingsWatch};
+use ui_settings::{Environment, SystemSettingsSource, SystemSettingsWatch};
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;

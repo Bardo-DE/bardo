@@ -13,7 +13,7 @@ use settings_types::AppName;
 use std::path::Path;
 
 /// `compositor/settings.toml`: one section per `CompositorSettings` part. A key it does not read
-/// is reported on load and dropped on save (ui-settings).
+/// is reported on load and dropped on save (the settings store).
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CompositorDoc {
@@ -54,7 +54,7 @@ const APP: AppName = AppName::desktop("compositor");
 /// itself.
 ///
 /// `Some(dir)` stands in for `$XDG_CONFIG_HOME`, so the file is `dir/compositor/settings.toml`
-/// (ui-settings' scratch root); `None` reads the environment.
+/// (the settings store's scratch root); `None` reads the environment.
 ///
 /// # Errors
 ///
@@ -77,7 +77,7 @@ pub fn xwayland_of(home: Option<&Path>) -> XwaylandSection {
     store(home).load::<CompositorDoc>().value.xwayland
 }
 
-/// `home` as the ui-settings store it names.
+/// `home` as the settings store it names.
 pub(crate) fn store(home: Option<&Path>) -> Store {
     let root = home.map_or(ConfigRoot::Xdg, |dir| {
         ConfigRoot::Scratch(dir.to_path_buf())
@@ -85,7 +85,7 @@ pub(crate) fn store(home: Option<&Path>) -> Store {
     Store::new(root, APP)
 }
 
-/// A watch on `home`'s document: every settled change of the file arrives whole (ui-settings,
+/// A watch on `home`'s document: every settled change of the file arrives whole (settings-store-fs,
 /// debounced). It runs as a task on `spawn`.
 pub(crate) fn watch(home: Option<&Path>, spawn: &dyn base_spawn::Spawner) -> Watch<CompositorDoc> {
     store(home).watch::<CompositorDoc>(spawn)

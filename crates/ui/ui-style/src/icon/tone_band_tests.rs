@@ -4,10 +4,11 @@
 
 use super::family::PlateFamily;
 use super::plate_tint::{PlateStops, PlateTint};
-use super::retint::{IconStyle, Tint, retint_in};
+use super::retint::{Tint, retint_in};
 use crate::appearance::theme::Scheme;
 use crate::space::presets::PRESETS;
 use crate::tokens::hex::Hex;
+use appearance_settings::IconStyle;
 use ui_core::colour::contrast::ratio;
 use ui_core::colour::{oklab::Oklab, srgb::Srgb};
 

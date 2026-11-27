@@ -1,0 +1,21 @@
+[package]
+name = "settings-proto"
+description = "What a live settings module and its reader agree on, without a bus: the schema, the snapshot, the size limits, the timeouts and the interface description."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+settings-types = { path = "../settings-types" }
+# The deadline every call to another process runs under.
+base-time = { path = "../../base/base-time" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+
+[lints]
+workspace = true

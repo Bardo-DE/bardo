@@ -22,25 +22,9 @@
 use super::tone_band::Tone;
 use crate::appearance::theme::Scheme;
 use crate::space::palette::{Dot, derive};
-use base_words::Word;
+use appearance_settings::IconStyle;
 use ui_core::colour::oklab::{Oklab, Oklch};
 use ui_core::colour::srgb::{LinearRgb, Srgb};
-
-/// Which dialect our app icons are drawn in (`icons.style`, design/08-ICONS.md section 2.10).
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize, Word,
-)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-pub enum IconStyle {
-    /// Each app as designed; third-party icons as they come.
-    #[default]
-    Colour,
-    /// Chroma held down (the shipped cap 0.07 scaled to 0.04).
-    Muted,
-    /// One hue, the tint's, tone on tone.
-    Monochrome,
-}
 
 /// The hue and chroma a Monochrome icon is tinted with (`OKLCh`; hue in degrees).
 #[derive(Debug, Clone, Copy, PartialEq)]

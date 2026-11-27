@@ -4,7 +4,7 @@
 use base_testkit::TestEnv;
 use settings_types::Px;
 use std::path::Path;
-use ui_components::style::icon::retint::IconStyle;
+use ui_components::prelude::IconStyle;
 use ui_settings::icon_assets::{APP_ICON_PX, AppIconName, Presence, find_app_icon};
 
 #[test]

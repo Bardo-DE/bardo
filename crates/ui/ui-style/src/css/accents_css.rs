@@ -13,13 +13,14 @@
 //! that has to paint all six at once: a swatch written `var(--accent)` would show the selected
 //! hue on every button.
 
-use crate::appearance::{accent::Accent, system::Contrast, theme::Scheme};
+use crate::appearance::{system::Contrast, theme::Scheme};
 use crate::emit::{attr_selector, declaration, rule};
 use crate::tokens::{
     accent_band::roles::AccentRoles,
     accent_table::{accent_in, accent_of},
     colour::ColourToken,
 };
+use appearance_settings::Accent;
 use base_words::Word;
 
 /// The accent quads, light and dark.

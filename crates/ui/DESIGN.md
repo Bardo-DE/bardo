@@ -32,10 +32,10 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 
 | Module | Implements | Notes |
 | --- | --- | --- |
-| `ui-style/appearance/theme.rs` | 30 §3 (the one Look), 22-SETTINGS §3.1 `appearance.theme`; 03-COLOR §3 (two schemes) | `Theme` (the choice); `Scheme` is the resolved light/dark |
-| `ui-style/appearance/accent.rs` | 03-COLOR §5 and §20; 22-SETTINGS §3.1 `appearance.accent` | the eight macOS accents |
-| `ui-style/appearance/motion.rs` | 05-MOTION §3.2; 22-SETTINGS §3.1-3.2 `motion_level` | `Motion` (the preference) and `MotionLevel` (resolved) |
-| `ui-style/appearance/transparency.rs` | 27-HIG-PARITY §3.1 Reduce Transparency; 22-SETTINGS §3.1 `appearance.transparency` | `Transparency` (`System`, `Reduced`); `Resolved` carries it and a root writes `data-transparency=reduced` only for `Reduced` |
+| `appearance-settings/theme.rs` | 30 §3 (the one Look), 22-SETTINGS §3.1 `appearance.theme`; 03-COLOR §3 (two schemes) | `Theme` (the choice); `Scheme` (in `ui-style/appearance/theme.rs`) is the resolved light/dark |
+| `appearance-settings/accent.rs` | 03-COLOR §5 and §20; 22-SETTINGS §3.1 `appearance.accent` | the eight macOS accents |
+| `appearance-settings/motion.rs` | 05-MOTION §3.2; 22-SETTINGS §3.1-3.2 `motion_level` | `Motion` (the preference); `MotionLevel` (resolved) is in `ui-style/appearance/motion.rs` |
+| `appearance-settings/transparency.rs` | 27-HIG-PARITY §3.1 Reduce Transparency; 22-SETTINGS §3.1 `appearance.transparency` | `Transparency` (`System`, `Reduced`); `Resolved` carries it and a root writes `data-transparency=reduced` only for `Reduced` |
 | `ui-style/appearance/appearance.rs` | 04-COMPONENTS §26 (O-16: Theme, Accent, Motion) | lenient read |
 | `ui-style/appearance/system.rs` | plan "ui-settings" portal mapping | `SystemPrefs{scheme, motion, contrast}` |
 | `ui-style/appearance/resolve.rs` | 05-MOTION §9 rule 11 (explicit `data-motion`); 03-COLOR open decision 13 | `resolve()`, `Resolved::attrs()` |
@@ -179,7 +179,7 @@ Props added in the launcher gaps (FINDINGS "Launcher gaps"): `FieldFocus::Contro
 | Crate / module | Implements |
 | --- | --- |
 | `ui-settings/src/{doc,root,store}.rs` | 22-SETTINGS §2 (`SettingsDoc`, `ConfigRoot`, `Store`: TOML and JSON, atomic write) |
-| `ui-settings/src/{appearance,units,lenient}` | 22-SETTINGS §3.1-3.3, §4 (`AppearanceFile`, `AppearanceSettings`, `IconsSettings`, the unit newtypes, lenient read and the unknown-key report) |
+| `appearance-settings/src/settings.rs`, `settings-types` units, `settings-store` lenient read | 22-SETTINGS §3.1-3.3, §4 (`AppearanceFile`, `AppearanceSettings`, `IconsSettings`, the unit newtypes, lenient read and the unknown-key report) |
 | `ui-settings/src/{watch,latest}.rs` | 22-SETTINGS §2 "Live reload", §6.3 (`Store::watch` on a `Spawner`) |
 | `ui-settings/src/{portal,environment}.rs` | the plan's `ui-settings` design (portal, `use_environment`); `Environment::tint_alpha` feeds `Ds{tint_alpha}` |
 | `ui-blitz` | the plan's `ui-blitz` design; spike S7/S8 (`data:` net provider), S11 (font registration), S12 (modality); `blitz_host.rs` is `ds::prelude::DocumentHost` on Blitz, which `launch` and the harness wire and `ui_blitz::provide_host()` gives any other Blitz host whole; `measure.rs` and `focus.rs` are its geometry and focus parts; `texture_layer/` is `TextureLayer`, `use_gpu` and the window's `Gpu` (a GPU texture inside the document; FINDINGS "Texture layer"); features `pdf` (PDF output and `PdfFileThumb`, painted by pdfrum's `pdfrum-anyrender` crate, a git dependency pinned to pdfrum rev 61371040), `print` and `spell`; `tokio` is named by `launch/runtime.rs` alone (plus `tokio::sync` channels in the workers) |

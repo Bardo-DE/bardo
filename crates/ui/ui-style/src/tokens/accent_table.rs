@@ -8,10 +8,11 @@
 //! ground in the band (`accent_band::floors`) would not read it. At increased contrast the fill
 //! is the increased value too. The legibility gates hold at every hue (`tests/legibility.rs`).
 
-use crate::appearance::{accent::Accent, system::Contrast, theme::Scheme};
+use crate::appearance::{system::Contrast, theme::Scheme};
 use crate::tokens::accent_band::{derive::system_roles, picked::BAND, roles::AccentRoles};
 use crate::tokens::hex::Hex;
 use crate::tokens::system_hue::{HueShades, SystemHue};
+use appearance_settings::Accent;
 
 /// The Mac's graphite accent: systemGray, in its four forms.
 const GRAPHITE: HueShades = HueShades {

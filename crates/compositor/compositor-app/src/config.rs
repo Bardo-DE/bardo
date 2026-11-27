@@ -1,4 +1,4 @@
-//! The stored settings: `compositor/settings.toml` through ui-settings (lenient read, atomic write,
+//! The stored settings: `compositor/settings.toml` through the settings store (lenient read, atomic write,
 //! a debounced watch), its schema for the Settings app (`bardo-compositor --write-schema`).
 //!
 //! And the one conversion into the model's `CompositorSettings` (ARCHITECTURE.md, "Add a settings
@@ -24,7 +24,7 @@ pub use sections::{
 /// Why the settings could not be read or the schema written.
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigError {
-    /// ui-settings refused.
+    /// the settings store refused.
     #[error("settings: {0}")]
     Settings(String),
     /// The schema could not be written.

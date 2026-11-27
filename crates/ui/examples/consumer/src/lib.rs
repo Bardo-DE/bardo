@@ -36,7 +36,7 @@ pub fn App() -> Element {
     let now = env();
     rsx! {
         Ds {
-            appearance: now.settings.appearance.appearance(),
+            appearance: (&now.settings.appearance).into(),
             system: now.system,
             material: Material::Window,
             style { {STYLE} }

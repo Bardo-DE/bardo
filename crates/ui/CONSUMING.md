@@ -1754,7 +1754,7 @@ next to your `.desktop` file. `KeyKind` picks the widget for you — a two-varia
 `SegmentedControl`, more a `Menu`, a `#[settings(range = "..")]` newtype a `Slider` — see
 `ui_settings::schema::KeyKind::widget` (design/22-SETTINGS.md section 9.1) for the full table; you
 never choose a widget yourself. The UI kit's own schema is written the same way by the `ui-settings`
-example: `cargo run -p ui-settings --example write_schema -- --write-schema target/schema`.
+example: `cargo run -p appearance-settings --example write_schema -- --write-schema target/schema`.
 
 ### Extensions: finding, choosing and reading them
 

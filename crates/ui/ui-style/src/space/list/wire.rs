@@ -10,10 +10,10 @@
 
 use super::model::{Space, SpaceId, Spaces};
 use super::recall::Recall;
-use crate::appearance::theme::Theme;
 use crate::space::look::{Grain, SpaceLook};
 use crate::space::palette::{Dot, NEUTRAL_DOT};
 use crate::space::presets::default_look;
+use appearance_settings::Theme;
 use base_words::Word;
 use serde::de::{DeserializeOwned, Error, IgnoredAny};
 use serde::{Deserialize, Deserializer, Serialize};

@@ -12,7 +12,8 @@ use account_service_core::audit::AuditEvent;
 use base_testkit::Scratch;
 use caller_role_types::CallerRole;
 use common::*;
-use settings_dbus::{AnyOwner, LiveClient, LiveError, Snapshot};
+use settings_dbus::{AnyOwner, LiveClient, LiveError};
+use settings_proto::Snapshot;
 use settings_types::schema::KeyPath;
 
 #[tokio::test(flavor = "multi_thread")]

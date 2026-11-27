@@ -45,7 +45,7 @@ pub(super) fn bar(output: OutputInfo) -> Element {
     let tray = use_service::<TrayService>()();
     let look = use_active_look(&output);
     let popup_look = PopupLook {
-        appearance: environment.settings.appearance.appearance(),
+        appearance: (&environment.settings.appearance).into(),
         system: environment.system,
     };
     let root = use_root_style();

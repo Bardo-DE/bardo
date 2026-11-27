@@ -29,7 +29,8 @@ use account_core::{Account, Family};
 use account_wire::ParentWindow;
 use caller_role_types::CallerRole;
 use drive_fs::CacheLimit;
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Served, Verdict, serve};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Note, Page, Section, WordLabels,

@@ -21,7 +21,7 @@ pub(super) fn window_menu(output: &OutputInfo) -> Element {
     rsx! {
         Ds {
             sheet: Some(shell_kit::stylesheet()),
-            appearance: environment.settings.appearance.appearance(),
+            appearance: (&environment.settings.appearance).into(),
             system: environment.system,
             material: Material::Sheet,
             chrome: Some(RootChrome::Transparent),

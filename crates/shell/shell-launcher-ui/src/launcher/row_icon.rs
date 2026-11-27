@@ -58,8 +58,8 @@ mod tests {
     use shell_ui_kit::app_icons::cache::Generation;
     use shell_ui_kit::app_icons::{IconContext, IconFile, IconLook, IconResolver};
     use std::path::PathBuf;
+    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
 
     fn row(provider: ProviderKind, id: &str, icon: IconRef) -> Item {

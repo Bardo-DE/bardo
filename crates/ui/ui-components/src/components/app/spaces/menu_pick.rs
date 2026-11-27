@@ -3,9 +3,9 @@
 use super::menu_link::{LinkChange, Linking, link_rows};
 use super::open_menu::Showing;
 use crate::components::menus::item::item::MenuItem;
+use appearance_settings::Theme;
 use base_words::Word;
 use ui_core::vocab::{Availability, Check};
-use ui_style::appearance::theme::Theme;
 use ui_style::space::look::SpaceLook;
 
 /// A row of the Space's menu, or a row the app added.

@@ -1,15 +1,9 @@
 //! Every `Word` enum that is stored in a settings file writes the same word as its attribute:
 //! a serde rename and a slug that drifted apart would make a saved choice unreadable.
 
-use crate::appearance::{
-    accent::Accent,
-    material::Material,
-    motion::{Motion, MotionLevel},
-    peek::PeekMode,
-    theme::{Scheme, Theme},
-    transparency::Transparency,
-};
+use crate::appearance::{material::Material, motion::MotionLevel, peek::PeekMode, theme::Scheme};
 use crate::tokens::label_hue::LabelHue;
+use appearance_settings::{Accent, Motion, Theme, Transparency};
 use ui_core::testing::word_matches_serde;
 
 #[test]

@@ -6,8 +6,8 @@
 
 use std::path::PathBuf;
 
+use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
-use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 
 use crate::app_icons::size::AssetPx;
@@ -131,8 +131,8 @@ mod tests {
     use crate::app_icons::size::AssetPx;
     use std::collections::HashSet;
     use std::path::PathBuf;
+    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
 
     fn key(path: PathBuf, px: u16, style: IconStyle, hue: f32) -> IconKey {

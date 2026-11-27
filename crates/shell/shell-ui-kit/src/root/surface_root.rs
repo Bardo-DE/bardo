@@ -28,7 +28,7 @@ pub fn SurfaceRoot(
     rsx! {
         Ds {
             sheet: Some(shell_kit::stylesheet()),
-            appearance: environment.settings.appearance.appearance(),
+            appearance: (&environment.settings.appearance).into(),
             system: environment.system,
             look,
             material,

@@ -27,6 +27,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "appearance-settings"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "serde",
+ "settings-store",
+ "settings-types",
+]
+
+[[package]]
 name = "base-clock"
 version = "0.1.0"
 dependencies = [
@@ -147,6 +157,7 @@ name = "compositor-layout"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-ids",
  "compositor-core",
  "desktop-protocols",
@@ -677,6 +688,7 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-clock",
  "base-ids",
  "base-machine",

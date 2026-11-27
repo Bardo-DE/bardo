@@ -5,10 +5,10 @@
 
 use std::path::Path;
 
+use appearance_settings::bardo_schema;
 use settings_types::schema::regenerate;
-use ui_settings::bardo_schema;
 
-const DOC_PATH: &str = "../design/22-SETTINGS.md";
+const DOC_PATH: &str = "../../ui/design/22-SETTINGS.md";
 
 fn doc() -> String {
     std::fs::read_to_string(Path::new(DOC_PATH)).unwrap_or_else(|e| panic!("{DOC_PATH}: {e}"))

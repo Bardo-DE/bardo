@@ -38,6 +38,7 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-clock = { path = "../../base/base-clock" }
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 serde_json = { workspace = true }

@@ -30,6 +30,7 @@ ui-harness = {path = "../../ui/ui-harness"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 ui-lint = {path = "../../ui/ui-lint"}
 ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["dioxus"] }
+appearance-settings = { path = "../../settings/appearance-settings" }
 layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
 shell-host-config = {path = "../shell-host-config"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}

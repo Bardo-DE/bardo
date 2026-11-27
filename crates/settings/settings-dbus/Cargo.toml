@@ -9,14 +9,12 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+settings-proto = { path = "../settings-proto" }
 settings-types = { path = "../settings-types" }
 # The deadline every call to another process runs under.
 base-time = { path = "../../base/base-time" }
 # `SenderName` and `Verdict`; no executor of its own, `tokio` below picks zbus's.
 dbus-kit = { path = "../../bus/dbus-kit", default-features = false }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-thiserror = { workspace = true }
 toml = { workspace = true }
 zbus = { workspace = true, features = ["default"] }
 

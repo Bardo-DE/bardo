@@ -292,7 +292,7 @@ fn gradient_matches_the_mockup() {
             accent_text: String::new(),
             accent_ring: String::new(),
             accent_roles: crate::tokens::accent_table::accent_of(
-                crate::appearance::accent::Accent::Blue,
+                appearance_settings::Accent::Blue,
                 Scheme::Light,
             ),
             capped: Capping::Uncapped,
@@ -334,7 +334,7 @@ fn the_readout_is_the_ratio_of_the_derived_tokens() {
         let space = SpaceLook {
             dots: HOME.to_vec(),
             grain: Grain(35),
-            theme: crate::appearance::theme::Theme::System,
+            theme: appearance_settings::Theme::System,
         };
         let palette = derive(HOME, scheme);
         let post = if dark { POST_DARK } else { POST_LIGHT };
@@ -346,7 +346,7 @@ fn the_readout_is_the_ratio_of_the_derived_tokens() {
                 .fold(f64::INFINITY, f64::min)
         };
         let roles =
-            crate::tokens::accent_table::accent_of(crate::appearance::accent::Accent::Blue, scheme);
+            crate::tokens::accent_table::accent_of(appearance_settings::Accent::Blue, scheme);
         let ground = Hex::parse(post.surface).expect("hex");
         let tint = roles.fill.over(roles.wash, ground).css();
         let want = [

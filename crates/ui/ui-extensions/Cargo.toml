@@ -26,7 +26,7 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
-ui-settings = { path = "../ui-settings", default-features = false }
+appearance-settings = { path = "../../settings/appearance-settings" }
 
 [lints]
 workspace = true

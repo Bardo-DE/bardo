@@ -5,10 +5,10 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use appearance_settings::AppearanceFile;
 use settings_store_fs::Store;
 use settings_types::schema::Provided;
 use ui_extensions::{ExtensionId, ExtensionsFile, ExtensionsSettings, Power};
-use ui_settings::AppearanceFile;
 
 use super::{ChosenLook, LookSearch, chosen_look};
 use crate::daemon::settings::store::desktop_store;

@@ -179,8 +179,8 @@ mod tests {
     use super::{make, styled};
     use crate::app_icons::key::{IconKey, TintKey};
     use crate::app_icons::size::AssetPx;
+    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
 
     /// A made key is shown from its cache file; one never started shows its source (no

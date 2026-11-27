@@ -10,10 +10,11 @@
 //! sheet reads under the root's `data-theme`, as a Space dot's `--dot-c*` are.
 
 use super::family::{NEUTRAL_DARK, PlateFamily};
-use super::retint::{IconStyle, Tint, recolour};
+use super::retint::{Tint, recolour};
 use super::tone_band::Tone;
 use crate::appearance::theme::Scheme;
 use crate::tokens::{hex::Hex, name::VarName};
+use appearance_settings::IconStyle;
 use base_words::Word;
 use std::fmt::Write as _;
 
@@ -136,9 +137,10 @@ mod tests {
     use super::{PlateStops, PlateTint, tint_style};
     use crate::appearance::theme::Scheme;
     use crate::icon::family::PlateFamily;
-    use crate::icon::retint::{IconStyle, Tint};
+    use crate::icon::retint::Tint;
     use crate::space::presets::PRESETS;
     use crate::tokens::hex::Hex;
+    use appearance_settings::IconStyle;
 
     fn hue_and_chroma(colour: Hex) -> Tint {
         Tint::from_hex(&colour.css()).expect("a hex colour")

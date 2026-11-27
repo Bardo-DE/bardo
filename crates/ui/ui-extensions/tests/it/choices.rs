@@ -1,9 +1,9 @@
 //! Choosing among Extensions: the menu's words, what a stored choice means, and the look's text.
 
+use appearance_settings::bardo_schema;
 use settings_types::schema::{Control, KeyKind, KeyPath, Provided};
 use ui_extensions::look::stylesheet_for;
 use ui_extensions::{Capability, ExtensionId, Search, choices_for, chosen};
-use ui_settings::bardo_schema;
 
 use crate::support::{ICONS, Scratch, install_entries, install_look, write};
 

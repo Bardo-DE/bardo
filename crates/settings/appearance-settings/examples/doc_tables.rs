@@ -1,4 +1,4 @@
-//! `cargo run -p ui-settings --example doc_tables -- [--schema <file>]... <doc.md>`:
+//! `cargo run -p appearance-settings --example doc_tables -- [--schema <file>]... <doc.md>`:
 //! rewrites the key tables of design/22-SETTINGS.md (the ones between `keys:begin <domain>` and
 //! `keys:end <domain>` comment lines) from the UI kit's own schema and any `<app>.settings.toml` named
 //! with `--schema`. The `doc_tables` test of this crate fails when the doc differs from the schema.
@@ -6,8 +6,8 @@
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use appearance_settings::bardo_schema;
 use settings_types::schema::{Schema, regenerate};
-use ui_settings::bardo_schema;
 
 /// What the command line asked for.
 struct Request {

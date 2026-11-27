@@ -67,7 +67,7 @@ pub(super) fn dock(output: &OutputInfo) -> Element {
         on.as_ref(),
     )
     .map(|(key, _)| key);
-    let appearance = environment.settings.appearance.appearance();
+    let appearance = Appearance::from(&environment.settings.appearance);
     // The maths reads the resolved tokens (a look's, the person's sheet's), the shipped values
     // until the surface mounts; `use_surface_tokens` reads again after each frame.
     let resolved = use_surface_tokens::<DockTokens>();

@@ -37,6 +37,7 @@ settings-app-link = {path = "../settings-app-link"}
 settings-app-system = {path = "../settings-app-system", features = ["testing"]}
 settings-app-testkit = {path = "../settings-app-testkit"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }
+settings-proto = { path = "../../settings/settings-proto" }
 dioxus-ssr = { workspace = true }
 ui-harness = {path = "../../ui/ui-harness"}
 image = { workspace = true, features = ["png", "jpeg"] }

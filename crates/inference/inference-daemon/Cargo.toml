@@ -60,6 +60,7 @@ inference-router = {path = "../inference-router"}
 # check, the audit trail and the stages of a pipeline.
 inference-turns = {path = "../inference-turns"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }

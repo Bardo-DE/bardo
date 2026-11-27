@@ -15,6 +15,7 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 account-core = {path = "../../accounts/account-core"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
 ui-style = {path = "../../ui/ui-style", default-features = false}
+appearance-settings = { path = "../../settings/appearance-settings" }
 taffy = {workspace = true, features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]}
 
 [dev-dependencies]

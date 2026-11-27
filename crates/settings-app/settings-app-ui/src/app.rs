@@ -99,7 +99,7 @@ pub fn App() -> Element {
     };
     rsx! {
         Ds {
-            appearance: now.settings.appearance.appearance(),
+            appearance: (&now.settings.appearance).into(),
             system: now.system,
             material: Material::Window,
             window: WindowFrame::titlebar(title, true),

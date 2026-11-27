@@ -1,6 +1,6 @@
 //! `appearance.toml` as a settings document.
 
-use super::{AppearanceFile, bardo_schema};
+use crate::{AppearanceFile, bardo_schema};
 use settings_store::{FileName, Format, Limits, SettingsDoc};
 
 impl SettingsDoc for AppearanceFile {

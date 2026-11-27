@@ -273,6 +273,7 @@ dependencies = [
  "serde",
  "serde_json",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "thiserror 2.0.21",
  "tokio",
@@ -762,6 +763,7 @@ dependencies = [
  "base-ids",
  "base-time",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "toml",
 ]
@@ -2553,6 +2555,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "appearance-settings"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
+ "toml",
+]
+
+[[package]]
 name = "appendlist"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4265,6 +4279,7 @@ name = "compositor-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-clock",
  "base-fs",
  "base-ids",
@@ -4305,7 +4320,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "ui-core",
- "ui-settings",
  "x11rb 0.14.0",
 ]
 
@@ -4421,13 +4435,13 @@ dependencies = [
  "dbus-kit",
  "desktop-protocols",
  "settings-dbus",
+ "settings-portal",
+ "settings-proto",
  "settings-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "tracing",
- "ui-settings",
- "ui-style",
  "xkbcommon 0.9.0",
  "zbus",
 ]
@@ -4437,6 +4451,7 @@ name = "compositor-layout"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-ids",
  "compositor-core",
  "desktop-protocols",
@@ -8089,6 +8104,7 @@ dependencies = [
  "serde",
  "serde_json",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "sha2 0.10.9",
  "speech-host-client",
@@ -13758,6 +13774,7 @@ dependencies = [
  "settings-app-callers",
  "settings-app-model",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "sync-bus",
  "tokio",
@@ -13833,6 +13850,7 @@ dependencies = [
  "settings-app-model",
  "settings-app-system",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "shell-dbus",
  "sync-bus",
@@ -13874,6 +13892,7 @@ dependencies = [
  "settings-app-system",
  "settings-app-testkit",
  "settings-dbus",
+ "settings-proto",
  "settings-store-fs",
  "settings-types",
  "sync-bus",
@@ -13896,13 +13915,35 @@ dependencies = [
  "base-testkit",
  "base-time",
  "dbus-kit",
+ "settings-proto",
+ "settings-types",
+ "tokio",
+ "toml",
+ "zbus",
+]
+
+[[package]]
+name = "settings-portal"
+version = "0.1.0"
+dependencies = [
+ "base-spawn",
+ "base-time",
+ "futures-timer",
+ "objc2-core-foundation",
+ "settings-store",
+ "zbus",
+]
+
+[[package]]
+name = "settings-proto"
+version = "0.1.0"
+dependencies = [
+ "base-time",
  "serde",
  "serde_json",
  "settings-types",
  "thiserror 2.0.21",
- "tokio",
  "toml",
- "zbus",
 ]
 
 [[package]]
@@ -14026,6 +14067,7 @@ name = "shell-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-testkit",
  "base-words",
  "base-xdg",
@@ -14128,6 +14170,7 @@ dependencies = [
 name = "shell-dock"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-machine",
  "desktop-client",
  "dioxus",
@@ -14535,6 +14578,7 @@ dependencies = [
  "action-core",
  "action-manifest",
  "action-vocab",
+ "appearance-settings",
  "base-clock",
  "base-fs",
  "base-machine",
@@ -15581,6 +15625,7 @@ dependencies = [
  "replica-graph",
  "serde_json",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "sync-bus",
  "sync-core",
@@ -16579,6 +16624,7 @@ dependencies = [
 name = "ui-components"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-ids",
  "base-machine",
  "base-spawn",
@@ -16650,6 +16696,7 @@ dependencies = [
 name = "ui-extensions"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-fs",
  "base-testkit",
  "base-words",
@@ -16661,7 +16708,6 @@ dependencies = [
  "settings-types",
  "thiserror 2.0.21",
  "ui-helpers",
- "ui-settings",
  "ui-style",
 ]
 
@@ -16669,6 +16715,7 @@ dependencies = [
 name = "ui-gallery"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-machine",
  "dioxus",
  "dioxus-ssr",
@@ -16680,7 +16727,6 @@ dependencies = [
  "ui-core",
  "ui-harness",
  "ui-lint",
- "ui-settings",
  "ui-shell",
 ]
 
@@ -16798,17 +16844,17 @@ dependencies = [
 name = "ui-settings"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-fs",
  "base-spawn",
  "base-testkit",
- "base-time",
  "base-words",
  "base-xdg",
  "dioxus",
- "objc2-core-foundation",
  "serde",
  "serde_json",
- "settings-dbus",
+ "settings-portal",
+ "settings-proto",
  "settings-store",
  "settings-store-fs",
  "settings-types",
@@ -16816,7 +16862,6 @@ dependencies = [
  "toml",
  "ui-components",
  "ui-style",
- "zbus",
 ]
 
 [[package]]
@@ -16850,6 +16895,7 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-clock",
  "base-ids",
  "base-machine",

@@ -38,6 +38,7 @@ account-sheets = {path = "../account-sheets"}
 account-store = {path = "../account-store"}
 account-tailscale = {path = "../account-tailscale", features = ["io"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }

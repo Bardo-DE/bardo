@@ -3,16 +3,16 @@
 
 use crate::support;
 
-use ui_style::appearance::accent::Accent;
+use appearance_settings::Accent;
 
-use ui_style::appearance::motion::Motion;
+use appearance_settings::Motion;
 
+use appearance_settings::Theme;
+use appearance_settings::Transparency;
+use appearance_settings::{AppearanceFile, IconStyle};
 use settings_store::Loaded;
 use std::path::Path;
 use support::Scratch;
-use ui_settings::{AppearanceFile, IconStyle};
-use ui_style::appearance::theme::Theme;
-use ui_style::appearance::transparency::Transparency;
 
 const FILE: &str = "appearance.toml";
 /// The file a save locks, beside the settings file.

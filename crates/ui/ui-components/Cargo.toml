@@ -17,6 +17,7 @@ ui-core = {path = "../ui-core"}
 ui-intents = {path = "../ui-intents"}
 ui-motion = {path = "../ui-motion", features = ["dioxus"]}
 ui-style = {path = "../ui-style", default-features = false, features = ["dioxus"]}
+appearance-settings = { path = "../../settings/appearance-settings" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 # `ds::keys`: the toolkit side of the keymap; sources are injected, none is linked here.
 keymap = {path = "../../keymap/keymap"}

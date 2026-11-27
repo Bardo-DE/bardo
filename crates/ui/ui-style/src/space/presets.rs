@@ -3,7 +3,7 @@
 
 use super::look::SpaceLook;
 use super::palette::Dot;
-use crate::appearance::theme::Theme;
+use appearance_settings::Theme;
 
 /// One preset: its name, its dots, and the grain it ships with when it overrides the settings default.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -83,8 +83,8 @@ pub fn default_look(index: usize, default_grain: super::look::Grain) -> SpaceLoo
 #[cfg(test)]
 mod tests {
     use super::{PRESETS, default_look};
-    use crate::appearance::theme::Theme;
     use crate::space::look::Grain;
+    use appearance_settings::Theme;
 
     #[test]
     fn the_presets_are_named_in_the_design_order() {

@@ -5,13 +5,12 @@
 //! (design/05-MOTION.md section 9 rule 11).
 
 use crate::appearance::{
-    accent::Accent,
     appearance::Appearance,
-    motion::{Motion, MotionLevel},
+    motion::MotionLevel,
     system::{Contrast, SystemSettings},
-    theme::{Scheme, Theme},
-    transparency::Transparency,
+    theme::Scheme,
 };
+use appearance_settings::{Accent, Motion, Theme, Transparency};
 use base_words::Word;
 
 /// What a `.ds` root is drawn as.
@@ -81,13 +80,12 @@ fn explicit(theme: Theme) -> Option<Scheme> {
 mod tests {
     use super::{Resolved, resolve};
     use crate::appearance::{
-        accent::Accent,
         appearance::Appearance,
-        motion::{Motion, MotionLevel},
+        motion::MotionLevel,
         system::{Contrast, SystemSettings},
-        theme::{Scheme, Theme},
-        transparency::Transparency,
+        theme::Scheme,
     };
+    use appearance_settings::{Accent, Motion, Theme, Transparency};
 
     const fn prefs(scheme: Scheme, reduced_motion: bool) -> SystemSettings {
         SystemSettings {

@@ -1,0 +1,23 @@
+[package]
+name = "appearance-settings"
+description = "The appearance settings without a toolkit: the theme, accent, motion, transparency and icon-style words, the keys of appearance.toml that hold them, and its schema."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-words = { path = "../../base/base-words" }
+settings-store = { path = "../settings-store" }
+settings-types = { path = "../settings-types" }
+serde = { workspace = true, features = ["derive"] }
+
+[dev-dependencies]
+# The round-trip tests write TOML; the `write_schema` example writes the schema file.
+toml = { workspace = true }
+settings-store-fs = { path = "../settings-store-fs" }
+
+[lints]
+workspace = true

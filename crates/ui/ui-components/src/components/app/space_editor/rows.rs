@@ -7,12 +7,10 @@ use crate::components::controls::segmented::SegmentedControl;
 use crate::components::controls::segmented::Tracking;
 use crate::components::fields::text_field::TextField;
 use crate::components::lists::section_header::SectionHeader;
+use appearance_settings::{Motion, Theme};
 use base_words::Word;
 use dioxus::prelude::*;
-use ui_style::appearance::{
-    motion::Motion,
-    theme::{Scheme, Theme},
-};
+use ui_style::appearance::theme::Scheme;
 use ui_style::space::dot_paint::DotPaint;
 use ui_style::space::{
     look::SpaceLook,
@@ -127,7 +125,8 @@ pub(super) fn EachScheme(look: SpaceLook) -> Element {
 #[cfg(test)]
 mod tests {
     use super::schemes_of;
-    use ui_style::appearance::theme::{Scheme, Theme};
+    use appearance_settings::Theme;
+    use ui_style::appearance::theme::Scheme;
 
     #[test]
     fn a_system_space_is_measured_in_both_schemes_and_a_fixed_one_in_its_own() {

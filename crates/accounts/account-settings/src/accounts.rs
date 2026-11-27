@@ -15,7 +15,7 @@ use account_provider::Issuer;
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
 use base_ids::word::{from_word, word};
-use settings_dbus::LiveSchema;
+use settings_proto::LiveSchema;
 use settings_types::schema::{Exposure, KeyKind, KeySpec};
 use std::collections::BTreeMap;
 

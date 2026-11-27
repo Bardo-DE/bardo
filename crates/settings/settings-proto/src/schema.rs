@@ -10,18 +10,22 @@ use settings_types::schema::{KeyPath, KeySpec, never_settable_violation};
 /// object path say who serves it), and its keys may use [`KeyKind::Live`](settings_types::schema::KeyKind::Live).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LiveSchema {
+    /// The schema format's version.
     pub version: u16,
+    /// The module's keys, in the order a page shows them.
     pub key: Vec<KeySpec>,
 }
 
 /// Why a [`LiveSchema`] is refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum LiveSchemaError {
+    /// The text is not JSON of the live schema shape.
     #[error("the schema is not valid JSON of the live schema shape: {0}")]
     Parse(String),
     /// Section 9.7: an `accounts.`, `ai.`, ... key can never be marked agent-settable.
     #[error("key {} is under a never-agent-settable prefix but is marked agent = \"settable\"", .0.0)]
     NeverSettable(KeyPath),
+    /// A key path is listed twice.
     #[error("key {} appears twice", .0.0)]
     Duplicate(KeyPath),
 }

@@ -121,6 +121,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc7eb209b1518d6bb87b283c20095f5228ecda460da70b44f0802523dea6da04"
 
 [[package]]
+name = "appearance-settings"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "serde",
+ "settings-store",
+ "settings-types",
+]
+
+[[package]]
 name = "appendlist"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -618,6 +628,7 @@ name = "compositor-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-clock",
  "base-fs",
  "base-ids",
@@ -654,7 +665,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "ui-core",
- "ui-settings",
  "x11rb",
 ]
 
@@ -749,13 +759,13 @@ dependencies = [
  "dbus-kit",
  "desktop-protocols",
  "settings-dbus",
+ "settings-portal",
+ "settings-proto",
  "settings-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "tracing",
- "ui-settings",
- "ui-style",
  "xkbcommon",
  "zbus",
 ]
@@ -765,6 +775,7 @@ name = "compositor-layout"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-ids",
  "compositor-core",
  "desktop-protocols",
@@ -2978,12 +2989,34 @@ version = "0.1.0"
 dependencies = [
  "base-time",
  "dbus-kit",
+ "settings-proto",
+ "settings-types",
+ "toml",
+ "zbus",
+]
+
+[[package]]
+name = "settings-portal"
+version = "0.1.0"
+dependencies = [
+ "base-spawn",
+ "base-time",
+ "futures-timer",
+ "objc2-core-foundation",
+ "settings-store",
+ "zbus",
+]
+
+[[package]]
+name = "settings-proto"
+version = "0.1.0"
+dependencies = [
+ "base-time",
  "serde",
  "serde_json",
  "settings-types",
  "thiserror 2.0.21",
  "toml",
- "zbus",
 ]
 
 [[package]]
@@ -3585,28 +3618,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "ui-settings"
-version = "0.1.0"
-dependencies = [
- "base-fs",
- "base-spawn",
- "base-time",
- "base-xdg",
- "objc2-core-foundation",
- "serde",
- "serde_json",
- "settings-store",
- "settings-store-fs",
- "settings-types",
- "toml",
- "ui-style",
- "zbus",
-]
-
-[[package]]
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-clock",
  "base-ids",
  "base-machine",

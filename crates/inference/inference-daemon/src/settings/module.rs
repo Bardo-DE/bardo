@@ -23,7 +23,8 @@ use inference_settings::{
     SLOTS, TIERS, model_path, model_text, parse_model, parse_model_path, parse_pool_path,
     pool_path, slot_value,
 };
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Verdict, serve};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
     HostName, KeyKind, KeyPath, KeySpec, Label, Page, Section, UnavailableReason, WordLabels,

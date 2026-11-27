@@ -24,7 +24,7 @@ pub(super) fn wallpaper(output: OutputInfo) -> Element {
     let environment = use_appearance()();
     let wallpapers = use_service::<WallpaperService>()();
     let on = output.name.map(OutputName);
-    let appearance = environment.settings.appearance.appearance();
+    let appearance = Appearance::from(&environment.settings.appearance);
     let resolved = resolve(appearance, SpaceLook::default().theme, environment.system);
     let url = url_for(&wallpapers, on.as_ref(), resolved.scheme);
     let layers = use_crossfade(url);

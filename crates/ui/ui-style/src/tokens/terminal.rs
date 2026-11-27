@@ -12,10 +12,11 @@
 //! 4.5:1 or better, so the "black" of a dark scheme and the "white" of a light one are lifted
 //! or deepened from the usual: `ansi_colours_read_on_the_background` gates all sixteen in both.
 
-use crate::appearance::{accent::Accent, theme::Scheme};
+use crate::appearance::theme::Scheme;
 use crate::tokens::accent_table::accent_of;
 use crate::tokens::hex::{Colour, Hex};
 use crate::tokens::token::{CssValue, Token, TokenScope};
+use appearance_settings::Accent;
 use base_words::Word;
 
 const fn rgb(value: u32) -> Colour {
@@ -179,9 +180,10 @@ fn terminal_css(token: TerminalColour, scope: TokenScope) -> CssValue {
 #[cfg(test)]
 mod tests {
     use super::TerminalColour;
-    use crate::appearance::{accent::Accent, theme::Scheme};
+    use crate::appearance::theme::Scheme;
     use crate::tokens::hex::Hex;
     use crate::tokens::token::{Token, TokenScope};
+    use appearance_settings::Accent;
     use base_words::Word;
     use ui_core::colour::contrast::ratio;
 

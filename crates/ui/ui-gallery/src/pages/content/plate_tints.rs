@@ -7,10 +7,10 @@
 use crate::pages::content::app_icons::{APPS, app_icon_in};
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
+use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::plate_tint::PlateTint;
-use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::space::presets::PRESETS;
 

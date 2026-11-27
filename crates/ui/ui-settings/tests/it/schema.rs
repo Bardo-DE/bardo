@@ -8,8 +8,8 @@
 
 use std::path::Path;
 
+use appearance_settings::{AppearanceSettings, IconsSettings};
 use settings_types::schema::{Page, Schema, SettingsSchema, deep_link_path};
-use ui_settings::{AppearanceSettings, IconsSettings};
 
 const DOC_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../design/22-SETTINGS.md");
 
@@ -123,8 +123,8 @@ fn icons_keys_exposure() {
 // ---------------------------------------------------------------------------------------------
 // agent_settable (design/22-SETTINGS.md section 9.7)
 
+use appearance_settings::bardo_schema;
 use settings_types::schema::{AGENT_NEVER_SETTABLE, AGENT_SETTABLE_PROPOSED, AgentSetting};
-use ui_settings::bardo_schema;
 
 fn settable(schema: &Schema) -> Vec<&str> {
     schema
@@ -231,8 +231,8 @@ fn the_design_doc_lists_exactly_the_proposed_keys() {
 // A provided key (design/22-SETTINGS.md section 9.1, `KeyKind::Provided`)
 
 mod provided {
+    use appearance_settings::{AppearanceFile, bardo_schema};
     use settings_types::schema::{Control, KeyKind, Provided, Schema, WordLabels};
-    use ui_settings::{AppearanceFile, bardo_schema};
 
     use crate::support::Scratch;
 
@@ -300,7 +300,7 @@ mod provided {
 }
 
 mod unavailable {
-    use settings_dbus::LiveSchema;
+    use settings_proto::LiveSchema;
     use settings_types::schema::{
         ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
         UnavailableReason,
@@ -392,7 +392,7 @@ mod unavailable {
 }
 
 mod groups {
-    use settings_dbus::LiveSchema;
+    use settings_proto::LiveSchema;
     use settings_types::schema::{
         ChoiceGroup, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
     };
@@ -526,7 +526,7 @@ mod groups {
 }
 
 mod places {
-    use settings_dbus::LiveSchema;
+    use settings_proto::LiveSchema;
     use settings_types::schema::{
         ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help, HostName, KeyKind,
         KeyPath, KeySpec, Label, Note, Page, Section,

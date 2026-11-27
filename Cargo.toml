@@ -250,6 +250,7 @@ members = [
     "crates/accounts/account-tailscale",
     "crates/accounts/account-wire",
     "crates/settings/settings-dbus",
+    "crates/settings/settings-proto",
     "crates/settings/settings-store",
     "crates/settings/settings-store-fs",
     "crates/settings/settings-types",

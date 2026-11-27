@@ -4,7 +4,7 @@
 //! Loading is lenient: a missing field is the first-run value and an unknown word for one field
 //! is that field's default, never a failure of the whole value.
 
-use crate::appearance::{accent::Accent, motion::Motion, theme::Theme, transparency::Transparency};
+use appearance_settings::{Accent, AppearanceSettings, Motion, Theme, Transparency};
 use base_words::Word;
 use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
@@ -32,6 +32,18 @@ pub struct Appearance {
         skip_serializing_if = "is_system"
     )]
     pub transparency: Transparency,
+}
+
+impl From<&AppearanceSettings> for Appearance {
+    /// The choices a `.ds` root resolves, from the person's stored settings.
+    fn from(settings: &AppearanceSettings) -> Appearance {
+        Appearance {
+            theme: settings.theme,
+            accent: settings.accent,
+            motion: settings.motion_level,
+            transparency: settings.transparency,
+        }
+    }
 }
 
 #[expect(
@@ -104,9 +116,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::Appearance;
-    use crate::appearance::{
-        accent::Accent, motion::Motion, theme::Theme, transparency::Transparency,
-    };
+    use appearance_settings::{Accent, Motion, Theme, Transparency};
 
     #[test]
     fn a_partial_value_keeps_the_fields_it_has() {

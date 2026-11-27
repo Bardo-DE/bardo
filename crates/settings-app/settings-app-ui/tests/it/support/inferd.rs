@@ -10,7 +10,8 @@ use data::{POOL_KEY, PROGRAMS, WORDS, places_of, tier_word};
 use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use settings_app_link::bus::Daemon;
 use settings_app_system::modules::FakeModules;
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, Verdict, serve};
+use settings_proto::LiveSchema;
 use settings_types::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
     KeyKind, KeyPath, KeySpec, Label, Note, Page, Section, UnavailableReason, WordLabels,

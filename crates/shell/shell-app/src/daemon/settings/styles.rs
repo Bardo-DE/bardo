@@ -21,6 +21,7 @@
 
 use std::path::Path;
 
+use appearance_settings::AppearanceFile;
 use layer_shell_host::{HostEvent, HostHandle};
 use settings_store_fs::{SettingsError, SettingsWriter, Store, WatchState};
 use settings_types::schema::KeyPath;
@@ -30,7 +31,6 @@ use tokio::runtime::Runtime;
 use tokio::sync::watch;
 use ui_components::style::kit::{StyleHomes, Styles, UserStyle};
 use ui_host_hooks::{StylesGuard, TokioSpawner};
-use ui_settings::AppearanceFile;
 
 use super::look::{ChosenLook, LookSearch, chosen_look, spawn_look_watch};
 use super::store::report;

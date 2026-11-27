@@ -4,6 +4,7 @@
 
 use std::time::Duration;
 
+use appearance_settings::IconStyle;
 use shell_dock::Dock;
 use shell_launcher::AppId;
 use shell_model::badges::Badges;
@@ -13,7 +14,7 @@ use shell_settings::ShellFile;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::hooks::PinnedAppearance;
 use ui_lint::{LintConfig, Profile, assert_clean};
-use ui_settings::{Environment, IconStyle};
+use ui_settings::Environment;
 
 type Running = SurfaceHarness<Dock>;
 

@@ -6,10 +6,10 @@
 //! reads its first state from this thread rather than from props.
 
 use crate::page::Page;
+use appearance_settings::AppearanceSettings;
 use std::cell::RefCell;
 use ui_components::prelude::*;
 use ui_components::style::space::presets::default_look;
-use ui_settings::AppearanceSettings;
 
 /// One of the eight preset Spaces, by its place in `ui_components::style::space::presets::PRESETS`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

@@ -1,7 +1,7 @@
 //! The Tokio runtime a host enters, so `tokio::spawn` works for what a Bardo app runs.
 //!
 //! `ui_settings::use_environment` calls `tokio::spawn` directly in two places that are not
-//! optional for a Blitz consumer: the desktop-portal watch (`ui-settings/src/portal.rs`, over
+//! optional for a Blitz consumer: the desktop-portal watch (`settings-portal/src/bus.rs`, over
 //! zbus's `tokio` feature) and the file-watch debounce (`settings_store_fs::watch_file`, `tokio::time::
 //! timeout` inside a spawned task). Both panic ("there is no reactor running") unless a runtime
 //! is entered on the calling thread first (CONSUMING.md section 3).

@@ -4,7 +4,7 @@
 #
 #   bardo-shell        bardo-shell --write-schema <dir>
 #   mouse-gestures  bardo-mouse-gestures --write-schema <dir>
-#   Bardo       ui-settings' `write_schema` example (the UI kit has no app binary)
+#   Bardo       appearance-settings' `write_schema` example (the UI kit has no app binary)
 #   inferd      ../inference/dist/inference.settings.toml (written by hand, no --write-schema yet)
 #   The actions service      ../actions/dist/settings/actions.settings.toml
 #   The memory service     ../memory/memory-settings/schema/memory.settings.toml
@@ -22,7 +22,7 @@ private() { env -i PATH="$PATH" HOME="$scratch/home" XDG_CONFIG_HOME="$scratch/c
 
 cargo build --quiet --manifest-path ../../Cargo.toml -p shell-app
 cargo build --quiet --manifest-path ../../Cargo.toml -p mouse-gestures-daemon
-cargo build --quiet --manifest-path ../../Cargo.toml -p ui-settings --example write_schema
+cargo build --quiet --manifest-path ../../Cargo.toml -p appearance-settings --example write_schema
 
 private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/bardo-shell" --write-schema "$scratch/out"
 private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/bardo-mouse-gestures" --write-schema "$scratch/out"

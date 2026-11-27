@@ -7,9 +7,10 @@ use super::legibility::legibility;
 use super::picked::BAND;
 use super::roles::AccentRoles;
 use super::text_grounds::{BACKDROPS, TEXT_MATERIALS, TextOn, text_grounds, text_on};
-use crate::appearance::{accent::Accent, theme::Scheme};
+use crate::appearance::theme::Scheme;
 use crate::tokens::accent_table::accent_of;
 use crate::tokens::hex::{Alpha, Hex};
+use appearance_settings::Accent;
 use base_words::Word;
 use ui_core::colour::{oklab::Oklab, srgb::Srgb};
 

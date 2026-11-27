@@ -4,7 +4,7 @@
 use std::path::Path;
 
 use image::{DynamicImage, Rgba32FImage};
-use ui_components::style::icon::retint::IconStyle;
+use ui_components::prelude::IconStyle;
 use ui_components::style::icon::retint::Tint as DsTint;
 use ui_components::style::icon::retint::retint as ds_retint;
 use ui_icon_tool::{

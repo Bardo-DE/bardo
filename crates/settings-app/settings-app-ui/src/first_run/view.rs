@@ -44,7 +44,7 @@ pub fn FirstRunApp() -> Element {
     let now = appearance();
     rsx! {
         Ds {
-            appearance: now.settings.appearance.appearance(),
+            appearance: (&now.settings.appearance).into(),
             system: now.system,
             material: Material::Window,
             window: WindowFrame::titlebar(crate::copy::first_run::WELCOME.to_owned(), true),

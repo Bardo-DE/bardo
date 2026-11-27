@@ -11,7 +11,7 @@
 
 use std::path::{Path, PathBuf};
 
-use ui_components::style::icon::retint::IconStyle;
+use ui_components::prelude::IconStyle;
 
 use crate::app_icons::key::{IconKey, TintKey};
 use crate::app_icons::look::IconLook;
@@ -61,8 +61,8 @@ mod tests {
     use crate::app_icons::look::IconLook;
     use crate::app_icons::size::AssetPx;
     use std::path::Path;
+    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
 
     fn look(style: IconStyle) -> IconLook {

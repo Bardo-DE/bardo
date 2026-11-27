@@ -1,8 +1,8 @@
 //! Everything a surface resolves its look from, as one live signal: the settings file and the
 //! desktop's preferences, both watched.
 
-use crate::appearance::AppearanceFile;
 use crate::portal::{SystemSettingsSource, SystemSettingsWatch};
+use appearance_settings::AppearanceFile;
 use base_spawn::Spawner;
 use dioxus::prelude::*;
 use settings_store::{Loaded, SettingsDoc};
@@ -31,7 +31,7 @@ use ui_style::appearance::system::SystemSettings;
 ///     let now = env();
 ///     rsx! {
 ///         Ds {
-///             appearance: now.settings.appearance.appearance(),
+///             appearance: (&now.settings.appearance).into(),
 ///             system: now.system,
 ///             custom_styles: now.settings.appearance.custom_styles,
 ///             material: Material::Window,
