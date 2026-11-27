@@ -1,7 +1,7 @@
 //! What the locker service hears and what it can be told.
 
 use super::{Host, LockCause};
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 /// One thing the live side learnt.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -19,12 +19,12 @@
 
 use crate::support::probe;
 
+use base_machine::time::FRAME_TICK;
 use dioxus::prelude::*;
 use probe::{distance, rect};
 use shell_kit::prelude::*;
 use std::cell::Cell;
 use std::time::Duration;
-use ui_components::base::time::FRAME_TICK;
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;

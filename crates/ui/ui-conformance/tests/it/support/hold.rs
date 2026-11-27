@@ -5,8 +5,8 @@
 use std::cell::{Cell, RefCell};
 use std::time::Duration;
 
-use ui_components::base::machine::{Elapsed, Machine};
-use ui_components::base::time::stamp::{Ms, Stamp};
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::{Ms, Stamp};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -10,7 +10,7 @@ its traits, its recipes and its repo rules. Where they disagree, this file wins 
 
 | Repo | What the shell takes from it |
 | --- | --- |
-| Bardo (`../bardo`, path deps) | `ui-core` (vocabulary, units, `Word`, colour, time), `ui-style` (appearance, tokens, materials), `ui-motion` (timelines, `Presence`, gestures), `ds` (components, `DocumentHost`, menus, `ds::prelude`), `ui-shell` (the app-facing parts: account sheets, consent alert, missing-helper sheet; the shell takes the account sheets from it), `ui-lint`, `ui-behaviour` (the switcher and hot-corner machines), `ui-settings` (`SettingsDoc`, `Store`, schema derive, the switcher and hot-corner sections; dioxus behind a feature), `ui-blitz` (`provide_host()`, measure, focus, caret, snap), `ui-harness` (`Driver`, `DocQuery`; dev only) |
+| Bardo (`../bardo`, path deps) | `ui-core` (vocabulary, units, `Word`, colour), `base-machine` (`Machine`, `Stamp`, the clock), `ui-style` (appearance, tokens, materials), `ui-motion` (timelines, `Presence`, gestures), `ds` (components, `DocumentHost`, menus, `ds::prelude`), `ui-shell` (the app-facing parts: account sheets, consent alert, missing-helper sheet; the shell takes the account sheets from it), `ui-lint`, `ui-behaviour` (the switcher and hot-corner machines), `ui-settings` (`SettingsDoc`, `Store`, schema derive, the switcher and hot-corner sections; dioxus behind a feature), `ui-blitz` (`provide_host()`, measure, focus, caret, snap), `ui-harness` (`Driver`, `DocQuery`; dev only) |
 | layer-shell-host (`../shell-host`) | Host, layer surfaces and popups, input, frames, regions, session lock, scroll engine, `Visibility`, `Inject` (pointer and key, `debug-inject`) |
 | anyview (`../anyview`, path deps) | the viewer's format library and its desktop contract: `anyview-core` (kinds, sniffing, the shared file actions and their keys, `Resume`, `Sequence`), `anyview-peek` (every kind's light peek and the `Card` that draws it; the launcher's preview), `anyview-store` (the history the viewer keeps, read for file rows), `anyview-platform` (the viewer's D-Bus requests, `Handoff` and `Play`, which the shell calls through `forward_over`; and its freedesktop thumbnail cache, read for a video's frame), `anyview-image` (`Rgba8`, the picture a cached thumbnail becomes). Taken by path until anyview is merged and its revision is pinned in the UI kit's `docs/workspace-deps.toml` (FINDINGS) |
 | The key remap daemon (`../key_remap`, path dep) | `key-remap-proto`: the socket messages, `ProfileName`, `Status`; `shell-model` and `shell-services` take it (serde, serde_json, thiserror only) |
@@ -98,7 +98,7 @@ re-export; the one type a module is named after may sit in its `mod.rs`.
 | `surface.rs` | the marker type named after the surface and its `impl Surface`: the declarations (outputs, keyboard, role, drawing order, presence, link) and the thin `layer` and `root` |
 | `layer.rs` | only when the surface's layer is its own: `fn layer(&OutputInfo, &ShellFile, slot) -> LayerConfig` and its constants. A sheet, a strip, a corner column or a whole-output surface names a `LayerPreset` in `surface.rs` instead |
 | `model.rs` | state types (data only) |
-| `step.rs` | the pure transitions; `impl Machine` (Bardo's, `ds::base::machine`) for a timed one |
+| `step.rs` | the pure transitions; `impl Machine` (Bardo's, `base_machine::machine`) for a timed one |
 | `keys.rs` | the keymap table, when the surface takes keys |
 | `io.rs` | `use_<surface>`: reads services and settings, follows the link, feeds `use_machine`, carries effects |
 | `view.rs` | components; no decisions beyond reading the model |
@@ -199,7 +199,7 @@ code into `tests.rs`. Exceptions and renames:
 
 | From (`crates/shell-surfaces/`) | To |
 | --- | --- |
-| `src/hooks/*`, `host_modality.rs`, `src/lib.rs` host config helpers | `shell-ui-kit/src/{hooks,root}`; `clock.rs` (`FrameClock`) is `ds::base::time::stamp::FrameClock` |
+| `src/hooks/*`, `host_modality.rs`, `src/lib.rs` host config helpers | `shell-ui-kit/src/{hooks,root}`; `clock.rs` (`FrameClock`) is `base_machine::time::stamp::FrameClock` |
 | `src/app_icons/`, `surfaces/notification_card/`, `surfaces/user_picture.rs`, `surfaces/naming.rs` | `shell-ui-kit/src/{app_icons,notification_card,surface}`; `user_picture` is `shell-kit`'s |
 | `src/widgets/` (providers, layout, wake) | `shell-ui-kit/src/widgets/<kind>/` |
 | `bar/menu_track/` | deleted; `ds`'s `menu_track` |
@@ -320,7 +320,7 @@ Look a concept up here before writing it. If it has a home, extend it.
 | A service's I/O | `shell_services::<service>::backend` |
 | Every running service's handle, `Member`, `use_service` | `shell_ui_kit::services`, `shell_ui_kit::hooks` |
 | Declaring a service, starting every service in `Deps` order, the fakes | `shell_ui_kit::services::registry` (`services!`; `Services::fake`), and `shell_app::daemon::start::start` (the spawns, in `Deps` order) |
-| Units and ids (`Cpx`, `Minutes`, `AppId`, `WorkspaceKey`) | `shell_model::{units, ids}` (`Percent`, `Fraction`, `Stamp`: `ui-core`) |
+| Units and ids (`Cpx`, `Minutes`, `AppId`, `WorkspaceKey`) | `shell_model::{units, ids}` (`Percent`, `Fraction`, `Stamp`: `base-machine`) |
 | Retry and stale-answer stamps | `shell_model::attempt` |
 | A closed vocabulary shared by a settings key and a service | `shell_model::vocab` or the service dir, implementing `ui_core::Word` |
 | A settings domain, its typed values | `shell_settings::<domain>` |
@@ -358,7 +358,7 @@ Look a concept up here before writing it. If it has a home, extend it.
 | Layer namespace `shell-<surface>-<output>` | `shell_ui_kit::surface::namespace` |
 | Spawning and closing surfaces per output | `shell::daemon::surfaces` (generic over `Surface`) |
 | Which surfaces exist on which output | `shell::daemon::outputs` |
-| A timed pure state machine and its timer; a machine's `Stamp` and the `FrameClock` that makes it | Bardo: `ds::base::machine` (`Machine`, `Elapsed`), `ds::machine` (`use_machine`, `MachineRef`), `ds::base::time::stamp` (`Stamp`, `FrameClock`); the shell has none of its own |
+| A timed pure state machine and its timer; a machine's `Stamp` and the `FrameClock` that makes it | Bardo: `base_machine::machine` (`Machine`, `Elapsed`), `ds::machine` (`use_machine`, `MachineRef`), `base_machine::time::stamp` (`Stamp`, `FrameClock`); the shell has none of its own |
 | Popup menus (bar, tray, dock, launcher actions) | `shell_ui_kit::menu` (`MenuModel`, `MenuPopup<M>`) over `ds`'s `menu_track`; a context menu a layer opens (at its pointer, or over a dock tile) is `use_context_menu::<M>` (one popup at a time, the report channel and the task that hands each pick to the owner; `use_context_menu_closing` also tells the owner when the popup is gone; the desktop menu, the window menu and the dock menu use it) over `context_menu_popup::<M>` (the popup root, reporting over a channel); where the popup goes is a `PopupGeom` (`AtPoint { clear }`, `OverTile { gap }`), whose size is one number. The bar's menus stay on their own tracking |
 | Where a panel opens: the focused window's output, else the pointer's (the first output until the daemon knows the pointer); which outputs a surface lives on | `shell_ui_kit::surface::OutputPolicy` (`Surface::OUTPUTS`); `shell::outputs::Outputs::{pick, open_on}` |
 | Where a sheet (a question for the person: polkit, confirm, voice consent, accounts, capture, permission, display trial) opens: the focused window's output when the first question of a burst appears, else the first output; held until no question is left, so a click beside a sheet does not move it; the first output again if the held one is unplugged | `shell::sheet_latch::SheetLatch` (one latch on the host thread, nudged by `ShellMsg::Sheets`), published on `shell_ui_kit::links::SheetLink` and read by `use_sheet_output` |
@@ -505,7 +505,7 @@ Sheets are `FocusedWindow` surfaces: one warm hidden surface per output, and the
 
 A panel's link is a `PanelLink<P>` over `Reveal<Opening<P>>` (`links/reveal.rs`): `open`, `reopen`, `toggle`, `close`, `focus`, `subscribe`, with the panel's own payload `P` (`()` for force quit and the notification center, `LauncherAsk`, `PowerMenuPayload`); what a panel adds is an `update` on it. What a surface says back for the desktop to carry out (a window menu pick, a Split View answer, the display trial's answer, a confirmed force quit, a Spaces bar click) is an `Outbox<T>` on its link, and `shell::outgoing` forwards every outbox to the host with one task per link type (`Outgoing`, listed in `outgoing::spawn_all`).
 
-### `Machine` (Bardo: `ds::base::machine`, hook `ds::machine`)
+### `Machine` (Bardo: `base_machine::machine`, hook `ds::machine`)
 
 The trait, `Elapsed`, `use_machine`, `use_machine_in` and `MachineRef` are Bardo's, with the same
 signatures (`step(self, In, at: Stamp, &Params, &Ctx) -> (Self, Vec<Out>)`, `wake(&self) ->
@@ -675,7 +675,7 @@ Each ends with its tests. Name the concept once and use it in every file name be
    is a `PanelLink<P>` (the payload is what an opening carries); an answer for the desktop is an
    `Outbox<T>`. A surface never imports another surface.
 4. Settings keys: recipe below. Services it reads: `use_service` in `io.rs` only.
-5. Timed state: `impl Machine` (`ds::base::machine`) in `step.rs`, run by `ds::machine::use_machine` in `io.rs`.
+5. Timed state: `impl Machine` (`base_machine::machine`) in `step.rs`, run by `ds::machine::use_machine` in `io.rs`.
 6. `shell/src/daemon/surfaces.rs`: add `kind::<Name>()` to `kinds()` and import the marker from the
    surface's crate; the order is the surface's `LAYER_ORDER`, and the generic `daemon/spawn.rs`
    spawns, resizes and closes. There is no per-surface spawn code, `outputs.rs` field or

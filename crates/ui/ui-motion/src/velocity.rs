@@ -41,7 +41,7 @@ struct Sample {
 
 /// Measures a drag's release velocity from its last two moves (a drag's `onpointermove` feeds it, its `onpointerup` reads it).
 ///
-/// Pure: the caller hands in the instants, from `ui_components::base::time::clock::now`.
+/// Pure: the caller hands in the instants, from `base_machine::time::clock::now`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct VelocityMeter {
     last: Option<Sample>,

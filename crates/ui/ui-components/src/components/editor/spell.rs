@@ -14,13 +14,13 @@ use crate::spell::lang::{Lang, Spell};
 use crate::spell::marks::{Misspelt, Typing, marks_for, reconcile, shown, typing_after};
 use crate::spell::service::{Paragraph, SpellService};
 use crate::spell::words::words;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::core::{Task, current_scope_id};
 use dioxus::prelude::*;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use ui_core::geometry::units::{Point, Rect};
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::task::{spawn_in, try_set_if_changed};
 use ui_style::tokens::delay::DelayToken;
 

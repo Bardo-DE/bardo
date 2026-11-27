@@ -6,6 +6,8 @@
 //! every frame tick of the surface feeds `Frame`, and `StopFrames` drops the drive, so an idle
 //! bar renders nothing. A `Redraw` stamps the time the next render draws the slide at.
 
+use base_machine::time::clock::sleep;
+use base_machine::time::stamp::{FrameClock, Stamp};
 use dioxus::prelude::*;
 use layer_shell_hooks::{FrameDrive, SurfaceHandle};
 use layer_shell_types::OutputId;
@@ -14,8 +16,6 @@ use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{Phase, Timing};
 use shell_ui_kit::hooks::use_edge_reveal;
 use shell_ui_kit::links::RevealEdge;
-use ui_components::base::time::clock::sleep;
-use ui_components::base::time::stamp::{FrameClock, Stamp};
 
 use super::io::MenuBar;
 use super::reveal::{BarReveal, RevealEffect, RevealEvent, rest_phase, step};

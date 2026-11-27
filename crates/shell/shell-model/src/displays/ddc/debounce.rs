@@ -8,7 +8,7 @@
 
 use super::vcp::Feature;
 use crate::ids::DdcId;
-use ui_core::time::stamp::{Ms, Stamp};
+use base_machine::time::stamp::{Ms, Stamp};
 
 /// How long a value must stand before it is written.
 pub const QUIET: Ms = Ms(120);
@@ -95,7 +95,7 @@ mod tests {
     use super::{Debounce, HOLD_MAX, Write};
     use crate::displays::ddc::Feature;
     use crate::ids::DdcId;
-    use ui_core::time::stamp::Stamp;
+    use base_machine::time::stamp::Stamp;
 
     fn brightness(value: u16) -> Write {
         Write {

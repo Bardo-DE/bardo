@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 use super::model::{PageMilli, PagesPerSecMilli, Swipe, SwipeOut, SwipeParams};
 use super::numbers::{div_nearest, finish_duration, saturate};

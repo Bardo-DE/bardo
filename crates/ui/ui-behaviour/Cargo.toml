@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-ui-core = {path = "../ui-core"}
+base-machine = { path = "../../base/base-machine" }
 
 [lints]
 workspace = true

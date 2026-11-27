@@ -5,7 +5,7 @@ use super::super::inhibit::Inhibition;
 use super::super::model::{DimShown, IdlePhase};
 use super::super::policy::{IdleLock, IdleMode, IdlePolicy, Threshold, Watch, watches};
 use super::{DisplayPower, IdleEffect, IdleEvent, IdleHint, IdleState, LockSeen};
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 type Step = (IdleState, Vec<IdleEffect>);
 

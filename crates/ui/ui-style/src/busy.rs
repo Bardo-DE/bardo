@@ -11,10 +11,10 @@
 //! retries wait for [`after_render`], an effect that wakes the task, and land in the same frame
 //! at the same instant, every run; only a document still busy after those waits a frame.
 
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::core::queue_effect;
 use std::pin::Pin;
 use std::task::{Context, Poll};
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 
 /// How many retries wait for the render to end before the rest wait a frame each.
 const AFTER_RENDER_RETRIES: usize = 4;

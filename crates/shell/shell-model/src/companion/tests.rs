@@ -6,6 +6,7 @@ use action_vocab::{
     TargetValue,
 };
 use action_wire::{SummonAnswer, SummonSerial};
+use base_machine::time::stamp::Stamp;
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, NeedsYou, PlanStepWire, PlanWire,
     StepWireState,
@@ -16,7 +17,6 @@ use provenance::{
     ActionName, AppName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, RunId, TaskId,
 };
 use shell_launcher::{Generation, LauncherMode, WindowKey};
-use ui_core::time::stamp::Stamp;
 use ui_core::vocab::CompanionPresence;
 
 use super::*;

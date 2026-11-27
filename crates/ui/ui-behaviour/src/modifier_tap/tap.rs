@@ -12,8 +12,8 @@
 
 use std::time::Duration;
 
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 
 /// The double tap's state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

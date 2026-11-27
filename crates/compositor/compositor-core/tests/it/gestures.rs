@@ -3,6 +3,7 @@
 
 use crate::support;
 
+use base_machine::time::stamp::Stamp;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::geometry::{SubPoint, SubPx};
 use compositor_core::input::gesture_route::{Axis, Drive, Fate, Route, route};
@@ -17,7 +18,6 @@ use compositor_core::space::{SpaceSeed, WorkspaceRequest};
 use compositor_core::time::TimerKey;
 use compositor_core::{Cause, DeviceId, Effect, Event, Model, PageMilli};
 use support::{headless, ms};
-use ui_core::time::stamp::Stamp;
 
 fn by(dx: i32, dy: i32) -> GestureStep<SubPoint> {
     GestureStep::Update(SubPoint {

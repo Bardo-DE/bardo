@@ -13,8 +13,8 @@
 //! Every other pair (an early `Elapsed`, a second `Enter` while dwelling) changes nothing. The
 //! machine is idle in `Armed`, in `Spent` once the re-arm is over, and runs no timer there.
 
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 
 use super::model::{Corner, CornerIn, CornerOut, CornerParams, Inside, Rearm};
 

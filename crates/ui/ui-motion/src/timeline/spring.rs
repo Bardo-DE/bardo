@@ -4,8 +4,8 @@
 
 use super::Timeline;
 use crate::spring::{Leg, SpringPhase, SpringTuning, State};
+use base_machine::time::FRAME_TICK;
 use std::time::Duration;
-use ui_core::time::FRAME_TICK;
 
 /// The longest a spring is looked at for its rest: past it, a spring counts as resting (the
 /// slowest damping a spring may have, 0.05, rings out well inside it).

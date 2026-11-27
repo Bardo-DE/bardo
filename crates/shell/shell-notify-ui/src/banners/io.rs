@@ -1,15 +1,17 @@
 //! The effects end of the column: follow the service's banners and the [`BannerLink`] into the
-//! [`deck`](super::deck), carry out what it decides with the UI kit's one timer (`ui_components::base::time::clock::sleep`, for
+//! [`deck`](super::deck), carry out what it decides with the UI kit's one timer (`base_machine::time::clock::sleep`, for
 //! The UI kit's `FRAME_SLACK` or the hold from `notifications.*`, never a literal), turn the card's
 //! presses, hover and swipe and the stack's `on_hidden` into the deck's inputs, and send the
 //! service what a press means (`commands.rs`). Once the last card has gone, no task runs.
 //!
 //! [`BannerLink`]: shell_ui_kit::links::BannerLink
 
+use base_machine::time::clock::sleep;
 use std::collections::BTreeMap;
 use std::time::Duration;
-use ui_components::base::time::clock::sleep;
 
+use base_machine::time::FRAME_SLACK;
+use base_machine::time::stamp::Stamp;
 use dioxus::core::{Runtime, Task, current_scope_id};
 use dioxus::prelude::*;
 use layer_shell_hooks::SurfaceHandle;
@@ -20,8 +22,6 @@ use shell_model::notifications::{
     NotificationsCommand,
 };
 use shell_model::service::Control;
-use ui_components::base::time::FRAME_SLACK;
-use ui_components::base::time::stamp::Stamp;
 use ui_components::focus::select::Select;
 use ui_components::focus::selector::{FocusError, focus_by_selector};
 use ui_components::prelude::*;
@@ -32,9 +32,9 @@ use super::deck_keys::KeysIn;
 use super::stack::Card;
 use super::step::{BannerIn, BannerParams};
 use crate::keyboard::seat_on_keyboard;
+use base_machine::time::stamp::FrameClock;
 use shell_ui_kit::links::{BannerLink, Transient};
 use shell_ui_kit::notification_card::{CardPart, CardPress, part_id};
-use ui_components::base::time::stamp::FrameClock;
 
 /// Everything the column's handlers share. Copy: signals and cells only.
 #[derive(Clone, Copy)]

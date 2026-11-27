@@ -25,11 +25,11 @@ use crate::input::{InputEvent, InputKind, Origin};
 use crate::lock::LockState;
 use crate::overview::Overview;
 use crate::time::{Due, Mono, TimerKey};
+use base_machine::machine::Machine;
 use std::time::Duration;
 use ui_behaviour::space_swipe::{
     PageMilli, Swipe, SwipeIn, SwipeOut, SwipeParams, SwipeSource, finish_duration,
 };
-use ui_core::machine::Machine;
 
 /// Where the row of Spaces is drawn while a swipe moves it.
 #[derive(Debug, Clone, PartialEq, Eq)]

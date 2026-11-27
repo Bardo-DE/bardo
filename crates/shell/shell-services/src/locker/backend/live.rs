@@ -9,12 +9,12 @@
 use std::path::PathBuf;
 use std::time::Instant;
 
+use base_machine::time::stamp::Stamp;
 use shell_model::locker::{
     Host, Lock, LockCause, LockPhase, Locker, LockerCommand, LockerEffect, LockerEvent,
     ShellLockEvent, cause_after, cause_of, next_deadline, step,
 };
 use tokio::sync::{mpsc, watch};
-use ui_core::time::stamp::Stamp;
 use zbus::zvariant::OwnedFd;
 
 use super::logind;

@@ -1,8 +1,8 @@
 //! Table tests for `step.rs`.
 
 use super::{Banner, BannerIn, BannerOut, BannerParams, Deadline, Leave, step};
+use base_machine::time::stamp::Stamp;
 use shell_model::notifications::BannerLife;
-use ui_components::base::time::stamp::Stamp;
 
 fn p() -> BannerParams {
     BannerParams::default()

@@ -8,7 +8,7 @@
 
 use std::time::Duration;
 
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 /// Where the pointer is, for `Spent`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -86,8 +86,8 @@ pub enum CornerIn {
     Elapsed,
 }
 
-impl From<ui_core::machine::Elapsed> for CornerIn {
-    fn from(_: ui_core::machine::Elapsed) -> CornerIn {
+impl From<base_machine::machine::Elapsed> for CornerIn {
+    fn from(_: base_machine::machine::Elapsed) -> CornerIn {
         CornerIn::Elapsed
     }
 }

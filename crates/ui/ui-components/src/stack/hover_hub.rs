@@ -7,9 +7,9 @@
 //! write a timer makes is a `try_set`, so a timer that outlives the hub's signals stops instead of panicking
 //! (`ui_style::task`).
 
+use base_machine::time::clock::sleep;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
-use ui_core::time::clock::sleep;
 use ui_motion::anim::Anim;
 use ui_motion::hover_intent::{HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase};
 use ui_motion::machine::{MachineRef, use_machine};

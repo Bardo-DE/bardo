@@ -1,5 +1,5 @@
 //! The effects end of the thumbnail: feed [`step`] and carry out what it returns. The hold is
-//! The UI kit's timer (`ui_components::base::time::clock::sleep`, for the thumbnail hold or the banners' rest after a
+//! The UI kit's timer (`base_machine::time::clock::sleep`, for the thumbnail hold or the banners' rest after a
 //! hover, never a literal), one at a time and a task of the thumbnail's own scope; `Show` maps
 //! the surface, `Hide` unmaps it, `Leave` tells the service; a drag out is a task of the same
 //! scope awaiting layer-shell-host's outcome. `TakeKeyboard` asks the compositor for the keyboard
@@ -7,8 +7,8 @@
 //! keyboard's so the UI kit's focus ring shows before the first key, and focuses the picture;
 //! `ReleaseKeyboard` sets the mode back to `None`. While hidden no task runs.
 
+use base_machine::time::clock::sleep;
 use std::time::Duration;
-use ui_components::base::time::clock::sleep;
 
 use dioxus::core::{Runtime, Task, current_scope_id};
 use dioxus::prelude::*;

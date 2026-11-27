@@ -1,10 +1,10 @@
 //! The palette machine, over a list of rows it only counts.
 
 use super::model::{PaletteIn, PaletteIndex, PaletteMove, PaletteOut, PaletteParams, PaletteState};
-use crate::machine::Machine;
 use crate::text::typed::TypedText;
-use crate::time::stamp::Stamp;
 use crate::vocab::ShortcutKey;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 
 type Palette = PaletteState;
 

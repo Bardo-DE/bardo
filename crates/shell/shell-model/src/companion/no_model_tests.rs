@@ -122,7 +122,7 @@ fn a_refusal_opens_nothing_by_itself() {
         let (next, effects) = step(
             state,
             event,
-            ui_core::time::stamp::Stamp(0),
+            base_machine::time::stamp::Stamp(0),
             &CompanionParams::default(),
         );
         assert_eq!(effects, Vec::new());

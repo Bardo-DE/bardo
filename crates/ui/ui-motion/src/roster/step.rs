@@ -14,8 +14,8 @@
 
 use super::model::{LeaveBy, Measured, RosterIn, RosterOut, RosterParams, RosterState};
 use crate::settle::settle;
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 
 impl<K: Clone + PartialEq + 'static> Machine for RosterState<K> {
     type In = RosterIn<K>;

@@ -6,9 +6,9 @@
 
 use crate::anim::Anim;
 use crate::settle::settle;
+use base_machine::time::clock::sleep;
 use dioxus::core::{Task, current_scope_id};
 use dioxus::prelude::*;
-use ui_core::time::clock::sleep;
 use ui_style::scope::{Scope, use_scope_signal};
 use ui_style::task::{Gone, spawn_in, try_get, try_set};
 

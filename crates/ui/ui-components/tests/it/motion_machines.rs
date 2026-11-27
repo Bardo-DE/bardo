@@ -1,8 +1,8 @@
 //! The pure motion machines as tables: the hover intent machine (design/06-INTERACTIONS.md
 //! section 3), drag and the pull tab (sections 6 and 9.2).
 
-use ui_components::base::machine::Machine;
-use ui_components::base::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use ui_components::motion::drag::fraction_along;
 use ui_components::prelude::*;
 use ui_motion::drag::{DRAG_THRESHOLD, Drag, DragPhase, WINDOW_DRAG_THRESHOLD};

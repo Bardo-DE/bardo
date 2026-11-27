@@ -10,7 +10,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::LockCause;
-use ui_core::time::stamp::{Ms, Stamp};
+use base_machine::time::stamp::{Ms, Stamp};
 
 /// How long the lock may take to report locked before it is taken as locked anyway.
 pub const READY_GIVE_UP_MS: Ms = Ms(10_000);

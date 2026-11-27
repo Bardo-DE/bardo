@@ -5,6 +5,7 @@
 use crate::axes::Axes;
 use crate::pages::Section;
 use crate::pages::details::overview::{Cell, mini};
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::controls::segmented::Tracking;
@@ -17,7 +18,6 @@ use ui_components::motion::pane_slide::Pane;
 use ui_components::motion::spring_point::Release;
 use ui_components::motion::velocity::VelocityMeter;
 use ui_components::prelude::*;
-use ui_core::time::clock::sleep;
 
 /// The section on the Motion page.
 #[component]
@@ -175,21 +175,21 @@ fn DockCell() -> Element {
                     let at = event.client_coordinates();
                     let at = point_at(at.x, at.y);
                     from.set(Some(at));
-                    let now = ui_components::base::time::clock::now();
+                    let now = base_machine::time::clock::now();
                     meters.set((VelocityMeter::default().moved(at.x, now), VelocityMeter::default().moved(at.y, now)));
                 },
                 onpointermove: move |event| {
                     let Some(start) = from() else { return };
                     let at = event.client_coordinates();
                     let at = point_at(at.x, at.y);
-                    let now = ui_components::base::time::clock::now();
+                    let now = base_machine::time::clock::now();
                     let (mx, my) = meters();
                     meters.set((mx.moved(at.x, now), my.moved(at.y, now)));
                     drag.follow(Point { x: Px(at.x.0 - start.x.0), y: Px(at.y.0 - start.y.0) });
                 },
                 onpointerup: move |event| {
                     if from.take().is_some() {
-                        let now = ui_components::base::time::clock::now();
+                        let now = base_machine::time::clock::now();
                         let (mx, my) = meters();
                         let release = Release { x: mx.released(now), y: my.released(now) };
                         drag.home(Touch::Contact(Contact::from_event(&event)), release);

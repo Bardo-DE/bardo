@@ -66,8 +66,8 @@ pub enum PaletteIn {
     Elapsed,
 }
 
-impl From<crate::machine::Elapsed> for PaletteIn {
-    fn from(_: crate::machine::Elapsed) -> Self {
+impl From<base_machine::machine::Elapsed> for PaletteIn {
+    fn from(_: base_machine::machine::Elapsed) -> Self {
         PaletteIn::Elapsed
     }
 }

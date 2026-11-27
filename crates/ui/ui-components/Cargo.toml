@@ -12,6 +12,7 @@ publish.workspace = true
 base-ids = { path = "../../base/base-ids" }
 base-spawn = { path = "../../base/base-spawn" }
 base-words = { path = "../../base/base-words" }
+base-machine = { path = "../../base/base-machine" }
 ui-core = {path = "../ui-core"}
 ui-intents = {path = "../ui-intents"}
 ui-motion = {path = "../ui-motion", features = ["dioxus"]}

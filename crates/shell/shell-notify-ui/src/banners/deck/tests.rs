@@ -4,8 +4,8 @@ use super::{Deck, DeckIn, DeckOut, EntryKey, advance};
 use crate::banners::deck_keys::{KeysIn, Neighbour};
 use crate::banners::stack::Card;
 use crate::banners::step::{Banner, BannerIn, BannerParams, Deadline, Leave};
+use base_machine::time::stamp::Stamp;
 use shell_model::notifications::{AppKey, BannerLife, NotificationId, NotificationsCommand};
-use ui_components::base::time::stamp::Stamp;
 
 fn p() -> BannerParams {
     BannerParams::default()

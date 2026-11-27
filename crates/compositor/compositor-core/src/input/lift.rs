@@ -10,8 +10,8 @@
 //! flick of the same speed (`ui_behaviour::space_swipe::commit`). The speed is the slope between
 //! the oldest and newest position in the last 80 ms.
 
+use base_machine::time::stamp::Stamp;
 use ui_behaviour::space_swipe::{PageMilli, PagesPerSecMilli, commit};
-use ui_core::time::stamp::Stamp;
 
 /// How far the fingers go for Mission Control to be fully open, in logical pixels.
 pub const FULL_PX: i32 = 400;
@@ -77,7 +77,7 @@ impl Lift {
     ///
     /// ```
     /// use compositor_core::input::lift::{Lift, LiftIn, LiftOut, LiftEnd};
-    /// use ui_core::time::stamp::Stamp;
+    /// use base_machine::time::stamp::Stamp;
     ///
     /// let (lift, _) = Lift::Idle.step(LiftIn::Began(true), Stamp(0));
     /// let (lift, _) = lift.step(LiftIn::Moved { dy: -300 }, Stamp(100));

@@ -18,7 +18,8 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | Crate | Purpose |
 | --- | --- |
 | `base-words-macros` (crates/base) | proc macros: `#[derive(Word)]`, `#[derive(Token)]` |
-| `ui-core` | pure base: vocabulary, geometry units, colour, time, errors, text clip, PNG/base64. `Word` lives in `base-words`, `Spawner` in `base-spawn`, `Fraction` in `base-ids` |
+| `ui-core` | pure base: vocabulary, geometry units, colour, errors, text clip, PNG/base64. `Word` lives in `base-words`, `Spawner` in `base-spawn`, `Fraction` in `base-ids` |
+| `base-machine` | the timed pure `Machine` trait, `Stamp`/`Ms`/`FrameClock`, and the thread-local clock (`now`, `since`, `sleep`, `VirtualClock`) that every timer reads |
 | `ui-style` | appearance, tokens and the `Token` trait, material, Space palettes, fonts (bytes), icons, CSS emission, the `Kit` seam |
 | `ui-motion` | `Anim` and recipes, keyframes, `Presence`, `Timeline`, rosters, gestures, pulse, the details grammar; feature `dioxus` adds the hooks, timers and event conversions over Dioxus (`ds` turns it on) |
 | `ui-lint` | stylesheet and markup linter; reads its vocabulary from `Kits` |
@@ -97,7 +98,7 @@ declarations and re-exports. Directories group a concept; role files are named f
 
 | Crate | Modules, lowest first |
 | --- | --- |
-| `ui-core` | `vocab` (Availability, Switch, Expanded, Check, Percent, StaggerIndex, ShortcutKey, Shortcut), `command` (names, `CommandFace`, `AppCommand`, a shortcut's chord text), `press`, `standard_action`, `geometry` (units, scale, scroll, placement), `colour` (srgb, oklab, fit, contrast), `time` (clock, virtual clock, `Stamp`, `FrameClock`), `machine` (the `Machine` trait, `Elapsed`), `selection` (`RowSelection`, `Pick`, `PickHow`), `error`, `text` (clip, `TypedText`), `codec` (png, base64) |
+| `ui-core` | `vocab` (Availability, Switch, Expanded, Check, Percent, StaggerIndex, ShortcutKey, Shortcut), `command` (names, `CommandFace`, `AppCommand`, a shortcut's chord text), `press`, `standard_action`, `geometry` (units, scale, scroll, placement), `colour` (srgb, oklab, fit, contrast), `selection` (`RowSelection`, `Pick`, `PickHow`), `error`, `text` (clip, `TypedText`), `codec` (png, base64) |
 | `ui-style` | `appearance` (theme, accent, motion, blur, material choice, peek, system prefs, resolve), `scope` (the enclosing `Scope`), `tokens` (one file per token family, `set.rs` = `TokenSet`, `tuned.rs`), `kit` (`Kit`, `Kits`, `Section`, `Vocabulary`), `material`, `space` (palette, look, presets, frame vars, store, and `list`: the pure list of an app's Spaces), `icon` (glyph tables by family, plate, classify, render, url), `fonts`, `scale`, `css` (emission per cascade section, `reset.css`, `utilities.css`), `emit` |
 | `ui-motion` | `anim` (`Anim`), `recipe` (the table), `keyframes` (generated CSS + `motion.css`), `settle` (settle, timers, wake, reduced), `presence`, `timeline` (`Timeline` + `use_timeline` + one file per implementor), `roster`, `pulse`, `gesture` (drag, swipe, velocity, hover intent), `machine` (the hooks that run a `Machine`: `use_machine`, `use_machine_in`, `use_machine_state`, `MachineRef`, `MachineState`), `details` (grammar, `Moment`, `Detailed`, cues, one-shots, glyph morphs) |
 | `ui-behaviour` | `dir` (`Dir`) < `switcher`, `hot_corner`, `modifier_tap` (`tap`, `hold`), `space_swipe` (`numbers`, `velocity`, `finish`; each concept holds `model`, `step`, `tests`) |
@@ -133,7 +134,7 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 | `ds/core/{press,standard_action}.rs` | `ui-core::{press, standard_action}` |
 | `ds/core/geometry/{units,scale,placement}.rs` | `ui-core::geometry::{units, scale, placement}` |
 | `ds/core/colour/*` | `ui-core::colour::*` (the one copy) |
-| `ds/core/time/*` | `ui-core::time::*`; the private `Timeline` struct in `clock/timeline.rs` becomes `VirtualQueue` |
+| `ds/core/time/*` | `base-machine::time::*`; the private `Timeline` struct in `clock/timeline.rs` becomes `VirtualQueue` |
 | `ds/core/error.rs`, `ds/core/text/clip.rs`, the `Spawner` half of `ds/core/task.rs` | `ui-core::{error, text::clip}`, `base-spawn` |
 | `ds/core/{task,busy,guarded}.rs` (the Dioxus halves: scope-owned tasks, busy and guarded hooks) | `ui-style::task` (the lowest crate that uses Dioxus) |
 | the Dioxus event conversion in `ds/core/press.rs` | `ds::controls::press` (`ui-core::press` keeps the plain `Press`/`PointerButton` data) |
@@ -249,14 +250,14 @@ The single place a concept lives. Extend it; never write a second one.
 | A file list's Name cell (glyph, name cut from the middle to the room) | `ds::components::lists::name_cell` (`NameCell`, `name_chars`) |
 | What a dropped file does (copy, move, link) from the modifiers held at the release | `ds::file_drop::drag` (`DropOperation`, `FileDrop::operation`; the host reads the modifiers from its tracked keyboard state, as `ui-blitz::window_drop` does) |
 | Which rows of a list or table are selected and how a click or key changes it (replace, toggle, extend from the anchor, select all, as ranges) | `ui-core::selection` (`RowSelection`, `Pick`, `PickHow`) |
-| Time, sleep, virtual clock | `ui-core::time` (`now`, `since`, `sleep`) |
-| A machine's "when" (ms from an origin) and the clock that makes it | `ui-core::time::stamp` (`Stamp`, `FrameClock`); every timed machine in `ui-behaviour` and `ui-motion` takes the same `Stamp` |
+| Time, sleep, virtual clock | `base-machine::time` (`now`, `since`, `sleep`) |
+| A machine's "when" (ms from an origin) and the clock that makes it | `base-machine::time::stamp` (`Stamp`, `FrameClock`); every timed machine in `ui-behaviour` and `ui-motion` takes the same `Stamp` |
 | The app switcher's transition (Command-Tab over apps, quick tap, panel, Q, H, App Exposé), generic over the app key | `ui-behaviour::switcher` |
 | A hot corner's dwell, fire and re-arm | `ui-behaviour::hot_corner` |
 | Command's double tap (summon) and hold (talk) | `ui-behaviour::modifier_tap` (`Tap`, `HoldKey`) |
 | The live Space swipe: follow, rubber band, commit, finish | `ui-behaviour::space_swipe` (`Swipe`; the numbers in `numbers`) |
 | The hot-corner setting; the switcher and corner timing are machine constants | `ui-settings::schema::behaviour` (`HotCornerSettings`); the timing is `CornerParams::default()` and `SwitcherParams::default()` in `ui-behaviour` |
-| A timed pure state machine and the one timer that drives it | `ui-core::machine` (`Machine`, `Elapsed`), `ui-motion::machine` (`use_machine`, `use_machine_in`, `use_machine_state`, `MachineRef`, `MachineState`; named `ds::machine` for apps) |
+| A timed pure state machine and the one timer that drives it | `base-machine::machine` (`Machine`, `Elapsed`), `ui-motion::machine` (`use_machine`, `use_machine_in`, `use_machine_state`, `MachineRef`, `MachineState`; named `ds::machine` for apps) |
 | A word or state shown for one `DelayToken` and then gone ("Copied", "Sent") | `ds::components::app::hold_for` (`HoldFor`, `use_hold_for`) |
 | A recording's progress bar: loaded stretches, a time tooltip, a captured drag | `ds::components::controls::scrubber` (`Scrubber`; drawing in `scrubber_face`, machine in `scrubber_machine`, `BufferedRange`, `merged` and `time_text` in `scrubber_model`) |
 | A floating pill of controls, and its media slots (progress bar, level) | `ds::components::chrome::capsule` (`Capsule`, `CapsuleSlot::{Item, Readout, Divider, Scrub, Level}`, `ScrubEvent`, `SlotPriority`, `RankedSlot`, `fit`) |
@@ -374,7 +375,7 @@ The single place a concept lives. Extend it; never write a second one.
 | `DocumentHost` (+ parts) | `ds` | `ui_blitz::BlitzHost`, `ds::host::NoHost` | a new renderer | a new capability of the document a component needs |
 | `SpellService`, `HostWindow` | `ds` | `ui_blitz::spell::Hunspell`, a test fake; `ui_blitz::window::WinitWindow`, the shell's layer-shell-host window, a test stub | a new platform | never |
 | `SettingsDoc` | `ui-settings` | `AppearanceFile`; each consumer's file | a new settings file | never |
-| `Machine` | `ui-core` | each consumer's timed pure state (the shell's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ui_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ui_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ui_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
+| `Machine` | `base-machine` | each consumer's timed pure state (the shell's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ui_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ui_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ui_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
 | `AppCommand` | `ui-core` | each app's command type (what its menu items yield and its shortcuts fire) | an app with menus or shortcuts | never |
 | `Spawner` | `base-spawn` | `ui_blitz::TokioSpawner`, a test's inline spawner | a new runtime | never |
 | `Clipboard` | `ui-blitz` | `System`, `Memory` | never | never |
@@ -526,7 +527,7 @@ pub trait HostWindow { fn begin_move(&self); fn begin_resize(&self, edge: Resize
     fn tile(&self, tile: WindowTile) -> Result<(), TileError>;
     fn supports(&self, tile: WindowTile) -> bool; fn state(&self) -> WindowState; }
 
-// ui-core::machine (time is ui-core::time::stamp::Stamp: whole ms from the caller's origin)
+// base-machine::machine (time is base-machine::time::stamp::Stamp: whole ms from the caller's origin)
 pub trait Machine: Clone + PartialEq + 'static {      // no Default: the caller supplies the first state
     type In: From<Elapsed>;                   // what moves it; the clock alone can wake it
     type Out: 'static;                        // what it wants done
@@ -536,7 +537,7 @@ pub trait Machine: Clone + PartialEq + 'static {      // no Default: the caller 
         -> (Self, Vec<Self::Out>);
     fn wake(&self) -> Option<Stamp>;          // when to step again with no input; none at rest
 }
-// ui-motion::machine (feature dioxus; `ds::machine` re-exports it): runs it on ui-core::time's
+// ui-motion::machine (feature dioxus; `ds::machine` re-exports it): runs it on base-machine::time's
 // clock, so a harness's virtual clock drives it.
 pub struct MachineState<M: Machine> { pub state: Signal<M>, pub clock: FrameClock }   // Copy
 pub fn use_machine_state<M: Machine>(initial: impl FnOnce(Stamp) -> M) -> MachineState<M>;
@@ -918,7 +919,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 - **Lint profile:** `Profile::Strict` is the default and runs every rule but `OffGrammarTiming`
   (HIG guardrails report as warnings); `Profile::Details` adds the details grammar's timing. Consumers read Bardo by path, so
   a new failing rule breaks every consumer's tests at once: tell their owners before it lands.
-- **Time in `ds*`** is read only through `ui_core::time::{now, since, sleep}`, never
+- **Time in `ds*`** is read only through `base_machine::time::{now, since, sleep}`, never
   `Instant::now()` or `futures_timer` directly (`ds/tests/it/clock_rule.rs`), so the virtual
   clock reaches it. Library crates never call `tokio::spawn`; they take a `Spawner`.
 - **Tests run on the virtual clock.** Every test harness names its clock

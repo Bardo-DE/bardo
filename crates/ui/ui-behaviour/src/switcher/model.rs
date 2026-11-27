@@ -2,8 +2,8 @@
 
 use std::time::Duration;
 
-use ui_core::machine::Elapsed;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Elapsed;
+use base_machine::time::stamp::Stamp;
 
 use crate::dir::Dir;
 

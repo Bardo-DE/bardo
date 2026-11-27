@@ -1701,7 +1701,7 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   person should be given the moment to read it). A `displays_trial_end` for the open trial takes
   the sheet down unanswered; an end for another number changes nothing. A person's answer takes the
   question off the link at once; the compositor's end that follows finds nothing open.
-- **Countdown.** Counted from when the card mounts on the UI kit's clock (`ds::base::time::clock::sleep`
+- **Countdown.** Counted from when the card mounts on the UI kit's clock (`base_machine::time::clock::sleep`
   to each whole second, `seconds_left` / `until_next_second` in `shell-model`). It is a display of the
   time given, not the compositor's clock: the card mounts a frame after the event, so it can lag the
   compositor's own deadline by a frame or two. It decides nothing: the compositor reverts.
@@ -1712,7 +1712,7 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   blank sees it on the banners' output, not the blank one. The exit animation of a restarted card
   is not played (a remount is immediate). The `dev/accept` scripts have no step for it: it needs
   a program that changes the displays under the compositor (`docs/manual-checks.md`, "The display trial").
-- **Could not be checked by reading.** That `ds::base::time::clock::sleep` and `FrameClock::now().0`
+- **Could not be checked by reading.** That `base_machine::time::clock::sleep` and `FrameClock::now().0`
   behave under the harness's virtual clock the way the OSD's use of them does (the tests assume the
   countdown line is changed by the time the harness has advanced a whole second, and that the card
   mounts less than a second after `begin`); that `use_future` accepts an `async move` block over a

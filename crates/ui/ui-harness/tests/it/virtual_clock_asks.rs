@@ -4,6 +4,7 @@
 //! and a palette reports its newly selected row in the frame of the selection, so an actions key
 //! at once anchors to that row.
 
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::time::{Duration, Instant};
@@ -13,7 +14,6 @@ use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::focus::request::use_focus_request;
 use ui_components::focus::soon::focus_soon;
 use ui_components::prelude::*;
-use ui_core::time::clock::sleep;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
@@ -50,9 +50,9 @@ fn Listener() -> Element {
         };
         spawn(async move {
             while feed.changed().await.is_ok() {
-                heard.set(Some(ui_components::base::time::clock::now()));
+                heard.set(Some(base_machine::time::clock::now()));
                 sleep(ANSWER_AFTER).await;
-                answered.set(Some(ui_components::base::time::clock::now()));
+                answered.set(Some(base_machine::time::clock::now()));
             }
         });
     });

@@ -6,8 +6,8 @@
 //! seen while armed (Tab, Grave, the arrows) proves the chord is held and steps as it would
 //! shown. Past the delay a chord steps.
 
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 
 use super::model::{Phase, SwIn, SwKey, SwOut, SwitcherParams};
 use crate::dir::Dir;

@@ -14,11 +14,11 @@ use crate::components::overlays::sheet_attach::Attach;
 use crate::components::overlays::sheet_width::SheetWidth;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use base_words::Word;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use std::rc::Rc;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_core::vocab::Dismiss;
 use ui_motion::anim::Anim;
 use ui_motion::presence::{

@@ -2,8 +2,8 @@
 //! the context the bar's titles feed it through. The only effectful part of the menus; every
 //! decision is `track::step`, `plan::effects` or `content::body`.
 
+use base_machine::time::clock::sleep;
 use std::collections::HashMap;
-use ui_components::base::time::clock::sleep;
 use ui_components::prelude::*;
 
 use dioxus::prelude::*;
@@ -27,6 +27,7 @@ use super::tokens::BarTokens;
 use super::track::{Event, Target, Track, step};
 use super::tray_input::row_image;
 use crate::control_center::{PanelCap, height_cap};
+use base_machine::time::stamp::FrameClock;
 use shell_model::app_menu::AppMenuService;
 use shell_model::app_menu::{AppMenuCommand, Follower, MenuApp};
 use shell_model::apps::AppsService;
@@ -41,7 +42,6 @@ use shell_ui_kit::hooks::{
 };
 use shell_ui_kit::links::{ActionLink, CenterLink, ControlCenterLink, Origin};
 use shell_ui_kit::menu::PopupLook;
-use ui_components::base::time::stamp::FrameClock;
 use ui_components::style::icon::classify::ChromaLimit;
 
 /// How long a menu opened while the notification center is up waits for it to leave. On `KWin`

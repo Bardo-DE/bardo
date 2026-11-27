@@ -53,7 +53,7 @@ fn Page() -> Element {
     use_effect(move || {
         let _ = query();
         spawn(async move {
-            ui_components::base::time::clock::sleep(Duration::from_millis(3)).await;
+            base_machine::time::clock::sleep(Duration::from_millis(3)).await;
             drawn.with_mut(|n| *n += 1);
         });
     });

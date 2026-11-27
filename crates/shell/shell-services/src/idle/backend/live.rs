@@ -12,6 +12,7 @@
 
 use std::time::{Duration, Instant};
 
+use base_machine::time::stamp::Stamp;
 use logind_zbus::manager::PrepareForSleepStream;
 use shell_model::auth::AuthCommand;
 use shell_model::idle::{
@@ -23,7 +24,6 @@ use shell_model::untrusted::for_log;
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinSet;
 use tokio::time::MissedTickBehavior;
-use ui_core::time::stamp::Stamp;
 use zbus::fdo::NameOwnerChangedStream;
 
 use super::links::{IdleLinks, Reach};

@@ -1,12 +1,12 @@
 //! The one timer a machine runs: asleep until the state's `wake()`, replaced whenever that moves.
 
 use super::handle::MachineRef;
+use base_machine::machine::Machine;
+use base_machine::time::clock::sleep;
+use base_machine::time::stamp::Stamp;
 use dioxus::core::Task;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_core::machine::Machine;
-use ui_core::time::clock::sleep;
-use ui_core::time::stamp::Stamp;
 use ui_style::task::spawn_in;
 
 /// The sleep that is running: the time it was set for and its task. None at rest.

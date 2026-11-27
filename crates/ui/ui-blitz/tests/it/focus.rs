@@ -635,9 +635,9 @@ mod field_handle {
     //! after the ask's own task has run, so a selector's "found" comes first);
     //! a handle's blur is heard once too (Blitz clears the focus silently, so the handle tells it); an unknown or unreadable selector is a typed error.
 
+    use base_machine::time::clock::sleep;
     use dioxus::prelude::*;
     use std::time::Duration;
-    use ui_components::base::time::clock::sleep;
     use ui_components::focus::field::{FieldHandle, use_field_handle};
     use ui_components::focus::select::Select;
     use ui_components::focus::selector::{FocusError, focus_by_selector};

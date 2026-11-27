@@ -69,8 +69,8 @@ pub fn chord_input(state: Phase, hold: Option<Chord>, dir: Dir) -> SwIn {
 
 #[cfg(test)]
 mod tests {
+    use base_machine::time::stamp::Stamp;
     use layer_shell_types::{Modifier, Modifiers};
-    use ui_components::base::time::stamp::Stamp;
 
     use super::{Hold, Watch, chord_input, chord_of, tick_input};
     use crate::switcher::keys::Chord;

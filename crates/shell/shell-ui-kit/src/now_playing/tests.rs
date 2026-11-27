@@ -1,9 +1,9 @@
 use super::face::{TrackTimes, playback_of, position_of, track_lines};
+use base_machine::time::stamp::Stamp;
 use shell_kit::now_playing::kind::Playback;
 use shell_model::now_playing::{Abilities, MediaPlayer, PlayerId, Track};
 use shell_model::now_playing::{Micros, Timeline};
 use std::time::Duration;
-use ui_components::base::time::stamp::Stamp;
 
 #[test]
 fn a_stopped_player_offers_play() {

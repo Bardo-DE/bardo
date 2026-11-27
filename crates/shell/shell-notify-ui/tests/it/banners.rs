@@ -7,8 +7,8 @@
 //! the service dropped leaves silently; another output's column draws nothing; and the keyboard
 //! ([`keys`]) is asked for and never taken.
 
+use base_machine::time::FRAME_SLACK;
 use std::time::Duration;
-use ui_components::base::time::FRAME_SLACK;
 use ui_harness::Input;
 
 use layer_shell_types::OutputId;

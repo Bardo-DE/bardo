@@ -8,10 +8,10 @@
 use super::disc::EmojiPlayback;
 use super::id::EmojiId;
 use super::sheet::durations;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::base::machine::{Elapsed, Machine};
-use ui_components::base::time::stamp::Stamp;
 use ui_components::motion::epoch::Epoch;
 use ui_components::motion::machine::use_machine;
 use ui_components::style::appearance::motion::MotionLevel;
@@ -134,9 +134,9 @@ pub(crate) fn use_frame(emoji: EmojiId, wake: Epoch, playback: EmojiPlayback) ->
 #[cfg(test)]
 mod tests {
     use super::{Frames, FramesIn, Held};
+    use base_machine::machine::Machine;
+    use base_machine::time::stamp::Stamp;
     use std::time::Duration;
-    use ui_components::base::machine::Machine;
-    use ui_components::base::time::stamp::Stamp;
 
     fn held(frame: u16, ms: u64) -> Held {
         Held {

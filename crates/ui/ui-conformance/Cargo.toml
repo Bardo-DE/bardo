@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dev-dependencies]
+base-machine = { path = "../../base/base-machine" }
 keymap = {path = "../../keymap/keymap"}
 ui-components = {path = "../ui-components"}
 ui-shell = {path = "../ui-shell"}

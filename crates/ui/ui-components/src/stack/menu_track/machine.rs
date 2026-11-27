@@ -5,9 +5,9 @@ use super::types::{
     ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming, MenuTrack,
     MenuTrackEffect, MenuTrackEvent, Session, ShownBy, Submenu,
 };
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use ui_core::geometry::units::Point;
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
 use ui_core::vocab::PressPhase;
 
 /// The effects of one step, in order.

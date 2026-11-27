@@ -1,9 +1,9 @@
 //! The menu tracker's vocabulary: what it remembers, what it is told, what it asks for.
 
+use base_machine::machine::Elapsed;
+use base_machine::time::stamp::Stamp;
 use std::time::Duration;
 use ui_core::geometry::units::Point;
-use ui_core::machine::Elapsed;
-use ui_core::time::stamp::Stamp;
 use ui_core::vocab::PressPhase;
 
 /// An item, by its index at each nesting level: `[2, 0]` is the first item of the third
@@ -127,7 +127,7 @@ pub enum MenuPhase<K> {
     Tracking(Session<K>),
 }
 
-/// The tracker's timings (its [`Machine::Params`](ui_core::machine::Machine::Params)).
+/// The tracker's timings (its [`Machine::Params`](base_machine::machine::Machine::Params)).
 ///
 /// From `menus.submenu_delay_ms` and `menus.submenu_triangle_timeout_ms` (design/22-SETTINGS.md;
 /// proposed 200 and 300 ms).
@@ -149,8 +149,9 @@ impl Default for MenuTiming {
     }
 }
 
-/// The tracker, a [`Machine`](ui_core::machine::Machine) over [`MenuTiming`]: where it is. Its
-/// deadlines (the submenu delay, the safe triangle's timeout) live in the state, so its wake is
+/// The tracker, a [`Machine`](base_machine::machine::Machine) over [`MenuTiming`]: where it is.
+///
+/// Its deadlines (the submenu delay, the safe triangle's timeout) live in the state, so its wake is
 /// the one timer.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MenuTrack<K> {

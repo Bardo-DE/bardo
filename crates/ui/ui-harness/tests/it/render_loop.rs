@@ -1,9 +1,9 @@
 //! A render loop in the app under test fails the harness loudly instead of being cut off after
 //! the round cap and carried on from.
 
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_core::time::clock::sleep;
 use ui_harness::{Harness, Viewport};
 
 const VIEW: Viewport = Viewport {

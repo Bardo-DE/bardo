@@ -7,11 +7,11 @@
 
 use std::rc::Rc;
 
+use base_machine::time::FRAME_SLACK;
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use layer_shell_hooks::{SurfaceHandle, use_watch};
 use layer_shell_types::{BlurSpec, RegionSpec};
-use ui_components::base::time::FRAME_SLACK;
-use ui_components::base::time::clock::sleep;
 use ui_components::prelude::*;
 
 use crate::launcher::hit::{ActionsShown, blur_region, hit_for, panel_input};

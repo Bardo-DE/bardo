@@ -1,6 +1,6 @@
 [package]
 name = "ui-core"
-description = "The design system's pure base: vocabulary, geometry units, colour, time, errors, text clip and image encodings."
+description = "The design system's pure base: vocabulary, geometry units, colour, errors, text clip and image encodings."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,9 +10,9 @@ publish.workspace = true
 
 [dependencies]
 base-words = { path = "../../base/base-words" }
+base-machine = { path = "../../base/base-machine" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
-futures-timer = { workspace = true }
 keyboard-types = {workspace = true}
 # The keymap nouns (actions, chords, platforms) and the resolver; pure, no source crates.
 keymap = {path = "../../keymap/keymap"}
@@ -21,8 +21,6 @@ serde_json = { workspace = true, optional = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }
-# The wall-clock sleep test waits for its timer by the one deadline wait.
-base-testkit = { path = "../../base/base-testkit" }
 
 [features]
 # `ui_core::testing`: checks a stored `Word` against its serde form.

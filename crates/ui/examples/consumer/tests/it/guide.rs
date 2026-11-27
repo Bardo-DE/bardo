@@ -342,8 +342,8 @@ fn the_badge_times_out_on_ds_motions_own_clock() {
 /// Section 10, "Menu tracking".
 #[test]
 fn menu_track_steps() {
-    use ui_components::base::machine::Machine;
-    use ui_components::base::time::stamp::Stamp;
+    use base_machine::machine::Machine;
+    use base_machine::time::stamp::Stamp;
     use ui_components::stack::menu_track::types::{
         MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent,
     };

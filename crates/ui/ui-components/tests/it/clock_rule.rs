@@ -1,9 +1,9 @@
 //! The clock rule, held over the design system's sources (`ds`, `ui-core`, `ui-style`, `ui-motion`,
-//! `ui-shell`): the design system reads time only through `ui_components::base::time::clock` (`now`, `since`, `sleep`), so a harness's virtual clock reaches every timer and
-//! every "now". A direct `Instant::now()` (or `.elapsed()` on an `Instant`, which this scan
+//! `ui-shell`): the design system reads time only through `base_machine::time::clock` (`now`,
+//! `since`, `sleep`), so a harness's virtual clock reaches every timer and every "now". A direct `Instant::now()` (or `.elapsed()` on an `Instant`, which this scan
 //! cannot tell from a tween's own `elapsed`, so review catches it) or a
 //! `futures_timer` sleep would stay on the wall clock and drift from the harness again.
-//! `ui-core`'s `src/time/` itself and test modules (everything from a file's `#[cfg(test)]` on, and
+//! `base-machine`'s `src/time/` itself and test modules (everything from a file's `#[cfg(test)]` on, and
 //! `*tests.rs` files) are exempt; comments are skipped.
 //!
 //! The second half holds the tests: every harness a test builds names its clock. Time in a test
@@ -78,7 +78,7 @@ fn ds_reads_time_only_through_ds_time() {
         .collect();
     assert!(
         found.is_empty(),
-        "read the time through ui_components::base::time::clock::{{now, since, sleep}} instead:\n{}",
+        "read the time through base_machine::time::clock::{{now, since, sleep}} instead:\n{}",
         found.join("\n")
     );
 }

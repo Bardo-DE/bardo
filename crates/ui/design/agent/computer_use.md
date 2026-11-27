@@ -394,7 +394,7 @@ pub fn stalled(history: &[FrameDigest], limit: u8) -> Stall;
 pub enum Stall { Moving, Stalled }
 ```
 
-The run machine has the same shape as `ui_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like the accounts service.
+The run machine has the same shape as `base_machine::machine::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like the accounts service.
 
 ```rust
 pub struct Run { pub id: RunId, pub task: ComputerUseTask, pub phase: RunPhase, pub used: BudgetUse, pub taint: Label,

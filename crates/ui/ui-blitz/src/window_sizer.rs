@@ -7,13 +7,13 @@ use crate::size_ledger::{ANSWER_WINDOW, Serial, SizeLedger, SizeOrigin, SizeRequ
 use crate::sized_window::{SizedWindow, WinitSized};
 use crate::window_requests::Requests;
 use crate::window_size::Extent;
+use base_machine::time::clock::{now, sleep};
 use dioxus::core::spawn_forever;
 use dioxus::prelude::*;
 use dioxus_native::winit::window::Window;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
-use ui_components::base::time::clock::{now, sleep};
 
 /// Resizes the window the calling component renders in, and says who last resized it.
 ///

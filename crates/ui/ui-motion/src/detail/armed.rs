@@ -45,9 +45,10 @@ impl Armed {
     /// Keep `touch` (from a handler) for the next change; a remote touch keeps nothing.
     pub fn arm(mut self, touch: Touch) {
         match touch {
-            Touch::Contact(contact) => self
-                .press
-                .set(Some((contact, Hold::Since(ui_core::time::clock::now())))),
+            Touch::Contact(contact) => self.press.set(Some((
+                contact,
+                Hold::Since(base_machine::time::clock::now()),
+            ))),
             Touch::Remote => {}
         }
     }
@@ -57,7 +58,7 @@ impl Armed {
     pub fn touch(self) -> Touch {
         match *self.press.peek() {
             Some((contact, Hold::Operation)) => Touch::Contact(contact),
-            Some((contact, Hold::Since(at))) if ui_core::time::clock::since(at) <= STALE => {
+            Some((contact, Hold::Since(at))) if base_machine::time::clock::since(at) <= STALE => {
                 Touch::Contact(contact)
             }
             Some(_) | None => Touch::Remote,

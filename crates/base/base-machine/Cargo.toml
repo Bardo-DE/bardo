@@ -1,0 +1,22 @@
+[package]
+name = "base-machine"
+description = "The timed pure state machine: the Machine trait, Stamp and Ms, and the thread-local clock (wall or virtual) every timer reads."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+# The wall clock's sleep: a delay on its own timer thread, so it works under any executor.
+futures-timer = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+# The wall-clock sleep test waits for its timer by the one deadline wait.
+base-testkit = { path = "../base-testkit" }
+
+[lints]
+workspace = true

@@ -11,12 +11,12 @@
 //! `DesktopOnly` rests fixed on an output showing a full-screen Space ([`mode_on`]).
 
 use super::tokens::BarTokens;
+use base_machine::time::stamp::Stamp;
 use layer_shell_types::{BlurSpec, ElementId, RegionSpec};
 use shell_model::desktop::Shown;
 use shell_model::units::Cpx;
 use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{self, Change, Hold, Input, Phase, Timing, advance};
-use ui_components::base::time::stamp::Stamp;
 use ui_components::prelude::Motion;
 use ui_components::style::tokens::easing::EasingToken;
 

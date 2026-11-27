@@ -46,12 +46,12 @@ use std::time::Instant;
 use crate::thumbs::{Anyview, ThumbKey, Thumbed, Thumbnailer};
 use crate::words::volume_trouble_words;
 use anyview_peek::{AnyPeeked, PeekWorker};
+use base_machine::time::clock;
 use files_core::{ItemRef, Location, Summary};
 use files_fs::WatchHandle;
 use files_model::{Effect, Input, Now, OpenTarget, TabId, Tabbed};
 use files_ops::{Job, Worker};
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
-use ui_components::base::time::clock;
 use ui_host_hooks::clipboard;
 
 pub use apps::{AppChoiceView, Apps, NoApps};

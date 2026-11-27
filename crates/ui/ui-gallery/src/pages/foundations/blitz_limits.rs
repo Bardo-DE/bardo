@@ -5,6 +5,7 @@
 use crate::axes::{Axes, Showcase};
 use crate::pages::{Scope, Section, Specimen};
 use crate::wallpaper;
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::host::measure::use_rect;
@@ -12,7 +13,6 @@ use ui_components::prelude::*;
 use ui_components::root::chrome::FrameTint;
 use ui_components::style::icon::render::Glyph;
 use ui_core::text::clip::clip_chars;
-use ui_core::time::clock::sleep;
 
 /// Each spike finding: its id, what Blitz does, and what the UI kit does about it.
 const LIMITS: [(&str, &str, &str); 16] = [
@@ -64,7 +64,7 @@ const LIMITS: [(&str, &str, &str); 16] = [
     (
         "S10",
         "futures-timer sleeps wake the document.",
-        "Settle timers, hover intent and the toast hold run on ui_core::time::clock::sleep (the ticker below).",
+        "Settle timers, hover intent and the toast hold run on base_machine::time::clock::sleep (the ticker below).",
     ),
     (
         "S11",
@@ -266,7 +266,7 @@ fn Live() -> Element {
                 Specimen { name: "use_rect after layout", code: rect,
                     div { class: "g-stage", onmounted: move |event| probe.on_mounted(event) }
                 }
-                Specimen { name: "ui_core::time::clock::sleep ticks", code: format!("{} s since this page opened", ticks()),
+                Specimen { name: "base_machine::time::clock::sleep ticks", code: format!("{} s since this page opened", ticks()),
                     div {}
                 }
                 Specimen { name: "data-modality", code: modality.to_string(),

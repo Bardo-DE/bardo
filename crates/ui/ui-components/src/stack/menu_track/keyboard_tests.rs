@@ -4,8 +4,8 @@
 use crate::stack::menu_track::types::{
     ItemPath, MenuKey, MenuPhase, MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent, Submenu,
 };
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use ui_core::vocab::PressPhase;
 
 type Event = MenuTrackEvent<()>;

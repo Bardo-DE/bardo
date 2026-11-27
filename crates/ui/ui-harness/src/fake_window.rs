@@ -4,6 +4,7 @@
 
 use crate::recorded_window::WindowHosting;
 use crate::snapshot::Viewport;
+use base_machine::time::clock::sleep;
 use dioxus::core::spawn_forever;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -11,7 +12,6 @@ use std::time::Duration;
 use ui_blitz::seam::SizedWindow;
 use ui_blitz::{Extent, ScreenArea, ScreenOf, WindowSizer, WorkBasis};
 use ui_components::prelude::Scale;
-use ui_core::time::clock::sleep;
 
 /// How the harness's window answers a request to resize it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

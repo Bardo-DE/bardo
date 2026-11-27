@@ -5,9 +5,9 @@
 
 use super::machine::{MachineRef, use_machine};
 use super::swipe::{SwipeEffect, SwipeInput, SwipeMetrics, SwipeState};
+use base_machine::time::stamp::Stamp;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
-use ui_core::time::stamp::Stamp;
 use ui_core::vocab::PressPhase;
 
 /// A live swipe: read its state in render, feed it from the card's listeners.

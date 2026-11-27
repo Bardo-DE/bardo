@@ -128,7 +128,7 @@ impl SwipeGlue {
         if let (Some(swiper), true) = (self.live(), primary) {
             let x = Px(narrow::f32_of(event.client_coordinates().x));
             let mut meter = self.meter;
-            meter.set(VelocityMeter::default().moved(x, ui_core::time::clock::now()));
+            meter.set(VelocityMeter::default().moved(x, base_machine::time::clock::now()));
             swiper.feed(SwipeInput::Down { x });
         }
     }
@@ -143,7 +143,7 @@ impl SwipeGlue {
             };
             let x = Px(narrow::f32_of(event.client_coordinates().x));
             let mut meter = self.meter;
-            let measured = meter.peek().moved(x, ui_core::time::clock::now());
+            let measured = meter.peek().moved(x, base_machine::time::clock::now());
             meter.set(measured);
             swiper.pointer_moved(x, held);
         }
@@ -160,7 +160,7 @@ impl SwipeGlue {
     /// the pointer's velocity into the return.
     pub fn released(&self, event: &PointerEvent) {
         if let Some(swiper) = self.live() {
-            let velocity = self.meter.peek().released(ui_core::time::clock::now());
+            let velocity = self.meter.peek().released(base_machine::time::clock::now());
             let mut released = self.released;
             released.set(Touch::Contact(
                 Contact::from_event(event).with_velocity(velocity),

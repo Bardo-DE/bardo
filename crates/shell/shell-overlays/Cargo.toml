@@ -13,6 +13,7 @@ account-sheet = {path = "../../accounts/account-sheet"}
 account-capability = {path = "../../accounts/account-capability"}
 base-secret = { path = "../../base/base-secret" }
 base-url = { path = "../../base/base-url" }
+base-machine = { path = "../../base/base-machine" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 keymap = {path = "../../keymap/keymap"}
 ui-components = {path = "../../ui/ui-components"}

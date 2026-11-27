@@ -2,8 +2,8 @@
 //! `animationend` (design/05-MOTION.md section 7.1).
 
 use super::anim::Anim;
+use base_machine::time::FRAME_SLACK;
 use std::time::Duration;
-use ui_core::time::FRAME_SLACK;
 use ui_style::appearance::motion::MotionLevel;
 
 /// `duration(anim, level) + FRAME_SLACK`. Worked values, Standard: `settle(RowOut)` 184 ms,

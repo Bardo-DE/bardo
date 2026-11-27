@@ -4,7 +4,7 @@ use crate::idle::{
     IdleTimes, LockGrace, LockedScreenOff, OffReason, PowerPair, Threshold, Timeout, WakeDelay,
 };
 use crate::locker::LockCause;
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 fn own() -> IdlePolicy {
     let after = |s| Timeout::After(IdleSecs(s));

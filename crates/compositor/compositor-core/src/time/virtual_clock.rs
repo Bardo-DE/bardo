@@ -1,5 +1,5 @@
 //! The virtual clock: an instant that moves only when told, the timers and the outputs'
-//! vblank clocks it stops for. It mirrors ui-core's `VirtualClock` (`elapsed`, `next_due`,
+//! vblank clocks it stops for. It mirrors base-machine's `VirtualClock` (`elapsed`, `next_due`,
 //! `advance_to`, `schedule`) as a plain value: no thread-installed global, no executor
 //! (21-FREEZE-AMENDMENTS A1). The composition root drives it as a calloop event source.
 
@@ -57,7 +57,7 @@ impl VirtualClock {
         self.now
     }
 
-    /// How far past the session epoch the clock stands (ui-core's `elapsed`).
+    /// How far past the session epoch the clock stands (base-machine's `elapsed`).
     #[must_use]
     pub fn elapsed(&self) -> Duration {
         self.now.0
@@ -75,7 +75,7 @@ impl VirtualClock {
         VirtualClock { timers, ..self }
     }
 
-    /// The clock with `due` armed (ui-core's `schedule`).
+    /// The clock with `due` armed (base-machine's `schedule`).
     #[must_use]
     pub fn schedule(self, due: Due) -> VirtualClock {
         let VirtualClock {
@@ -106,7 +106,7 @@ impl VirtualClock {
         VirtualClock { outputs, ..self }
     }
 
-    /// The earliest instant a timer is due strictly after now (ui-core's `next_due`).
+    /// The earliest instant a timer is due strictly after now (base-machine's `next_due`).
     #[must_use]
     pub fn next_due(&self) -> Option<Mono> {
         self.timers.next_after(self.now)

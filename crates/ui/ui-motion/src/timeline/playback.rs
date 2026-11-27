@@ -5,10 +5,10 @@
 //! handle a component moves by hand.
 
 use super::Timeline;
+use base_machine::time::{FRAME_TICK, clock};
 use dioxus::core::{Task, current_scope_id};
 use dioxus::prelude::*;
 use std::time::{Duration, Instant};
-use ui_core::time::{FRAME_TICK, clock};
 use ui_style::task::{Gone, spawn_in, try_get, try_set, try_set_if_changed};
 
 /// The run in progress: its timeline, when it started and which run it is.

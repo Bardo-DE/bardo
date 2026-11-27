@@ -10,7 +10,7 @@
 //! wakes cannot tell the two apart: a timer that fires while a render runs queues its task
 //! without waking anyone.)
 
-use ui_core::time::clock::wall_sleeps_finished;
+use base_machine::time::clock::wall_sleeps_finished;
 
 /// Rounds that made their own work, counted before the harness panics.
 pub(crate) const MAX_ROUNDS: usize = 64;
@@ -51,10 +51,10 @@ impl RoundBudget {
 #[cfg(test)]
 mod tests {
     use super::{MAX_ROUNDS, MAX_TOTAL, RoundBudget};
+    use base_machine::time::clock::{install_wall, sleep};
     use std::pin::pin;
     use std::task::{Context, Waker};
     use std::time::Duration;
-    use ui_core::time::clock::{install_wall, sleep};
 
     /// A wall sleep that finishes now, counted on this thread.
     fn finish_a_sleep() {

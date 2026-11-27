@@ -39,7 +39,7 @@ pub fn use_widget<W: Widget>(
     // Read so that each wake, which changes the state, re-renders the caller.
     let _ = follower.state().read();
     timeline
-        .current(ui_components::base::time::clock::now())
+        .current(base_machine::time::clock::now())
         .cloned()
         .unwrap_or_else(|| W::placeholder(fit::<W>(size)))
 }

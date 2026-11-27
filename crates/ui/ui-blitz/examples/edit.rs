@@ -5,10 +5,10 @@
 //!
 //! `cargo run -p ui-blitz --example edit`
 
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_blitz::{AppConfig, AppId, WindowSize, launch};
-use ui_components::base::time::clock::sleep;
 use ui_components::edit::handle::use_edit_handle;
 use ui_components::edit::input::EditInput;
 use ui_components::edit::pointer::EditPointer;

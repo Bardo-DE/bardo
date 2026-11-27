@@ -225,7 +225,7 @@ impl PanelCtx {
                 drop(drive);
                 eprintln!(
                     "{}",
-                    first_frame_line(ui_components::base::time::clock::since(requested))
+                    first_frame_line(base_machine::time::clock::since(requested))
                 );
             });
         }

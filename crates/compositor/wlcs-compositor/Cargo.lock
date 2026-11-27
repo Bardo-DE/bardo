@@ -322,6 +322,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-machine"
+version = "0.1.0"
+dependencies = [
+ "futures-timer",
+ "serde",
+]
+
+[[package]]
 name = "base-secret"
 version = "0.1.0"
 dependencies = [
@@ -685,6 +693,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-ids",
+ "base-machine",
  "base-time",
  "base-words",
  "desktop-protocols",
@@ -3537,15 +3546,15 @@ dependencies = [
 name = "ui-behaviour"
 version = "0.1.0"
 dependencies = [
- "ui-core",
+ "base-machine",
 ]
 
 [[package]]
 name = "ui-core"
 version = "0.1.0"
 dependencies = [
+ "base-machine",
  "base-words",
- "futures-timer",
  "keyboard-types",
  "keymap",
  "serde",
@@ -3569,6 +3578,7 @@ name = "ui-motion"
 version = "0.1.0"
 dependencies = [
  "base-ids",
+ "base-machine",
  "base-words",
  "ui-core",
  "ui-style",
@@ -3599,6 +3609,7 @@ version = "0.1.0"
 dependencies = [
  "base-clock",
  "base-ids",
+ "base-machine",
  "base-time",
  "base-words",
  "base-words-macros",

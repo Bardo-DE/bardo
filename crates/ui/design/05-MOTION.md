@@ -630,7 +630,7 @@ velocity instead. `use_spring_motion(at, PxPerUnit) -> SpringMotion` is the impe
 its snap cell): `use_spring_point(target: Point, spec)` and `use_spring_point_motion(at)`, one
 spring per axis, `go(target, touch, Release { x, y }, response)` handing each axis the hand's
 velocity along it; `PointThrow::landing` picks the cell nearest the projection. The frame
-task sleeps `FRAME_TICK` (16 ms) on `ds::time`, so a harness on `Clock::Virtual` drives it
+task sleeps `FRAME_TICK` (16 ms) on `base_machine::time`, so a harness on `Clock::Virtual` drives it
 exactly; it ends the moment the spring rests, and asks for nothing after (design/26 R3). A
 component writes the position into a custom property on its own element (`--knob-x`, `--seg-dx`,
 `--switcher-at`, `--pane-p`, `--present-p`, `--swipe-dx`, `--drag-dx`/`--drag-dy`, the slider's

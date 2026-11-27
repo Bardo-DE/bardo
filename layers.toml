@@ -295,6 +295,8 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.base-ids]
 kind = "unclassified"
+[crate.base-machine]
+kind = "unclassified"
 [crate.base-path]
 kind = "unclassified"
 [crate.base-process]
@@ -920,6 +922,11 @@ forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyri
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
 
 [[reach]]
+crate = "base-machine"
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "toml"]
+why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
+
+[[reach]]
 crate = "base-time"
 forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "toml"]
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
@@ -1459,6 +1466,12 @@ why = "the table of allowed direct edges between workspace crates"
 crate = "account-fake"
 features = "all"
 exactly = ["account-capability", "account-core", "account-provider", "account-secrets", "account-service", "account-service-core", "account-sheet", "account-wire", "base-time"]
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "base-machine"
+features = "all"
+exactly = []
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -2707,15 +2720,17 @@ crate = "anyview-peek"
 features = ["media", "pane"]
 # 581 in the script; 605 since the monorepo moves (the base-* split, ui-components), which raised no
 # budget. Set to today's count so it stops growing; trimming it back is a review item. 606 when
-# the real clock moved out of base-time into base-clock (phase 3.1: the same code in its own crate).
-max = 606
+# the real clock moved out of base-time into base-clock (phase 3.1: the same code in its own crate),
+# 607 when the machine and stamp code moved out of ui-core into base-machine (phase 3.4, likewise).
+max = 607
 why = "the launcher links the peek, so growth here is growth of its binary"
 
 [[budget]]
 crate = "anyview-peek"
 features = "none"
 # 202 in the script; 212 since the monorepo moves, as above.
-max = 212
+# 213 when ui-core's machine and stamp code moved into base-machine (phase 3.4: same code).
+max = 213
 why = "the headless peek is what a mail client or a terminal links to look at a file"
 
 # The lock file holds none of the libmpv, libav and picture-codec bindings at all, so a dev-dependency cannot
@@ -5080,14 +5095,14 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-kit"
 features = "all"
-exactly = ["ui-components", "ui-core", "ui-shell"]
+exactly = ["base-machine", "ui-components", "ui-core", "ui-shell"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "shell-model"
 features = "all"
 exactly = ["account-capability", "account-core", "account-sheet", "action-core", "action-manifest",
-  "action-vocab", "action-wire", "base-ids", "base-secret", "base-time", "base-url", "base-words",
+  "action-vocab", "action-wire", "base-ids", "base-machine", "base-secret", "base-time", "base-url", "base-words",
   "base-xdg", "companion-model", "companion-wire", "computer-use-action", "computer-use-bus",
   "desktop-protocols", "inference-core", "key-remap-proto", "keymap", "memory-core",
   "permission-core", "provenance", "shell-launcher", "speech-wire", "ui-core", "ui-helpers"]
@@ -5128,7 +5143,7 @@ exactly = [
     "anyview-platform",
     "base-fs",
     "base-ids",
-    "base-secret",
+    "base-machine", "base-secret",
     "base-time",
     "base-words",
     "bluez-proxy",
@@ -5209,7 +5224,7 @@ exactly = [
     "action-manifest",
     "action-vocab",
     "base-fs",
-    "base-words",
+    "base-machine", "base-words",
     "base-xdg",
     "companion-wire",
     "computer-use-action",
@@ -5240,14 +5255,14 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-bar"
 features = "all"
-exactly = ["base-fs", "layer-shell-hooks", "layer-shell-types", "shell-kit", "shell-launcher",
+exactly = ["base-fs", "base-machine", "layer-shell-hooks", "layer-shell-types", "shell-kit", "shell-launcher",
   "shell-model", "shell-settings", "shell-ui-kit", "ui-components", "ui-host-hooks"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "shell-dock"
 features = "all"
-exactly = ["keymap", "layer-shell-hooks", "layer-shell-types", "shell-desktop-fs", "shell-kit",
+exactly = ["base-machine", "keymap", "layer-shell-hooks", "layer-shell-types", "shell-desktop-fs", "shell-kit",
   "shell-launcher", "shell-model", "shell-settings", "shell-ui-kit", "ui-components"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -5262,7 +5277,7 @@ exactly = [
     "anyview-image",
     "anyview-peek",
     "anyview-platform",
-    "base-time",
+    "base-machine", "base-time",
     "base-xdg",
     "companion-model",
     "companion-wire",
@@ -5287,7 +5302,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "shell-notify-ui"
 features = "all"
 exactly = [
-    "ui-components",
+    "base-machine", "ui-components",
     "ui-settings",
     "shell-model",
     "shell-settings",
@@ -5304,7 +5319,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-overlays"
 features = "all"
-exactly = ["account-capability", "account-core", "account-sheet", "base-secret", "base-url", "keymap",
+exactly = ["account-capability", "account-core", "account-sheet", "base-machine", "base-secret", "base-url", "keymap",
   "layer-shell-hooks", "layer-shell-types", "shell-kit", "shell-launcher", "shell-model",
   "shell-settings", "shell-ui-kit", "ui-behaviour", "ui-components", "ui-shell"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
@@ -5930,19 +5945,19 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-core"
 features = "all"
-exactly = ["base-words", "keymap"]
+exactly = ["base-machine", "base-words", "keymap"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-style"
 features = "all"
-exactly = ["base-ids", "base-time", "base-words", "base-words-macros", "settings-store", "ui-core", "base-clock"]
+exactly = ["base-ids", "base-machine", "base-time", "base-words", "base-words-macros", "settings-store", "ui-core", "base-clock"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-motion"
 features = "all"
-exactly = ["base-ids", "base-words", "ui-core", "ui-style"]
+exactly = ["base-ids", "base-machine", "base-words", "ui-core", "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5960,13 +5975,13 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-behaviour"
 features = "all"
-exactly = ["ui-core"]
+exactly = ["base-machine"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-components"
 features = "all"
-exactly = ["base-ids", "base-spawn", "base-words", "keymap", "ui-core", "ui-intents", "ui-motion",
+exactly = ["base-ids", "base-machine", "base-spawn", "base-words", "keymap", "ui-core", "ui-intents", "ui-motion",
   "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -6011,7 +6026,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-blitz"
 features = "all"
-exactly = ["base-fs", "base-time", "base-xdg", "blitz-embed", "blitz-embed-types", "caller-identity-dbus",
+exactly = ["base-fs", "base-machine", "base-time", "base-xdg", "blitz-embed", "blitz-embed-types", "caller-identity-dbus",
   "dbus-kit", "keymap", "keymap-gnome", "keymap-kde", "ui-components", "ui-desktop", "ui-emoji",
   "ui-host-hooks", "wayland-raw-handle"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
@@ -6019,13 +6034,13 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-harness"
 features = "all"
-exactly = ["blitz-embed", "keymap", "ui-blitz", "ui-components", "ui-core", "ui-host-hooks"]
+exactly = ["base-machine", "blitz-embed", "keymap", "ui-blitz", "ui-components", "ui-core", "ui-host-hooks"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-gallery"
 features = "all"
-exactly = ["keymap", "ui-blitz", "ui-components", "ui-core", "ui-harness", "ui-lint", "ui-settings",
+exactly = ["base-machine", "keymap", "ui-blitz", "ui-components", "ui-core", "ui-harness", "ui-lint", "ui-settings",
   "ui-shell"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 

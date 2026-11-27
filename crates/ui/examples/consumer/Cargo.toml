@@ -22,6 +22,7 @@ ui-host-hooks = { path = "../../ui-host-hooks" }
 dioxus = { workspace = true, features = ["hooks", "html", "macro", "signals"] }
 
 [dev-dependencies]
+base-machine = { path = "../../../base/base-machine" }
 settings-store = { path = "../../../settings/settings-store" }
 serde = { workspace = true, features = ["derive"] }
 dioxus-ssr = { workspace = true }

@@ -1,6 +1,6 @@
 //! The lift's velocity: a least-squares line through the last 80 ms of the fingers' positions.
 
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 use super::model::{PageMilli, PagesPerSecMilli, Samples};
 use super::numbers::{div_nearest, saturate};

@@ -4,6 +4,7 @@
 use crate::axes::Showcase;
 use crate::pages::overlays::outbox::Outbox;
 use crate::pages::{Section, Specimen};
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use ui_components::components::app::link_pill::{LinkPill, LinkTarget};
 use ui_components::components::app::send_pill::SEND_COUNTDOWN;
@@ -18,7 +19,6 @@ use ui_components::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 use ui_components::stack::toast_hub::{ToastAction, UndoToken, use_toast_hub};
 use ui_components::style::icon::render::Glyph;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_core::time::clock::sleep;
 
 /// The hover targets, one per card kind.
 const TARGETS: [(HoverKind, &str, &str); 4] = [

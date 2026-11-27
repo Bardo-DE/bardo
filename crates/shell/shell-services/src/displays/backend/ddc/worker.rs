@@ -8,12 +8,12 @@ use std::sync::Arc;
 use std::sync::mpsc::{Receiver, RecvTimeoutError};
 use std::time::{Duration, Instant};
 
+use base_machine::time::stamp::Stamp;
 use shell_model::displays::DdcDisplay;
 use shell_model::displays::ddc::debounce::{Debounce, Write};
 use shell_model::displays::ddc::vcp::{Controls, Feature};
 use shell_model::ids::DdcId;
 use tokio::sync::watch;
-use ui_core::time::stamp::Stamp;
 
 use super::retry;
 use crate::env::ddc::{DdcBus, DdcError};

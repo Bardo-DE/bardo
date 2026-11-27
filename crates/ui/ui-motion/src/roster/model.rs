@@ -1,9 +1,9 @@
 //! The roster's state, inputs, outputs and settings.
 
 use super::super::presence::{Exit, Presence};
+use base_machine::machine::Elapsed;
+use base_machine::time::stamp::Stamp;
 use ui_core::geometry::units::Px;
-use ui_core::machine::Elapsed;
-use ui_core::time::stamp::Stamp;
 use ui_style::appearance::motion::MotionLevel;
 
 /// A row's height plus the gap below it: how far the rows below move when it goes.

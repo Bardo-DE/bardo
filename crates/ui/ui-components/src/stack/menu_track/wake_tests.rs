@@ -6,8 +6,8 @@ use super::tests::{
     submenu_open_to,
 };
 use crate::stack::menu_track::types::{ItemPath, MenuPhase, MenuTarget, MenuTrack, Submenu};
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 
 /// The machine's wake after a script.
 fn wake_of(phase: MenuPhase<Key>) -> Option<Stamp> {

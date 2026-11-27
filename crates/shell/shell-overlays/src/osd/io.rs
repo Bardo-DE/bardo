@@ -1,11 +1,11 @@
 //! The effects end of one indicator: follow the [`OsdLink`], feed the [`step`] machine, wake it
-//! with the UI kit's one timer (`ui_components::base::time::clock::sleep`, for durations from [`HOLD`], never a literal), map
+//! with the UI kit's one timer (`base_machine::time::clock::sleep`, for durations from [`HOLD`], never a literal), map
 //! the surface once the machine shows something, unmap it once the UI kit's `Osd` card says its exit
 //! has settled (`on_hidden`). Once hidden and
 //! gone, no task runs and nothing asks for a frame.
 
+use base_machine::time::clock::sleep;
 use std::time::Duration;
-use ui_components::base::time::clock::sleep;
 
 use dioxus::core::Task;
 use dioxus::prelude::*;
@@ -13,12 +13,12 @@ use layer_shell_hooks::use_watch;
 use layer_shell_types::OutputId;
 
 use super::step::{OsdHold, OsdInput, OsdTimes, step};
+use base_machine::time::stamp::FrameClock;
 use shell_ui_kit::hooks::{use_map_when_shown, use_unmap_on_hidden};
 use shell_ui_kit::links::{OsdChange, OsdLink};
-use ui_components::base::time::stamp::FrameClock;
 
 /// How long the indicator holds after the last change.
-const HOLD: ui_components::base::time::stamp::Ms = ui_components::base::time::stamp::Ms(1500);
+const HOLD: base_machine::time::stamp::Ms = base_machine::time::stamp::Ms(1500);
 
 /// The machine's times.
 pub fn times() -> OsdTimes {
@@ -90,6 +90,6 @@ mod tests {
 
     #[test]
     fn the_hold_is_one_and_a_half_seconds() {
-        assert_eq!(times().hold_ms, ui_components::base::time::stamp::Ms(1500));
+        assert_eq!(times().hold_ms, base_machine::time::stamp::Ms(1500));
     }
 }

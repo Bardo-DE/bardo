@@ -42,7 +42,7 @@ fn Idle() -> Element {
     let mut ticks = use_signal(|| 0u32);
     use_future(move || async move {
         loop {
-            ui_components::base::time::clock::sleep(ms(5)).await;
+            base_machine::time::clock::sleep(ms(5)).await;
             ticks.with_mut(|n| *n += 1);
         }
     });

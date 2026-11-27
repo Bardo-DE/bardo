@@ -13,6 +13,7 @@ publish.workspace = true
 testing = []
 
 [dependencies]
+base-machine = { path = "../../base/base-machine" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-fs = {path = "../../anyview/crates/anyview-fs"}
 # The picture of a file for the icon view: scaled and encoded here, kept in the shared thumbnail cache below.

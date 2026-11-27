@@ -1,6 +1,6 @@
 //! Presses, clicks, drags and spring-loading (design/10 §10.3.6-10.3.8, §10.4 "Press").
 
-use ui_components::base::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 use super::hover::{self, FreezeCause, Hover};
 use super::params::DockParams;

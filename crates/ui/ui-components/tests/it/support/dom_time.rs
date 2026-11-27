@@ -2,15 +2,15 @@
 //! (a toast's hold, a roster's settle) advance one clock by exactly the span they name instead
 //! of waiting on the wall clock, so what they see is the same on an idle machine and a loaded one.
 
+use base_machine::time::clock::{ClockGuard, VirtualClock};
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
 use std::ops::{Deref, DerefMut};
 use std::pin::pin;
 use std::task::{Context, Waker};
 use std::time::Duration;
-use ui_core::time::clock::{ClockGuard, VirtualClock};
 
-/// A dom whose `ui_core::time` clock is virtual, from before its first render until it drops.
+/// A dom whose `base_machine::time` clock is virtual, from before its first render until it drops.
 pub struct TimedDom {
     /// First, so the dom (and every task sleeping on the clock) drops while it is installed.
     dom: VirtualDom,

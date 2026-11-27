@@ -49,7 +49,7 @@ fn Page() -> Element {
     use_future(move || async move {
         let by = SHIFT.with(Cell::get);
         if by > 0 {
-            ui_components::base::time::clock::sleep(Duration::from_millis(40)).await;
+            base_machine::time::clock::sleep(Duration::from_millis(40)).await;
             shift.set(by);
         }
     });

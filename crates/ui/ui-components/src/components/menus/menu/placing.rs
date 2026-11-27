@@ -9,9 +9,9 @@
 use super::tracker::{Hands, OpenSub, path};
 use crate::host::measure::{MountedRef, follow_rects};
 use crate::stack::menu_track::types::{ItemPath, MenuTrack};
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Rect, Size};
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_motion::machine::MachineRef;
 use ui_style::task::spawn_in;
 

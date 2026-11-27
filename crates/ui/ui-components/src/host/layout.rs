@@ -9,9 +9,9 @@ use crate::host::document::use_document_host;
 use crate::host::measure::{MountedRef, read_after_layout};
 use crate::host::phase::{Observe, Observed, Watch};
 use crate::host::resized::WindowResized;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use ui_core::geometry::units::Rect;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::task::try_set;
 
 /// How a hook's rect gets its values.

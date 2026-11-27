@@ -43,7 +43,7 @@ fn ask(query: String, mode: LauncherMode) -> LauncherAsk {
         query,
         mode,
         scope: Scope::All,
-        requested: ui_components::base::time::clock::now(),
+        requested: base_machine::time::clock::now(),
     }
 }
 

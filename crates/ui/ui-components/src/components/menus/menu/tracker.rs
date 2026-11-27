@@ -19,13 +19,13 @@ use crate::stack::menu_track::types::{
     Submenu,
 };
 use crate::stack::typeahead::Typeahead;
-use dioxus::core::current_scope_id;
-use dioxus::prelude::*;
-use ui_core::geometry::units::{Point, Px, Rect};
-use ui_core::time::{
+use base_machine::time::{
     FRAME_SLACK,
     clock::{now, sleep},
 };
+use dioxus::core::current_scope_id;
+use dioxus::prelude::*;
+use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::vocab::Availability;
 use ui_motion::machine::{MachineRef, use_machine};
 use ui_style::task::spawn_in;

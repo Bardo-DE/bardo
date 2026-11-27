@@ -13,7 +13,7 @@ keep a "moved to" stub in their old file, so a section number here still resolve
 
 The design system's crates each name only the ones below them (`layers.toml` at the bardo root
 holds the allowed edges, checked by `cargo xtask check layers`); `ui-settings`, `ui-blitz`, `ui-harness`, `ui-conformance` and
-`ui-gallery` sit beside and above them (the last table). The layers: `ui-core` (vocabulary, geometry units, time, errors, text, colour, PNG
+`ui-gallery` sit beside and above them (the last table). The layers: `ui-core` (vocabulary, geometry units, errors, text, colour, PNG
 and base64, the `Spawner` trait: plain data and maths with no Dioxus), `ui-style` (appearance,
 tokens, materials, Space palettes, fonts, icons, the stylesheet's sections, the scope a component
 draws in, the tasks a scope owns; the scope, scale, task, busy and `Glyph` parts are its
@@ -86,7 +86,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 | Module | Implements |
 | --- | --- |
 | `ui-motion/anim.rs`, `ui-motion/recipe.rs` | 05-MOTION §4, §5 (the recipe per assignment): one `Anim` variant per keyframe an assignment plays, with the catalogue's recipes; `recipe.rs` holds the table |
-| `ui-motion/settle.rs`, `ui-core/time/mod.rs` | 05-MOTION §7.1 (`settle`, `FRAME_SLACK`) |
+| `ui-motion/settle.rs`, `base-machine/time.rs` | 05-MOTION §7.1 (`settle`, `FRAME_SLACK`) |
 | `ui-motion/timer.rs` | 05-MOTION §7.2 (timers start in handlers) |
 | `ui-style/task.rs` | every task Bardo spawns belongs to its owner's scope and drops with it (`spawn_in` registers it through the scope's own `spawn`); its writes are `try_set`, so a timer that finds its owner gone stops (FINDINGS "Launcher gaps") |
 | `host/{document,no_host,parts,signals}.rs`, `host/{focused,caret,fallback,found,hand_back,ime,pasted,position,probe,captured,drop_hit}.rs` | the document seam: `DocumentHost` and its parts (`FocusHost`, `CaretHost`, `GeometryHost`, `ClickFocusHost`, `EditHost`, `ImeHost`, `FileDropHost`), `NoHost`, `HostSignals`, and the vocabulary they speak |
@@ -195,7 +195,7 @@ The shell-only settings of 22-SETTINGS (§3.4-3.14, `ShellFile`, `GesturesFile`,
 | Module | Implements | Notes |
 | --- | --- | --- |
 | shell-kit/widget/contract.rs | 23-WIDGETS §9.2 | `Widget` (one trait per kind), `WidgetKind`, `WidgetContext`, `NoIntent`, `fit` |
-| shell-kit/widget/timeline.rs, shell-kit/widget/use_widget.rs | 23-WIDGETS §9.2 | `Timeline`, `Dated`, `EntryDate`, `Refresh`, `RefreshAsk`, `REFRESH_FLOOR`; `use_widget` sleeps on `ds::base::time::clock` (virtual in tests) |
+| shell-kit/widget/timeline.rs, shell-kit/widget/use_widget.rs | 23-WIDGETS §9.2 | `Timeline`, `Dated`, `EntryDate`, `Refresh`, `RefreshAsk`, `REFRESH_FLOOR`; `use_widget` sleeps on `base_machine::time::clock` (virtual in tests) |
 | shell-kit/widget/card.rs | 23-WIDGETS §9.3 | `WidgetCard`: the only way a widget is drawn; the card is `WidgetFrame`'s |
 | shell-kit/widget/registry.rs | 23-WIDGETS §9.4 | `WidgetRegistry`, `WidgetInfo` (type-erased preview) |
 | shell-kit/widget/wire.rs | 23-WIDGETS §9.5 | `WireTimeline`: the out-of-process format (the transport is not built) |

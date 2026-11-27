@@ -1,7 +1,7 @@
 //! The swipe's state, units, inputs, outputs and settings.
 
-use ui_core::machine::Elapsed;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Elapsed;
+use base_machine::time::stamp::Stamp;
 
 /// A position on the row of Spaces, or a distance along it, in thousandths of a page; it grows
 /// toward later Spaces, and Space `k` sits at `k × 1000`.

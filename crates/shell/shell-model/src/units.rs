@@ -55,8 +55,8 @@ pub struct Ms(pub u16);
 impl Ms {
     /// The length as a stamp is advanced by it.
     #[must_use]
-    pub fn span(self) -> ui_core::time::stamp::Ms {
-        ui_core::time::stamp::Ms::from(self.0)
+    pub fn span(self) -> base_machine::time::stamp::Ms {
+        base_machine::time::stamp::Ms::from(self.0)
     }
 }
 

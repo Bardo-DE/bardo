@@ -53,7 +53,7 @@ fn ms(n: u64) -> Duration {
 fn start(motion: Motion) -> (Harness, Point) {
     MOTION.with(|cell| cell.set(motion));
     // On the virtual clock: the release velocity and the wheel's quiet window both read
-    // ui_components::time, and on the wall clock they raced under load.
+    // base_machine::time, and on the wall clock they raced under load.
     let mut harness = Harness::new(Card, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.within(|| LOG.write().clear());
     harness.advance(ms(1));

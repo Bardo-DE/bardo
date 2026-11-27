@@ -2,11 +2,11 @@
 
 use super::state::MachineState;
 use super::waking::Waking;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use std::collections::VecDeque;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 use ui_style::task::try_set_if_changed;
 
 /// A running [`Machine`]: send it inputs, read its state. Copy: signals and cells only.

@@ -47,7 +47,7 @@ impl Default for SurfaceState {
 impl SurfaceState {
     /// Count a press at `at` now, remembering it for the next.
     pub(crate) fn press(&self, at: Point) -> Clicks {
-        let when = ui_core::time::clock::now();
+        let when = base_machine::time::clock::now();
         let clicks = clicks_after(self.last_press.get(), at, when);
         self.last_press.set(Some(LastPress { at, when, clicks }));
         self.pressing.set(PressPhase::Pressed);

@@ -5,8 +5,8 @@
 //! The deadline lives in the state (`Armed { until }`), so a machine at rest wakes nothing: an
 //! idle companion runs no timer.
 
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 
 use crate::units::Ms;
 

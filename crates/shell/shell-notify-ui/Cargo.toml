@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-clock = { path = "../../base/base-clock" }
 base-time = { path = "../../base/base-time" }
+base-machine = { path = "../../base/base-machine" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["dioxus"] }

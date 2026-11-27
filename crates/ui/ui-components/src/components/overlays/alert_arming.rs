@@ -5,9 +5,9 @@
 //! question) must not land on a question the person never saw.
 
 use crate::components::overlays::alert_model::{AlertRole, default_button, escape_button};
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use std::time::Duration;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 use ui_core::vocab::Availability;
 
 /// Whether an alert takes answers yet.
@@ -125,9 +125,9 @@ impl Machine for Arming {
 mod tests {
     use super::{AlertInput, Arming, Hearing, Route, route};
     use crate::components::overlays::alert_model::AlertRole::{Cancel, Normal};
+    use base_machine::machine::{Elapsed, Machine};
+    use base_machine::time::stamp::Stamp;
     use std::time::Duration;
-    use ui_core::machine::{Elapsed, Machine};
-    use ui_core::time::stamp::Stamp;
     use ui_core::vocab::Availability;
 
     #[test]

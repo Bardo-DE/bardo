@@ -17,10 +17,10 @@
 
 use crate::host::document::use_document_host;
 use crate::host::layout::use_layout_into;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::units::{Point, Rect};
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::busy::{after_render, wait_out_busy};
 
 /// One attempt at reading an element's rect through the host.
@@ -280,8 +280,8 @@ pub async fn follow_rects(
 #[cfg(test)]
 mod tests {
     use super::{SLOW_RETRY, laid_out, layout_retry};
+    use base_machine::time::FRAME_SLACK;
     use ui_core::geometry::units::{Point, Px, Rect, Size};
-    use ui_core::time::FRAME_SLACK;
 
     #[test]
     fn a_read_before_layout_is_tried_again_frame_paced_then_slower_then_not() {

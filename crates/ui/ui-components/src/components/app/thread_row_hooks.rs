@@ -6,10 +6,10 @@
 //! caller's handlers to them.
 
 use crate::components::lists::row::row::relay;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 use ui_motion::machine::{MachineRef, use_machine};
 use ui_style::tokens::delay::DelayToken;
 
@@ -200,9 +200,9 @@ fn leave(hooks: Option<PartHooks>) -> impl FnMut(PointerEvent) + 'static {
 #[cfg(test)]
 mod tests {
     use super::{RowIn, RowPointer};
+    use base_machine::machine::Machine;
+    use base_machine::time::stamp::Stamp;
     use std::time::Duration;
-    use ui_core::machine::Machine;
-    use ui_core::time::stamp::Stamp;
 
     fn pointer(on_row: bool, wait: Option<u64>) -> RowPointer {
         RowPointer {

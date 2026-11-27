@@ -3,8 +3,8 @@
 
 use std::time::Duration;
 
-use ui_components::base::machine::Machine;
-use ui_components::base::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use ui_components::prelude::*;
 use ui_components::stack::menu_track::types::{
     MenuTarget, MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent,

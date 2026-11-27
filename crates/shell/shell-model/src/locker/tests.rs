@@ -4,7 +4,7 @@ use super::{
     Hold, LockCause, LockPhase, Locker, LockerEffect, LockerEvent, READY_GIVE_UP_MS, SLEEP_HOLD_MS,
     next_deadline, step,
 };
-use ui_core::time::stamp::{Ms, Stamp};
+use base_machine::time::stamp::{Ms, Stamp};
 
 const T0: Stamp = Stamp(1_000);
 

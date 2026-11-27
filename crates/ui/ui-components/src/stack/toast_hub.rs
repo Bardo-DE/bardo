@@ -6,9 +6,9 @@
 //! The hold is a task of the root that provides the hub and drops with it; it writes through
 //! `try_set`, so a hold that finds the hub gone stops (`ui_style::task`).
 
+use base_machine::time::clock::sleep;
 use dioxus::core::{Task, current_scope_id};
 use dioxus::prelude::*;
-use ui_core::time::clock::sleep;
 use ui_style::icon::Icon;
 use ui_style::task::{Gone, spawn_in, try_get, try_set};
 use ui_style::tokens::delay::DelayToken;

@@ -3,7 +3,7 @@
 use super::{
     Hold, LockCause, LockPhase, Locker, LockerEffect, LockerEvent, READY_GIVE_UP_MS, SLEEP_HOLD_MS,
 };
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 /// `locker` after `event`, and the effects to perform.
 #[must_use]

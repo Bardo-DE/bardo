@@ -5,13 +5,13 @@ use crate::harness::Harness;
 use crate::harness_frames::Delivery;
 use crate::harness_input::{blitz_button, keyboard, pointer};
 use crate::input::{KeyInput, PointerAction, PointerInput, RawKeyInput, RawKeyPhase};
+use base_machine::time::clock::now;
 use blitz_embed::scroll::driver::KeyRepeat;
 use blitz_embed::scroll::keys::scroll_key;
 use blitz_traits::events::{BlitzKeyEvent, KeyState, MouseEventButton, UiEvent};
 use keyboard_types::{Location, Modifiers};
 use ui_components::prelude::*;
 use ui_core::press::PointerButton;
-use ui_core::time::clock::now;
 
 impl Harness {
     /// Deliver one pointer input.

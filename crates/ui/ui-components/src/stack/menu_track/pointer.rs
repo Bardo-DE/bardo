@@ -7,8 +7,8 @@ use super::types::{
     Branch, ItemPath, MenuPhase, MenuTarget, MenuTiming, MenuTrackEffect, SafeTriangle, Session,
     Submenu,
 };
+use base_machine::time::stamp::Stamp;
 use ui_core::geometry::units::Point;
-use ui_core::time::stamp::Stamp;
 
 /// The open submenu's corners are known: arm its safe triangle from the last pointer sample.
 pub(super) fn placed<K>(session: Session<K>, top: Point, bottom: Point) -> Session<K> {

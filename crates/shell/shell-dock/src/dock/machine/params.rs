@@ -2,9 +2,9 @@
 //! (no easing follows the motion level). Built once per settings change, never hard-coded.
 
 use crate::dock::tokens::DockTokens;
+use base_machine::time::stamp::Ms;
 use shell_model::units::Cpx;
 use shell_settings::DockSettings;
-use ui_components::base::time::stamp::Ms;
 use ui_components::motion::hover_intent::HoverProfile;
 use ui_components::style::tokens::delay::TipDelay;
 use ui_components::style::tokens::easing::{CubicBezier, EasingToken};

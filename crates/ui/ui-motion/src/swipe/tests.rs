@@ -2,9 +2,9 @@ use super::{
     Sample, Speed, SwipeEffect, SwipeInput as I, SwipeLook, SwipeMetrics, SwipeState,
     release_speed, shaped,
 };
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use ui_core::geometry::units::Px;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 
 fn at(ms: u64) -> Stamp {
     Stamp(ms)

@@ -46,6 +46,7 @@ resvg = { workspace = true }
 base-xdg = { path = "../../base/base-xdg" }
 base-clock = { path = "../../base/base-clock" }
 base-time = { path = "../../base/base-time" }
+base-machine = { path = "../../base/base-machine" }
 # Civil dates for the calendar widgets' month grid and the world clock.
 jiff = { workspace = true }
 thiserror = { workspace = true }

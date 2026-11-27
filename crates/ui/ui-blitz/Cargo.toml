@@ -33,6 +33,7 @@ dioxus-native-dom = {workspace = true, features = ["svg", "system-fonts", "acces
 dioxus-native = {workspace = true, features = ["accessibility", "html", "svg", "system-fonts", "vello-gpu"]}
 # A deadline for each call to the print portal (the `print` feature).
 base-time = {path = "../../base/base-time", optional = true}
+base-machine = { path = "../../base/base-machine" }
 dbus-kit = {path = "../../bus/dbus-kit", default-features = false, optional = true}
 # `open_window`: a second window on the same event loop, each with its own VirtualDom
 # (`crate::windows`), and the two providers dioxus-native keeps private (`crate::native_providers`).

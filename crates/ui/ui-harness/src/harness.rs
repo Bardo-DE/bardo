@@ -29,13 +29,13 @@ use crate::headless::{Backdrop, Headless, Layout};
 use crate::input::Input;
 use crate::query::first;
 use crate::snapshot::Viewport;
+use base_machine::time::clock::VirtualClock;
 use blitz_dom::{BaseDocument, Document as _};
 use blitz_traits::events::UiEvent;
 use dioxus::prelude::*;
 use std::time::{Duration, Instant};
 use ui_components::file_drop::drag::DropAcceptance;
 use ui_components::prelude::*;
-use ui_core::time::clock::VirtualClock;
 
 /// A headless document under test.
 pub struct Harness {
@@ -145,7 +145,7 @@ impl Harness {
     }
 
     /// Now on this harness's clock: the wall clock's now, or the virtual clock's (which
-    /// `ui_components::base::time::clock::now` also reads on this thread). Compare it with other instants from the same
+    /// `base_machine::time::clock::now` also reads on this thread). Compare it with other instants from the same
     /// harness, e.g. the one [`settle_until`] returns.
     #[must_use]
     pub fn now(&self) -> Instant {

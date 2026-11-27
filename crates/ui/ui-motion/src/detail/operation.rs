@@ -39,7 +39,7 @@ impl PendingToken {
     pub fn start() -> PendingToken {
         PendingToken {
             serial: STARTED.fetch_add(1, Ordering::Relaxed) + 1,
-            started: ui_core::time::clock::now(),
+            started: base_machine::time::clock::now(),
         }
     }
 
@@ -52,7 +52,7 @@ impl PendingToken {
     /// How long it has been running.
     #[must_use]
     pub fn elapsed(self) -> Duration {
-        ui_core::time::clock::since(self.started)
+        base_machine::time::clock::since(self.started)
     }
 }
 

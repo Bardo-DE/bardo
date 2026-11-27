@@ -2,9 +2,9 @@
 //! exact instant: a slider thrown from 30 % lands where the throw projects; a swiped card let
 //! go springs home; each of them stops asking for frames once it rests.
 
+use base_machine::time::FRAME_TICK;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::base::time::FRAME_TICK;
 use ui_components::motion::detail::touch::Touch;
 use ui_components::motion::projection::Throw;
 use ui_components::motion::spring_spec::SpringSpec;

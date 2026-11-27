@@ -21,10 +21,10 @@ use crate::components::menus::palette::palette_reveal::Reveal as Stops;
 use crate::components::menus::palette::palette_stops::ShownGroup;
 use crate::host::measure::{BUSY_ATTEMPTS, laid_out_rect};
 use crate::host::narrow;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::core::{current_scope_id, queue_effect};
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_motion::{
     anim::Anim,
     timer::{MotionTimer, TimerPhase, use_motion_timer},

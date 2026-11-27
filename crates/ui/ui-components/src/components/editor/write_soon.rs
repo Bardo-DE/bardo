@@ -7,9 +7,9 @@ use crate::host::document::DocumentHost;
 use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::parts::EditHost;
 use crate::host::probe::Probe;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use std::rc::Rc;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 
 /// Run a host write against `element` from a task of the calling scope.
 ///

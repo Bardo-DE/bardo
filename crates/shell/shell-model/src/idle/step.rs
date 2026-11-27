@@ -28,7 +28,7 @@ use super::policy::{
 };
 use super::{DimShown, IdlePhase};
 use crate::locker::LockCause;
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 /// The machine's whole state.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

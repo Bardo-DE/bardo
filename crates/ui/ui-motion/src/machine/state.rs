@@ -1,8 +1,8 @@
 //! The state a machine hook runs over: the signal that holds it and the clock its stamps count on.
 
+use base_machine::machine::Machine;
+use base_machine::time::stamp::{FrameClock, Stamp};
 use dioxus::prelude::*;
-use ui_core::machine::Machine;
-use ui_core::time::stamp::{FrameClock, Stamp};
 
 /// A machine's state and the clock its [`Stamp`]s count on.
 ///

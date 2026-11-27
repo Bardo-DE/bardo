@@ -6,9 +6,9 @@
 //! holds the document ("`RefCell` already borrowed"). Each test drives mounts and unmounts from a
 //! script inside the page, on the harness's clock, and passes only if nothing panics.
 
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::base::time::clock::sleep;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;

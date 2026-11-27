@@ -14,6 +14,7 @@ use std::collections::HashSet;
 use std::fmt::Debug;
 use std::time::Instant;
 
+use base_machine::time::stamp::FrameClock;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostCtx, HostEvent};
 use layer_shell_types::{OutputId, OutputInfo};
@@ -23,7 +24,6 @@ use shell_ui_kit::links::CenterLink;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{MountProps, Surface, mount};
 use tokio::sync::mpsc;
-use ui_components::base::time::stamp::FrameClock;
 
 fn main() {
     if let Err(error) = run() {

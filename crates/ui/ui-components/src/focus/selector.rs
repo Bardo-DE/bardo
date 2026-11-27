@@ -12,9 +12,9 @@ use crate::host::document::use_document_host;
 use crate::host::focused::Focused;
 use crate::host::found::Found;
 use crate::host::parts::GeometryHost;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use std::rc::Rc;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 
 /// Frames a selector waits for its element to be drawn: a field asked for in the handler that
 /// opens its panel mounts a frame or two later.

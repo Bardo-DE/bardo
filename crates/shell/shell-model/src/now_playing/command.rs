@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::{Abilities, MediaPlayer, Playback, PlayerId, Timeline, Track};
-use ui_core::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 /// One change on the bus.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

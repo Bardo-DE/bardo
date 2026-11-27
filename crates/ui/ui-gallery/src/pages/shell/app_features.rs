@@ -3,9 +3,9 @@
 //! in a Space's order, and Space switching by Control and a digit.
 
 use crate::pages::Section;
+use base_machine::time::clock::now;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::base::time::clock::now;
 use ui_components::components::app::edge_peek::EdgePeek;
 use ui_components::components::app::link_pill::{LinkPill, LinkTarget};
 use ui_components::components::app::pin_tile::{PinFace, PinStatus, PinTile};

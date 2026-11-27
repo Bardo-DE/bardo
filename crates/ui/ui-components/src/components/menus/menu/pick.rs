@@ -4,8 +4,8 @@
 
 use crate::components::menus::menu::blink::{Blink, half, phases, picked};
 use crate::components::overlays::flow::Flow;
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
-use ui_core::time::clock::sleep;
 use ui_style::task::spawn_in;
 
 /// Where a pointer gesture over an open menu is: a press-drag-release onto an item picks it

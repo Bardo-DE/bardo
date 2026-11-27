@@ -77,7 +77,7 @@ fn stage(timeline: fn() -> Timeline<String>) -> Element {
 
 /// 10:00 now, 10:01 a minute on, 10:02 two minutes on; ask again at the end.
 fn three_minutes() -> Timeline<String> {
-    let now = ui_components::base::time::clock::now();
+    let now = base_machine::time::clock::now();
     Timeline::new(
         vec![
             Dated::new(EntryDate::Start, taipei(10, 0)),
@@ -90,7 +90,7 @@ fn three_minutes() -> Timeline<String> {
 
 /// The first entry half a minute away.
 fn later() -> Timeline<String> {
-    let now = ui_components::base::time::clock::now();
+    let now = base_machine::time::clock::now();
     Timeline::new(
         vec![Dated::new(EntryDate::At(now + secs(30)), taipei(8, 30))],
         Refresh::Never,
@@ -99,7 +99,7 @@ fn later() -> Timeline<String> {
 
 /// One entry, and a refresh already due.
 fn overdue() -> Timeline<String> {
-    let now = ui_components::base::time::clock::now();
+    let now = base_machine::time::clock::now();
     Timeline::new(
         vec![Dated::new(EntryDate::Start, taipei(9, 0))],
         Refresh::After(now),
@@ -187,7 +187,7 @@ fn a_new_timeline_is_followed_at_once_and_the_old_one_dropped() {
     let mut harness = harness(ThreeMinutes);
     harness.advance(secs(30));
     let answer = harness.within(|| {
-        let now = ui_components::base::time::clock::now();
+        let now = base_machine::time::clock::now();
         Timeline::new(
             vec![
                 Dated::new(EntryDate::Start, taipei(11, 0)),

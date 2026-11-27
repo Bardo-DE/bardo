@@ -69,7 +69,7 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | logical, physical and sub-pixel geometry; the one logical-to-physical conversion | `compositor-core::geometry` |
 | the scale type | ui-core's `Scale` (120ths, C26); its stored form is `geometry::scale_serde` |
 | the session instant, refresh rates, vblank instants, timers, the virtual clock | `compositor-core::time` |
-| conversion to ui-core's millisecond `Stamp` (for ui-behaviour machines) | `Mono::stamp` only (C56) |
+| conversion to base-machine's millisecond `Stamp` (for ui-behaviour machines) | `Mono::stamp` only (C56) |
 | an app's identity (proven or claimed) | `compositor-core::app::AppKey` over account-core's `identity_of` (C39) |
 | a window's state, limits (C51), hints | `compositor-core::window` |
 | Spaces and their ids (the compositor mints, C16) | `compositor-core::space` (`SpaceSeed`, `mint_space_id`) |

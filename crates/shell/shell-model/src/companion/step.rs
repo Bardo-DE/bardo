@@ -4,11 +4,11 @@
 use std::collections::BTreeMap;
 
 use action_core::{ContextKeep, Hit, Keep};
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, FooterWire};
 use provenance::TaskId;
 use shell_launcher::Generation;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 
 use super::card::{card_call, handle_fallback, settled};
 use super::command::{CompanionEffect, CompanionEvent, CompanionParams};

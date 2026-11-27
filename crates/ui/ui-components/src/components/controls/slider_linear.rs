@@ -195,7 +195,7 @@ pub(crate) fn LinearSlider(
                 }
                 let at = point(event.client_coordinates());
                 drag.down((), at);
-                meter.set(VelocityMeter::default().moved(at.x, ui_core::time::clock::now()));
+                meter.set(VelocityMeter::default().moved(at.x, base_machine::time::clock::now()));
                 if let Some(mounted) = element() {
                     spawn(async move {
                         // Focus is best-effort: a renderer without it still slides.
@@ -213,7 +213,7 @@ pub(crate) fn LinearSlider(
                 }
                 let at = point(event.client_coordinates());
                 drag.moved(at);
-                let measured_now = meter.peek().moved(at.x, ui_core::time::clock::now());
+                let measured_now = meter.peek().moved(at.x, base_machine::time::clock::now());
                 meter.set(measured_now);
                 if let Some(measured) = track() {
                     onchange.call(snap(ticks, fraction_at(measured, at.x)));
@@ -221,7 +221,7 @@ pub(crate) fn LinearSlider(
             },
             onpointerup: move |event| {
                 let _ = drag.up(); // Nothing here takes a drop: the pointer-up only ends the drag.
-                let velocity = meter.peek().released(ui_core::time::clock::now());
+                let velocity = meter.peek().released(base_machine::time::clock::now());
                 meter.set(VelocityMeter::default());
                 let width = track.peek().map_or(0.0, |rect| rect.size.width.0);
                 if let (true, Some(to)) = (enabled, thrown_to(value, velocity, width)) {

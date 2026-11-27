@@ -3,13 +3,13 @@
 //!
 //! `cargo run -p ui-blitz --example window`
 
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use dioxus_native::use_window_event;
 use dioxus_native::winit::event::{ElementState, WindowEvent};
 use dioxus_native::winit::keyboard::Key;
 use std::time::Duration;
 use ui_blitz::{AppConfig, AppId, WindowSize, launch};
-use ui_components::base::time::clock::sleep;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;

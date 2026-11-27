@@ -4,8 +4,8 @@
 use super::super::anim::Anim;
 use super::super::presence::{Exit, Presence};
 use super::model::{Heal, RosterEntry, RosterState, RowPitch, StayError};
+use base_machine::time::stamp::Stamp;
 use ui_core::geometry::units::Px;
-use ui_core::time::stamp::Stamp;
 
 impl<K: Clone + PartialEq> RosterState<K> {
     /// `entries` in place of the rows, everything else as it was.

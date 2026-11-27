@@ -16,6 +16,7 @@ image = { workspace = true, features = ["png", "jpeg", "webp"] }
 # The tray icons' art (`bar/tray_icon.rs`): theme lookup and a capped file read.
 freedesktop-icons = { workspace = true }
 base-fs = { path = "../../base/base-fs" }
+base-machine = { path = "../../base/base-machine" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-settings = {path = "../shell-settings"}

@@ -3,9 +3,9 @@
 //! also zoom. The wait's end is in the state, so a release, a leave or a newer wait replaces it
 //! and nothing is left to cancel.
 
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use std::time::Duration;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 
 /// What the light is waiting for, and until when.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -154,9 +154,9 @@ impl Machine for Hold {
 #[cfg(test)]
 mod tests {
     use super::{Hold, HoldIn, HoldOut, HoldTiming, Wait, Waiting};
+    use base_machine::machine::Machine;
+    use base_machine::time::stamp::Stamp;
     use std::time::Duration;
-    use ui_core::machine::Machine;
-    use ui_core::time::stamp::Stamp;
 
     const TIMING: HoldTiming = HoldTiming {
         press: Duration::from_millis(500),

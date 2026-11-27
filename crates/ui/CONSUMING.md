@@ -668,8 +668,8 @@ for the defaults) and renders the first frame. A test sends `Input` and lets tim
 | Timers on the harness's clock | `HarnessConfig::with_clock(Clock::Virtual)` | Default `Clock::Wall`. `Harness::clock() -> Clock` |
 | A window a component sizes | `use_window_sizer()` is `Some` in every harness. `HarnessConfig::with_sizer_ack(SizerAck::Now / After(Duration) / Never)` (default `Now`); `with_window_screen(WindowScreen::Standard / Absent / Area(ScreenArea))`; `harness.window_requests()` (the sizes asked, logical, oldest first), `harness.window_size()`, `harness.resize_window(Extent)` (a person's drag), `harness.window_sizer()` | The answer to a request is a resize that arrives later, as in a window: `Now` is the next turn with no time passing, `After(d)` is `d` on the harness's clock, `Never` is a compositor that ignores it (the request then expires after 500 ms, see `SizeRequest`), `Applied` is Wayland's answer (the size is taken at once and only the host hears it, laid out on the next frame). The standard screen is 1920 x 1080 logical at the viewport's scale. Use `Clock::Virtual` for `After` and `Never`. |
 | "Now" in a test | `Harness::now() -> Instant` | The virtual clock's now (or the wall clock's); `settle_until` returns instants on the same clock, and its 3 s bound is the harness's time. On the virtual clock, time a window from `harness.now()`, never `Instant::now()` |
-| Read the time in your own component | `ds::base::time::clock::now()`, `ds::base::time::clock::since(instant)`, `ds::base::time::clock::sleep(d)` | Whatever clock the thread has installed: the wall clock in a window, the harness's in a test. A component that calls `Instant::now()` or `futures_timer` itself stays on the wall clock and drifts from the harness |
-| Install a virtual clock yourself (another harness) | `ds::base::time::clock::VirtualClock::new()`, `.install() -> ClockGuard`, `.advance_to(d)`, `.next_due()`, `.now()`, `.elapsed()`, `.waiting()`, `.due_times()` | Thread-local, restored when the guard drops. Step through `next_due` and poll your executor between steps, as `Harness::advance` does |
+| Read the time in your own component | `base_machine::time::clock::now()`, `base_machine::time::clock::since(instant)`, `base_machine::time::clock::sleep(d)` | Whatever clock the thread has installed: the wall clock in a window, the harness's in a test. A component that calls `Instant::now()` or `futures_timer` itself stays on the wall clock and drifts from the harness |
+| Install a virtual clock yourself (another harness) | `base_machine::time::clock::VirtualClock::new()`, `.install() -> ClockGuard`, `.advance_to(d)`, `.next_due()`, `.now()`, `.elapsed()`, `.waiting()`, `.due_times()` | Thread-local, restored when the guard drops. Step through `next_due` and poll your executor between steps, as `Harness::advance` does |
 
 Not on the virtual clock: work off the harness's thread (a Tokio task such as `ui_settings`'
 file watch, a D-Bus reply, a resource fetched by a custom `AppNet` on another thread).
@@ -1870,7 +1870,7 @@ authority; this table is a pointer. `ui_lint::Rule::BlitzUnsupported`
 What *does* work and needs no fallback: a `<style>` in the body (S1), the `.ds[data-*]` custom
 property cascade with plain `[data-x=v]` attribute selectors (S2, fixed in the Blitz fork at `1b23fbd9`; the UI kit's own sheet still writes `[*|data-x=v]`, which matches too), `@keyframes` including `var()` inside them (S3),
 `transition` on a `var()`-driven value (S4), restarting an animation by swapping its name (S5,
-what a keyframe pulse does), `futures-timer` sleeps from render or a handler (S10, what `ds::base::time::clock::sleep`
+what a keyframe pulse does), `futures-timer` sleeps from render or a handler (S10, what `base_machine::time::clock::sleep`
 and every Bardo timer uses), registering a bundled font through a shared `FontContext` (S11), and
 `color-mix()` (S14, though Bardo precomputes washes instead, for determinism).
 
@@ -1908,8 +1908,8 @@ and perform what it returns, in order; its `wake()` is the one time it wants to 
 `Elapsed`), and none at rest.
 
 ```rust,ignore
-use ds::base::machine::Machine;
-use ds::base::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use ds::stack::menu_track::types::{MenuTarget, MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent};
 
 let track: MenuTrack<u32> = MenuTrack::closed();

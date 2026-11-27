@@ -32,14 +32,14 @@ fn harness(clock: Clock) -> Harness {
 
 fn reads_wall() -> bool {
     let wall = Instant::now();
-    let seen = ui_core::time::clock::now();
+    let seen = base_machine::time::clock::now();
     seen.max(wall) - seen.min(wall) < Duration::from_secs(60)
 }
 
-/// Whether the clock `ui_core::time::clock::now` reads on this thread is `harness`'s.
+/// Whether the clock `base_machine::time::clock::now` reads on this thread is `harness`'s.
 fn reads(harness: &Harness) -> bool {
     match harness.clock() {
-        Clock::Virtual => ui_core::time::clock::now() == harness.now(),
+        Clock::Virtual => base_machine::time::clock::now() == harness.now(),
         Clock::Wall => reads_wall(),
     }
 }
@@ -99,5 +99,5 @@ fn a_wall_harness_beside_a_live_virtual_one_reads_the_wall_clock() {
     assert!(reads_wall());
     // The wall harness's own `now` is the wall's, an hour behind the virtual one's.
     assert!(virtual_harness.now() > wall.now() + HOUR / 2);
-    assert!(ui_core::time::clock::now() < virtual_harness.now());
+    assert!(base_machine::time::clock::now() < virtual_harness.now());
 }

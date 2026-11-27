@@ -37,10 +37,10 @@ use crate::host::narrow;
 use crate::keys::use_platform;
 use crate::root::common::Common;
 use crate::stack::typeahead::Typeahead;
+use base_machine::time::clock::now;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 use ui_core::selection::{Pick, PickHow};
-use ui_core::time::clock::now;
 
 /// A column's width before anyone drags it (Finder's default).
 const COLUMN_WIDTH: Px = Px(220.0);

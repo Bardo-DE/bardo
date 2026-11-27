@@ -37,6 +37,7 @@ md-5 = { workspace = true }
 provenance = {path = "../../provenance/provenance"}
 base-time = { path = "../../base/base-time" }
 base-clock = { path = "../../base/base-clock" }
+base-machine = { path = "../../base/base-machine" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-settings = {path = "../shell-settings"}

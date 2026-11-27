@@ -1,9 +1,9 @@
 //! Auto-hide (design/10 §10.3.11, §10.4 "Reveal", §10.5.5). `Fixed` is auto-hide off.
 
+use base_machine::time::stamp::Stamp;
 use layer_shell_types::{BlurSpec, ElementId, ExclusiveZone, RegionSpec};
 use shell_model::units::Cpx;
 use shell_ui_kit::autohide::{self, Change, Hold, Input, advance};
-use ui_components::base::time::stamp::Stamp;
 
 use super::params::DockParams;
 use super::press::Press;
@@ -150,8 +150,8 @@ mod tests {
     use crate::dock::machine::params::tests::params;
     use crate::dock::machine::types::{DockEvent, DockState, Hit, Point};
     use crate::dock::machine::{DropZone, step};
+    use base_machine::time::stamp::Stamp;
     use shell_model::units::Cpx;
-    use ui_components::base::time::stamp::Stamp;
 
     /// One scripted input sequence: `(ms, input)` pairs.
     type Script = Vec<(u64, DockEvent)>;

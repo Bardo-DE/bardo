@@ -7,7 +7,7 @@
 //! is dropped at `settle(Anim::Fold)`; the machine back at `Hidden` unmaps at once. Hidden, no
 //! task runs and nothing asks for a frame.
 
-use ui_components::base::time::clock::sleep;
+use base_machine::time::clock::sleep;
 
 use super::apps::{SwitcherApp, switcher_apps};
 use super::opening::{Facts, Opening};

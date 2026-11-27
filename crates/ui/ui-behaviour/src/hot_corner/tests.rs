@@ -2,8 +2,8 @@
 
 use std::time::Duration;
 
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 
 use super::{Corner, CornerIn, CornerOut, CornerParams, Inside, Rearm};
 

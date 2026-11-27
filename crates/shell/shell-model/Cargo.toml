@@ -23,6 +23,7 @@ base-xdg = { path = "../../base/base-xdg" }
 base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
+base-machine = { path = "../../base/base-machine" }
 shell-launcher = {path = "../shell-launcher"}
 keymap = {path = "../../keymap/keymap"}
 ui-core = {path = "../../ui/ui-core"}

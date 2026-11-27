@@ -6,9 +6,9 @@ use super::{
 use crate::anim::Anim;
 use crate::presence::{Exit, Presence};
 use crate::settle::settle;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use ui_core::geometry::units::Px;
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
 use ui_style::appearance::motion::MotionLevel;
 
 fn params(leave: LeaveBy) -> RosterParams {

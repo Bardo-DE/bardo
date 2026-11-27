@@ -8,9 +8,9 @@ use crate::host::document::DocumentHost;
 use crate::host::ime::{ImeEvent, ImeListener};
 use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::probe::Probe;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use std::rc::Rc;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::task::{spawn_in, try_set_if_changed};
 
 /// Whether an input method has preedit text in the field, after `event` when it was `composing`

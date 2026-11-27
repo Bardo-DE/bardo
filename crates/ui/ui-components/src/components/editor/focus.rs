@@ -12,10 +12,10 @@ use crate::host::document::DocumentHost;
 use crate::host::ime::ImeEvent;
 use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::probe::Probe;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::units::Rect;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 
 /// The surface has the keyboard: the IME on and pointed at the app's area, the app told once.
 pub(crate) fn focused_in(ctx: &SurfaceCtx) {

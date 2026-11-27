@@ -4,9 +4,9 @@
 //! no wake and the hook's timer stops.
 
 use crate::components::fields::stepper::model::StepDirection;
+use base_machine::machine::{Elapsed, Machine};
+use base_machine::time::stamp::Stamp;
 use std::time::Duration;
-use ui_core::machine::{Elapsed, Machine};
-use ui_core::time::stamp::Stamp;
 use ui_style::tokens::delay::DelayToken;
 
 /// When a held press repeats: how long it waits to start and the pitch after.
@@ -114,8 +114,8 @@ impl Machine for StepHold {
 mod tests {
     use super::{HoldIn, RepeatPace, StepHold};
     use crate::components::fields::stepper::model::StepDirection::{Down, Up};
-    use ui_core::machine::Machine;
-    use ui_core::time::stamp::Stamp;
+    use base_machine::machine::Machine;
+    use base_machine::time::stamp::Stamp;
     use ui_style::tokens::delay::DelayToken;
 
     fn held(

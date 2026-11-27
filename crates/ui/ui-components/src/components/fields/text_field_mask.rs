@@ -12,9 +12,9 @@
 use crate::components::fields::text_field_model::MASK_DOT;
 use crate::host::caret::FieldSelection;
 use crate::host::document::DocumentHost;
+use base_machine::time::{FRAME_SLACK, clock::sleep};
 use dioxus::prelude::*;
 use std::rc::Rc;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::task::{spawn_in, try_set_if_changed};
 
 /// How many frames a read waits out a busy document before it gives up.

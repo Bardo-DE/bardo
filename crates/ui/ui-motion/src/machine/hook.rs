@@ -5,10 +5,10 @@
 use super::handle::{CtxReader, MachineRef, OutHandler, Pending};
 use super::state::{MachineState, use_machine_state};
 use super::waking::Waking;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
 
 /// Run a machine `M` that starts at `initial(stamp of now)`, on `params`, giving each output to `on_out` with the machine so it can send a follow-up.
 ///

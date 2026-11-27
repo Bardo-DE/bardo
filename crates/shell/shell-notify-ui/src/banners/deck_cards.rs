@@ -3,7 +3,7 @@
 //! longer has leaves without a word to the service. A stack card whose newest notification is
 //! one a leaving card already stood for is the service not having caught up yet, not news.
 
-use ui_components::base::time::stamp::Stamp;
+use base_machine::time::stamp::Stamp;
 
 use super::deck::{Deck, DeckOut, Entry, arrive, feed};
 use super::stack::Card;

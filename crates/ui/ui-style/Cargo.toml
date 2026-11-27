@@ -15,6 +15,7 @@ base-time = { path = "../../base/base-time" }
 ui-core = {path = "../ui-core"}
 base-words-macros = { path = "../../base/base-words-macros" }
 base-clock = { path = "../../base/base-clock" }
+base-machine = { path = "../../base/base-machine" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 serde = { workspace = true, features = ["derive"] }
 settings-store = { path = "../../settings/settings-store" }

@@ -12,6 +12,7 @@ use crate::painter::{Canvas, PaintTime, Painter};
 use crate::recorded_window::{WindowHosting, WindowLog};
 use crate::round_budget::{MAX_ROUNDS, RoundBudget};
 use crate::snapshot::Viewport;
+use base_machine::time::clock::now;
 use blitz_dom::{BaseDocument, Document as _, DocumentConfig, NodeId, StyleThreading};
 use blitz_embed::hit::element_of;
 use blitz_embed::hover::{LastMove, Repaired, Shift, remember, repair};
@@ -55,7 +56,6 @@ use ui_blitz::{
 use ui_components::file_drop::board::FileDropBoard;
 use ui_components::host::gesture::GestureBus;
 use ui_components::prelude::*;
-use ui_core::time::clock::now;
 use ui_host_hooks::FocusFallback;
 
 /// Whether a document is laid out as it renders: a shell surface is not until it is mapped.

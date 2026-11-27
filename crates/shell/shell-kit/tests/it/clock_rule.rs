@@ -1,5 +1,5 @@
 //! The clock rule, held over the shell parts' sources: like the UI kit's own (`ds/tests/clock_rule.rs`),
-//! they read time only through `ui_components::base::time::clock` (`now`, `since`, `sleep`), so a harness's
+//! they read time only through `base_machine::time::clock` (`now`, `since`, `sleep`), so a harness's
 //! virtual clock reaches every timer and every "now". Test modules (from a file's `#[cfg(test)]`
 //! on, and `*tests.rs` files) are exempt; comments are skipped.
 
@@ -49,7 +49,7 @@ fn the_shell_parts_read_time_only_through_ds_time() {
         .collect();
     assert!(
         found.is_empty(),
-        "read the time through ui_components::base::time::clock::{{now, since, sleep}} instead:\n{}",
+        "read the time through base_machine::time::clock::{{now, since, sleep}} instead:\n{}",
         found.join("\n")
     );
 }

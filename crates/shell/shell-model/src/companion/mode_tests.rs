@@ -2,10 +2,10 @@
 //! the lock, the note while a step runs, and the mode a turn carries.
 
 use action_core::{ContextKeep, Keep};
+use base_machine::time::stamp::Stamp;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, FooterWire};
 use permission_core::Mode;
 use provenance::{SessionId, TaskId};
-use ui_core::time::stamp::Stamp;
 
 use super::{
     Companion, CompanionEffect, CompanionEvent, CompanionParams, FROM_NEXT_STEP, LOCKED_HELP,

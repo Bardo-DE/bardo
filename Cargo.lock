@@ -2973,6 +2973,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-machine"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "futures-timer",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "base-path"
 version = "0.1.0"
 dependencies = [
@@ -4326,6 +4336,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-ids",
+ "base-machine",
  "base-time",
  "base-words",
  "desktop-protocols",
@@ -5075,6 +5086,7 @@ dependencies = [
 name = "consumer"
 version = "0.1.0"
 dependencies = [
+ "base-machine",
  "dioxus",
  "dioxus-ssr",
  "serde",
@@ -6659,6 +6671,7 @@ dependencies = [
  "anyview-image",
  "anyview-peek",
  "anyview-platform",
+ "base-machine",
  "base-testkit",
  "dioxus",
  "files-core",
@@ -14061,6 +14074,7 @@ name = "shell-bar"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-machine",
  "base-testkit",
  "dioxus",
  "dioxus-ssr",
@@ -14108,6 +14122,7 @@ dependencies = [
 name = "shell-dock"
 version = "0.1.0"
 dependencies = [
+ "base-machine",
  "desktop-client",
  "dioxus",
  "keymap",
@@ -14157,6 +14172,7 @@ dependencies = [
 name = "shell-kit"
 version = "0.1.0"
 dependencies = [
+ "base-machine",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -14200,6 +14216,7 @@ dependencies = [
  "anyview-peek",
  "anyview-platform",
  "base-clock",
+ "base-machine",
  "base-testkit",
  "base-time",
  "base-xdg",
@@ -14246,6 +14263,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-ids",
+ "base-machine",
  "base-secret",
  "base-testkit",
  "base-time",
@@ -14281,6 +14299,7 @@ name = "shell-notify-ui"
 version = "0.1.0"
 dependencies = [
  "base-clock",
+ "base-machine",
  "base-time",
  "dioxus",
  "image",
@@ -14303,6 +14322,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-sheet",
+ "base-machine",
  "base-secret",
  "base-url",
  "desktop-client",
@@ -14396,6 +14416,7 @@ dependencies = [
  "base-clock",
  "base-fs",
  "base-ids",
+ "base-machine",
  "base-secret",
  "base-testkit",
  "base-time",
@@ -14510,6 +14531,7 @@ dependencies = [
  "action-vocab",
  "base-clock",
  "base-fs",
+ "base-machine",
  "base-time",
  "base-words",
  "base-xdg",
@@ -16482,7 +16504,7 @@ dependencies = [
 name = "ui-behaviour"
 version = "0.1.0"
 dependencies = [
- "ui-core",
+ "base-machine",
 ]
 
 [[package]]
@@ -16493,6 +16515,7 @@ dependencies = [
  "anyrender_vello_gpu",
  "arboard",
  "base-fs",
+ "base-machine",
  "base-testkit",
  "base-time",
  "base-xdg",
@@ -16552,6 +16575,7 @@ name = "ui-components"
 version = "0.1.0"
 dependencies = [
  "base-ids",
+ "base-machine",
  "base-spawn",
  "base-words",
  "dioxus",
@@ -16572,6 +16596,7 @@ dependencies = [
 name = "ui-conformance"
 version = "0.1.0"
 dependencies = [
+ "base-machine",
  "dioxus",
  "image",
  "keymap",
@@ -16586,9 +16611,8 @@ dependencies = [
 name = "ui-core"
 version = "0.1.0"
 dependencies = [
- "base-testkit",
+ "base-machine",
  "base-words",
- "futures-timer",
  "keyboard-types",
  "keymap",
  "serde",
@@ -16640,6 +16664,7 @@ dependencies = [
 name = "ui-gallery"
 version = "0.1.0"
 dependencies = [
+ "base-machine",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -16661,6 +16686,7 @@ dependencies = [
  "anyrender",
  "anyrender_vello_cpu",
  "anyrender_vello_gpu",
+ "base-machine",
  "base-testkit",
  "blitz-dom",
  "blitz-embed",
@@ -16754,6 +16780,7 @@ name = "ui-motion"
 version = "0.1.0"
 dependencies = [
  "base-ids",
+ "base-machine",
  "base-words",
  "dioxus",
  "ui-components",
@@ -16819,6 +16846,7 @@ version = "0.1.0"
 dependencies = [
  "base-clock",
  "base-ids",
+ "base-machine",
  "base-time",
  "base-words",
  "base-words-macros",

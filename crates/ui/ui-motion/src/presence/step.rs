@@ -5,8 +5,8 @@
 use super::Presence;
 use super::model::{Life, PresenceIn, PresenceOut, PresenceParams};
 use crate::settle::settle;
-use ui_core::machine::Machine;
-use ui_core::time::stamp::Stamp;
+use base_machine::machine::Machine;
+use base_machine::time::stamp::Stamp;
 
 /// The input a render's `shown` makes, from `last` (`None` before the first render). A surface
 /// mounted shown plays its entrance; one mounted hidden stays hidden and says nothing.
@@ -90,8 +90,8 @@ mod tests {
     use super::{Life, Presence as P, PresenceIn as I, PresenceOut as O, PresenceParams, change};
     use crate::anim::Anim;
     use crate::presence::{EntranceAlias as A, Exit};
-    use ui_core::machine::Machine;
-    use ui_core::time::stamp::Stamp;
+    use base_machine::machine::Machine;
+    use base_machine::time::stamp::Stamp;
     use ui_style::appearance::motion::MotionLevel;
 
     const OUT: P = P::Leaving(Exit::OsdOut);

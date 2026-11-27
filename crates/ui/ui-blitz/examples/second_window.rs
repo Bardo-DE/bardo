@@ -15,12 +15,12 @@
 //! first window with that one still open, which stays up until it closes itself, and then the
 //! process exits 0 as `launch` returns, printing each step.
 
+use base_machine::time::clock::sleep;
 use dioxus::prelude::*;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 use ui_blitz::{AppConfig, AppId, WindowHandle, WindowSize, WindowSpec, launch, open_window_with};
-use ui_components::base::time::clock::sleep;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::file_drop::board::FileDropBoard;
 use ui_components::host::found::Found;

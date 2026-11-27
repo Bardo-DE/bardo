@@ -677,7 +677,7 @@ pub struct WidgetContext<I> { pub size: WidgetSize, pub host: WidgetHost, pub wa
   each entry shown from its `EntryDate` (`Start`, or an instant on the design system's clock),
   and `Refresh::{Never, AtEnd, After(instant)}`. `Timeline::now(entry)` is a live widget's
   (one entry, no refresh: the provider pushes the next when its data changes). `use_widget`
-  picks the entry for now (the placeholder before the first), sleeps on `ds::time` to the next
+  picks the entry for now (the placeholder before the first), sleeps on `base_machine::time` to the next
   entry's date and redraws, and at the refresh asks `onrefresh(RefreshAsk::{Ended, Due})` once,
   never sooner than `REFRESH_FLOOR` (1 s) after the timeline arrived, so a provider answering
   with a timeline already due cannot spin the host. It wakes for nothing else: a pushed widget

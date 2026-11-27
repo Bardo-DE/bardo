@@ -1,8 +1,8 @@
 //! A surface's life as a machine's state, inputs, outputs and settings.
 
 use super::{Exit, Presence};
+use base_machine::time::stamp::Stamp;
 use base_words::Word;
-use ui_core::time::stamp::Stamp;
 use ui_style::appearance::motion::MotionLevel;
 
 use crate::anim::Anim;
@@ -62,8 +62,8 @@ pub enum PresenceIn {
     Elapsed,
 }
 
-impl From<ui_core::machine::Elapsed> for PresenceIn {
-    fn from(_: ui_core::machine::Elapsed) -> Self {
+impl From<base_machine::machine::Elapsed> for PresenceIn {
+    fn from(_: base_machine::machine::Elapsed) -> Self {
         PresenceIn::Elapsed
     }
 }

@@ -101,7 +101,7 @@ Delays (`DelayToken`, never scaled by any level, each with a settings override o
 | Mail-owned, move to `app`: SendCountdown 5000, SendTick 1000 | | | moved |
 
 Deleted delays: Fly, HealStep, FlashHold, PendingGrace, PendingCap, SettleHold. Frame pacing is
-one `FRAME_TICK` 16 (`ui-core::time`); `glide::FRAME` and `Motor::FRAME` are deleted.
+one `FRAME_TICK` 16 (`base-machine::time`); `glide::FRAME` and `Motor::FRAME` are deleted.
 
 Easings (`EasingToken`, evaluated only by `CubicBezier::at`; the shell's own `ease` is deleted):
 

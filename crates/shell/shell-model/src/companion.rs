@@ -6,7 +6,7 @@
 //! the orb and the glow show; [`run_state_of`] and [`run_controls`] read a run; [`step`] keeps
 //! the published [`Companion`]. `shell-services` does the bus.
 //!
-//! [`Machine`]: ui_core::machine::Machine
+//! [`Machine`]: base_machine::machine::Machine
 
 mod card;
 mod command;

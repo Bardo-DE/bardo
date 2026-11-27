@@ -17,12 +17,12 @@ use super::io::{MenuCtx, use_menu};
 use super::labels::{NONE_OFFERED_MESSAGE, NONE_OFFERED_TITLE, action_label, consequence, prompt};
 use super::sheet::{MenuSession, SheetInput};
 use super::surface::PANEL_ID;
+use base_machine::time::clock::sleep;
 use shell_model::session::words::{COUNTDOWN_SECONDS, countdown};
 use shell_ui_kit::links::OpenSerial;
 use shell_ui_kit::root::{ClickAway, SurfaceRoot};
 use shell_ui_kit::sheet_stage::SheetExit;
 use std::time::Duration;
-use ui_components::base::time::clock::sleep;
 
 /// The power menu's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const POWER_MENU_CSS: &str = include_str!("style.css");
