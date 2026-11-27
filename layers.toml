@@ -2741,7 +2741,8 @@ features = ["media", "pane"]
 # the real clock moved out of base-time into base-clock (phase 3.1: the same code in its own crate),
 # 607 when the machine and stamp code moved out of ui-core into base-machine (phase 3.4, likewise),
 # 608 when ui-blitz took the window protocol from desktop-protocols instead of its own copy (phase 4.4).
-max = 608
+# 609 when the appearance enums moved out of ui-style into appearance-settings (phase 4.1, likewise).
+max = 609
 why = "the launcher links the peek, so growth here is growth of its binary"
 
 [[budget]]
