@@ -106,7 +106,7 @@ fn use_ref(text: &str) -> Result<ActionRef, SkillError> {
         .ok_or_else(|| SkillError::UseNoColon(text.to_owned()))?;
     Ok(ActionRef {
         app: AppName::parse(app).map_err(bad)?,
-        name: ActionName::parse(name).map_err(bad)?,
+        name: ActionName::parse(name).map_err(|source| bad(source.into()))?,
     })
 }
 

@@ -14,6 +14,7 @@ action-core = {path = "../action-core"}
 action-manifest = {path = "../action-manifest"}
 action-vocab = {path = "../action-vocab"}
 account-core = {path = "../../accounts/account-core"}
+base-ids = {path = "../../base/base-ids"}
 provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }

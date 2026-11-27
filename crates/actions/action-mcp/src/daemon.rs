@@ -184,7 +184,7 @@ pub enum CommandLineError {
     NeedsValue(String),
     /// `--client` was given something that is not a client name.
     #[error("--client: not a client name")]
-    NotAClient(#[source] account_core::CoreError),
+    NotAClient(#[source] base_ids::IdError),
     /// A flag this program does not have.
     #[error("unknown argument {0}")]
     Unknown(String),

@@ -1,8 +1,8 @@
 //! The witness that a person said yes, and the two functions that spend it.
 
-use crate::ids::text_id;
 use crate::label::{Confidentiality, Integrity, Labelled, Source};
 use base_ids::is_id;
+use base_ids::text_id;
 use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 

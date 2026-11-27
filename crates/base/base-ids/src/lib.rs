@@ -22,5 +22,5 @@ mod units;
 pub mod word;
 
 pub use error::IdError;
-pub use id::{is_id, object_segment};
+pub use id::{is_dotted_name, is_id, is_opaque, object_segment};
 pub use units::{Bytes, Count, Dims, Fraction, Permille, Px, Tokens, TurnCount};

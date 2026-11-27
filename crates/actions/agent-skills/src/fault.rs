@@ -40,7 +40,7 @@ pub enum SkillError {
     UseNoColon(String),
     /// A `when.kinds` entry is not an entity kind.
     #[error("when.kinds entry {0:?} is not an entity kind")]
-    BadKind(String, #[source] account_core::CoreError),
+    BadKind(String, #[source] base_ids::IdError),
     /// `SKILL.md` has no front matter.
     #[error("SKILL.md has no `---` front matter")]
     NoFrontMatter,

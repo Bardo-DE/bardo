@@ -89,6 +89,58 @@ macro_rules! slug_id {
     };
 }
 
+/// Whether `text` is two or more dot-separated elements, each `[a-z][a-z0-9_]*`
+/// (`mail.thread`, `mail.thread.archive`).
+#[must_use]
+pub fn is_dotted_name(text: &str) -> bool {
+    let element = |e: &str| {
+        let mut bytes = e.bytes();
+        bytes.next().is_some_and(|b| b.is_ascii_lowercase())
+            && bytes.all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
+    };
+    let mut count = 0;
+    let all = text.split('.').all(|e| {
+        count += 1;
+        element(e)
+    });
+    all && count >= 2
+}
+
+/// Whether `text` is 1 to `max` bytes with no control characters: text that an id does not
+/// interpret.
+#[must_use]
+pub fn is_opaque(text: &str, max: usize) -> bool {
+    !text.is_empty() && text.len() <= max && !text.chars().any(char::is_control)
+}
+
+/// Declares an id type with a grammar of its own: `ok` is a `fn(&str) -> bool`.
+///
+/// Like [`slug_id!`] otherwise: a `String` newtype whose `parse` is the only way in, whose serde
+/// form is its text, and whose `Display` writes the text. The caller depends on `serde`.
+#[macro_export]
+macro_rules! text_id {
+    ($(#[$doc:meta])* $name:ident, $what:literal, $ok:expr) => {
+        $(#[$doc])*
+        #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, ::serde::Serialize, ::serde::Deserialize)]
+        #[serde(try_from = "String", into = "String")]
+        pub struct $name(String);
+
+        impl $name {
+            /// The id written as `text`, or why it is not one.
+            pub fn parse(text: &str) -> Result<Self, $crate::IdError> {
+                let ok: fn(&str) -> bool = $ok;
+                if ok(text) {
+                    Ok(Self(text.to_owned()))
+                } else {
+                    Err($crate::IdError::malformed($what, text))
+                }
+            }
+        }
+
+        $crate::string_newtype!($name, $crate::IdError);
+    };
+}
+
 /// The id as one D-Bus object path segment (`[A-Za-z0-9_]`): `.` and `-` become `_`.
 ///
 /// Two ids differing only in those characters share a segment; accountd refuses the second
@@ -109,6 +161,38 @@ mod tests {
         TestId,
         "test id"
     );
+
+    text_id!(
+        /// A dotted id of the tests.
+        DottedId,
+        "dotted id",
+        is_dotted_name
+    );
+
+    #[test]
+    fn dotted_names_need_two_lowercase_elements() {
+        for (text, ok) in [
+            ("mail.thread", true),
+            ("mail.thread.archive", true),
+            ("mail.thread_x9", true),
+            ("mail", false),
+            ("Mail.thread", false),
+            ("mail..thread", false),
+            ("mail.1thread", false),
+            ("", false),
+        ] {
+            assert_eq!(is_dotted_name(text), ok, "{text:?}");
+            assert_eq!(DottedId::parse(text).is_ok(), ok, "{text:?}");
+        }
+    }
+
+    #[test]
+    fn opaque_text_is_bounded_and_has_no_control_characters() {
+        assert!(is_opaque("a/b c", 5));
+        assert!(!is_opaque("", 5));
+        assert!(!is_opaque("abcdef", 5));
+        assert!(!is_opaque("a\nb", 5));
+    }
 
     const CASES: &[(&str, &str, bool)] = &[
         ("plain", "nextcloud", true),

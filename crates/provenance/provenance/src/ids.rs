@@ -1,58 +1,8 @@
-//! The ids agent-side crates share. Slug ids use the accounts service's one id grammar; entity names carry
-//! their own.
+//! The ids agent-side crates share. Slug ids use the one id grammar; entity names carry their own.
 
 use account_core::AppName;
+use base_ids::{is_dotted_name, is_opaque, text_id};
 use serde::{Deserialize, Serialize};
-
-macro_rules! text_id {
-    ($(#[$doc:meta])* $name:ident, $what:literal, $ok:expr) => {
-        $(#[$doc])*
-        #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, ::serde::Serialize, ::serde::Deserialize)]
-        #[serde(try_from = "String", into = "String")]
-        pub struct $name(String);
-
-        impl $name {
-            /// The id written as `text`, or why it is not one.
-            ///
-            /// # Errors
-            ///
-            /// Returns [`CoreError::MalformedId`](::account_core::CoreError::MalformedId) when
-            /// `text` is not a valid id.
-            pub fn parse(text: &str) -> Result<Self, ::account_core::CoreError> {
-                let ok: fn(&str) -> bool = $ok;
-                if ok(text) {
-                    Ok(Self(text.to_owned()))
-                } else {
-                    Err(::account_core::CoreError::MalformedId { what: $what, text: text.to_owned() })
-                }
-            }
-        }
-
-        base_ids::string_newtype!($name, ::account_core::CoreError);
-    };
-}
-
-pub(crate) use text_id;
-
-/// Two or more dot-separated elements, each `[a-z][a-z0-9_]*`.
-fn dotted(text: &str) -> bool {
-    let element = |e: &str| {
-        let mut bytes = e.bytes();
-        bytes.next().is_some_and(|b| b.is_ascii_lowercase())
-            && bytes.all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
-    };
-    let mut count = 0;
-    let all = text.split('.').all(|e| {
-        count += 1;
-        element(e)
-    });
-    all && count >= 2
-}
-
-/// 1 to 128 bytes, no control characters: an id prov does not interpret.
-fn opaque(text: &str) -> bool {
-    !text.is_empty() && text.len() <= 128 && !text.chars().any(char::is_control)
-}
 
 base_ids::slug_id!(
     /// One companion session. A slug minted by the companion service.
@@ -69,26 +19,26 @@ text_id!(
     /// characters.
     ClientName,
     "client name",
-    |t| !t.is_empty() && t.len() <= 64 && !t.chars().any(char::is_control)
+    |t| is_opaque(t, 64)
 );
 text_id!(
     /// What kind of thing an app owns: two or more dotted `[a-z][a-z0-9_]*` elements
     /// (`mail.thread`).
     EntityKind,
     "entity kind",
-    dotted
+    is_dotted_name
 );
 text_id!(
     /// An app-local key for one entity: opaque, 1 to 512 bytes, no control characters.
     EntityKey,
     "entity key",
-    |t| !t.is_empty() && t.len() <= 512 && !t.chars().any(char::is_control)
+    |t| is_opaque(t, 512)
 );
 text_id!(
     /// A typed action's name (`mail.thread.archive`), the same grammar as [`EntityKind`].
     ActionName,
     "action name",
-    dotted
+    is_dotted_name
 );
 
 base_ids::slug_id!(
@@ -118,14 +68,14 @@ text_id!(
     /// handle): 1 to 128 bytes, no control characters.
     OutcomeRef,
     "outcome ref",
-    opaque
+    |t| is_opaque(t, 128)
 );
 text_id!(
     /// A reference to one undo journal entry, opaque to prov (the actions service owns `UndoId`): 1 to 128
     /// bytes, no control characters.
     UndoHandle,
     "undo handle",
-    opaque
+    |t| is_opaque(t, 128)
 );
 
 /// One of the person's helpers: a persistent named agent (account-core owns the type, because
