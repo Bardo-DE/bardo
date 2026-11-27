@@ -21,7 +21,6 @@ pub enum Emitted {
 
 impl Emitted {
     /// What the command exits with when this was all it had to do: only a real error fails.
-    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
             Emitted::Done | Emitted::ReaderGone => ExitCode::SUCCESS,

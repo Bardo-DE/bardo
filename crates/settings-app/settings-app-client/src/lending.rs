@@ -33,7 +33,6 @@ impl Lending {
 
     /// Gives the switch `input` now; the returned work carries out what it asks for. A
     /// [`Notice::Recorded`] says when the setting may be written.
-    #[must_use]
     pub fn send(&self, input: SharingInput) -> Pending {
         self.dispatch(input)
     }

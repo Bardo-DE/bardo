@@ -38,7 +38,6 @@ use crate::outputs::Outputs;
 const BLOCKING_THREADS: usize = 48;
 
 /// Run the daemon until `quit` or a fatal host error, on the seams `args` make.
-#[must_use]
 #[expect(
     clippy::too_many_lines,
     reason = "the start-up sequence of the shell: each step needs the ones before it"

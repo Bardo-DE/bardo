@@ -118,7 +118,6 @@ pub fn parse(args: &[String]) -> Result<Command, CommandError> {
 
 /// Runs `command` against the compositor on `$DBUS_SESSION_BUS_ADDRESS` (the jail's private
 /// bus) and `$WAYLAND_DISPLAY`: exit 0 on success, 1 on a failed wait, 2 outside the jail.
-#[must_use]
 pub fn run(command: Command) -> ExitCode {
     ExitCode::from(exit_code(command))
 }

@@ -19,7 +19,6 @@ use shell_services::auth::pam;
 const MAX_REQUEST: usize = 8 * 1024;
 
 /// Run the helper over this process's stdin and stdout.
-#[must_use]
 pub fn main() -> ExitCode {
     let mut request = Vec::with_capacity(MAX_REQUEST + 1);
     let read = std::io::stdin()

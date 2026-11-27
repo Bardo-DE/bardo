@@ -15,7 +15,6 @@ use shell_ipc::response::Response;
 pub const START_TIMEOUT: Duration = Duration::from_secs(3);
 
 /// Send `request`, print the reply, exit 0 on success.
-#[must_use]
 pub fn main(request: &Request) -> ExitCode {
     match send(request) {
         Ok(Response::Failed(failure)) => {

@@ -31,7 +31,6 @@ impl Engines {
     }
 
     /// Gives the pane `input` now; the returned work carries out what it asks for.
-    #[must_use]
     pub fn send(&self, input: EnginesInput) -> Pending {
         self.dispatch(input)
     }

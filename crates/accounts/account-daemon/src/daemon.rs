@@ -204,7 +204,6 @@ pub enum StartError {
 
 impl StartError {
     /// The exit status for this failure: a refused registry has one of its own.
-    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
             Self::RegistryRefused(_) => ExitCode::from(crate::EXIT_REGISTRY_REFUSED),

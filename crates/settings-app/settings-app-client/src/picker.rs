@@ -67,7 +67,6 @@ impl Picker {
 
     /// Gives the pane what the person asked of a row: a pick, an engine for Local, a model in or
     /// out of Automatic's list. The returned work carries out what it asks for.
-    #[must_use]
     pub fn send(&self, input: PickerInput) -> Pending {
         self.dispatch(input)
     }

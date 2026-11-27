@@ -109,7 +109,6 @@ pub enum Output {
 }
 
 /// Run `bardo-shell launch`.
-#[must_use]
 pub fn main(args: &LaunchArgs) -> ExitCode {
     let (output, code) = report(&ending(send(&launch_request(args))), args.timing);
     match output {

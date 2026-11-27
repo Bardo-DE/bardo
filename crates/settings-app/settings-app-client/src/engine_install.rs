@@ -36,7 +36,6 @@ impl EngineInstall {
 
     /// Gives the offer `input` now: the person chose an engine or took an action. The returned
     /// work carries out what it asks for.
-    #[must_use]
     pub fn send(&self, input: EngineOfferInput) -> Pending {
         self.dispatch(input)
     }

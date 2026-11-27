@@ -140,7 +140,6 @@ impl SpendRows {
     }
 
     /// The value of a row.
-    #[must_use]
     pub fn get<'a>(&'a self, path: &'a str) -> Boxed<'a, Result<toml::Value, LiveError>> {
         Box::pin(async move {
             let (id, row) = self
@@ -152,7 +151,6 @@ impl SpendRows {
     }
 
     /// A row is a read-out.
-    #[must_use]
     pub fn set<'a>(
         &'a self,
         path: &'a str,

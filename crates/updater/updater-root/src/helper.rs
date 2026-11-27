@@ -165,7 +165,6 @@ fn conclude(program: &str, result: Result<Applied, ApplyError>) -> ExitCode {
 }
 
 /// `bardo-updater-apply`: install a staged release.
-#[must_use]
 pub fn install_main() -> ExitCode {
     const NAME: &str = "bardo-updater-apply";
     if let Err(code) = reset(NAME) {
@@ -193,7 +192,6 @@ pub fn install_main() -> ExitCode {
 }
 
 /// `bardo-updater-rollback`: go back to the previous release. Its polkit action asks for a password.
-#[must_use]
 pub fn rollback_main() -> ExitCode {
     const NAME: &str = "bardo-updater-rollback";
     if let Err(code) = reset(NAME) {
@@ -221,7 +219,6 @@ pub fn rollback_main() -> ExitCode {
 }
 
 /// `bardo-updater-health`: keep the root-side health record.
-#[must_use]
 pub fn health_main() -> ExitCode {
     const NAME: &str = "bardo-updater-health";
     if let Err(code) = reset(NAME) {

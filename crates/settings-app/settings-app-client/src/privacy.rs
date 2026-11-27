@@ -42,7 +42,6 @@ impl Privacy {
     }
 
     /// Gives the pane `input` now; the returned work carries out what it asks for.
-    #[must_use]
     pub fn send(&self, input: PrivacyInput) -> Pending {
         self.dispatch(input)
     }

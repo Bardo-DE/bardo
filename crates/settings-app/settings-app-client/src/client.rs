@@ -99,7 +99,6 @@ impl Client {
     }
 
     /// The accounts the modules list now, read once; never starts a daemon.
-    #[must_use]
     pub fn read_accounts(&self) -> Work<'_, Result<AccountsPane, Absence>> {
         self.accounts.read()
     }

@@ -78,7 +78,6 @@ impl StyleCheck {
     }
 
     /// Non-zero only when some text is not well-formed CSS.
-    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self.parse_errors() {
             0 => ExitCode::SUCCESS,
@@ -88,7 +87,6 @@ impl StyleCheck {
 }
 
 /// Run `action`: read the file and print its report.
-#[must_use]
 pub fn main(action: &StyleAction) -> ExitCode {
     let StyleAction::Check { file } = action;
     let source = match file {
