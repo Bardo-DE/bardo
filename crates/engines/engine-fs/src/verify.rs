@@ -18,7 +18,6 @@ use crate::seal::{SealError, file_digest, seal_of};
 use engine_manifest::{
     Delivery, InstallDir, Manifest, PythonEnv, Record, Roots, Row, Scope, Verdict,
 };
-use model_catalog::EngineKind;
 use std::collections::BTreeMap;
 use std::path::Path;
 
@@ -170,6 +169,7 @@ mod tests {
     use super::*;
     use crate::record::write_record;
     use engine_manifest::{Arch, Artifact, Backend};
+    use model_catalog::EngineKind;
     use std::os::unix::fs::PermissionsExt;
     use std::path::PathBuf;
 

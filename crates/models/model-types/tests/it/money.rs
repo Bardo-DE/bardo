@@ -74,7 +74,7 @@ fn money_is_written_as_digits_and_a_code() {
             Money::usd(95, 5)
         );
     }
-    assert!(serde_json::from_str::<Money>(r#"{"amount":"1","currency":"usd"}"#).is_err());
+    serde_json::from_str::<Money>(r#"{"amount":"1","currency":"usd"}"#).unwrap_err();
 }
 
 #[test]

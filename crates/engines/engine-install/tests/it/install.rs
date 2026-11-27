@@ -3,7 +3,7 @@ use crate::support::{fetcher, fixture, roots, row};
 use engine_fs::{Finder, Verifier, read_record, seal_of};
 use engine_install::{CancelToken, InstallError, Installer, Meter};
 use engine_manifest::{Failure, Manifest};
-use engine_manifest::{Origin, Record, Scope, Verdict};
+use engine_manifest::{Origin, Scope, Verdict};
 use model_catalog::EngineKind;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;

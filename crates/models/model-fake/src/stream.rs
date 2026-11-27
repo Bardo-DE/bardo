@@ -1,6 +1,7 @@
-//! The path the driver takes with a reply: bytes in chunks, through the SSE framer, into the
-//! stream decoder, and the invariants every such reply must keep. Shared by the `hostile` suite
-//! of `model-openai-compat` and the model fuzz targets.
+//! The path the driver takes with a reply, and the invariants every such reply must keep.
+//!
+//! Bytes in chunks go through the SSE framer into the stream decoder. Shared by the `hostile`
+//! suite of `model-openai-compat` and the model fuzz targets.
 
 use std::collections::BTreeSet;
 use std::fmt::Write as _;

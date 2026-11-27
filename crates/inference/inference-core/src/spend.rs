@@ -115,9 +115,7 @@ pub fn spend_verdict(cap: &SpendCap, spent: &ChargeTotal) -> SpendVerdict {
         return SpendVerdict::Stop;
     }
     // A warning line too large to hold is no line: only the limit speaks.
-    let warn_line = limit
-        .scaled(u32::from(cap.warn_at.0), 1000)
-        .unwrap_or(limit);
+    let warn_line = limit.scaled(cap.warn_at.0, 1000).unwrap_or(limit);
     if spent >= warn_line {
         SpendVerdict::Warn
     } else {

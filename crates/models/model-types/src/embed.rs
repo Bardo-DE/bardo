@@ -9,7 +9,7 @@ use core::fmt;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{BatchMax, Knob, ModelName, ProviderError, TurnUsage};
+use crate::{BatchMax, Knob, ModelName, TurnUsage};
 use base_ids::{Count, Dims, Tokens};
 
 /// What a text is for.

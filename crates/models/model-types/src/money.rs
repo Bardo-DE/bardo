@@ -329,26 +329,26 @@ impl<'de> Deserialize<'de> for Digits {
         impl Visitor<'_> for Reader {
             type Value = Digits;
 
-            fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.write_str("an amount in decimal digits")
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("an amount in decimal digits")
             }
 
-            fn visit_str<E: de::Error>(self, text: &str) -> Result<Digits, E> {
-                parse_parts(text)
+            fn visit_str<E: de::Error>(self, v: &str) -> Result<Digits, E> {
+                parse_parts(v)
                     .map(Digits)
-                    .ok_or_else(|| E::invalid_value(de::Unexpected::Str(text), &self))
+                    .ok_or_else(|| E::invalid_value(de::Unexpected::Str(v), &self))
             }
 
-            fn visit_i64<E: de::Error>(self, number: i64) -> Result<Digits, E> {
-                self.visit_str(&number.to_string())
+            fn visit_i64<E: de::Error>(self, v: i64) -> Result<Digits, E> {
+                self.visit_str(&v.to_string())
             }
 
-            fn visit_u64<E: de::Error>(self, number: u64) -> Result<Digits, E> {
-                self.visit_str(&number.to_string())
+            fn visit_u64<E: de::Error>(self, v: u64) -> Result<Digits, E> {
+                self.visit_str(&v.to_string())
             }
 
-            fn visit_f64<E: de::Error>(self, number: f64) -> Result<Digits, E> {
-                self.visit_str(&number.to_string())
+            fn visit_f64<E: de::Error>(self, v: f64) -> Result<Digits, E> {
+                self.visit_str(&v.to_string())
             }
         }
         deserializer.deserialize_any(Reader)
