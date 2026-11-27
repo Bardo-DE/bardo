@@ -1,7 +1,9 @@
 //! The portal client: the half of `lib.rs` that reaches `zbus`. Built only on Linux with feature
 //! `desktop`; `absent.rs` answers the same two entry points elsewhere.
 
-use super::{PortalPrefs, dark_from_portal, high_contrast_from_portal, reduced_motion_from_portal};
+use super::{
+    PortalSettings, dark_from_portal, high_contrast_from_portal, reduced_motion_from_portal,
+};
 use base_spawn::Spawner;
 use base_time::deadline::{Deadline, within};
 use settings_store::latest::{self, Receiver, Sender};
@@ -27,12 +29,12 @@ fn as_u32(value: &OwnedValue) -> Option<u32> {
     u32::try_from(value.clone()).ok()
 }
 
-/// [`PortalPrefs`] from one `ReadAll` namespace's key/value map. Every key is independently
+/// [`PortalSettings`] from one `ReadAll` namespace's key/value map. Every key is independently
 /// optional: the desktop may answer some and not others, and each missing or malformed key
 /// falls back to its own default, never the whole struct's.
-fn prefs_from_namespace(namespace: &HashMap<String, OwnedValue>) -> PortalPrefs {
+fn prefs_from_namespace(namespace: &HashMap<String, OwnedValue>) -> PortalSettings {
     let raw = |key: &str| namespace.get(key).and_then(as_u32);
-    PortalPrefs {
+    PortalSettings {
         dark: raw(KEY_COLOR_SCHEME).is_some_and(dark_from_portal),
         reduced_motion: raw(KEY_REDUCED_MOTION).is_some_and(reduced_motion_from_portal),
         high_contrast: raw(KEY_CONTRAST).is_some_and(high_contrast_from_portal),
@@ -42,11 +44,11 @@ fn prefs_from_namespace(namespace: &HashMap<String, OwnedValue>) -> PortalPrefs 
 /// Fold one `SettingChanged(namespace, key, value)` onto `prefs`; a namespace or key this crate
 /// does not read, or a value that is not a `u32`, leaves `prefs` unchanged.
 fn apply_setting_changed(
-    mut prefs: PortalPrefs,
+    mut prefs: PortalSettings,
     namespace: &str,
     key: &str,
     value: &OwnedValue,
-) -> PortalPrefs {
+) -> PortalSettings {
     if namespace != NAMESPACE {
         return prefs;
     }
@@ -107,7 +109,7 @@ pub(super) async fn open() -> Option<Opened> {
 impl Opened {
     /// `ReadAll(["org.freedesktop.appearance"])`, or `None` when the portal does not answer in time
     /// or has no such namespace: every failure mode collapses to "use the defaults" at the caller.
-    pub(super) async fn read(&self) -> Option<PortalPrefs> {
+    pub(super) async fn read(&self) -> Option<PortalSettings> {
         let all = within(Deadline::START, PEER, self.proxy.read_all(&[NAMESPACE]))
             .await
             .ok()?
@@ -122,7 +124,7 @@ impl Opened {
     /// Fold every appearance-namespace `SettingChanged` onto `tx` until the receiver is gone or
     /// the bus connection ends. The portal's own signals only: the proxy takes a signal from the
     /// portal's unique name and no one else's.
-    pub(super) async fn follow(mut self, tx: Sender<PortalPrefs>) {
+    pub(super) async fn follow(mut self, tx: Sender<PortalSettings>) {
         while let Some(signal) = self.changes.next().await {
             let Ok(args) = signal.args() else {
                 continue;
@@ -137,14 +139,14 @@ impl Opened {
 }
 
 /// `ReadAll`, once, on a connection of its own.
-pub(super) async fn read_all() -> Option<PortalPrefs> {
+pub(super) async fn read_all() -> Option<PortalSettings> {
     open().await?.read().await
 }
 
 /// The preferences now and every change after: read after subscribing, the following task on
 /// `spawn`. A desktop without the portal, or one that does not answer in time, is the defaults
 /// and never changes.
-pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<PortalPrefs> {
+pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<PortalSettings> {
     let opened = open().await;
     let first = match &opened {
         Some(opened) => opened.read().await,
@@ -169,7 +171,7 @@ mod tests {
             .collect()
     }
 
-    const DARK: PortalPrefs = PortalPrefs {
+    const DARK: PortalSettings = PortalSettings {
         dark: true,
         reduced_motion: false,
         high_contrast: false,
@@ -177,16 +179,16 @@ mod tests {
 
     #[test]
     fn prefs_from_namespace_reads_every_key_independently() {
-        let cases: &[(&str, HashMap<String, OwnedValue>, PortalPrefs)] = &[
+        let cases: &[(&str, HashMap<String, OwnedValue>, PortalSettings)] = &[
             (
                 "an empty answer is every default",
                 namespace(&[]),
-                PortalPrefs::default(),
+                PortalSettings::default(),
             ),
             (
                 "every key present",
                 namespace(&[("color-scheme", 1), ("reduced-motion", 1), ("contrast", 1)]),
-                PortalPrefs {
+                PortalSettings {
                     dark: true,
                     reduced_motion: true,
                     high_contrast: true,
@@ -200,9 +202,9 @@ mod tests {
             (
                 "a key this crate does not read is ignored",
                 namespace(&[("accent-color", 1), ("contrast", 1)]),
-                PortalPrefs {
+                PortalSettings {
                     high_contrast: true,
-                    ..PortalPrefs::default()
+                    ..PortalSettings::default()
                 },
             ),
         ];
@@ -213,8 +215,8 @@ mod tests {
 
     #[test]
     fn a_setting_changed_signal_updates_only_its_own_key() {
-        let start = PortalPrefs::default();
-        let cases: &[(&str, &str, &str, u32, PortalPrefs)] = &[
+        let start = PortalSettings::default();
+        let cases: &[(&str, &str, &str, u32, PortalSettings)] = &[
             (
                 "a matching namespace and key",
                 NAMESPACE,

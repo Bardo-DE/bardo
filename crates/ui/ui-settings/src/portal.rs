@@ -4,12 +4,12 @@
 //! feature set that has none, answers [`SystemSettings::default`].
 
 use base_spawn::Spawner;
-use settings_portal::PortalPrefs;
+use settings_portal::PortalSettings;
 use ui_style::appearance::system::{Contrast, SystemSettings};
 use ui_style::appearance::theme::Scheme;
 
 /// The toolkit's form of what the portal answered.
-fn settings_from(prefs: PortalPrefs) -> SystemSettings {
+fn settings_from(prefs: PortalSettings) -> SystemSettings {
     SystemSettings::default()
         .with_scheme(if prefs.dark {
             Scheme::Dark
@@ -95,17 +95,17 @@ impl SystemSettingsWatch {
 
 #[cfg(test)]
 mod tests {
-    use super::{PortalPrefs, SystemSettingsSource, settings_from};
+    use super::{PortalSettings, SystemSettingsSource, settings_from};
     use ui_style::appearance::system::{Contrast, SystemSettings};
     use ui_style::appearance::theme::Scheme;
 
     #[test]
     fn the_portal_values_map_to_the_toolkit_settings() {
         assert_eq!(
-            settings_from(PortalPrefs::default()),
+            settings_from(PortalSettings::default()),
             SystemSettings::default()
         );
-        let all = PortalPrefs {
+        let all = PortalSettings {
             dark: true,
             reduced_motion: true,
             high_contrast: true,

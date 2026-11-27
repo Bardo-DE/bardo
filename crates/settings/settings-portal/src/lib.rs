@@ -7,9 +7,9 @@
 //! `SettingChanged` payload with no bus involved; only the client in `bus.rs` touches `zbus`, and
 //! only on Linux with feature `desktop`. On macOS the same answers come from the user's defaults
 //! (`macos.rs`). A desktop without the portal, or a build for a platform or feature set that has
-//! neither (`absent.rs`), answers [`PortalPrefs::default`].
+//! neither (`absent.rs`), answers [`PortalSettings::default`].
 //!
-//! The crate knows no toolkit types: the program that draws maps [`PortalPrefs`] to its own.
+//! The crate knows no toolkit types: the program that draws maps [`PortalSettings`] to its own.
 //! A watch runs as a task on the [`Spawner`] it is handed; no runtime is named here.
 
 use base_spawn::Spawner;
@@ -27,7 +27,7 @@ mod bus;
 /// What the desktop says about appearance. The default is what a desktop with no portal answers:
 /// light, no motion preference, normal contrast.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub struct PortalPrefs {
+pub struct PortalSettings {
     /// The desktop prefers a dark colour scheme.
     pub dark: bool,
     /// The desktop asks for reduced motion.
@@ -57,14 +57,14 @@ pub fn high_contrast_from_portal(value: u32) -> bool {
 
 /// Every appearance preference, once. Never fails: a missing bus, portal or namespace is the
 /// defaults.
-pub async fn read() -> PortalPrefs {
+pub async fn read() -> PortalSettings {
     bus::read_all().await.unwrap_or_default()
 }
 
 /// A subscription to the desktop's appearance preferences.
 #[derive(Debug)]
 pub struct Watch {
-    changes: Receiver<PortalPrefs>,
+    changes: Receiver<PortalSettings>,
 }
 
 impl Watch {
@@ -81,12 +81,12 @@ impl Watch {
 
     /// The preferences as last read.
     #[must_use]
-    pub fn current(&self) -> PortalPrefs {
+    pub fn current(&self) -> PortalSettings {
         self.changes.latest()
     }
 
     /// Wait for the next change. `None` once the bus connection is gone.
-    pub async fn changed(&mut self) -> Option<PortalPrefs> {
+    pub async fn changed(&mut self) -> Option<PortalSettings> {
         self.changes.changed().await
     }
 }

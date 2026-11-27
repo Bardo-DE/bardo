@@ -7,7 +7,7 @@
 //! on a run loop; this crate owns no run loop, so the watch reads the preferences again every
 //! [`EVERY`] and publishes only what changed. A read is three lookups in `cfprefsd`'s cache.
 
-use super::PortalPrefs;
+use super::PortalSettings;
 use base_spawn::Spawner;
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
@@ -33,8 +33,8 @@ fn dark_from_style(style: Option<&str>) -> bool {
 }
 
 /// The three answers, as the portal's tables would give them.
-fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> PortalPrefs {
-    PortalPrefs {
+fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> PortalSettings {
+    PortalSettings {
         dark: dark_from_style(style),
         reduced_motion: reduce_motion,
         high_contrast: increase_contrast,
@@ -62,7 +62,7 @@ fn flag(key: &str, domain: &CFString) -> bool {
 
 /// The preferences as the user's defaults hold them now; a domain written by another process
 /// since the last read is read afresh.
-fn read() -> PortalPrefs {
+fn read() -> PortalSettings {
     let global = CFString::from_static_str(GLOBAL);
     let accessibility = CFString::from_static_str(ACCESSIBILITY);
     CFPreferencesAppSynchronize(&global);
@@ -77,12 +77,12 @@ fn read() -> PortalPrefs {
 }
 
 /// Every preference, once.
-pub(super) async fn read_all() -> Option<PortalPrefs> {
+pub(super) async fn read_all() -> Option<PortalSettings> {
     Some(read())
 }
 
 /// Read again every [`EVERY`] and publish a change, until the receiver is gone.
-async fn follow(tx: Sender<PortalPrefs>) {
+async fn follow(tx: Sender<PortalSettings>) {
     loop {
         futures_timer::Delay::new(EVERY).await;
         let now = read();
@@ -93,7 +93,7 @@ async fn follow(tx: Sender<PortalPrefs>) {
 }
 
 /// The preferences now and every change after, the watch running on `spawn`.
-pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<PortalPrefs> {
+pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<PortalSettings> {
     let (tx, changes) = latest::channel(read());
     spawn.spawn(Box::pin(follow(tx)));
     changes
@@ -105,22 +105,22 @@ mod tests {
 
     #[test]
     fn the_style_and_the_switches_map_as_the_portal_s_tables_do() {
-        let cases: &[(&str, Option<&str>, bool, bool, PortalPrefs)] = &[
+        let cases: &[(&str, Option<&str>, bool, bool, PortalSettings)] = &[
             (
                 "light: no style",
                 None,
                 false,
                 false,
-                PortalPrefs::default(),
+                PortalSettings::default(),
             ),
             (
                 "dark",
                 Some("Dark"),
                 false,
                 false,
-                PortalPrefs {
+                PortalSettings {
                     dark: true,
-                    ..PortalPrefs::default()
+                    ..PortalSettings::default()
                 },
             ),
             (
@@ -128,14 +128,14 @@ mod tests {
                 Some("Graphite"),
                 false,
                 false,
-                PortalPrefs::default(),
+                PortalSettings::default(),
             ),
             (
                 "both switches on",
                 None,
                 true,
                 true,
-                PortalPrefs {
+                PortalSettings {
                     dark: false,
                     reduced_motion: true,
                     high_contrast: true,
