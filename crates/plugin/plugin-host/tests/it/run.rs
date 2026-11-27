@@ -1,10 +1,11 @@
 //! Crash containment: a plugin that hangs, dies, lies or ignores a cancel costs one request and
 //! leaves nothing running.
 
-use crate::support::shapes::{Cap, Message, Request, Wire};
-use crate::support::{Host, PROVIDES, facts, quick, runner};
-use plugin_host::manifest::PluginId;
-use plugin_host::run::{RunError, Runner, Timeouts};
+use crate::support::shapes::{Cap, Message, Request};
+use crate::support::{Host, PROVIDES, Wire, facts, quick, runner};
+use plugin_core::Timeouts;
+use plugin_core::manifest::PluginId;
+use plugin_host::run::{RunError, Runner};
 use std::ops::ControlFlow;
 use std::path::Path;
 use std::process::Command;

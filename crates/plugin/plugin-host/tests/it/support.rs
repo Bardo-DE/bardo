@@ -10,10 +10,11 @@
 #[path = "../../examples/shared/shapes.rs"]
 pub mod shapes;
 
-use plugin_host::registry::Installed;
-use plugin_host::run::{Runner, Timeouts};
+use plugin_core::Timeouts;
+use plugin_core::registry::Installed;
+use plugin_host::run::{Greeting, Protocol, Runner};
 use plugin_host::{Discovery, Search, discover};
-use shapes::{Provision, Request};
+use shapes::{Cap, Message, Provision, Request};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
@@ -125,5 +126,33 @@ impl Host {
     /// A pid file path in the scratch directory.
     pub fn pid_file(&self) -> PathBuf {
         self.root.path().join("child.pid")
+    }
+}
+
+/// The host's protocol.
+#[derive(Debug, Clone, Copy)]
+pub struct Wire;
+
+impl Protocol for Wire {
+    type Provides = Provision;
+    type Request = Request;
+    type Message = Message;
+    const VERSION: u32 = 1;
+
+    fn greeting(message: &Message) -> Option<Greeting<'_, Cap>> {
+        match message {
+            Message::Hello { protocol, provides } => Some(Greeting {
+                protocol: *protocol,
+                provides,
+            }),
+            Message::Drawn { .. }
+            | Message::Batch(_)
+            | Message::Complete
+            | Message::Activation(_)
+            | Message::Event { .. }
+            | Message::Facts(_)
+            | Message::Finished
+            | Message::Failed { .. } => None,
+        }
     }
 }

@@ -14,8 +14,8 @@ use settings_app_model::{
 use settings_types::schema::{FilePath, KeyPath};
 use std::collections::BTreeSet;
 use std::path::PathBuf;
-use ui_extensions::plugin_host::manifest::Raw;
-use ui_extensions::plugin_host::registry::Candidate;
+use ui_extensions::plugin_core::manifest::Raw;
+use ui_extensions::plugin_core::registry::Candidate;
 use ui_extensions::{
     Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search, YOUR_CHANGES_ID,
     YourChanges, choices_for,

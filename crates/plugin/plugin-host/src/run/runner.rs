@@ -4,9 +4,9 @@ use super::error::RunError;
 use super::process::{Arrival, Log, Process};
 use super::protocol::{Cap, Protocol};
 use super::session::Session;
-use crate::registry::Installed;
-use crate::timeouts::Timeouts;
-use crate::wire::Frame;
+use plugin_core::Timeouts;
+use plugin_core::registry::Installed;
+use plugin_core::wire::Frame;
 use std::sync::Arc;
 
 /// Runs requests against plugins. A request starts the plugin, takes its greeting, checks it and
@@ -35,7 +35,8 @@ impl Runner {
     /// capture state, and is called from the thread that is waiting on the plugin.
     ///
     /// ```
-    /// use plugin_host::run::{Runner, Timeouts};
+    /// use plugin_core::Timeouts;
+    /// use plugin_host::run::Runner;
     /// use std::sync::{Arc, Mutex};
     ///
     /// let lines = Arc::new(Mutex::new(Vec::new()));
@@ -73,9 +74,10 @@ impl Runner {
     /// `request`. No reply may carry more than `payload_limit` bytes of payload.
     ///
     /// ```no_run
-    /// use plugin_host::manifest::{Entry, Provides, Refusal};
-    /// use plugin_host::registry::Installed;
-    /// use plugin_host::run::{Greeting, Protocol, RunError, Runner, Timeouts};
+    /// use plugin_core::Timeouts;
+    /// use plugin_core::manifest::{Entry, Provides, Refusal};
+    /// use plugin_core::registry::Installed;
+    /// use plugin_host::run::{Greeting, Protocol, RunError, Runner};
     /// use serde::{Deserialize, Serialize};
     ///
     /// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

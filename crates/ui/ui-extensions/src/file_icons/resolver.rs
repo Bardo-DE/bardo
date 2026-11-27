@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use base_words::Word;
-use plugin_host::registry::{Installed, Origin};
+use plugin_core::registry::{Installed, Origin};
 use settings_types::schema::Provided;
 use ui_helpers::mime::{FileName, MimeDb, MimeType};
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};

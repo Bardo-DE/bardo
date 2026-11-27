@@ -13,7 +13,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use plugin_host::manifest::{Entry, Refusal};
+use plugin_core::manifest::{Entry, Refusal};
 use serde::Deserialize;
 
 use crate::fault::EntryError;

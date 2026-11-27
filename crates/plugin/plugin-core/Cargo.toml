@@ -1,0 +1,21 @@
+[package]
+publish.workspace = true
+name = "plugin-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Plugins as separate programs, the pure half: manifests, the registry and a framed JSON wire. No process, no file, no clock. Generic over the host's capability type."
+repository.workspace = true
+keywords = ["plugin", "ipc", "manifest"]
+categories = ["development-tools"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+thiserror.workspace = true
+# Reads the manifest text only; not part of the public API.
+toml.workspace = true
+
+[lints]
+workspace = true

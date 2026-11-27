@@ -1,7 +1,7 @@
 //! Whether the files a manifest names are there, can be run, and stay in the plugin's folder.
 
-use crate::manifest::{Manifest, ManifestError, PathReach, PathRole, Provides};
-use crate::registry::Readiness;
+use plugin_core::manifest::{Manifest, ManifestError, PathReach, PathRole, Provides};
+use plugin_core::registry::Readiness;
 use std::fs;
 use std::path::Path;
 

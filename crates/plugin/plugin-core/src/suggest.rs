@@ -41,7 +41,7 @@ pub struct Suggestion<C, K, H> {
 /// no package is known.
 ///
 /// ```
-/// use plugin_host::{Package, Suggestion, suggest};
+/// use plugin_core::{Package, Suggestion, suggest};
 ///
 /// #[derive(Debug, Clone, Copy, PartialEq)]
 /// enum Capability {

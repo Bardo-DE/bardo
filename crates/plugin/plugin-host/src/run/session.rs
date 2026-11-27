@@ -3,9 +3,9 @@
 use super::error::RunError;
 use super::process::{Arrival, Process};
 use super::protocol::{Cap, Protocol};
-use crate::manifest::PluginId;
-use crate::timeouts::Timeouts;
-use crate::wire::Frame;
+use plugin_core::Timeouts;
+use plugin_core::manifest::PluginId;
+use plugin_core::wire::Frame;
 use std::fmt;
 use std::ops::ControlFlow;
 use std::time::Instant;

@@ -2,8 +2,8 @@
 
 use super::ready::readiness;
 use super::search::Layout;
-use crate::manifest::{Manifest, ManifestError, Provides};
-use crate::registry::{Candidate, Origin};
+use plugin_core::manifest::{Manifest, ManifestError, Provides};
+use plugin_core::registry::{Candidate, Origin};
 use std::fs;
 use std::path::{Path, PathBuf};
 

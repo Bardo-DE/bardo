@@ -39,9 +39,8 @@ impl<P: Provides> Registry<P> {
     /// protocol version the host speaks.
     ///
     /// ```
-    /// use plugin_host::manifest::{Entry, Provides, Refusal};
-    /// use plugin_host::registry::{Fit, Registry};
-    /// use plugin_host::{Search, discover};
+    /// use plugin_core::manifest::{Entry, Provides, Refusal};
+    /// use plugin_core::registry::{Fit, Registry};
     ///
     /// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Deserialize)]
     /// enum Cap {
@@ -61,11 +60,8 @@ impl<P: Provides> Registry<P> {
     ///     }
     /// }
     ///
-    /// // Discovery builds the registry from `<data dir>/myapp/plugins`; a host that gathers
-    /// // candidates itself calls `Registry::resolve`.
-    /// let user = std::path::Path::new("/nonexistent/data");
-    /// let found = discover::<Tool>(&Search::new("myapp", user, &[], 1));
-    /// let registry: Registry<Tool> = found.registry;
+    /// // Discovery (in `plugin-host`) gathers the candidates from disk; with none, nothing serves.
+    /// let registry: Registry<Tool> = Registry::resolve(Vec::new(), 1);
     /// assert!(registry.serving(Cap::Thumbnail, |_| Fit::Exact).is_none());
     /// ```
     pub fn resolve(candidates: Vec<Candidate<P>>, supported: u32) -> Registry<P> {

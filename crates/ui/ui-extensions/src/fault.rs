@@ -8,7 +8,7 @@ pub enum EntryError {
     /// The entry names a word this crate does not own. Reached only by parsing an entry
     /// directly; a scan hands over just the owned words ([`Provides::owns`]).
     ///
-    /// [`Provides::owns`]: plugin_host::manifest::Provides::owns
+    /// [`Provides::owns`]: plugin_core::manifest::Provides::owns
     #[error("{word:?} is not a capability this crate owns")]
     NotOwned {
         /// The word as written.

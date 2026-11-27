@@ -4,16 +4,16 @@
 
 use crate::support::shapes::{
     Action, Activation, Batch, Block, Cap, Choice, Fact, Icon, Item, Message, OpenTarget,
-    Provision, Request, Wire,
+    Provision, Request,
 };
-use crate::support::{Host, PROVIDES, quick, runner};
-use plugin_host::registry::Fit;
+use crate::support::{Host, PROVIDES, Wire, quick, runner};
+use plugin_core::registry::Fit;
 use plugin_host::run::RunError;
 use serde_json::{Value, json};
 use std::cell::Cell;
 use std::ops::ControlFlow;
 
-fn installed() -> (Host, plugin_host::registry::Installed<Provision>) {
+fn installed() -> (Host, plugin_core::registry::Installed<Provision>) {
     let host = Host::new();
     host.install("demo", &[], PROVIDES);
     let plugin = host.plugin("demo");

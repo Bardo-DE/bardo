@@ -1,7 +1,7 @@
 //! A small host for the unit tests: three capabilities, one of which names a library instead of
 //! speaking the wire.
 
-use crate::manifest::{Entry, PathRole, Provides, Refusal, absolute};
+use plugin_core::manifest::{Entry, PathRole, Provides, Refusal, absolute};
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 

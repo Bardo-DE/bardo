@@ -1,6 +1,6 @@
 //! Why a run failed.
 
-use crate::manifest::PluginId;
+use plugin_core::manifest::PluginId;
 use std::fmt::Debug;
 use std::time::Duration;
 

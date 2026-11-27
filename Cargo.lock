@@ -12202,16 +12202,36 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 
 [[package]]
+name = "plugin-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "plugin-fake"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "plugin-core",
+ "serde",
+]
+
+[[package]]
 name = "plugin-host"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
+ "plugin-core",
+ "plugin-fake",
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
- "toml",
 ]
 
 [[package]]
@@ -16808,6 +16828,7 @@ dependencies = [
  "base-testkit",
  "base-words",
  "base-xdg",
+ "plugin-core",
  "plugin-host",
  "serde",
  "settings-store",

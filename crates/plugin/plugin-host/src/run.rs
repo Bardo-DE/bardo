@@ -12,7 +12,6 @@ mod protocol;
 mod runner;
 mod session;
 
-pub use crate::timeouts::Timeouts;
 pub use error::RunError;
 pub use protocol::{Cap, Greeting, Protocol};
 pub use runner::Runner;

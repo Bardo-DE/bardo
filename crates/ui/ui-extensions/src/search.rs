@@ -5,8 +5,8 @@ use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
 use base_xdg::Xdg;
-use plugin_host::manifest::Raw;
-use plugin_host::registry::{Candidate, Origin};
+use plugin_core::manifest::Raw;
+use plugin_core::registry::{Candidate, Origin};
 use plugin_host::{Layout, Rejected};
 use settings_store_fs::{data_dirs_list_from, data_home_from};
 use settings_types::target::ExtensionId;
@@ -129,7 +129,7 @@ pub struct Found {
     /// raw. Two copies of one id are both here, and nothing is ranked: the owner of a word
     /// checks its entries first, since only the owner knows what is usable, and ranks after
     /// ([`Found::resolve`] for this crate's words; `plugin_host::reparse` and
-    /// `plugin_host::registry::Registry::resolve` for another owner's).
+    /// `plugin_core::registry::Registry::resolve` for another owner's).
     pub candidates: Vec<Candidate<Raw>>,
     /// Manifest files that could not be read, with why.
     pub rejected: Vec<Rejected<Raw>>,

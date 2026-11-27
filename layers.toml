@@ -668,6 +668,10 @@ kind = "unclassified"
 lints = "baseline"
 
 # plugin
+[crate.plugin-core]
+kind = "unclassified"
+[crate.plugin-fake]
+kind = "unclassified"
 [crate.plugin-host]
 kind = "unclassified"
 
@@ -6049,7 +6053,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-extensions"
 features = "all"
-exactly = ["base-fs", "base-words", "base-xdg", "plugin-host", "settings-store", "settings-store-fs", "settings-types",
+exactly = ["base-fs", "base-words", "base-xdg", "plugin-core", "plugin-host", "settings-store", "settings-store-fs", "settings-types",
   "ui-helpers", "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 

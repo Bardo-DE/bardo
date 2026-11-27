@@ -3,7 +3,7 @@
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-use plugin_host::registry::Origin;
+use plugin_core::registry::Origin;
 use ui_extensions::{Capability, ExtensionId, Provision, Search};
 
 use crate::support::{LOOK, Scratch, install, install_look, manifest, write};

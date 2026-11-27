@@ -1,6 +1,6 @@
 //! What a host teaches the plugin host about its wire.
 
-use crate::manifest::Provides;
+use plugin_core::manifest::Provides;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;

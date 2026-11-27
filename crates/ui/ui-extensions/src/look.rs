@@ -16,8 +16,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use base_fs::{ReadCap, read_text_capped};
-use plugin_host::manifest::{Entry, Refusal};
-use plugin_host::registry::Registry;
+use plugin_core::manifest::{Entry, Refusal};
+use plugin_core::registry::Registry;
 use serde::Deserialize;
 use settings_types::schema::Provided;
 

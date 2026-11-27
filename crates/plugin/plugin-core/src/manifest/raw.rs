@@ -12,7 +12,7 @@ pub struct RawCapability;
 /// A `[[provides]]` entry kept as the TOML it was written in, with its `capability` word.
 ///
 /// A scan that owns no vocabulary reads manifests as `Manifest<Raw>`; each owner then turns the
-/// entries of its own words into its own [`Provides`] type with [`reparse`](crate::reparse).
+/// entries of its own words into its own [`Provides`] type with [`reparse_with`](crate::reparse_with).
 #[derive(Debug, Clone)]
 pub struct Raw {
     word: String,
@@ -25,12 +25,6 @@ impl Raw {
     #[must_use]
     pub fn word(&self) -> &str {
         &self.word
-    }
-
-    /// The whole table, `capability` included.
-    #[must_use]
-    pub fn table(&self) -> &toml::Table {
-        &self.table
     }
 
     /// The folder of the manifest this entry was read from, when it has one.

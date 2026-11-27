@@ -27,13 +27,13 @@
 //! read their own words from the same scan: the entries a scan keeps are raw, and the owner turns
 //! the candidates into its own type with `plugin_host::reparse`, which sets aside the words it does
 //! not own instead of failing on them. Then it asks its own checks and ranks with
-//! `plugin_host::registry::Registry::resolve`.
+//! `plugin_core::registry::Registry::resolve`.
 //!
 //! ```
 //! use std::path::Path;
 //!
 //! use ui_extensions::Search;
-//! use ui_extensions::plugin_host::manifest::{Entry, Provides, Refusal};
+//! use ui_extensions::plugin_core::manifest::{Entry, Provides, Refusal};
 //!
 //! #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 //! enum Word {
@@ -111,6 +111,7 @@ pub use file_icons::{
     Built, FileFacts, FileIcons, FolderFacts, IconFolder, IconPick, PICTURE_CAP_BYTES, Pictures,
 };
 pub use look::{Look, LookSheet, STYLESHEET_CAP_BYTES};
+pub use plugin_core;
 pub use plugin_host;
 pub use provision::Provision;
 pub use resolve::{Problem, Resolved, Trouble};

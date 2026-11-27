@@ -1,7 +1,7 @@
 //! What a host's handler can do while it serves a request, and how it ends the plugin.
 
 use super::fault::Fault;
-use crate::wire::{WireError, write_frame};
+use plugin_core::wire::{WireError, write_frame};
 use serde::Serialize;
 use std::collections::VecDeque;
 use std::io::Write;

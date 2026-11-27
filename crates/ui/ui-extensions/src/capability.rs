@@ -3,7 +3,7 @@
 //! Every capability word has exactly one owner, the crate that parses its entries. These are the
 //! data words: an Extension that provides one carries pictures or values and no program.
 //! Words owned elsewhere (`thumbnail`, `peek` and the rest of anyview-plugin's) are not here;
-//! [`Provision::owns`](plugin_host::manifest::Provides::owns) says no to them, and their owner reads
+//! [`Provision::owns`](plugin_core::manifest::Provides::owns) says no to them, and their owner reads
 //! them itself from the raw entries of a scan.
 //!
 //! Room is left for the later data words (`wallpapers`, `sounds`, `cursors`): adding one is a

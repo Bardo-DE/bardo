@@ -3,7 +3,7 @@
 use std::path::Path;
 
 use base_words::Word;
-use plugin_host::manifest::{Entry, PathRole, Provides, Refusal};
+use plugin_core::manifest::{Entry, PathRole, Provides, Refusal};
 use serde::Deserialize;
 
 use crate::capability::Capability;

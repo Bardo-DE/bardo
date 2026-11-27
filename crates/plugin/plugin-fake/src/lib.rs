@@ -8,7 +8,7 @@
 //! writes whatever it likes through its [`Conversation`] and ends the plugin with a [`Step`].
 //!
 //! ```no_run
-//! use plugin_host::testing::{Ending, Fake, Fault, Step, fault_argument};
+//! use plugin_fake::{Ending, Fake, Fault, Step, fault_argument};
 //! use serde::{Deserialize, Serialize};
 //!
 //! #[derive(Serialize)]
@@ -41,7 +41,7 @@
 //! # No in-memory session
 //!
 //! [`Fake::serve`] takes any reader and writer, so the plugin's half of a conversation can be
-//! driven in memory. There is no in-memory pipe for [`Session`](crate::run::Session): a session's
+//! driven in memory. There is no in-memory pipe for `plugin-host`'s `Session`: a session's
 //! work is a child process in a group of its own, polled with a deadline and killed on every path
 //! out, and a pipe in memory would test none of that. A test of a host's handling of a plugin
 //! runs a real, small program, which is what this module makes cheap.

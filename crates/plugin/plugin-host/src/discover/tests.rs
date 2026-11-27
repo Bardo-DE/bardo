@@ -1,7 +1,7 @@
 use super::*;
 use crate::fixture::{Tool, manifest_text, probe};
-use crate::manifest::ManifestError;
-use crate::registry::Origin;
+use plugin_core::manifest::ManifestError;
+use plugin_core::registry::Origin;
 use std::fs;
 use std::path::{Path, PathBuf};
 

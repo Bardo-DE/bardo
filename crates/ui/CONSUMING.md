@@ -1781,8 +1781,8 @@ An Extension that cannot be used is in `looks.problems()` with a line in plain w
 (`Problem::words`). When nothing serves a request and `found.off_serving("look")` is not empty,
 offer "Turn On…" (a link to the `extension:<id>` Settings target) instead of "missing". Another
 owner's words (anyview-plugin's six) are read from `found.candidates` through `plugin_host::reparse`
-with that owner's own `Provides` type; `ui_extensions::plugin_host` is the same plugin host, re-exported
-so the two agree. `ExtensionsFile` is `bardo/extensions.toml`; its schema is
+with that owner's own `Provides` type; `ui_extensions::plugin_host` and `ui_extensions::plugin_core` are the same
+crates, re-exported so the two agree. `ExtensionsFile` is `bardo/extensions.toml`; its schema is
 `ui_extensions::extensions_schema()`.
 
 ### File icons

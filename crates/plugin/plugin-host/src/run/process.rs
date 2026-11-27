@@ -4,9 +4,9 @@
 
 use super::error::RunError;
 use super::protocol::{Cap, Protocol};
-use crate::manifest::PluginId;
-use crate::manifest::Program;
-use crate::wire::{Frame, FrameDecoder, MAX_PAYLOAD_BYTES, WireError, encode_frame};
+use plugin_core::manifest::PluginId;
+use plugin_core::manifest::Program;
+use plugin_core::wire::{Frame, FrameDecoder, MAX_PAYLOAD_BYTES, WireError, encode_frame};
 use rustix::event::{PollFd, PollFlags, poll};
 use rustix::time::Timespec;
 use std::fmt;

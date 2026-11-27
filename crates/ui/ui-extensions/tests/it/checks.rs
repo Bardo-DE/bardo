@@ -3,7 +3,7 @@
 
 use std::fs;
 
-use plugin_host::manifest::ManifestError;
+use plugin_core::manifest::ManifestError;
 use ui_extensions::{Capability, EntryError, STYLESHEET_CAP_BYTES, Search, Trouble};
 
 use crate::support::{

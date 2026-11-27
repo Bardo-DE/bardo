@@ -1,7 +1,7 @@
 //! The fake served in memory: no process, no pipe.
 
 use super::*;
-use crate::wire::{Frame, WireError, encode_frame, read_frame};
+use plugin_core::wire::{Frame, WireError, encode_frame, read_frame};
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 use std::time::{Duration, Instant};

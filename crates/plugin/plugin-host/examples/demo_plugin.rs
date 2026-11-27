@@ -14,7 +14,7 @@
 #[path = "shared/shapes.rs"]
 mod shapes;
 
-use plugin_host::wire::{WireError, read_frame, write_frame};
+use plugin_core::wire::{WireError, read_frame, write_frame};
 use shapes::{
     Action, Activation, Batch, Cap, Choice, Fact, Icon, Item, Message, OpenTarget, Request,
 };

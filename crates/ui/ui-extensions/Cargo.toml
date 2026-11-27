@@ -19,8 +19,9 @@ settings-types = { path = "../../settings/settings-types" }
 ui-style = {path = "../ui-style", default-features = false}
 # The capped file reader (a look's stylesheet is read through it).
 ui-helpers = {path = "../ui-helpers", default-features = false}
-# Manifests, the folder scan and the registry; see the workspace entry.
-plugin-host = {default-features = false, features = ["host"], path = "../../plugin/plugin-host"}
+# Manifests and the registry (`plugin-core`), and the folder scan that reads them (`plugin-host`).
+plugin-core = {path = "../../plugin/plugin-core"}
+plugin-host = {path = "../../plugin/plugin-host"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 

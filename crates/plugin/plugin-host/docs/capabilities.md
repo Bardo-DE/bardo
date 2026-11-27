@@ -3,7 +3,7 @@
 The plugin host knows no capability by name. A host defines them, and the plugin host carries the value through the
 manifest, the registry and the greeting. This note shows what that looks like for a second host whose
 capabilities are `block.lens`, `open.provider`, `agent.adapter` and `row.facts`. The code is
-`examples/shapes/mod.rs`; `tests/plugin_host/capabilities.rs` runs it against `examples/demo_plugin.rs`, a real
+`examples/shared/shapes.rs`; `tests/it/capabilities.rs` runs it against `examples/demo_plugin.rs`, a real
 program on a real pipe.
 
 ## What a host writes

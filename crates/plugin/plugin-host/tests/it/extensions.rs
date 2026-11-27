@@ -1,10 +1,10 @@
 //! The folder layout, the envelope's `version`, and the two-step read of raw entries, against
 //! scratch directories.
 
-use plugin_host::manifest::{
+use plugin_core::manifest::{
     Entry, Manifest, ManifestError, PathReach, PathRole, Provides, Raw, Refusal, absolute,
 };
-use plugin_host::registry::{Origin, Registry};
+use plugin_core::registry::{Origin, Registry};
 use plugin_host::{Discovery, Layout, Search, discover, reparse, scan};
 use serde::Deserialize;
 use std::convert::Infallible;

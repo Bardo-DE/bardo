@@ -2,7 +2,7 @@
 
 use super::conversation::{Conversation, Ending, Step};
 use super::fault::Fault;
-use crate::wire::{WireError, read_frame};
+use plugin_core::wire::{WireError, read_frame};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::collections::VecDeque;
@@ -154,7 +154,7 @@ impl<C, M: Serialize, Q: DeserializeOwned + Send + 'static> Fake<C, M, Q> {
             Some(Fault::ProvidesNothing) => (self.protocol, &self.provides[..0]),
             _ => (self.protocol, (&*self.provides)),
         };
-        crate::wire::write_frame(out, &(self.hello)(protocol, provides), &[])
+        plugin_core::wire::write_frame(out, &(self.hello)(protocol, provides), &[])
     }
 
     /// What the fault does when the first request arrives: `Some` ends the plugin, `None` lets it

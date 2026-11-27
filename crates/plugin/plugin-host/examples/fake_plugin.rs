@@ -1,11 +1,11 @@
-//! A fake plugin built on `plugin_host::testing`, for the tests of the demo host's runner: eleven
+//! A fake plugin built on `plugin_fake`, for the tests of the demo host's runner: eleven
 //! lines of host code plus one fault of the host's own.
 //!
 //! ```text
 //! fake_plugin [--fault <name>]
 //! ```
 //!
-//! The names are those of `plugin_host::testing::Fault`, and `crash-mid-stream`, which only this host
+//! The names are those of `plugin_fake::Fault`, and `crash-mid-stream`, which only this host
 //! knows how to do: two events, then it dies.
 
 // `shapes` is also read by the host side of the tests, which use what this program does not.
@@ -13,7 +13,7 @@
 #[path = "shared/shapes.rs"]
 mod shapes;
 
-use plugin_host::testing::{Ending, Fake, Fault, Step, fault_argument};
+use plugin_fake::{Ending, Fake, Fault, Step, fault_argument};
 use shapes::{Cap, Message, Request};
 use std::process::ExitCode;
 use std::time::Duration;

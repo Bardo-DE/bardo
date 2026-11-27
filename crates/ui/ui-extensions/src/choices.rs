@@ -6,8 +6,8 @@
 //! usable Extensions of the key's capability and fills the key with [`Choices::fill`]; the program
 //! that reads it calls [`chosen`].
 
-use plugin_host::manifest::Provides;
-use plugin_host::registry::Installed;
+use plugin_core::manifest::Provides;
+use plugin_core::registry::Installed;
 use settings_store::InvalidKey;
 use settings_types::schema::{KeyPath, KeySpec, Provided, STANDARD, WordLabels};
 use settings_types::target::ExtensionId;

@@ -2,8 +2,8 @@
 //! name are there.
 
 use super::scan::{read_candidate, sources};
-use crate::manifest::{ManifestError, Provides};
-use crate::registry::{Candidate, Origin, Registry};
+use plugin_core::manifest::{ManifestError, Provides};
+use plugin_core::registry::{Candidate, Origin, Registry};
 use std::path::{Path, PathBuf};
 
 /// Where in a data directory the manifests are.
@@ -116,7 +116,7 @@ pub fn discover<P: Provides>(search: &Search<'_>) -> Discovery<P> {
 /// Reads every manifest as [`discover`] does and stops there: no candidate is set aside or ranked,
 /// so a host can make its own checks first and call [`Registry::resolve`] after.
 ///
-/// Read with [`Raw`](crate::manifest::Raw) as `P` when the host owns no vocabulary of its own and
+/// Read with [`Raw`](plugin_core::manifest::Raw) as `P` when the host owns no vocabulary of its own and
 /// hands the entries on to [`reparse`](crate::reparse).
 #[must_use]
 pub fn scan<P: Provides>(search: &Search<'_>) -> Scan<P> {

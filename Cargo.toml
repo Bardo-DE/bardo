@@ -43,6 +43,8 @@ members = [
     "crates/anyview/crates/anyview-store",
     "crates/anyview/crates/anyview-text",
     "crates/anyview/dev/syntax-dump",
+    "crates/plugin/plugin-core",
+    "crates/plugin/plugin-fake",
     "crates/plugin/plugin-host",
     "crates/blitz-embed/blitz-embed",
     "crates/blitz-embed/blitz-embed-types",

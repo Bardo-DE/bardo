@@ -135,7 +135,7 @@ pub trait Provides: Sized + fmt::Debug + Clone + Eq {
     fn capability(&self) -> Self::Capability;
 
     /// Whether this capability is one this type parses. A host with a vocabulary of its own
-    /// answers for its words, so [`reparse`](crate::reparse) can set aside the entries
+    /// answers for its words, so [`reparse_with`](crate::reparse_with) can set aside the entries
     /// that belong to another owner instead of failing on them.
     #[must_use]
     fn owns(_capability: &str) -> bool {

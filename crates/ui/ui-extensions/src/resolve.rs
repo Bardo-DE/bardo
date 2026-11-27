@@ -7,9 +7,10 @@
 //! then the newer version, then the id).
 
 use base_words::Word;
-use plugin_host::manifest::ManifestError;
-use plugin_host::registry::{Candidate, Origin, Readiness, Registry, Unusable};
-use plugin_host::{Reparsed, reparse};
+use plugin_core::Reparsed;
+use plugin_core::manifest::ManifestError;
+use plugin_core::registry::{Candidate, Origin, Readiness, Registry, Unusable};
+use plugin_host::reparse;
 use settings_types::target::ExtensionId;
 
 use crate::capability::Capability;

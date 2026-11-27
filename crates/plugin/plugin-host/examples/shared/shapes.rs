@@ -1,10 +1,9 @@
 //! A host with four capabilities, shared by the demo plugin and the tests: the shapes of
-//! `block.lens`, `open.provider`, `agent.adapter` and `row.facts`, written on the plugin host's generic
-//! API. `open.provider` carries the wire shape of a launcher provider (`Query` in, `Batch` out,
+//! `block.lens`, `open.provider`, `agent.adapter` and `row.facts`, written on the generic API of
+//! `plugin-core`. `open.provider` carries the wire shape of a launcher provider (`Query` in, `Batch` out,
 //! `Choice` in, `Activation` out), so one plugin can feed a launcher and a document host alike.
 
-use plugin_host::manifest::{Entry, Provides, Refusal};
-use plugin_host::run::{Greeting, Protocol};
+use plugin_core::manifest::{Entry, Provides, Refusal};
 use serde::{Deserialize, Serialize};
 
 /// The four things a plugin of this host can offer.
@@ -263,32 +262,4 @@ pub enum Message {
         /// What a person can read.
         message: String,
     },
-}
-
-/// The host's protocol.
-#[derive(Debug, Clone, Copy)]
-pub struct Wire;
-
-impl Protocol for Wire {
-    type Provides = Provision;
-    type Request = Request;
-    type Message = Message;
-    const VERSION: u32 = 1;
-
-    fn greeting(message: &Message) -> Option<Greeting<'_, Cap>> {
-        match message {
-            Message::Hello { protocol, provides } => Some(Greeting {
-                protocol: *protocol,
-                provides,
-            }),
-            Message::Drawn { .. }
-            | Message::Batch(_)
-            | Message::Complete
-            | Message::Activation(_)
-            | Message::Event { .. }
-            | Message::Facts(_)
-            | Message::Finished
-            | Message::Failed { .. } => None,
-        }
-    }
 }
