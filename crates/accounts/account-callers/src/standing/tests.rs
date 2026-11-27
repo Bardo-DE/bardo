@@ -1,6 +1,6 @@
 use super::*;
 use crate::CallerRow;
-use caller_identity_core::{ExePath, Pin, RoleName, WhyNot};
+use caller_identity_core::{ExePath, Pin, WhyNot};
 
 fn key(text: &str) -> AppKey {
     AppKey::new(text).expect("key")
