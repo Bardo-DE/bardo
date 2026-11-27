@@ -17,12 +17,13 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules, shear and deny, then fmt, clippy and tests on the affected set; --all adds every accept suite and the feature builds
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules, shear and deny, then fmt, clippy and tests on the affected set; --all adds the structure lints, every accept suite and the feature builds
   accept [<suite>] [<filter>]   run the jailed accept:: tests of a suite from suites.toml (every accept suite without a name)
   accept --list                 the accept suites and why each exists
   live <suite> [<filter>] --yes run the live:: tests of a suite on this machine (never part of a gate)
   live --list                   the live suites and what each touches
   check deny                    cargo deny check (needs cargo-deny)
+  check deslop                  structure lints (deslop-please) with deslop.allow's findings let through
   check features [--cross]      each package built alone, per feature (clippy) and without default features (portable core); --cross adds macOS and Windows targets (needs cargo-hack)
   check test-modules            one test binary per crate (tests/it), every tests/it file a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
@@ -132,12 +133,16 @@ fn run() -> Result<bool> {
 fn check(parser: &mut lexopt::Parser) -> Result<bool> {
     let which = parser
         .value()
-        .context("`check` needs a name: deny, features, test-modules, workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs or shear")?
+        .context("`check` needs a name: deny, deslop, features, test-modules, workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs or shear")?
         .string()?;
     match which.as_str() {
         "deny" => {
             reject_extra(parser)?;
             tasks::deny::run()
+        }
+        "deslop" => {
+            reject_extra(parser)?;
+            tasks::deslop::run()
         }
         "features" => {
             let mut cross = false;

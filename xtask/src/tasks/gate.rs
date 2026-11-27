@@ -1,5 +1,5 @@
 //! `cargo xtask gate`: the workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs,
-//! no-prefs, test-modules, shear and deny checks, then fmt, clippy and tests on the affected set, then (with `--all`) every accept suite, then a
+//! no-prefs, test-modules, shear and deny checks, then fmt, clippy and tests on the affected set, then (with `--all`) the structure lints (deslop) and every accept suite, then a
 //! compile of every workspace of its own. With `--all`, the per-package feature builds (`check features`)
 //! run last.
 
@@ -14,40 +14,31 @@ use super::{finish, git_lines, run_logged_within};
 use crate::affected::{Scope, scope};
 use crate::workspace::Workspace;
 
+/// The checks that read the tree only, in the order the gate runs them.
+const SOURCE_CHECKS: [fn() -> Result<bool>; 11] = [
+    super::workspace_deps::run,
+    super::renderer_edges::run,
+    super::layers::run,
+    super::lints::run,
+    super::product_words::run,
+    super::error_names::run,
+    super::no_mod_rs::run,
+    super::no_prefs::run,
+    super::test_modules::run,
+    super::shear::run,
+    super::deny::run,
+];
+
 /// Runs the gate. `base` defaults to `origin/master`, else `HEAD~1`.
 pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
-    // Reads the manifests only, so it runs on every gate whatever the affected set.
-    if !super::workspace_deps::run()? {
-        return Ok(finish("gate", false));
+    // The source checks read the tree only, so they run on every gate whatever the affected set.
+    for check in SOURCE_CHECKS {
+        if !check()? {
+            return Ok(finish("gate", false));
+        }
     }
-    if !super::renderer_edges::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::layers::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::lints::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::product_words::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::error_names::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::no_mod_rs::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::no_prefs::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::test_modules::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::shear::run()? {
-        return Ok(finish("gate", false));
-    }
-    if !super::deny::run()? {
+    // Indexes the whole workspace (a rust-analyzer pass), so only the full gate runs it.
+    if all && !super::deslop::run()? {
         return Ok(finish("gate", false));
     }
     let ws = Workspace::load()?;
