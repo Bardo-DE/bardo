@@ -46,15 +46,9 @@ impl Profile {
         self
     }
 
-    /// Covers the sensitive `/etc` paths (password hashes, sudoers, host keys, saved network
-    /// credentials) that the host has.
-    #[must_use]
-    pub fn covering_host_secrets(self) -> Self {
-        self.covering_secrets_where(|p| std::path::Path::new(p).exists())
-    }
-
-    /// Covers the sensitive `/etc` paths for which `exists` is true; the host's view is supplied
-    /// by the caller, so a test can answer it.
+    /// Covers the sensitive `/etc` paths for which `exists` is true. The host's view is supplied
+    /// by the caller (the sandbox crate asks the file system), so this crate reads no files and a
+    /// test can answer it.
     #[must_use]
     pub fn covering_secrets_where(mut self, exists: impl Fn(&str) -> bool) -> Self {
         self.root = self.root.covering_where(exists);

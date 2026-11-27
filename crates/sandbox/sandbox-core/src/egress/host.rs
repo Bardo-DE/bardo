@@ -1,8 +1,8 @@
 //! Host names as the proxy sees them: a validated, lower-case ASCII name or an address, and the
 //! patterns a policy compares them with.
 
+use core::net::IpAddr;
 use std::fmt;
-use std::net::IpAddr;
 
 /// The longest host name kept, in bytes (the DNS limit).
 const NAME_MAX: usize = 253;

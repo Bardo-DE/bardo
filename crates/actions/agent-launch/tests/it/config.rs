@@ -1,8 +1,8 @@
 //! `agents.toml`: what is accepted, and what is refused outright.
 
 use agent_launch::{AgentsFile, ConfigError, Route};
-use sandbox::NetworkMode;
-use sandbox::egress::{EgressHostError, EgressRefusedError, Host};
+use sandbox_core::NetworkMode;
+use sandbox_core::egress::{EgressHostError, EgressRefusedError, Host};
 
 use super::support::{HANDOFF, LOGIN};
 

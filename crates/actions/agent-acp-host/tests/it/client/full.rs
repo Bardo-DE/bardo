@@ -15,7 +15,7 @@ use agent_acp_core::taint::TaintSource;
 use agent_session::{BackendEvent, CallEvent, EndCause, SessionHost, TurnEnd};
 use permission_core::{FILES_READ, FILES_WRITE, GrantCaller, StandingScope, TERMINAL_RUN};
 use provenance::Actor;
-use sandbox::fake::Script;
+use sandbox_fake::Script;
 use serde_json::json;
 
 fn script() -> Vec<Act> {

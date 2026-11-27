@@ -109,7 +109,7 @@ fn the_entry_is_an_agents_toml_entry_under_the_scratch_home() {
         .get(&permission_core::ProgramName::parse("claude-code").expect("name"))
         .expect("entry");
     assert_eq!(entry.route, agent_launch::Route::Login);
-    assert_eq!(entry.network, sandbox::NetworkMode::Host);
+    assert_eq!(entry.network, sandbox_core::NetworkMode::Host);
     assert_eq!(entry.state[0].as_str(), "/scratch/world-1/.claude");
     assert_eq!(
         entry.home.as_ref().map(base_path::AbsPath::as_str),

@@ -4,7 +4,7 @@
 //! is read from the person's own `agents.toml`. A path the agent keeps its state in is given
 //! relative to the scratch HOME, so the entry can never name a place in the person's real one.
 
-use sandbox::NetworkMode;
+use sandbox_core::NetworkMode;
 use std::fmt::Write as _;
 use std::path::{Component, Path, PathBuf};
 

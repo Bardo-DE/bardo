@@ -24,8 +24,8 @@ use base_path::AbsPath;
 use permission_core::ProgramName;
 use permission_core::{ActionMatch, StandingGrant, TaskPolicy, TaskPolicyState, acp_agent_app};
 use provenance::{AgentRef, Effect, SessionId, SpaceId, TaskId, UnixSeconds};
-use sandbox::fake::{FakeSandbox, Script, Seen};
-use sandbox::{Network, NetworkMode};
+use sandbox_core::{Network, NetworkMode};
+use sandbox_fake::{FakeSandbox, Script, Seen};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

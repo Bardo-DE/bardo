@@ -7,7 +7,7 @@ use account_core::ProcessCredentialId;
 use agent_acp_host::{AgentChild, Spawn, SpawnError};
 use agent_launch::fake::{Call, FakeAccounts, Mood};
 use agent_launch::{Heard, Supervisor};
-use sandbox::{Access, AgentNet, AgentRun, NetworkMode, Profile, agent_bwrap_args};
+use sandbox_core::{Access, AgentNet, AgentRun, NetworkMode, Profile, agent_bwrap_args};
 use std::os::unix::fs::PermissionsExt;
 
 fn env_of<'a>(run: &'a AgentRun, name: &str) -> Option<&'a str> {
@@ -266,7 +266,7 @@ async fn a_child_says_how_far_it_is_held_once_the_exec_stage_reported() {
     rig.spawn = agent_launch::AgentSpawn::new(
         std::sync::Arc::clone(&rig.file),
         std::sync::Arc::new(rig.accounts.clone()),
-        procs.reporting(sandbox::LandlockLevel::Full),
+        procs.reporting(sandbox_core::LandlockLevel::Full),
         rig.dir.path().to_owned(),
         super::support::abs("/opt/actions/bardo-agent-net-forward"),
         rig.registry.clone(),

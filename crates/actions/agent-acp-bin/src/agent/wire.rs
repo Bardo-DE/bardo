@@ -159,9 +159,9 @@ impl SandboxLimits {
             SandboxLimits::Scope => Detected::probe(path),
             #[cfg(feature = "testing")]
             SandboxLimits::PerProcess => {
-                let hardening = sandbox::Hardening {
-                    limits: sandbox::LimitPolicy::Rlimit(sandbox::Limits::default()),
-                    ..sandbox::Hardening::default()
+                let hardening = sandbox_core::Hardening {
+                    limits: sandbox_core::LimitPolicy::Rlimit(sandbox_core::Limits::default()),
+                    ..sandbox_core::Hardening::default()
                 };
                 Detected::probe_with(path, &hardening, &sandbox::UserSession::from_env())
             }

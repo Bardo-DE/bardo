@@ -8,7 +8,7 @@ use agent_acp_host::{ModelId, SignIn};
 use agent_registry::dirs::AgentsDir;
 use base_path::AbsPath;
 use permission_core::ProgramName;
-use sandbox::NetworkMode;
+use sandbox_core::NetworkMode;
 
 use account_capability::{AgentProgram, AgentProtocol, EnvName};
 use account_core::DataClass;

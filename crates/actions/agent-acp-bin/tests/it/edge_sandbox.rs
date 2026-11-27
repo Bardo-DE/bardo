@@ -10,7 +10,7 @@ use agent_acp_core::court::{Court, CourtError, OpenAgent, Ruled};
 use agent_acp_host::{ToolsEdge, ToolsOffer};
 use base_path::AbsPath;
 use provenance::SessionId;
-use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EnvVar, Profile, agent_bwrap_args};
+use sandbox_core::{Access, AgentNet, AgentRun, Argv, Bind, EnvVar, Profile, agent_bwrap_args};
 use std::path::Path;
 use std::process::{Command, Stdio};
 

@@ -6,14 +6,13 @@
 //! some sign of progress, and a load spike can make that window long. So `spawn` waits for
 //! nothing and `kill` does not rely on the death signal at all.
 
-use crate::output::Tail;
-use crate::sandbox::{Captured, ExitReport, Job, KILLED, StartError};
+use sandbox_core::{Captured, ExitReport, Job, KILLED, StartError, Tail};
 use std::io::Read;
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::thread::JoinHandle;
 
-pub(crate) fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
+fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
     m.lock().unwrap_or_else(PoisonError::into_inner)
 }
 

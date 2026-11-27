@@ -19,7 +19,7 @@ use agent_launch::{AgentSpawn, AgentsFile, Registry};
 use agent_session::{BackendEvent, BackendKind, Opening, SessionBackend, StartSession, TurnEnd};
 use permission_core::ProgramName;
 use provenance::{AgentRef, SessionId, SpaceId, TaskId, UnixSeconds};
-use sandbox::fake::FakeSandbox;
+use sandbox_fake::FakeSandbox;
 use std::sync::Arc;
 
 /// A router that is never asked: this test is about what the launcher lends and gives back, and

@@ -15,7 +15,7 @@ use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
 use agent_acp_host::{Files, Performer};
 use base_ids::Count;
 use provenance::{Actor, Confidentiality, EntityId, Integrity, Label, Labelled, Source};
-use sandbox::Sandbox;
+use sandbox_core::Sandbox;
 use std::collections::BTreeSet;
 
 /// The performer, as an app's provider.

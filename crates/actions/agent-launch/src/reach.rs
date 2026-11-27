@@ -4,7 +4,7 @@
 //! nothing in it refuses too, because it would reach nothing and is surely a mistake.
 
 use crate::config::ConfigError;
-use sandbox::egress::{DEFAULT_PORTS, EgressPolicy, Host, HostPattern, Ports};
+use sandbox_core::egress::{DEFAULT_PORTS, EgressPolicy, Host, HostPattern, Ports};
 
 /// The checked lists of one program.
 #[derive(Debug, Clone, PartialEq, Eq)]

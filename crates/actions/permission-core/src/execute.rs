@@ -38,9 +38,6 @@ pub enum CannotSandboxError {
     /// The syscall filter is required and cannot be installed here.
     #[error("the syscall filter cannot be installed here")]
     SeccompUnavailable,
-    /// The configured resource limits are not usable numbers.
-    #[error("the resource limits are not usable")]
-    BadLimits,
 }
 
 /// Whether this command can run in the sandbox.

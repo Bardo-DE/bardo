@@ -5,8 +5,8 @@ use agent_acp_core::command_deadline::CommandDeadline;
 use agent_acp_host::Terminals;
 use agent_client_protocol::schema::v1::Error;
 use base_path::AbsPath;
-use sandbox::CannotSandboxError;
-use sandbox::fake::{FakeSandbox, Script, Seen};
+use sandbox_core::CannotSandboxError;
+use sandbox_fake::{FakeSandbox, Script, Seen};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
@@ -183,7 +183,7 @@ fn the_command_runs_with_the_cwd_a_cleared_env_and_no_network() {
     let started = b.seen.started();
     assert_eq!(started[0].argv.line(), "ls -la");
     assert_eq!(started[0].cwd.as_str(), "/work/app/src");
-    assert_eq!(started[0].network, sandbox::Network::Off);
+    assert_eq!(started[0].network, sandbox_core::Network::Off);
     assert!(started[0].env.iter().all(|v| v.name != "API_TOKEN"));
 }
 

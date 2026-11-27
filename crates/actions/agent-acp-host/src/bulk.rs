@@ -4,7 +4,7 @@
 //! path is its own, shared), and these are the conversions at the edge.
 
 use permission_core::{CannotSandboxError, SandboxState};
-use sandbox::{
+use sandbox_core::{
     CannotSandboxError as ShellCannot, Network, NetworkMode, SandboxState as ShellState,
 };
 
@@ -19,7 +19,6 @@ pub const fn cannot(why: ShellCannot) -> CannotSandboxError {
         ShellCannot::BadWorkingDir => CannotSandboxError::BadWorkingDir,
         ShellCannot::LimitsUnavailable => CannotSandboxError::LimitsUnavailable,
         ShellCannot::SeccompUnavailable => CannotSandboxError::SeccompUnavailable,
-        ShellCannot::BadLimits => CannotSandboxError::BadLimits,
     }
 }
 

@@ -37,7 +37,7 @@ use agent_session::{BackendEvent, EndCause, SessionHost};
 use companion_model::helper::{AppsAsk, AppsReply};
 use permission_core::ProgramName;
 use provenance::SpaceId;
-use sandbox::NetworkMode;
+use sandbox_core::NetworkMode;
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
 use std::time::Instant;

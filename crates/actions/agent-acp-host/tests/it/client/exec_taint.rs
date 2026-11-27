@@ -10,7 +10,8 @@ use permission_core::{
     acp_agent_action,
 };
 use provenance::UnixSeconds;
-use sandbox::{Network, NetworkMode, fake::Script};
+use sandbox_core::{Network, NetworkMode};
+use sandbox_fake::Script;
 use serde_json::json;
 
 fn run(tag: &'static str, command: &str, args: &[&str]) -> Act {

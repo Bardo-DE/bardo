@@ -1,12 +1,12 @@
-//! Applies an [`EnterPlan`] to the calling process with the `landlock` crate (nothing here is
+//! Applies an `EnterPlan` to the calling process with the `landlock` crate (nothing here is
 //! `unsafe`). Best effort by the kernel's ABI, and it says how far it got.
 
-use super::plan::{EnterPlan, LandlockLevel, NetRule};
 use base_path::AbsPath;
 use landlock::{
     ABI, Access, AccessFs, AccessNet, LandlockStatus, NetPort, RestrictionStatus, Ruleset,
     RulesetAttr, RulesetCreatedAttr, RulesetError, RulesetStatus, path_beneath_rules,
 };
+use sandbox_core::{EnterPlan, LandlockLevel, NetRule};
 
 /// The newest ABI the crate knows; the kernel gives what it has.
 const ABI_TOP: ABI = ABI::V9;

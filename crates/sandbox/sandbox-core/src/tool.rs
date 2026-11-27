@@ -96,29 +96,8 @@ struct Term<J> {
 
 /// The terminals of one connection.
 ///
-/// A command runs only inside the sandbox it is given. This example uses the scripted
-/// `FakeSandbox`, so it needs no `bwrap` and no privileges:
-///
-/// ```
-/// use sandbox::fake::{FakeSandbox, Script};
-/// use sandbox::{Argv, ExitReport, Launch, Shell};
-/// use base_path::AbsPath;
-///
-/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// let (sandbox, seen) = FakeSandbox::ready(vec![Script::done("hello\n", 0)]);
-/// let mut shell = Shell::new(sandbox);
-///
-/// let argv = Argv::new("echo", &["hello".to_owned()]).ok_or("no program")?;
-/// let cwd = AbsPath::parse("/home/u/project")?;
-/// let id = shell.create(&Launch::new(argv, cwd))?;
-///
-/// assert_eq!(shell.wait(id)?, ExitReport::Code(0));
-/// assert_eq!(shell.output(id)?.shown.text, "hello\n");
-/// assert_eq!(seen.started()[0].argv.line(), "echo hello");
-/// shell.release(id)?;
-/// # Ok(())
-/// # }
-/// ```
+/// A command runs only inside the sandbox it is given: the real one (crate `sandbox`) or, in
+/// tests, the scripted one (crate `sandbox-fake`, whose crate docs show a whole run).
 #[derive(Debug)]
 pub struct Shell<S: Sandbox> {
     sandbox: S,

@@ -1,0 +1,21 @@
+[package]
+name = "sandbox-enter"
+description = "The exec stage that runs first inside an agent's sandbox: it applies a Landlock ruleset to itself, reports how far the kernel went, and starts the agent. Linux only; the only crate here that links the Landlock library."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "bardo-sandbox-enter"
+path = "src/bin/bardo-sandbox-enter.rs"
+
+[dependencies]
+base-path = { path = "../../base/base-path" }
+landlock = { workspace = true }
+sandbox-core = { path = "../sandbox-core" }
+
+[lints]
+workspace = true

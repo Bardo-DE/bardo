@@ -1,8 +1,8 @@
 //! The one request line the proxy understands, read with every size bounded. `CONNECT host:port`
 //! (https) and `METHOD http://host[:port]/... HTTP/1.x` (plain http); anything else is refused.
 
-use super::host::{EgressHostError, Host};
 use crate::forward::Duplex;
+use sandbox_core::egress::{EgressHostError, Host};
 use std::io;
 use std::time::{Duration, Instant};
 

@@ -324,7 +324,7 @@ mod tests {
 
     #[test]
     fn no_sandbox_is_told_as_its_own_sentence() {
-        let none = AgentError::NoSandbox(sandbox::CannotSandboxError::NotInstalled);
+        let none = AgentError::NoSandbox(sandbox_core::CannotSandboxError::NotInstalled);
         let why = HelperHost::told(&none);
         assert_eq!(why, JobFault::NoSandbox);
         assert!(!why.plain().contains("crash") && !why.plain().contains("bubblewrap"));

@@ -28,7 +28,7 @@ use agent_acp_host::{EdgeBind, LaunchPlan, SandboxStepError, Spawn, SpawnError, 
 use base_path::AbsPath;
 use sandbox::egress::{Resolver, SystemResolver};
 use sandbox::forward::{Bridge, Loopback};
-use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, NetworkMode};
+use sandbox_core::{Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, NetworkMode};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 

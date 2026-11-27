@@ -1,4 +1,4 @@
-//! The command line that confines a long-running agent process : bubblewrap
+//! The command line that confines a long-running agent process: bubblewrap
 //! as a separate program, built as plain arguments so a test reads them. Unlike a terminal
 //! command, an agent talks over its stdio, so this file only builds the arguments; the process
 //! and its pipes are the caller's.
@@ -143,10 +143,11 @@ impl AgentRun {
 
     /// The same run with `path` read-only inside the writable workspace.
     ///
-    /// The path must be
-    /// strictly inside `cwd`. When the arguments are built, a path that does not exist is
-    /// skipped (nothing to protect) and so is a symbolic link (a bind would follow it out of the
-    /// workspace); skipping never makes the sandbox more open than without the path.
+    /// The path must be strictly inside `cwd`. The arguments bind every protected path, and
+    /// bubblewrap refuses to start on one that is not there or that is a symbolic link (a bind
+    /// would follow it out of the workspace), so whoever builds the arguments from a real
+    /// file system first drops those with [`AgentRun::keeping_protected`]; dropping one never makes
+    /// the sandbox more open than without the path.
     ///
     /// # Errors
     /// Returns `ProtectError::OutsideCwd` when `path` is not strictly inside `cwd`.
@@ -163,6 +164,15 @@ impl AgentRun {
         Ok(self)
     }
 
+    /// The same run keeping only the protected paths for which `fit` is true: the caller's look
+    /// at the file system (the path exists and is not a symbolic link, judged without following
+    /// it), so the argument builder itself reads no files.
+    #[must_use]
+    pub fn keeping_protected(mut self, fit: impl Fn(&AbsPath) -> bool) -> Self {
+        self.protect.retain(|path| fit(path));
+        self
+    }
+
     /// The same run with one more overlay, after the ones already there.
     #[must_use]
     pub fn with_overlay(mut self, overlay: Overlay) -> Self {
@@ -171,7 +181,8 @@ impl AgentRun {
     }
 }
 
-/// The `bwrap` arguments for `run`. Pure.
+/// The `bwrap` arguments for `run`. Pure: every protected path of `run` is bound, so a caller that
+/// reads a real file system drops the ones that are not there first (`AgentRun::keeping_protected`).
 pub fn agent_bwrap_args(run: &AgentRun, profile: &Profile) -> Vec<String> {
     let mut args = confinement(run.net.network(), profile);
     for bind in &run.binds {
@@ -188,7 +199,7 @@ pub fn agent_bwrap_args(run: &AgentRun, profile: &Profile) -> Vec<String> {
     let cwd = run.cwd.as_str();
     args.extend(["--bind", cwd, cwd, "--chdir", cwd].map(str::to_owned));
     // After the writable workspace, so each layers read-only over it.
-    for path in run.protect.iter().filter(|p| protectable(p)) {
+    for path in &run.protect {
         let path = path.as_str();
         args.extend(["--ro-bind", path, path].map(str::to_owned));
     }
@@ -208,11 +219,6 @@ pub fn agent_bwrap_args(run: &AgentRun, profile: &Profile) -> Vec<String> {
     args.push("--".to_owned());
     args.extend(inner(run, profile));
     args
-}
-
-/// Whether `path` exists and is not a symbolic link (judged without following it).
-fn protectable(path: &AbsPath) -> bool {
-    std::fs::symlink_metadata(path.as_str()).is_ok_and(|m| !m.file_type().is_symlink())
 }
 
 /// The words bubblewrap runs: the agent itself, behind the exec stage when there is one, behind

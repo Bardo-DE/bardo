@@ -15,7 +15,7 @@ pub enum AgentError {
     Agents(String),
     /// No sandbox: no agent is started unconfined.
     #[error("no sandbox (bubblewrap) here ({0}): no agent is started unconfined")]
-    NoSandbox(sandbox::CannotSandboxError),
+    NoSandbox(sandbox_core::CannotSandboxError),
     /// The network forwarder is not beside this program.
     #[error("cannot find bardo-agent-net-forward beside this program")]
     NoForwarder,

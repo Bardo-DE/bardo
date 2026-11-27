@@ -1,6 +1,7 @@
 //! Why a refused user namespace is refused: the `AppArmor` switch, read from a scratch file.
 
-use sandbox::{CannotSandboxError, namespaces_refused, refusal_at};
+use sandbox::{namespaces_refused, refusal_at};
+use sandbox_core::CannotSandboxError;
 
 #[test]
 fn the_switch_decides_the_reason() {

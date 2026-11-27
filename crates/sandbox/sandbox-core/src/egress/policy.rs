@@ -7,7 +7,7 @@
 //! name cannot be pointed at the host's own services or the local network.
 
 use super::host::{Host, HostPattern};
-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 /// The ports a policy allows when it names none.
 pub const DEFAULT_PORTS: [u16; 2] = [443, 80];

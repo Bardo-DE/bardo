@@ -7,11 +7,10 @@
 //! It never reads or keeps what passes through a tunnel. The journal gets the host, the port and
 //! the verdict, and nothing else: no headers, no path, no body.
 
-use super::host::Host;
-use super::policy::{EgressPolicy, EgressRefusedError};
 use super::request::{BadRequestError, HEAD_DEADLINE, Request, Target, parse_head, read_head};
 use super::resolve::Resolver;
 use crate::forward::{Duplex, Listening, splice};
+use sandbox_core::egress::{EgressPolicy, EgressRefusedError, Host};
 use std::io::{self, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::path::Path;

@@ -11,38 +11,17 @@
 //! not resolve. FINDINGS.md "Sandboxed shell" lists what that does not
 //! stop.
 
-use crate::agent::{AgentRun, agent_bwrap_args};
 use crate::apparmor::{RESTRICT_USERNS, refusal_at};
 use crate::bwrap_job::BwrapJob;
-use crate::confinement::confinement;
 use crate::fds::inherited_fds;
-use crate::harden::Hardening;
 use crate::launch::{Enforcement, Env, Feed, Launcher, UserSession};
-use crate::profile::Profile;
-use crate::sandbox::{RunSpec, Sandbox, StartError};
-use crate::seccomp::default_filter;
-use crate::{CannotSandboxError, SandboxState};
 use base_path::AbsPath;
+use sandbox_core::{
+    AgentRun, CannotSandboxError, Hardening, Profile, RunSpec, Sandbox, SandboxState, StartError,
+    agent_bwrap_args, bwrap_args, default_filter,
+};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-
-/// The `bwrap` arguments for `spec`. Pure.
-///
-/// The shared confinement comes first (`confinement`). The environment then travels as
-/// `--setenv` words, readable in `/proc/*/cmdline`: safe only because `sandbox_env` is a fixed
-/// allowlist with no secret. The agent sandbox passes its environment on the process instead.
-pub fn bwrap_args(spec: &RunSpec, profile: &Profile) -> Vec<String> {
-    let cwd = spec.cwd.as_str();
-    let mut args = confinement(spec.network, profile);
-    // The working directory goes in after the emptied directories, so it shows through them.
-    args.extend(["--bind", cwd, cwd, "--chdir", cwd, "--clearenv"].map(str::to_owned));
-    for var in &spec.env {
-        args.extend(["--setenv".to_owned(), var.name.clone(), var.value.clone()]);
-    }
-    args.push("--".to_owned());
-    args.extend(spec.argv.words().iter().cloned());
-    args
-}
 
 /// The bubblewrap sandbox.
 #[derive(Debug, Clone)]
@@ -83,10 +62,12 @@ impl BwrapSandbox {
     #[must_use]
     pub fn profile(&self) -> Profile {
         let mut sized = match self.launcher.limits() {
-            Some(limits) => Profile::bare().with_tmpfs_size(limits.tmpfs),
+            Some(limits) => Profile::bare().with_tmpfs_size(limits.tmpfs()),
             None => Profile::bare(),
         };
-        sized = sized.with_opt(self.hardening.opt).covering_host_secrets();
+        sized = sized
+            .with_opt(self.hardening.opt)
+            .covering_secrets_where(|path| Path::new(path).exists());
         for path in &self.hardening.extra_ro {
             sized = sized.with_extra_ro(path.clone());
         }
@@ -141,7 +122,8 @@ impl BwrapSandbox {
             (Some(_), Some(file)) => Feed::FromFile(file.clone()),
             (Some(_), None) => return Err(StartError::FilterFile),
         };
-        let args = agent_bwrap_args(run, &self.profile());
+        let run = run.clone().keeping_protected(protectable);
+        let args = agent_bwrap_args(&run, &self.profile());
         Ok(self
             .launcher
             .command(&self.program, &args, &feed, Env::Exactly(&run.env)))
@@ -206,6 +188,12 @@ impl BwrapSandbox {
             hardening: hardening.clone(),
         })
     }
+}
+
+/// Whether `path` exists and is not a symbolic link (judged without following it): a protected
+/// path that is not, would make bubblewrap fail or follow the link out of the workspace.
+fn protectable(path: &AbsPath) -> bool {
+    std::fs::symlink_metadata(path.as_str()).is_ok_and(|m| !m.file_type().is_symlink())
 }
 
 /// A pipe already holding `bytes` (a filter is far below the pipe's capacity), read end only.
@@ -298,7 +286,8 @@ impl Detected {
     /// it starts a real `bwrap`, which needs unprivileged user namespaces.
     ///
     /// ```no_run
-    /// use sandbox::{Argv, Detected, Launch, Shell};
+    /// use sandbox::Detected;
+    /// use sandbox_core::{Argv, Launch, Shell};
     /// use base_path::AbsPath;
     ///
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -347,5 +336,25 @@ impl Sandbox for Detected {
             Detected::Bwrap(b) => b.start(spec),
             Detected::Missing(why) => Err(StartError::Cannot(*why)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A protected path is bound only when it is really there and is not a link: a real
+    /// directory fits; a missing path and a symbolic link (here to `/etc`) do not.
+    #[test]
+    fn only_a_real_path_that_is_not_a_link_can_be_protected() {
+        let root = tempfile::tempdir().expect("scratch");
+        let cwd = root.path().join("proj");
+        std::fs::create_dir_all(cwd.join(".git")).expect("git dir");
+        std::os::unix::fs::symlink("/etc", cwd.join("link")).expect("link");
+        let at =
+            |name: &str| AbsPath::parse(cwd.join(name).to_str().expect("utf8")).expect("absolute");
+        assert!(protectable(&at(".git")));
+        assert!(!protectable(&at("missing")));
+        assert!(!protectable(&at("link")));
     }
 }

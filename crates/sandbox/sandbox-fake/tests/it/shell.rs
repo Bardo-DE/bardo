@@ -2,9 +2,11 @@
 //! kill and release always work.
 
 use base_path::AbsPath;
-use sandbox::CannotSandboxError;
-use sandbox::fake::{FakeSandbox, Script};
-use sandbox::{Argv, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellError, StartError};
+use sandbox_core::{
+    Argv, CannotSandboxError, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellError,
+    StartError,
+};
+use sandbox_fake::{FakeSandbox, Script};
 
 fn launch(line: &[&str]) -> Launch {
     let words: Vec<String> = line.iter().map(|s| (*s).to_owned()).collect();

@@ -2,7 +2,7 @@
 //! arguments carry it. Nothing here needs a kernel with Landlock.
 
 use base_path::{AbsPath, AbsPathError};
-use sandbox::{
+use sandbox_core::{
     Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnterError, EnterPlan, EnvVar,
     INSIDE_ENTER, INSIDE_FORWARDER, LandlockLevel, NetRule, Overlay, Profile, agent_bwrap_args,
 };

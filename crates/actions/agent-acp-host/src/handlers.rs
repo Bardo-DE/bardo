@@ -25,7 +25,7 @@ use agent_client_protocol::schema::v1::{
 };
 use base_path::AbsPath;
 use permission_core::{BreakerTrip, DenyCode, SandboxState};
-use sandbox::Argv;
+use sandbox_core::Argv;
 use serde::Serialize;
 use serde_json::Value as Json;
 

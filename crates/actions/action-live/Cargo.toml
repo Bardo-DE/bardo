@@ -31,7 +31,7 @@ action-review = {path = "../action-review"}
 agent-registry = {path = "../agent-registry"}
 base-path = { path = "../../base/base-path" }
 base-clock = { path = "../../base/base-clock", features = ["tokio"] }
-sandbox = {path = "../../sandbox/sandbox"}
+sandbox-core = {path = "../../sandbox/sandbox-core"}
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 companion-wire = {path = "../companion-wire"}
 action-accept = {path = "../action-accept"}
@@ -68,6 +68,7 @@ zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 accept-kit = {path = "../../base/accept-kit"}
+sandbox = {path = "../../sandbox/sandbox"}
 action-settings = {path = "../action-settings"}
 futures-util = { workspace = true, features = ["std"] }
 tempfile = { workspace = true }

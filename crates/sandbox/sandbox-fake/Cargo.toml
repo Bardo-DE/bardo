@@ -1,0 +1,16 @@
+[package]
+name = "sandbox-fake"
+description = "For tests: a `Sandbox` that records what it was asked to run and answers from a script, with no process and no clock. Nothing that ships depends on it."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-path = { path = "../../base/base-path" }
+sandbox-core = { path = "../sandbox-core" }
+
+[lints]
+workspace = true

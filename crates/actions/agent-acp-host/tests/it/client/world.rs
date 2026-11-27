@@ -15,7 +15,7 @@ use agent_acp_host::fake::{FakeFiles, FakeSpawn};
 use agent_acp_host::{Files, IntentsCourt, OsFiles, Performer, Seams};
 use agent_session::fake::MemoryLog;
 use provenance::Actor;
-use sandbox::fake::FakeSandbox;
+use sandbox_fake::FakeSandbox;
 use std::sync::Arc;
 
 /// The desktop's sheet (a script of the person's answers) for a call, and the host's own desk for

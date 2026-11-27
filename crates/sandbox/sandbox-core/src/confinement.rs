@@ -1,6 +1,6 @@
 //! The part of the bubblewrap command line every sandbox here starts with: namespaces, no
 //! capabilities, the allow-list root (`root`), a fresh `/dev` and `/proc`, the scratch
-//! directories, and the resolver files when the network is the host's. The terminal sandbox (`bwrap`) and the agent
+//! directories, and the resolver files when the network is the host's. The terminal sandbox (`bwrap_args`) and the agent
 //! sandbox (`agent`) both begin with exactly this, so a hardening flag added here reaches both.
 //!
 //! What follows it differs, and so does how the environment travels: the terminal sandbox puts
@@ -12,7 +12,7 @@
 
 use crate::net::resolver_binds;
 use crate::profile::Profile;
-use crate::sandbox::Network;
+use crate::sandbox::{Network, RunSpec};
 
 fn words(list: &[&str]) -> Vec<String> {
     list.iter().map(|s| (*s).to_owned()).collect()
@@ -32,6 +32,25 @@ pub(crate) fn confinement(network: Network, profile: &Profile) -> Vec<String> {
     if network == Network::Host {
         args.extend(resolver_binds());
     }
+    args
+}
+
+/// The `bwrap` arguments for `spec`. Pure.
+///
+/// The shared confinement comes first (`confinement`). The environment then travels as
+/// `--setenv` words, readable in `/proc/*/cmdline`: safe only because `sandbox_env` is a fixed
+/// allowlist with no secret. The agent sandbox passes its environment on the process instead.
+#[must_use]
+pub fn bwrap_args(spec: &RunSpec, profile: &Profile) -> Vec<String> {
+    let cwd = spec.cwd.as_str();
+    let mut args = confinement(spec.network, profile);
+    // The working directory goes in after the emptied directories, so it shows through them.
+    args.extend(["--bind", cwd, cwd, "--chdir", cwd, "--clearenv"].map(str::to_owned));
+    for var in &spec.env {
+        args.extend(["--setenv".to_owned(), var.name.clone(), var.value.clone()]);
+    }
+    args.push("--".to_owned());
+    args.extend(spec.argv.words().iter().cloned());
     args
 }
 

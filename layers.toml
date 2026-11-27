@@ -685,7 +685,13 @@ kind = "unclassified"
 
 # sandbox
 [crate.sandbox]
-kind = "unclassified"
+kind = "io"
+[crate.sandbox-core]
+kind = "core"
+[crate.sandbox-enter]
+kind = "io"
+[crate.sandbox-fake]
+kind = "test-support"
 
 # settings-app
 [crate.settings-app]
@@ -1984,13 +1990,13 @@ why = "The ACP server edge: the lib is portable; no bus, HTTP, Cedar or MCP SDK.
 
 [[reach]]
 crate = "agent-acp-host"
-forbid = ["zbus", "zvariant", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy"]
-why = "The ACP client edge, an external agent as a session backend: it reaches the router only through action-client (its `InProcess` transport is a dev-dependency): the host of an external agent calls the same Intents1 every caller does. Same bans as the server edge."
+forbid = ["zbus", "zvariant", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "sandbox-fake"]
+why = "The ACP client edge, an external agent as a session backend: it reaches the router only through action-client (its `InProcess` transport is a dev-dependency): the host of an external agent calls the same Intents1 every caller does. Same bans as the server edge, and the scripted sandbox is a dev-dependency only."
 
 [[reach]]
 crate = "agent-launch"
-forbid = ["reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "landlock", "libseccomp"]
-why = "Starts the external agents: the bus is the `dbus` feature's, the runtime is its processes'; no HTTP, desktop stack, database, Cedar or MCP SDK, and nothing that links a sandbox library."
+forbid = ["reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "cedar-policy", "landlock", "libseccomp", "sandbox-fake"]
+why = "Starts the external agents: the bus is the `dbus` feature's, the runtime is its processes'; no HTTP, desktop stack, database, Cedar or MCP SDK, and nothing that links a sandbox library or the scripted sandbox (a dev-dependency only)."
 
 [[reach]]
 crate = "action-host"
@@ -2004,8 +2010,8 @@ why = "The /proc reads (terminal scope, own uid) under an injected root: files o
 
 [[reach]]
 crate = "agent-acp-bin"
-forbid = ["action-router", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp"]
-why = "The bardo-agent-acp process (and `bardo-agent`, the host of an external coding agent): the router and the companion hosted in it, over the bus (zbus, tokio) and nothing else of the desktop. It is wiring over clients: it reaches no router."
+forbid = ["action-router", "reqwest", "hyper", "hyper-util", "rustls", "pipewire", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "rmcp", "sandbox-fake"]
+why = "The bardo-agent-acp process (and `bardo-agent`, the host of an external coding agent): the router and the companion hosted in it, over the bus (zbus, tokio) and nothing else of the desktop. It is wiring over clients: it reaches no router and no scripted sandbox."
 
 [[reach]]
 crate = "agent-models"

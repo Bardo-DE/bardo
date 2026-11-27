@@ -1,6 +1,6 @@
 [package]
 name = "sandbox"
-description = "Run a command or an agent process confined by bubblewrap: read-only root, one writable directory, no network unless given, and a kill that takes the whole sandbox."
+description = "Runs a command or an agent process confined by bubblewrap: read-only root, one writable directory, no network unless given, and a kill that takes the whole sandbox. The Linux side of `sandbox-core`: it starts bubblewrap, applies the limits, and serves the endpoint bridge and the filtering egress proxy."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -13,25 +13,11 @@ publish.workspace = true
 name = "bardo-sandbox-forward"
 path = "src/bin/bardo-sandbox-forward.rs"
 
-[[bin]]
-name = "bardo-sandbox-enter"
-path = "src/bin/bardo-sandbox-enter.rs"
-required-features = ["landlock"]
-
 [dependencies]
 base-path = { path = "../../base/base-path" }
-serde = { workspace = true, features = ["derive"] }
+sandbox-core = { path = "../sandbox-core" }
 thiserror.workspace = true
 tracing.workspace = true
-
-[target.'cfg(target_os = "linux")'.dependencies]
-landlock = { workspace = true, optional = true }
-
-[features]
-# The exec stage's Landlock calls (`enter::apply`, `enter::enter_main` and the `bardo-sandbox-enter`
-# binary). Off by default: a crate that only builds the agent's command line (the plan, the argv,
-# the report line) links no sandbox library; the binary that IS the exec stage turns it on.
-landlock = ["dep:landlock"]
 
 [dev-dependencies]
 tempfile.workspace = true

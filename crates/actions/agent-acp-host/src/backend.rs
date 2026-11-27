@@ -47,7 +47,7 @@ use companion_model::helper::SignInWay;
 use permission_core::PermissionKind;
 use permission_core::ProgramName;
 use provenance::Effect;
-use sandbox::Sandbox;
+use sandbox_core::Sandbox;
 use std::collections::VecDeque;
 
 /// The closed set of seams one agent connection is built from.

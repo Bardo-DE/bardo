@@ -1,7 +1,7 @@
 //! The agent process's bubblewrap arguments, as plain strings.
 
 use base_path::AbsPath;
-use sandbox::{
+use sandbox_core::{
     Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnvVar, INSIDE_FORWARDER, INSIDE_SOCKET,
     Network, NetworkMode, Profile, RESOLVER_FILES, RunSpec, agent_bwrap_args, bwrap_args,
 };
@@ -240,7 +240,7 @@ fn a_command_with_the_host_network_resolves_names_too() {
 #[test]
 fn an_overlay_is_a_read_only_mount_of_another_file_after_the_binds() {
     let binds = vec![Bind::new(abs("/home/u/.gemini"), Access::ReadWrite)];
-    let with = run(AgentNet::None, binds).with_overlay(sandbox::Overlay::new(
+    let with = run(AgentNet::None, binds).with_overlay(sandbox_core::Overlay::new(
         abs("/run/d/settings.json"),
         abs("/home/u/.gemini/antigravity-acp/settings.json"),
     ));
@@ -296,7 +296,7 @@ fn the_terminal_and_the_agent_sandbox_begin_with_the_same_confinement() {
 /// cap must come right before the `--tmpfs` it applies to.
 #[test]
 fn every_scratch_directory_gets_its_own_size_cap() {
-    let profile = Profile::bare().with_tmpfs_size(sandbox::Bytes::mib(8));
+    let profile = Profile::bare().with_tmpfs_size(sandbox_core::Bytes::mib(8));
     let args = agent_bwrap_args(&run(AgentNet::None, Vec::new()), &profile);
     for dir in ["/tmp", "/run"] {
         assert!(has(&args, &["--size", "8388608", "--tmpfs", dir]), "{dir}");
@@ -304,15 +304,12 @@ fn every_scratch_directory_gets_its_own_size_cap() {
 }
 
 /// Why: a protected path (a `.git` directory) must come after the writable workspace bind, or
-/// the workspace would cover it. Steps: a real directory is bound read-only after the workspace,
-/// a missing one and a symlink are skipped, and a path outside the workspace is refused.
+/// the workspace would cover it. Steps: a path the caller keeps is bound read-only after the
+/// workspace, one it drops (missing, or a link: the caller's look at the file system) is not, and
+/// a path outside the workspace is refused.
 #[test]
 fn a_protected_path_is_bound_read_only_after_the_workspace() {
-    let root = tempfile::tempdir().expect("scratch");
-    let cwd = root.path().join("proj");
-    std::fs::create_dir_all(cwd.join(".git")).expect("git dir");
-    std::os::unix::fs::symlink("/etc", cwd.join("link")).expect("link");
-    let cwd_text = cwd.to_str().expect("utf8");
+    let cwd_text = "/work/proj";
     let inside = |name: &str| abs(&format!("{cwd_text}/{name}"));
     let base = AgentRun::new(
         Argv::new("agent", &[]).expect("argv"),
@@ -326,7 +323,14 @@ fn a_protected_path_is_bound_read_only_after_the_workspace() {
         .and_then(|r| r.with_protect(inside("missing")))
         .and_then(|r| r.with_protect(inside("link")))
         .expect("inside the workspace");
-    let args = agent_bwrap_args(&with, &Profile::bare());
+    assert_eq!(with.protect.len(), 3, "step asked: all three are protected");
+    let kept = with.keeping_protected(|p| p.as_str().ends_with("/.git"));
+    assert_eq!(
+        kept.protect,
+        [inside(".git")],
+        "step kept: only the one that fits"
+    );
+    let args = agent_bwrap_args(&kept, &Profile::bare());
     let at = |seq: &[&str]| {
         args.windows(seq.len())
             .position(|w| w.iter().map(String::as_str).eq(seq.iter().copied()))
@@ -347,7 +351,7 @@ fn a_protected_path_is_bound_read_only_after_the_workspace() {
     ] {
         assert_eq!(
             base.clone().with_protect(abs(&bad)).err(),
-            Some(sandbox::ProtectError::OutsideCwd),
+            Some(sandbox_core::ProtectError::OutsideCwd),
             "step refused: {bad}"
         );
     }

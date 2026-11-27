@@ -8,7 +8,7 @@ use crate::config::{Entry, Route};
 use crate::env::{Lent, child_env};
 use crate::spawn::binds;
 use base_path::AbsPath;
-use sandbox::{AgentNet, AgentRun, Argv, EnvVar, NetworkMode};
+use sandbox_core::{AgentNet, AgentRun, Argv, EnvVar, NetworkMode};
 use std::collections::BTreeMap;
 
 /// The variable a terminal's program reads to know what it is talking to.
@@ -49,5 +49,9 @@ pub fn login_run(
     let net = AgentNet::of(NetworkMode::Host, None).ok()?;
     let run = AgentRun::new(invocation, folder.clone(), vars, net);
     let binds = binds(entry, None);
-    Some(binds.into_iter().fold(run, sandbox::AgentRun::with_bind))
+    Some(
+        binds
+            .into_iter()
+            .fold(run, sandbox_core::AgentRun::with_bind),
+    )
 }

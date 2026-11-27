@@ -24,7 +24,7 @@ agent-client-protocol = { workspace = true }
 base-path = { path = "../../base/base-path" }
 base-random = { path = "../../base/base-random" }
 base-xdg = { path = "../../base/base-xdg" }
-sandbox = {path = "../../sandbox/sandbox"}
+sandbox-core = {path = "../../sandbox/sandbox-core"}
 companion-model = {path = "../companion-model"}
 action-client = {path = "../action-client", default-features = false}
 action-core = {path = "../action-core"}
@@ -56,6 +56,7 @@ action-router = {path = "../action-router"}
 agent-session = {path = "../agent-session", features = ["testing"]}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 jsonschema = { workspace = true }
+sandbox-fake = {path = "../../sandbox/sandbox-fake"}
 tempfile = { workspace = true }
 
 [lints]

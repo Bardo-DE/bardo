@@ -89,7 +89,7 @@ mod tests {
         for (fault, expected) in rows {
             assert_eq!(refusal_of_fault(&fault), expected, "{fault:?}");
         }
-        let none = AgentError::NoSandbox(sandbox::CannotSandboxError::NotInstalled);
+        let none = AgentError::NoSandbox(sandbox_core::CannotSandboxError::NotInstalled);
         let said = refusal_of_fault(&none).sentence();
         assert!(!said.contains("bubblewrap"), "{said}");
     }

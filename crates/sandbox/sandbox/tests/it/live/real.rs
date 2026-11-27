@@ -3,8 +3,9 @@
 //! the working directory and never the real home.
 
 use base_path::AbsPath;
-use sandbox::{
-    Argv, BwrapSandbox, ExitReport, Hardening, Launch, LimitPolicy, Limits, Shell, UserSession,
+use sandbox::{BwrapSandbox, UserSession};
+use sandbox_core::{
+    Argv, Bytes, ExitReport, Hardening, Launch, LimitPolicy, Limits, Shell, ShellError, StartError,
 };
 use std::path::Path;
 
@@ -238,7 +239,7 @@ fn a_cwd_that_is_not_a_directory_or_is_too_shallow_cannot_be_sandboxed() {
         assert!(
             matches!(
                 shell.create(&ask),
-                Err(sandbox::ShellError::Start(sandbox::StartError::Cannot(_)))
+                Err(ShellError::Start(StartError::Cannot(_)))
             ),
             "{bad}"
         );
@@ -249,10 +250,9 @@ fn a_cwd_that_is_not_a_directory_or_is_too_shallow_cannot_be_sandboxed() {
 #[test]
 fn the_cpu_time_limit_reaches_the_command() {
     let hardening = Hardening {
-        limits: LimitPolicy::Rlimit(Limits {
-            cpu_seconds: 7,
-            ..Limits::default()
-        }),
+        limits: LimitPolicy::Rlimit(
+            Limits::new(Bytes::gib(2), 256, 7, Bytes::mib(256)).expect("usable limits"),
+        ),
         ..Hardening::default()
     };
     let sandbox = sandbox_with(&hardening);

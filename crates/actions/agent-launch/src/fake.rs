@@ -7,7 +7,7 @@ use account_capability::LoginOutcome;
 use account_capability::{AgentProgram, AgentProtocol, EnvName};
 use account_core::{DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
 use agent_acp_host::fake::ChannelWire;
-use sandbox::{AgentRun, LandlockLevel};
+use sandbox_core::{AgentRun, LandlockLevel};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, MutexGuard};
 

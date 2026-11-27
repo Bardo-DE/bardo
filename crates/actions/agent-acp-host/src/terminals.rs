@@ -22,7 +22,9 @@ use agent_client_protocol::schema::v1::{
 };
 use base_path::AbsPath;
 use permission_core::SandboxState;
-use sandbox::{Argv, ExitReport, Launch, Network, Sandbox, Shell, ShellError, StartError, TermId};
+use sandbox_core::{
+    Argv, ExitReport, Launch, Network, Sandbox, Shell, ShellError, StartError, TermId,
+};
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
 
@@ -126,7 +128,7 @@ impl<S: Sandbox> Terminals<S> {
     /// `base` with the terminal capability on exactly when the sandbox is there. With none, the
     /// capability stays off and an agent is told it has no terminal.
     pub fn capabilities(&self, base: ClientCapabilities) -> ClientCapabilities {
-        base.terminal(self.shell.available() == sandbox::SandboxState::Ready)
+        base.terminal(self.shell.available() == sandbox_core::SandboxState::Ready)
     }
 
     /// Whether `cwd` can be confined, and if not why not: a command that cannot be sandboxed is
@@ -201,7 +203,7 @@ impl<S: Sandbox> Terminals<S> {
         // We never run unsandboxed: a command that cannot be confined is refused here, with the
         // reason.
         let shell_cwd = cwd.clone();
-        if let sandbox::SandboxState::Cannot(why) = self.shell.check(&shell_cwd) {
+        if let sandbox_core::SandboxState::Cannot(why) = self.shell.check(&shell_cwd) {
             return Err(shell_error(&ShellError::Start(StartError::Cannot(why))));
         }
         let launch = Launch::new(argv, shell_cwd).with_env(

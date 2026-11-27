@@ -3,7 +3,8 @@
 //! unreachable bus, a scratch home.
 
 use agent_launch::{BwrapProcs, Proc, Procs, StdioWire};
-use sandbox::{AgentNet, AgentRun, Argv, BwrapSandbox, Detected, EnvVar};
+use sandbox::{BwrapSandbox, Detected};
+use sandbox_core::{AgentNet, AgentRun, Argv, EnvVar};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt};
 
 fn bwrap() -> BwrapSandbox {

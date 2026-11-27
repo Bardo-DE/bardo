@@ -1,8 +1,8 @@
 //! Output is bounded and redacted; the environment is rebuilt from an allowlist.
 
-use sandbox::{Captured, Tail, redact, sandbox_env, shown};
+use sandbox_core::{Captured, Tail, redact, sandbox_env, shown};
 
-fn names(env: &[sandbox::EnvVar]) -> Vec<&str> {
+fn names(env: &[sandbox_core::EnvVar]) -> Vec<&str> {
     env.iter().map(|v| v.name.as_str()).collect()
 }
 

@@ -2,7 +2,7 @@
 //! kernel limits (the level the exec stage reported, or none when there is no exec stage) and
 //! which network the agent was given. Nothing here names how it is done.
 
-use sandbox::{LandlockLevel, NetworkMode};
+use sandbox_core::{LandlockLevel, NetworkMode};
 
 /// The confinement of one agent process.
 #[derive(Debug, Clone, PartialEq, Eq)]

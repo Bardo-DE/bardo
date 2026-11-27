@@ -136,8 +136,8 @@ pub enum StartError {
     Spawn(String),
 }
 
-/// Something that confines commands. Closed set of implementations: `BwrapSandbox` and
-/// `FakeSandbox`.
+/// Something that confines commands: `BwrapSandbox` (crate `sandbox`) runs them under bubblewrap,
+/// `FakeSandbox` (crate `sandbox-fake`) answers from a script for tests.
 pub trait Sandbox: Send + std::fmt::Debug {
     /// What it runs.
     type Job: Job;

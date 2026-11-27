@@ -60,7 +60,9 @@ settings-store-fs = { path = "../../settings/settings-store-fs" }
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 base-path = { path = "../../base/base-path" }
 base-clock = { path = "../../base/base-clock" }
-sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
+sandbox = {path = "../../sandbox/sandbox"}
+sandbox-core = {path = "../../sandbox/sandbox-core"}
+sandbox-enter = {path = "../../sandbox/sandbox-enter"}
 companion-tasks = {path = "../companion-tasks"}
 futures-util = { workspace = true, features = ["std"] }
 account-core = {path = "../../accounts/account-core"}

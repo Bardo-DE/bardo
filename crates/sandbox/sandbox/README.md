@@ -4,6 +4,19 @@ Run a command, or a long-running agent process, confined by
 [bubblewrap](https://github.com/containers/bubblewrap). Killing a job kills the whole sandbox,
 not just the first process in it.
 
+Four crates, in `crates/sandbox/`:
+
+- `sandbox-core`: everything that is only data and decisions, with no process, file or socket:
+  the bubblewrap command lines, the network modes, the limits (checked once, when made), the
+  egress policy, the exec stage's plan, the syscall filter's bytes, redaction, and `Shell` with the
+  `Sandbox` and `Job` seam.
+- `sandbox` (this crate): the Linux side. Starts bubblewrap, applies the limits, kills the whole
+  sandbox, and serves the endpoint bridge, the forwarder and the filtering proxy.
+- `sandbox-enter`: the Landlock exec stage that runs first inside an agent's sandbox. The only
+  crate that links the Landlock library.
+- `sandbox-fake`: for tests only, a `Sandbox` that answers from a script. Nothing that ships
+  depends on it.
+
 Linux only. It needs the `bwrap` program installed and a kernel that allows unprivileged user
 namespaces. bubblewrap runs as a separate process and is never linked.
 
@@ -19,7 +32,9 @@ namespaces. bubblewrap runs as a separate process and is never linked.
 - a cleared environment rebuilt from an allowlist, with a fixed `PATH` and `HOME`
 - its own session, no capabilities, and death with its parent
 - resource limits (`Hardening::limits`): by default memory, process count and CPU seconds in a
-  transient systemd user scope, and a size cap on every scratch directory. If the limits cannot
+  transient systemd user scope, and a size cap on every scratch directory. Limits are checked
+  once, when they are made (`Limits::new`, or read from a file), so an unusable number never
+  reaches a sandbox. If the limits cannot
   be applied the sandbox is not created (`CannotSandbox::LimitsUnavailable`); running without
   them needs an explicit `LimitPolicy::Unlimited(AcceptNoLimits)`. `LimitPolicy::Rlimit` is the
   weaker choice for hosts with no user manager: CPU seconds and address space per process, and
@@ -38,8 +53,8 @@ refused, a bad working directory), `Shell` refuses and says why.
 
 ## Pieces
 
-- `Sandbox` and `Job`: the seam. `BwrapSandbox` is the real one, `FakeSandbox` (in `fake`)
-  records what it was asked and answers from a script, for tests.
+- `Sandbox` and `Job` (`sandbox-core`): the seam. `BwrapSandbox` is the real one, `FakeSandbox`
+  (`sandbox-fake`) records what it was asked and answers from a script, for tests.
 - `Detected`: the startup probe, bubblewrap or the reason there is none.
 - `Shell`: a table of running terminals over any sandbox: create, output, wait, kill, release.
 - `redact`, `Tail`, `shown`: output is bounded, valid UTF-8, and secret-looking values are masked.
@@ -55,14 +70,14 @@ refused, a bad working directory), `Shell` refuses and says why.
   unspecified unless that exact address is listed, and connects to the address it checked.
   `AgentRun::new` sets `HTTPS_PROXY`, `HTTP_PROXY` (both cases) and an empty `NO_PROXY`. It
   filters by name, not content: an allowed host still receives whatever the agent sends it.
-- `enter` and `bardo-sandbox-enter`: an optional exec stage (`AgentRun::with_landlock`) that bubblewrap
+- `sandbox-enter` and `bardo-sandbox-enter`: an optional exec stage (`AgentRun::with_landlock`) that bubblewrap
   runs first. It applies a Landlock ruleset to itself (read and execute where the root is read-only,
   write only in the workspace and the private scratch places, TCP connect only to the forwarder's
   port or nowhere), prints `bardo-sandbox-enter: landlock=full|files-only|none` on standard error
   (`LandlockLevel::from_report_line` reads it), and execs the agent. On a kernel without Landlock
   or without its network rules it still runs the agent, and says so in that line.
-  The Landlock calls (`enter::apply`, `enter::enter_main`, the binary) are behind the `landlock`
-  feature, off by default: a crate that only builds the command line links no sandbox library.
+  The Landlock calls (`sandbox_enter::apply`, `sandbox_enter::enter_main`, the binary) are their
+  own crate: a crate that only builds the command line links no Landlock library.
 
 ## Ubuntu 24.04 and later: AppArmor
 

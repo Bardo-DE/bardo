@@ -4,7 +4,7 @@
 
 use base_path::AbsPath;
 use sandbox::forward::{Bridge, Loopback};
-use sandbox::{AgentNet, AgentRun, Argv, EndpointBind, EnvVar, Profile, agent_bwrap_args};
+use sandbox_core::{AgentNet, AgentRun, Argv, EndpointBind, EnvVar, Profile, agent_bwrap_args};
 use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::path::Path;

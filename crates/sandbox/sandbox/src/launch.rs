@@ -11,10 +11,8 @@
 //! them once and reading them back; where that does not work, `resolve` is an error and no
 //! sandbox exists.
 
-use crate::harden::{LimitPolicy, Limits};
-use crate::sandbox::EnvVar;
-use crate::state::CannotSandboxError;
 use base_path::AbsPath;
+use sandbox_core::{CannotSandboxError, EnvVar, LimitPolicy, Limits};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -167,7 +165,7 @@ fn scope_applies(program: &Path, session: &UserSession, limits: &Limits) -> bool
         .stdin(Stdio::null())
         .stderr(Stdio::null())
         .output();
-    let want = format!("{} {}", limits.memory.0, limits.pids);
+    let want = format!("{} {}", limits.memory().0, limits.pids());
     out.is_ok_and(|o| o.status.success() && String::from_utf8_lossy(&o.stdout).trim() == want)
 }
 
@@ -187,9 +185,9 @@ fn scope_command(program: &Path, session: &UserSession, limits: &Limits) -> Comm
             "--collect",
             "--expand-environment=no",
         ])
-        .arg(format!("--property=MemoryMax={}", limits.memory.0))
+        .arg(format!("--property=MemoryMax={}", limits.memory().0))
         .arg("--property=MemorySwapMax=0")
-        .arg(format!("--property=TasksMax={}", limits.pids))
+        .arg(format!("--property=TasksMax={}", limits.pids()))
         .arg("--")
         .env_clear()
         .env("PATH", BASE_PATH)
@@ -207,9 +205,6 @@ impl Launcher {
         match policy {
             LimitPolicy::Unlimited(_) => Ok(Self { how: How::Nothing }),
             LimitPolicy::Rlimit(limits) => {
-                if !limits.usable() {
-                    return Err(CannotSandboxError::BadLimits);
-                }
                 if !Path::new(SH).is_file() {
                     return Err(CannotSandboxError::LimitsUnavailable);
                 }
@@ -218,9 +213,6 @@ impl Launcher {
                 })
             }
             LimitPolicy::Cgroup(limits) => {
-                if !limits.usable() {
-                    return Err(CannotSandboxError::BadLimits);
-                }
                 let program =
                     find(path, "systemd-run").ok_or(CannotSandboxError::LimitsUnavailable)?;
                 if !Path::new(SH).is_file() || !scope_applies(&program, session, limits) {
@@ -256,10 +248,10 @@ impl Launcher {
     fn rlimit_words(&self) -> (String, String) {
         let none = || "-".to_owned();
         match &self.how {
-            How::Scope { limits, .. } => (limits.cpu_seconds.to_string(), none()),
+            How::Scope { limits, .. } => (limits.cpu_seconds().to_string(), none()),
             How::Rlimit(limits) => (
-                limits.cpu_seconds.to_string(),
-                (limits.memory.0 / 1024).to_string(),
+                limits.cpu_seconds().to_string(),
+                (limits.memory().0 / 1024).to_string(),
             ),
             How::Nothing => (none(), none()),
         }
@@ -323,7 +315,7 @@ impl Launcher {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::harden::{AcceptNoLimits, Bytes};
+    use sandbox_core::AcceptNoLimits;
 
     fn words(command: &Command) -> Vec<String> {
         command
@@ -426,30 +418,6 @@ mod tests {
         assert_eq!(w[at + 5], "none", "step scope: no filter to feed");
         assert_eq!(w[at + 6], "900", "step scope: cpu seconds still set");
         assert_eq!(w[at + 7], "-", "step scope: no address-space cap");
-    }
-
-    #[test]
-    fn limits_that_are_not_usable_fail_closed_before_anything_runs() {
-        let zero = |edit: fn(&mut Limits)| {
-            let mut l = Limits::default();
-            edit(&mut l);
-            l
-        };
-        let bad = [
-            zero(|l| l.pids = 0),
-            zero(|l| l.cpu_seconds = 0),
-            zero(|l| l.memory = Bytes(4097)),
-            zero(|l| l.tmpfs = Bytes(0)),
-        ];
-        for limits in bad {
-            for policy in [
-                LimitPolicy::Cgroup(limits.clone()),
-                LimitPolicy::Rlimit(limits.clone()),
-            ] {
-                let got = Launcher::resolve("/usr/bin", &policy, &UserSession::default());
-                assert_eq!(got.err(), Some(CannotSandboxError::BadLimits), "{policy:?}");
-            }
-        }
     }
 
     #[test]

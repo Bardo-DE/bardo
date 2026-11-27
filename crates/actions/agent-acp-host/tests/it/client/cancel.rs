@@ -13,8 +13,8 @@ use agent_acp_host::{AcpBackend, EdgeError, Parts, Performer, Seams, ToolsOffer}
 use agent_session::{SessionBackend, StartSession};
 use futures_util::future::pending;
 use provenance::SessionId;
-use sandbox::Network;
-use sandbox::fake::FakeSandbox;
+use sandbox_core::Network;
+use sandbox_fake::FakeSandbox;
 use std::sync::{Arc, Mutex, MutexGuard};
 use tokio::sync::Notify;
 

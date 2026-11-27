@@ -10,7 +10,8 @@ use action_client::DbusTransport;
 use agent_acp_host::{AcpBackend, EdgeMenu, IntentsCourt, OsFiles, Parts, Performer, ToolsOffer};
 use agent_registry::dirs::AgentsDir;
 use permission_core::ProgramName;
-use sandbox::{BwrapSandbox, Detected, NetworkMode};
+use sandbox::{BwrapSandbox, Detected};
+use sandbox_core::NetworkMode;
 
 use action_dbus::CONFIRM_PATH;
 use action_host::EditorDesk;
@@ -68,7 +69,7 @@ struct Placeholder {
 pub enum LiveError {
     /// No bubblewrap: no agent is started unconfined.
     #[error("no sandbox (bubblewrap) here ({0}): no agent is started unconfined")]
-    NoSandbox(sandbox::CannotSandboxError),
+    NoSandbox(sandbox_core::CannotSandboxError),
     /// The pseudo-app's manifest does not parse.
     #[error("the agent manifest: {0}")]
     Manifest(#[from] action_manifest::ManifestFileError),

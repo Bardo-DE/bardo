@@ -1,0 +1,20 @@
+[package]
+name = "sandbox-core"
+description = "What a sandbox is told, with nothing that runs: the bubblewrap command lines, the network modes, resource limits checked once, the egress policy, the exec stage's plan, the syscall filter's bytes, output redaction and the shell tool's terminal table over the `Sandbox` seam."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-path = { path = "../../base/base-path" }
+serde = { workspace = true, features = ["derive"] }
+thiserror.workspace = true
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

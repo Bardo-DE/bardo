@@ -163,7 +163,8 @@ hickory-resolver = "0.26"
 keyring-core = "1"
 apple-native-keyring-store = { version = "1", features = ["keychain"] }
 windows-native-keyring-store = "1"
-# memoryd (the memory service): the Landlock sandbox around the daemon (ask 115); MIT OR Apache-2.0.
+# memoryd (the memory service): the Landlock sandbox around the daemon (ask 115); sandbox-enter, the exec stage
+# inside an agent's sandbox; MIT OR Apache-2.0.
 landlock = "0.4"
 # recall-fastembed only; excluded from the gate.
 fastembed = "7.1"

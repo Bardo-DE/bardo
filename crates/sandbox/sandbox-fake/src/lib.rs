@@ -1,14 +1,41 @@
 //! `FakeSandbox`: records what it was asked to run and answers from a script. No process, no
 //! clock. A test hands the sandbox to the shell tool and keeps a `Seen` handle to look at what
-//! reached it.
+//! reached it. For tests only: nothing that ships depends on this crate.
+//!
+//! A whole run, needing no `bwrap` and no privileges:
+//!
+//! ```
+//! use base_path::AbsPath;
+//! use sandbox_core::{Argv, ExitReport, Launch, Shell};
+//! use sandbox_fake::{FakeSandbox, Script};
+//!
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! let (sandbox, seen) = FakeSandbox::ready(vec![Script::done("hello\n", 0)]);
+//! let mut shell = Shell::new(sandbox);
+//!
+//! let argv = Argv::new("echo", &["hello".to_owned()]).ok_or("no program")?;
+//! let cwd = AbsPath::parse("/home/u/project")?;
+//! let id = shell.create(&Launch::new(argv, cwd))?;
+//!
+//! assert_eq!(shell.wait(id)?, ExitReport::Code(0));
+//! assert_eq!(shell.output(id)?.shown.text, "hello\n");
+//! assert_eq!(seen.started()[0].argv.line(), "echo hello");
+//! shell.release(id)?;
+//! # Ok(())
+//! # }
+//! ```
 
-use crate::bwrap_job::locked;
-use crate::output::Tail;
-use crate::sandbox::{Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, StartError};
-use crate::{CannotSandboxError, SandboxState};
 use base_path::AbsPath;
+use sandbox_core::{
+    CannotSandboxError, Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, SandboxState,
+    StartError, Tail,
+};
 use std::collections::VecDeque;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+
+fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
+    m.lock().unwrap_or_else(PoisonError::into_inner)
+}
 
 /// What the next job does.
 #[derive(Debug, Clone, PartialEq, Eq)]

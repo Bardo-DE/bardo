@@ -18,7 +18,7 @@ use permission_core::{
     FILES_READ, FILES_SENSITIVE, FILES_WRITE, PermissionKind, REPORTED, TERMINAL_RUN,
 };
 use provenance::{Integrity, Label, Labelled, Source};
-use sandbox::Sandbox;
+use sandbox_core::Sandbox;
 use std::collections::BTreeSet;
 
 fn failed(why: &str) -> AppRefusal {

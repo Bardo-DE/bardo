@@ -109,7 +109,7 @@ pub(super) fn say_agent(agent: &Agent) {
             "agent-live: --agent acp: {} runs in a sandbox with network {}{}",
             spec.program,
             crate::acp::spec::network_word(spec.network),
-            if spec.network == sandbox::NetworkMode::Host {
+            if spec.network == sandbox_core::NetworkMode::Host {
                 " (its prompts go to its own provider)"
             } else {
                 ""

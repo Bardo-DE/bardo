@@ -5,7 +5,7 @@
 //! `bwrap` has no such profile, so it fails exactly as it does when namespaces are off, and the
 //! remedy is different. This module only reads the switch; it never changes it.
 
-use crate::CannotSandboxError;
+use sandbox_core::CannotSandboxError;
 use std::path::Path;
 
 /// Where the kernel exposes the switch.

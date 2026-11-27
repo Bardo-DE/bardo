@@ -3,7 +3,7 @@
 
 use agent_launch::Confinement;
 use agent_launch::procs::level_in;
-use sandbox::{LandlockLevel, NetworkMode};
+use sandbox_core::{LandlockLevel, NetworkMode};
 
 const MODES: [NetworkMode; 4] = [
     NetworkMode::None,

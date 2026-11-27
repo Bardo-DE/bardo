@@ -1321,6 +1321,7 @@ dependencies = [
  "permission-core",
  "provenance",
  "sandbox",
+ "sandbox-core",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
@@ -1681,6 +1682,8 @@ dependencies = [
  "permission-core",
  "provenance",
  "sandbox",
+ "sandbox-core",
+ "sandbox-enter",
  "serde_json",
  "settings-store-fs",
  "tempfile",
@@ -1741,7 +1744,8 @@ dependencies = [
  "jsonschema",
  "permission-core",
  "provenance",
- "sandbox",
+ "sandbox-core",
+ "sandbox-fake",
  "serde",
  "serde_json",
  "tempfile",
@@ -1868,6 +1872,8 @@ dependencies = [
  "permission-core",
  "provenance",
  "sandbox",
+ "sandbox-core",
+ "sandbox-fake",
  "serde",
  "serde_json",
  "tempfile",
@@ -13393,11 +13399,37 @@ name = "sandbox"
 version = "0.1.0"
 dependencies = [
  "base-path",
- "landlock",
- "serde",
+ "sandbox-core",
  "tempfile",
  "thiserror 2.0.21",
  "tracing",
+]
+
+[[package]]
+name = "sandbox-core"
+version = "0.1.0"
+dependencies = [
+ "base-path",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "sandbox-enter"
+version = "0.1.0"
+dependencies = [
+ "base-path",
+ "landlock",
+ "sandbox-core",
+]
+
+[[package]]
+name = "sandbox-fake"
+version = "0.1.0"
+dependencies = [
+ "base-path",
+ "sandbox-core",
 ]
 
 [[package]]

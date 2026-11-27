@@ -5,5 +5,5 @@
 //! error, and starts the agent. The host starts it from beside itself (`agent::sibling`).
 
 fn main() -> std::process::ExitCode {
-    sandbox::enter::enter_main("bardo-agent-net-enter")
+    sandbox_enter::enter_main("bardo-agent-net-enter")
 }

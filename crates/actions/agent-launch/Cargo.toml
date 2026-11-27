@@ -33,6 +33,7 @@ permission-core = {path = "../permission-core"}
 action-store = {path = "../action-store"}
 base-path = { path = "../../base/base-path" }
 sandbox = {path = "../../sandbox/sandbox"}
+sandbox-core = {path = "../../sandbox/sandbox-core"}
 fnv = { workspace = true }
 account-client = {optional = true, path = "../../accounts/account-client"}
 account-client-dbus = {optional = true, path = "../../accounts/account-client-dbus"}
@@ -58,6 +59,7 @@ tempfile = { workspace = true }
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 action-settings = {path = "../action-settings"}
 agent-session = {path = "../agent-session"}
+sandbox-fake = {path = "../../sandbox/sandbox-fake"}
 
 [lints]
 workspace = true

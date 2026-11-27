@@ -10,7 +10,8 @@ use action_accept::world::ModelSource;
 use action_live::acp::{AcpSpec, CredentialsSource, agent_cassette, run_flow_acp};
 use action_live::flows::{Flow, Kind};
 use base_testkit::TestEnv;
-use sandbox::{Detected, NetworkMode};
+use sandbox::Detected;
+use sandbox_core::NetworkMode;
 use std::path::Path;
 use std::time::Duration;
 
