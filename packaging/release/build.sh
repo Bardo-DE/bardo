@@ -37,7 +37,7 @@ SATELLITE_URL=https://github.com/Supreeeme/xwayland-satellite
 SATELLITE_TAG=v0.8.3
 SATELLITE_REV=b83eab900644e4c7c77982ce3d44cb490f0c5e1d
 # The Rust it is built with: the channel the tree pins (the workflow installs it); satellite itself needs 1.85 or later.
-SATELLITE_RUST=1.98.1
+SATELLITE_RUST=1.100.0
 
 version="" out="$ROOT/build/release" tree="$(tree_root)" only=""
 usage() { sed -n '2,/^set -euo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }

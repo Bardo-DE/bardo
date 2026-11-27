@@ -144,10 +144,6 @@ fn at_a_fractional_scale_the_snap_is_idempotent_and_asks_for_nothing() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn at_a_whole_scale_the_snap_touches_nothing() {
     for scale in [100, 200] {
         let calls = snap_twice(scale);

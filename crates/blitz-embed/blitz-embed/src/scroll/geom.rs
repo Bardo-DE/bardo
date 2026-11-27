@@ -192,10 +192,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn direction_and_clamp() {
         assert_eq!(Dir::of(3.0), Some(Dir::Pos));
         assert_eq!(Dir::of(-0.1), Some(Dir::Neg));

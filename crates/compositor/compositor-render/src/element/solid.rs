@@ -147,10 +147,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn quantised_colours_are_exact_steps_of_one_255th() {
         let colour = Rgba8 {
             r: 0,

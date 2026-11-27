@@ -33,10 +33,6 @@ fn landed(intent: Intent, lead: Motion) -> PadFrame {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_scroll_lands_two_contacts_20_mm_apart_opposite_the_motion() {
     let (xs, y) = contacts(&landed(DOWN, lead(0.0, 1.0)));
     assert_eq!(xs, [40.0, 60.0]);
@@ -50,10 +46,6 @@ fn a_scroll_lands_two_contacts_20_mm_apart_opposite_the_motion() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_swipe_lands_four_contacts_12_mm_apart_opposite_the_motion() {
     let (xs, y) = contacts(&landed(SWIPE, lead(1.0, 0.3)));
     assert_eq!(xs, [10.0, 22.0, 34.0, 46.0]);
@@ -102,10 +94,6 @@ fn a_scroll_follows_one_to_one_and_a_stroke_fits_without_landing_again() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_scroll_out_of_room_lands_again_on_the_opposite_side() {
     let (pad, _) = Pad::Up.land(DOWN, lead(0.0, 1.0), Mono(0));
     let (_, frames) = pad.moved(DOWN, lead(0.0, 61.0), Mono::from_millis(300));
@@ -176,10 +164,6 @@ fn a_swipe_follows_x_only_and_stops_at_the_edge() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_swipe_halves_a_lone_double_step_and_keeps_its_whole_travel() {
     // The Magic Mouse's steady 2 mm steps with one 4 mm step among them.
     let steps = [2.0, 2.0, 4.0, 2.0, 2.0];

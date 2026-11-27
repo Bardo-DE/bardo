@@ -67,20 +67,12 @@ fn pulled(height: u32) -> (Harness, Point, f64) {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_sheet_whose_content_fits_does_not_move_under_a_drag() {
     let (_harness, _, held) = pulled(200);
     assert_eq!(held, 0.0);
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_long_sheet_dragged_past_its_top_springs_back_when_the_fingers_lift() {
     let (mut harness, at, held) = pulled(2000);
     assert!(held < -20.0, "the drag stretches it: {held}");

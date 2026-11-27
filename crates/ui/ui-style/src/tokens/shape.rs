@@ -191,10 +191,6 @@ mod tests {
     use ui_core::geometry::units::Px;
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_group_follows_the_card_and_a_menu_item_is_concentric_in_its_menu() {
         assert_eq!(Radius::Group.value(), Radius::Card.value());
         let px = |radius: Radius| -> f32 {
@@ -216,10 +212,6 @@ mod tests {
     /// for the menu and the command palette alike (the palette's card is `--r-panel`, its list
     /// inset `--shell-palette-inset`, its rows the highlight radius `--r-shell-highlight`).
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_menu_row_and_a_palette_row_are_concentric_in_their_containers() {
         let px = |radius: Radius| -> f32 {
             radius

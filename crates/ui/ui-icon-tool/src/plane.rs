@@ -159,10 +159,6 @@ mod tests {
         clippy::cast_precision_loss,
         reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
     )]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn shift_moves_and_zero_fills() {
         let p = Plane::from_fn(4, 4, |x, _| x as f32);
         let s = p.shifted(1, 0);

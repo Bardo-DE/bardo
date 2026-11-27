@@ -43,10 +43,6 @@ fn start(edge: PinEdge) -> Harness {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn the_bar_lies_over_the_edge_it_is_pinned_to_and_the_scroller_keeps_the_whole_box() {
     let top = start(PinEdge::Top);
     let frame = top.rect(".frame").expect("frame");

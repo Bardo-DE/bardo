@@ -26,10 +26,6 @@ fn measured(open: &mut launcher_harness::Open) {
     clippy::cast_possible_truncation,
     reason = "a card is at most a few hundred pixels tall, so it fits an i32"
 )]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn card_height(open: &launcher_harness::Open) -> i32 {
     let rect = open
         .harness

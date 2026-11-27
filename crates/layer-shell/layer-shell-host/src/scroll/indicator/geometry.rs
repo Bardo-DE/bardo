@@ -152,10 +152,6 @@ pub(super) mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn the_thumb_shortens_to_75_percent_at_a_quarter_stretch() {
         let s = ScrollbarSettings::default();
         let length = 1000.0 - 4.0;

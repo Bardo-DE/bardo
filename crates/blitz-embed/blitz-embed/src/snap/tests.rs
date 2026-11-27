@@ -4,10 +4,6 @@ use super::grid::DeviceGrid;
 const GRID: DeviceGrid = DeviceGrid(1.5);
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_coordinate_lands_on_a_device_pixel() {
     for (logical, device) in [(11.0, 17.0), (10.0, 15.0), (0.4, 1.0), (0.3, 0.0)] {
         assert_eq!(GRID.snap(logical) * 1.5, device, "{logical}");
@@ -15,10 +11,6 @@ fn a_coordinate_lands_on_a_device_pixel() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_border_is_whole_device_pixels_and_never_vanishes() {
     // Stylo's snapped 1 px border at 1.5 (40 of 60 app units), and one just under it.
     for (width, device) in [(2.0 / 3.0, 1.0), (0.66, 1.0), (1.0, 2.0), (0.1, 1.0)] {

@@ -59,10 +59,6 @@ mod tests {
     use super::*;
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_step_climbs_the_ladder_and_holds_at_its_ends() {
         // (from, step, to)
         let cases: &[(f32, PageZoom, f32)] = &[

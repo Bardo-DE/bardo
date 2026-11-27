@@ -63,10 +63,6 @@ mod tests {
     use compositor_core::geometry::{LogicalPoint, LogicalSize};
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_tucked_pose_keeps_its_centre() {
         let rect = LogicalRect::new(
             LogicalPoint { x: 100, y: 50 },

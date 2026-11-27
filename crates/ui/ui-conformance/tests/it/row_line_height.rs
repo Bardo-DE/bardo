@@ -52,10 +52,6 @@ fn rect(harness: &Harness, selector: &str) -> (f32, f32, f32, f32) {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_flush_rows_lines_are_exactly_the_asked_height_and_stacked_at_the_left_edge() {
     let harness = start();
     let row = rect(&harness, ".flush .ds-row");

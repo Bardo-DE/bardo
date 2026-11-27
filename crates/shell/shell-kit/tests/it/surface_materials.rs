@@ -268,10 +268,6 @@ fn SlimMenu() -> Element {
 /// A Slim menu's rows are the shell type scale's menu row (28 px) and its separator row is the
 /// hairline with 5 px above and below (11 px).
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn text_menu_rows_are_the_shell_menu_row() {
     let mut harness = Harness::new(
         SlimMenu,

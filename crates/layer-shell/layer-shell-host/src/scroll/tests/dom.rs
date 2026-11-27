@@ -156,10 +156,6 @@ const OVER_MENU: PointerPos = PointerPos { x: 150.0, y: 500.0 };
 const OVER_PAGE: PointerPos = PointerPos { x: 350.0, y: 500.0 };
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn raw_offsets_survive_blitz_resolve_even_out_of_range() {
     let mut bench = Bench::new();
     let list = bench.scroller("list");
@@ -199,10 +195,6 @@ fn only_an_opted_in_container_is_elastic() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_8_the_menu_list_never_stretches() {
     let mut bench = Bench::new();
     let menu = bench.scroller("menu");
@@ -232,10 +224,6 @@ fn item_9a_an_inner_list_at_its_bottom_lets_the_page_scroll() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_9b_an_inner_list_midway_takes_the_whole_gesture_and_stretches() {
     let mut bench = Bench::new();
     let list = bench.scroller("list");
@@ -261,10 +249,6 @@ fn item_9b_an_inner_list_midway_takes_the_whole_gesture_and_stretches() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_10_the_thumb_shows_on_the_change_and_fades_after_740_ms() {
     let mut bench = Bench::new();
     bench.pad(15.0, false, OVER_LIST);
@@ -291,10 +275,6 @@ fn item_10_the_thumb_shows_on_the_change_and_fades_after_740_ms() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_11_keys_in_a_text_input_do_not_scroll() {
     let mut bench = Bench::new();
     let field = bench.doc.base().get_element_by_id("field").expect("input");
@@ -316,10 +296,6 @@ fn item_11_keys_in_a_text_input_do_not_scroll() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_11_page_down_over_the_page_scrolls_it() {
     let mut bench = Bench::new();
     let used = {
@@ -342,10 +318,6 @@ fn item_11_page_down_over_the_page_scrolls_it() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_15_natural_mouse_gestures_content_follows_the_finger() {
     for (natural, want_down) in [
         (crate::NaturalScroll::Natural, false),
@@ -400,10 +372,6 @@ fn a_capturing_element_gets_the_raw_wheel() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_wheel_detent_over_the_list_moves_it_60_px() {
     let mut bench = Bench::new();
     let list = bench.scroller("list");
@@ -484,10 +452,6 @@ impl Bench {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_focused_element_that_handles_its_own_keys_keeps_the_arrows() {
     use ScrollAxis::{X, Y};
     // The focused element, the arrows pressed on it, the scroller that must stay at 0 and the
@@ -530,10 +494,6 @@ fn a_focused_element_that_handles_its_own_keys_keeps_the_arrows() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_plain_scroller_scrolls_with_focus_on_it_or_on_nothing() {
     // Nothing focused (the body): the scroller under the pointer.
     let mut bench = keyed_bench();
@@ -565,10 +525,6 @@ fn a_plain_scroller_scrolls_with_focus_on_it_or_on_nothing() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_capturing_element_that_is_not_a_scroller_gets_the_wheel_as_before() {
     use smithay_client_toolkit::seat::pointer::AxisScroll;
     let mut bench = keyed_bench();

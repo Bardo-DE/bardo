@@ -161,10 +161,6 @@ fn strip_box(harness: &Harness) -> (f32, f32, f32, f32) {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn the_strip_is_the_designs_box_in_a_74px_row() {
     let harness = settled(Visible);
     assert_eq!(rect(&harness, ".ds-row").size.height.0, 74.0);

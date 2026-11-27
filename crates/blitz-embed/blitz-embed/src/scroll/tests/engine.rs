@@ -76,10 +76,6 @@ fn item_3_a_second_flick_boosts_only_in_the_same_direction() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_4_touch_stops_the_glide_where_it_is() {
     let mut sim = Sim::new(1000.0, 100_000.0, Elastic::Rigid);
     sim.began(Dir::Pos, AtEdge::Inside);
@@ -105,10 +101,6 @@ fn stretch(over: f64) -> f64 {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_5_the_stretch_under_the_fingers() {
     let cases = [
         ("bounded 100", 100.0, 52.1),
@@ -138,10 +130,6 @@ fn item_5_the_stretch_under_the_fingers() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_6_snap_back_from_100_px() {
     let mut sim = Sim::new(50.0, 5000.0, Elastic::Elastic);
     sim.began(Dir::Neg, AtEdge::Inside);
@@ -169,10 +157,6 @@ fn item_6_snap_back_from_100_px() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_7_a_glide_into_the_edge_bounces_18_px() {
     let mut sim = Sim::new(5000.0, 5000.0, Elastic::Elastic);
     sim.engine = Engine::Momentum(Flight {
@@ -194,10 +178,6 @@ fn item_7_a_glide_into_the_edge_bounces_18_px() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_7_a_real_flick_meets_the_edge_at_its_glide_speed() {
     // Released at 3000 px/s with just enough room to slow to 2000 px/s by the edge.
     let glide = Physics::from_settings(&ScrollSettings::default()).glide;
@@ -217,10 +197,6 @@ fn item_7_a_real_flick_meets_the_edge_at_its_glide_speed() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_8_a_rigid_scroller_never_stretches() {
     let mut sim = Sim::new(0.0, 800.0, Elastic::Rigid);
     sim.began(Dir::Neg, AtEdge::AtEdge);
@@ -234,10 +210,6 @@ fn item_8_a_rigid_scroller_never_stretches() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_11_a_held_arrow_ramps_then_springs() {
     let mut sim = Sim::new(0.0, 100_000.0, Elastic::Rigid);
     sim.feed(ScrollIn::Hold {
@@ -275,10 +247,6 @@ fn item_11_a_held_arrow_ramps_then_springs() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_wheel_detent_at_the_edge_never_stretches() {
     let mut edge = Sim::new(4990.0, 5000.0, Elastic::Elastic);
     edge.feed(ScrollIn::Step {
@@ -291,10 +259,6 @@ fn a_wheel_detent_at_the_edge_never_stretches() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn item_14_the_engine_is_still_once_settled() {
     let mut sim = Sim::new(1000.0, 100_000.0, Elastic::Rigid);
     sim.began(Dir::Pos, AtEdge::Inside);
@@ -378,10 +342,6 @@ fn the_systems_momentum_is_applied_one_to_one_and_the_engine_adds_no_glide() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_flick_the_system_sends_no_momentum_for_glides_after_the_grace() {
     let mut sim = Sim::new(1000.0, 100_000.0, Elastic::Rigid);
     sim.began(Dir::Pos, AtEdge::Inside);
@@ -413,10 +373,6 @@ fn a_slow_lift_ends_at_once_without_waiting() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn the_systems_momentum_stretches_at_the_end_and_snaps_back() {
     let mut sim = Sim::with(50.0, 5000.0, Elastic::Elastic, ScrollSettings::default());
     sim.began(Dir::Neg, AtEdge::Inside);
@@ -450,10 +406,6 @@ fn a_new_touch_during_the_grace_starts_a_fresh_gesture() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_wheel_detent_eases_no_longer_than_the_wheel_smooth_cap() {
     let mac = ScrollSettings::macos();
     let mut sim = Sim::with(0.0, 100_000.0, Elastic::Rigid, mac);

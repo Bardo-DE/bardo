@@ -64,10 +64,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn use_scroll_follows_what_the_host_publishes() {
         let (ping, _source) = calloop::ping::make_ping().expect("eventfd ping");
         let board = ScrollBoard::default();

@@ -252,10 +252,6 @@ fn a_swipe_that_pauses_is_still_one_swipe() {
     reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
 )]
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_click_during_a_swipe_returns_it_to_its_space_before_it_lifts() {
     let click = |i: usize| {
         if i >= 30 {

@@ -35,10 +35,6 @@ mod tests {
     use std::time::Duration;
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn seconds_count_from_the_origin_and_never_go_negative() {
         let origin = Instant::now();
         let clock = HostClock::starting_at(origin);

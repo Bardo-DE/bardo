@@ -11,7 +11,7 @@
 #           build    tools plus compilers and the development packages the components link against
 #           runtime  tools plus the libraries the built programs load, for the smoke jobs
 #
-# Rust itself comes from rustup (the repos pin 1.98.1; no distro ships it), and Zig from release/install-zig.sh.
+# Rust itself comes from rustup (the repos pin 1.100.0; no distro ships it), and Zig from release/install-zig.sh.
 # Exit: 0 printed, 2 bad usage.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -102,10 +102,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn speed_and_travel_agree_and_the_glide_stops() {
         let glide = glide();
         let (v0, t, dt) = (2000.0, 0.3, 1e-4);

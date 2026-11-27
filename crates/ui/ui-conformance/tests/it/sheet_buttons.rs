@@ -55,10 +55,6 @@ fn page() -> Harness {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_regular_danger_is_as_tall_as_the_secondary_beside_it() {
     let harness = page();
     let height = |selector: &str| {

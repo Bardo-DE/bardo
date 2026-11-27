@@ -308,10 +308,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_turn_scales_by_its_gain_and_a_touchpad_slide_does_not() {
         let wheel = input(WheelDelta::Lines { x: 0.0, y: -2.0 }, GesturePhase::Changed);
         assert_eq!(wheel.turned(), 2.0);

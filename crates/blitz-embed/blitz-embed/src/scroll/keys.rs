@@ -207,10 +207,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_held_line_reaches_1000_px_s_in_200_ms() {
         assert_eq!(held_speed(LINE_PX, 0.1), 500.0);
         assert_eq!(held_speed(LINE_PX, 0.2), 1000.0);

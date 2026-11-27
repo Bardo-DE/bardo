@@ -43,7 +43,7 @@
 # the restart rule and /usr/lib/bardo/key-remap/key-remap.toml (Caps Lock; the keyboard map's vendor file, under the administrator's
 # /etc/bardo/key-remap/key-remap.toml, which is never touched) instead.
 #
-# Builds. The tree pins Rust 1.98.1 (rust-toolchain.toml) and needs rustup (a distro's rust package is the wrong
+# Builds. The tree pins Rust 1.100.0 (rust-toolchain.toml) and needs rustup (a distro's rust package is the wrong
 # version). The tree is one cargo workspace: every program the selected components install is built by one
 # `cargo build --release --locked -p ...` into <tree>/target (or $CARGO_TARGET_DIR), as you, then each component's
 # installer runs with --no-build. The build runs from / with --manifest-path (install/cargo.sh), so the tree's own cargo
@@ -422,7 +422,7 @@ case "$prefix" in
     echo "        user units: systemd's user manager does not read $prefix/lib/systemd/user at all; link them where it does, as root:"
     echo "          mkdir -p /usr/local/lib/systemd/user && ln -sf $prefix/lib/systemd/user/* /usr/local/lib/systemd/user/" ;;
 esac
-command -v rustup >/dev/null || echo "note: rustup was not found. Building from source needs it (this tree pins Rust 1.98.1): $RUSTUP_LINE"
+command -v rustup >/dev/null || echo "note: rustup was not found. Building from source needs it (this tree pins Rust 1.100.0): $RUSTUP_LINE"
 [ "$dry" = 0 ] || exit 0
 
 # One build for everything the selected components install, as you, before any installer runs (root must not run the compiler,

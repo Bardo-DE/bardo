@@ -184,10 +184,6 @@ mod tests {
     use super::*;
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn opacity_becomes_alpha_held_to_one() {
         assert_eq!(alpha(Fraction(0)), 0.0);
         assert_eq!(alpha(Fraction(350)), 0.35);

@@ -76,10 +76,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn an_offset_is_clamped_to_the_range() {
         let bounds = ScrollBounds::new(0.0, 500.0);
         // name, offset, clamped

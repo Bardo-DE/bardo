@@ -202,10 +202,6 @@ fn a_control_inside_a_tooltip_shows_that_one_tip_only() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn wrapping_an_item_in_its_tip_changes_neither_its_size_nor_its_neighbours() {
     let harness = started(Neutral);
     for item in ["a", "b", "c"] {

@@ -37,10 +37,6 @@ fn Both() -> Element {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn the_well_and_its_segments_stand_on_the_ladder() {
     // (scope, well, segment), both from the ladder.
     let cases: Vec<(&str, f32, f32)> = [

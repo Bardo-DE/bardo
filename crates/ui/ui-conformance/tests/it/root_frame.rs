@@ -101,10 +101,6 @@ fn press(harness: &mut Harness) -> u32 {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn an_absolutely_placed_frame_with_no_floor_leaves_its_root_0_px() {
     let harness = laid_out(Frame::Absolute);
     assert_eq!(
@@ -117,10 +113,6 @@ fn an_absolutely_placed_frame_with_no_floor_leaves_its_root_0_px() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn the_floor_gives_the_root_a_height_inside_an_absolutely_placed_parent() {
     let mut harness = laid_out(Frame::AbsoluteWithFloor);
     assert_eq!(height(&harness, ".frame"), 160.0);
@@ -129,10 +121,6 @@ fn the_floor_gives_the_root_a_height_inside_an_absolutely_placed_parent() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn a_frame_in_flow_at_the_viewports_size_takes_the_press() {
     let mut harness = laid_out(Frame::InFlow);
     assert_eq!(height(&harness, ".frame"), 160.0);

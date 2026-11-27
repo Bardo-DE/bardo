@@ -197,10 +197,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_spring_standing_still_is_settled_at_once() {
         let still = Spring::still(
             42.0,

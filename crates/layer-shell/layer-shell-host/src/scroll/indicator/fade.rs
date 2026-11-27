@@ -175,10 +175,6 @@ mod tests {
     };
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn the_fade_of_11_8_item_10() {
         let s = ScrollbarSettings::default();
         let vis = ScrollbarVisibility::WhenScrolling;
@@ -201,10 +197,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn hovering_expands_and_holds_the_thumb() {
         let s = ScrollbarSettings::default();
         let vis = ScrollbarVisibility::WhenScrolling;

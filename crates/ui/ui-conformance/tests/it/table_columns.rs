@@ -68,10 +68,6 @@ fn a_header_press_sorts_ascending_and_the_next_flips_it() {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn dragging_a_header_edge_resizes_the_column_and_stops_at_its_least() {
     let mut harness = harness();
     let head = |harness: &Harness| {

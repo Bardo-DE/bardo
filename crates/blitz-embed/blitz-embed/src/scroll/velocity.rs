@@ -131,10 +131,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_pause_before_the_lift_releases_nothing() {
         let (samples, end) = stroke(2000.0, 100.0);
         let lifted = SampleTime(end.0 + Duration::from_millis(60));
@@ -142,10 +138,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn too_few_samples_release_nothing() {
         let mut samples = Samples::default();
         samples.push(at(0.0), 0.0);

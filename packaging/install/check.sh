@@ -119,7 +119,7 @@ run_check() {
     if command -v rustup >/dev/null; then
       echo "  rustup: found"
     else
-      echo "  missing: rustup. This tree pins Rust 1.98.1 (rust-toolchain.toml), which only rustup installs for you; your distro's rust package is the wrong version."
+      echo "  missing: rustup. This tree pins Rust 1.100.0 (rust-toolchain.toml), which only rustup installs for you; your distro's rust package is the wrong version."
       echo "    $RUSTUP_LINE"
       rc=1
     fi

@@ -125,10 +125,6 @@ mod eased {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn one_wheel_detent_moves_a_container_60_px_over_frames() {
         let mut harness = harness();
         let at = over(&harness, "#list");
@@ -160,10 +156,6 @@ mod eased {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn an_element_that_takes_the_wheel_is_left_alone_by_the_engine() {
         let mut harness = harness();
         let at = over(&harness, "#slider");
@@ -182,10 +174,6 @@ mod eased {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn page_down_moves_a_page_of_the_container_under_the_pointer() {
         let mut harness = harness();
         harness.send(Input::pointer_move(over(&harness, "#list")));
@@ -209,10 +197,6 @@ mod eased {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_scroll_command_runs_through_the_engine_by_element_id() {
         let mut harness = harness();
         harness.send(Input::click(over(&harness, "#jump")));
@@ -454,10 +438,6 @@ mod frames {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn a_wheel_over_a_frame_scrolls_its_document_eased() {
         let mut harness = harness();
         let at = over_frame(&harness);
@@ -478,10 +458,6 @@ mod frames {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn at_the_frames_end_the_outer_scroller_moves() {
         let mut harness = harness();
         let at = over_frame(&harness);
@@ -638,10 +614,6 @@ mod fingers {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn fingers_reach_a_listener_as_received_with_their_source_and_phases() {
         let mut harness = harness();
         flick(&mut harness, 30.0, 4);

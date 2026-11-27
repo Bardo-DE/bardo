@@ -58,10 +58,6 @@ fn page() -> Harness {
 }
 
 #[test]
-#[expect(
-    clippy::float_cmp,
-    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-)]
 fn primary_secondary_and_danger_share_one_height_at_regular_and_at_mini() {
     let harness = page();
     let height = |selector: &str| {

@@ -230,10 +230,6 @@ mod tests {
     }
 
     #[test]
-    #[expect(
-        clippy::float_cmp,
-        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
-    )]
     fn snapping_puts_the_geometry_at_the_target_at_once_and_still_fades() {
         let start = WindowLegs::still(shown(0, 0, 400, 300).faded(), output(), 0, ms(0));
         let snapped = start.aimed(
