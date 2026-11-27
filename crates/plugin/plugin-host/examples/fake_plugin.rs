@@ -9,7 +9,10 @@
 //! knows how to do: two events, then it dies.
 
 // `shapes` is also read by the host side of the tests, which use what this program does not.
-#[allow(dead_code)]
+#[allow(
+    dead_code,
+    reason = "`shapes` is also read by the host side of the tests, which use what this program does not"
+)]
 #[path = "shared/shapes.rs"]
 mod shapes;
 

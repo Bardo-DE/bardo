@@ -113,7 +113,7 @@ fn a_well_behaved_fake_greets_and_answers_each_request() {
 fn each_fault_changes_what_the_fake_writes() {
     // name, the fault, the ending, the messages written, the stderr's length, and its bytes where
     // they are pinned
-    #[allow(clippy::type_complexity)]
+    #[expect(clippy::type_complexity, reason = "a table of cases read row by row")]
     let cases: Vec<(&str, Fault, Ending, Vec<Say>, usize, Option<&[u8]>)> = vec![
         ("mute", Fault::Mute, Ending::Mute, vec![], 0, None),
         (

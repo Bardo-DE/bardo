@@ -46,11 +46,19 @@ pub struct Conversation<'a, W, Q> {
 
 impl<W: Write, Q> Conversation<'_, W, Q> {
     /// Writes one message and its payload as a frame.
+    ///
+    /// # Errors
+    ///
+    /// The frame could not be encoded or written.
     pub fn say<T: Serialize>(&mut self, message: &T, payload: &[u8]) -> Result<(), WireError> {
         write_frame(self.out, message, payload)
     }
 
     /// Writes `bytes` as they are, for a host's own kind of broken frame.
+    ///
+    /// # Errors
+    ///
+    /// The bytes could not be written or flushed.
     pub fn say_raw(&mut self, bytes: &[u8]) -> Result<(), WireError> {
         self.out
             .write_all(bytes)

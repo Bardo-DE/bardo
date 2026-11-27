@@ -63,8 +63,9 @@ impl Fault {
     }
 }
 
-/// The value of `--fault <name>` among `args`, which are the program's arguments without its own
-/// name. A host reads it once, tries [`Fault::from_name`], and takes the name for one of its own
+/// The value of `--fault <name>` among `args`.
+///
+/// `args` are the program's arguments without its own name. A host reads it once, tries [`Fault::from_name`], and takes the name for one of its own
 /// faults when that finds nothing.
 pub fn fault_argument(args: impl IntoIterator<Item = String>) -> Option<String> {
     let mut args = args.into_iter();

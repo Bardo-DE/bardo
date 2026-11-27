@@ -83,6 +83,10 @@ impl<C, M: Serialize, Q: DeserializeOwned + Send + 'static> Fake<C, M, Q> {
     /// The plugin greets, unless it is mute, then gives each request to `handler`. A fault that
     /// acts on a request acts on the first one. Requests are read on a thread of their own, so
     /// the handler can see a cancel while it works ([`Conversation::cancelled`]).
+    ///
+    /// # Errors
+    ///
+    /// Writing to `out` or `err` failed, or the handler returned an error.
     pub fn serve<R, W, E, H>(
         &self,
         input: R,
