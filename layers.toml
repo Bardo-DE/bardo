@@ -2733,8 +2733,9 @@ features = ["media", "pane"]
 # 581 in the script; 605 since the monorepo moves (the base-* split, ui-components), which raised no
 # budget. Set to today's count so it stops growing; trimming it back is a review item. 606 when
 # the real clock moved out of base-time into base-clock (phase 3.1: the same code in its own crate),
-# 607 when the machine and stamp code moved out of ui-core into base-machine (phase 3.4, likewise).
-max = 607
+# 607 when the machine and stamp code moved out of ui-core into base-machine (phase 3.4, likewise),
+# 608 when ui-blitz took the window protocol from desktop-protocols instead of its own copy (phase 4.4).
+max = 608
 why = "the launcher links the peek, so growth here is growth of its binary"
 
 [[budget]]
