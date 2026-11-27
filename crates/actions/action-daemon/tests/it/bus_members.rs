@@ -137,7 +137,7 @@ impl Pair {
 )]
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn every_member_over_the_bus_answers_what_the_router_answers() {
-    let world = World::serving(mail_router(), everything_config()).await;
+    let world = Box::pin(World::serving(mail_router(), everything_config())).await;
     let (everything, _keep) = world.client(&[EVERYTHING]).await;
     // The connection is introduced as the sheet host, the highest standing one app holds: the roles
     // that need `computer_use` or `compositor` in the table are not backed, and it has no more than that.
@@ -567,7 +567,7 @@ fn sample_policy(task: &provenance::TaskId) -> TaskPolicy {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_caller_with_no_role_is_a_plain_app_and_an_unnamed_one_is_nobody() {
-    let world = World::serving(mail_router(), everything_config()).await;
+    let world = Box::pin(World::serving(mail_router(), everything_config())).await;
     // A plain app may read the registry, and nothing the launcher alone may do.
     let (plain, _keep) = world.client(&["org.bardo.Mail"]).await;
     let manifests = plain
@@ -602,7 +602,7 @@ async fn a_caller_with_no_role_is_a_plain_app_and_an_unnamed_one_is_nobody() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_name_the_configuration_does_not_list_gets_no_roles_even_if_it_says_it_is_shell() {
     // The role comes from the name the connection owns, never from anything in a body.
-    let world = World::serving(mail_router(), everything_config()).await;
+    let world = Box::pin(World::serving(mail_router(), everything_config())).await;
     let (impostor, _keep) = world.client(&["org.bardo.Shell"]).await;
     let reply = impostor
         .call(IntentsRequest::ControlHalt {
@@ -616,7 +616,7 @@ async fn a_name_the_configuration_does_not_list_gets_no_roles_even_if_it_says_it
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_interfaces_actiond_serves_are_the_declared_ones() {
-    let world = World::serving(mail_router(), everything_config()).await;
+    let world = Box::pin(World::serving(mail_router(), everything_config())).await;
     let (client, connection) = world.client(&[EVERYTHING]).await;
     let _ = client;
     let proxy = zbus::fdo::IntrospectableProxy::builder(&connection)
@@ -666,7 +666,7 @@ fn block(xml: &str, name: &str) -> String {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_request_that_the_bus_cannot_carry_to_actiond_is_closed_not_a_hang() {
-    let world = World::serving(mail_router(), everything_config()).await;
+    let world = Box::pin(World::serving(mail_router(), everything_config())).await;
     let (everything, _keep) = world.client(&[EVERYTHING]).await;
     world.daemon().clone().close().await.expect("close");
     let reply = everything.call(IntentsRequest::ControlState).await;

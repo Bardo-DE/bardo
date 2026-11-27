@@ -37,14 +37,14 @@ fn delete(key: &str) -> CallRequest {
 }
 
 async fn desk() -> (World, Intents<DbusTransport>, action_dbus::BusConnection) {
-    let world = World::serving(mail_router(), config()).await;
+    let world = Box::pin(World::serving(mail_router(), config())).await;
     let (transport, connection) = world.client(&[TERMINAL]).await;
     (world, Intents::over(transport), connection)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_watching_caller_hears_the_sheet_announced_and_then_the_end_of_its_call() {
-    let (world, intents, _connection) = desk().await;
+    let (world, intents, _connection) = Box::pin(desk()).await;
     let mut watch = intents
         .perform_watched(delete("t1"), None, None)
         .await
@@ -70,7 +70,7 @@ async fn a_watching_caller_hears_the_sheet_announced_and_then_the_end_of_its_cal
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_unwatched_perform_answers_as_before() {
-    let (_world, intents, _connection) = desk().await;
+    let (_world, intents, _connection) = Box::pin(desk()).await;
     let end = intents
         .perform(delete("t1"), None, None)
         .await

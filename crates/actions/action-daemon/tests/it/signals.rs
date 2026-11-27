@@ -277,7 +277,7 @@ async fn a_caller_that_may_not_search_gets_no_hits() {
         vec![AppName::parse("org.bardo.Readerish").expect("app")],
     );
     config.roles.retain(|role, _| *role == CallerRole::Reader);
-    let world = World::serving(mail_router(), config).await;
+    let world = Box::pin(World::serving(mail_router(), config)).await;
     let (_, reader) = world.client(&["org.bardo.Readerish"]).await;
     let proxy = action_dbus::SearchProxy::new(&reader).await.expect("proxy");
     let scope = serde_json::to_string(&SearchScope::Everything).expect("scope");
