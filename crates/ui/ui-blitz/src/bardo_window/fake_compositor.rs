@@ -2,7 +2,7 @@
 //! make a toplevel with, and, unless left out, `bardo_window_manager_v1`, which records what its
 //! windows are sent.
 
-use super::proto::server::{
+use desktop_protocols::server::bardo_window_v1::{
     bardo_window_manager_v1::{self, BardoWindowManagerV1},
     bardo_window_v1::{self, BardoWindowV1, FrameMode},
 };

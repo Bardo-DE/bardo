@@ -6039,7 +6039,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "ui-blitz"
 features = "all"
 exactly = ["base-fs", "base-machine", "base-time", "base-xdg", "blitz-embed", "blitz-embed-types", "caller-identity-dbus",
-  "dbus-kit", "keymap", "keymap-gnome", "keymap-kde", "ui-components", "ui-desktop", "ui-emoji",
+  "dbus-kit", "desktop-protocols", "keymap", "keymap-gnome", "keymap-kde", "ui-components", "ui-desktop", "ui-emoji",
   "ui-host-hooks", "wayland-raw-handle"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 

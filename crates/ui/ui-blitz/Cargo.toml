@@ -83,13 +83,11 @@ memfd = { workspace = true, optional = true }
 # `WindowHandle::focus_with_token`: xdg-activation on the app's own Wayland connection, with the
 # window's `wl_surface` borrowed (`wayland-raw-handle`).
 wayland-client = { workspace = true, optional = true }
-# The generated `bardo_window_v1` client code names wayland-backend.
-wayland-backend = { workspace = true, optional = true }
 # The window's display and surface, adopted from winit's handles (the one place that writes `unsafe`).
 wayland-raw-handle = { path = "../../wayland/wayland-raw-handle", features = ["winit"], optional = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"], optional = true }
-# `bardo_window`: the client bindings of our own bardo_window_v1, generated from `protocols/` by macro.
-wayland-scanner = { workspace = true, optional = true }
+# `bardo_window`: the client bindings of our own bardo_window_v1.
+desktop-protocols = { path = "../../wayland/desktop-protocols", features = ["client"], optional = true }
 # `menus::ShellOnly` (the `caller_identity` feature): which program is calling, by its pidfd and the unit
 # manager's facts. Its own repo, taken by tag; Linux only, because it reads `/proc` and the system
 # manager's bus. `desktop` adds the desktop's role names.
@@ -100,6 +98,8 @@ caller-identity-dbus = {features = ["desktop"], optional = true, path = "../../i
 wayland-raw-handle = {path = "../../wayland/wayland-raw-handle", features = ["testing"]}
 # The fake compositor `xdg_activation`'s tests talk to.
 wayland-server = { workspace = true }
+# The server side of `bardo_window_v1`, for the same fake compositor.
+desktop-protocols = { path = "../../wayland/desktop-protocols", features = ["server"] }
 wayland-protocols = { workspace = true, features = ["client", "server", "staging", "unstable"] }
 
 [features]
@@ -107,7 +107,7 @@ default = ["desktop"]
 # Our desktop's integration on Linux (design/36 section 1): xdg-activation on the app's own Wayland
 # connection (`WindowHandle::focus_with_token`). Without it a token is ignored and the window is
 # raised through winit, the same call with the same result type. `print` and `menus` need it too.
-desktop = ["dep:wayland-client", "dep:wayland-backend", "dep:wayland-raw-handle", "dep:wayland-protocols", "dep:wayland-scanner"]
+desktop = ["dep:wayland-client", "dep:wayland-raw-handle", "dep:wayland-protocols", "dep:desktop-protocols"]
 # `print_dialog`: the system print dialog (the desktop portal on Linux), else the viewer.
 # Off by default, so an app that never prints builds no D-Bus client for it.
 print = ["desktop", "dep:zbus", "dep:memfd", "dep:base-time"]

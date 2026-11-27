@@ -6,17 +6,15 @@
 //! destroyed, so dropping this destroys it and nothing sooner. A compositor without the global
 //! is `FrameError::Unsupported`, and the window is drawn as it always was.
 
+use desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::BardoWindowManagerV1;
+use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{BardoWindowV1, FrameMode};
 use dioxus_native::winit::window::Window;
-use proto::client::bardo_window_manager_v1::BardoWindowManagerV1;
-use proto::client::bardo_window_v1::{BardoWindowV1, FrameMode};
 use ui_components::style::tokens::shape::Radius;
 use wayland_client::globals::{BindError, GlobalError, GlobalListContents, registry_queue_init};
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::{Connection, Dispatch, EventQueue, Proxy, QueueHandle};
 use wayland_protocols::xdg::shell::client::xdg_toplevel::XdgToplevel;
 use wayland_raw_handle::{AdoptError, Adopted};
-
-mod proto;
 
 /// Why the compositor could not be told.
 #[derive(Debug, thiserror::Error)]

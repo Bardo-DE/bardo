@@ -9,6 +9,9 @@
 //! - `client` (feature `client`): wayland-scanner client bindings, one module per protocol;
 //! - `server` (feature `server`): wayland-scanner server bindings, one module per protocol.
 //!
+//! All six protocols are drafts: they may change without notice, and nothing outside this
+//! repository should depend on them staying as they are.
+//!
 //! The protocols build on wayland-protocols' `xdg_shell`, `ext-foreign-toplevel-list-v1` and
 //! `ext-image-capture-source-v1`.
 

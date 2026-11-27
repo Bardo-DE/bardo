@@ -35,6 +35,8 @@ macro_rules! server_protocol {
 
 server_protocol!(
     /// `bardo-window-v1.xml`: what an app says about its toplevel.
+    ///
+    /// Draft: this protocol may change without notice.
     bardo_window_v1,
     "protocols/bardo-window-v1.xml",
     [wayland_protocols::xdg::shell::server]
@@ -42,6 +44,8 @@ server_protocol!(
 
 server_protocol!(
     /// `bardo-sensitive-v1.xml`: surfaces and regions kept from agents and capture.
+    ///
+    /// Draft: this protocol may change without notice.
     bardo_sensitive_v1,
     "protocols/bardo-sensitive-v1.xml",
     []
@@ -49,6 +53,8 @@ server_protocol!(
 
 server_protocol!(
     /// `bardo-agent-v1.xml`: agent leases.
+    ///
+    /// Draft: this protocol may change without notice.
     bardo_agent_v1,
     "protocols/bardo-agent-v1.xml",
     [
@@ -59,6 +65,8 @@ server_protocol!(
 
 server_protocol!(
     /// `bardo-trusted-surface-v1.xml`: surfaces only the person can answer.
+    ///
+    /// Draft: this protocol may change without notice.
     bardo_trusted_surface_v1,
     "protocols/bardo-trusted-surface-v1.xml",
     []
@@ -66,6 +74,8 @@ server_protocol!(
 
 server_protocol!(
     /// `bardo-desktop-v1.xml`: the compositor's model of apps, windows and Spaces.
+    ///
+    /// Draft: this protocol may change without notice.
     bardo_desktop_v1,
     "protocols/bardo-desktop-v1.xml",
     [
@@ -78,6 +88,8 @@ server_protocol!(
 
 server_protocol!(
     /// `bardo-shell-v1.xml`: the shell's surface roles and system events.
+    ///
+    /// Draft: this protocol may change without notice.
     bardo_shell_v1,
     "protocols/bardo-shell-v1.xml",
     [

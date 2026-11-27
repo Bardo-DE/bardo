@@ -607,6 +607,25 @@ fn every_protocol_is_served_or_says_it_is_not_served_yet() {
 }
 
 #[test]
+fn every_protocol_says_it_is_a_draft() {
+    for file in support::FILES {
+        let text = std::fs::read_to_string(support::protocols_dir().join(file)).expect("the XML");
+        let start = text.find("<description").expect("a protocol description");
+        let end = start + text[start..].find("</description>").expect("it closes");
+        let flat = text[start..end]
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .to_lowercase();
+        assert!(
+            flat.contains("protocol is a draft"),
+            "{file}: the protocol description must say it is a draft; if it is now stable, \
+             change this test, the doc notes in client.rs and server.rs, and the crate docs together"
+        );
+    }
+}
+
+#[test]
 fn masking_applies_to_every_capture_trusted_ones_included() {
     let text = std::fs::read_to_string(support::protocols_dir().join("bardo-sensitive-v1.xml"))
         .expect("the XML");
