@@ -50,7 +50,7 @@ fn the_sample_table_reads_into_typed_rows() {
             .row_for_unit(&UnitName::new("bardo-shell.service").expect("a unit"))
             .is_some()
     );
-    assert!(Table::from_toml("").expect("empty").rows().is_empty());
+    assert_eq!(Table::from_toml("").expect("empty").rows(), []);
 }
 
 #[test]

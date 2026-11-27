@@ -142,7 +142,7 @@ fn a_card_shows_each_entry_from_its_date_and_asks_once_at_the_end() {
     assert_eq!(shown(&harness), "10:00", "a second before its date");
     harness.advance(secs(1));
     assert_eq!(shown(&harness), "10:01", "on its date");
-    assert!(asks().is_empty());
+    assert_eq!(asks(), [] as [shell_kit::widget::timeline::RefreshAsk; 0]);
     harness.advance(secs(60));
     assert_eq!(shown(&harness), "10:02");
     assert_eq!(

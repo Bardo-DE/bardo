@@ -207,7 +207,7 @@ fn outline(served: &ServedMenu) -> (Vec<String>, Vec<(String, Vec<String>)>) {
             .collect::<Vec<_>>()
     };
     (
-        made.app.map(|(_, rows)| labels(&rows)).unwrap_or_default(),
+        made.app.map_or_default(|(_, rows)| labels(&rows)),
         made.menus
             .iter()
             .map(|menu| (menu.title.clone(), labels(&menu.rows)))
@@ -1317,7 +1317,7 @@ mod routed {
             .await
             .unwrap_or_else(|e| panic!("{e:?}"));
         assert_eq!(asks(&router), 0);
-        assert!(done(&router).is_empty());
+        assert_eq!(done(&router), [] as [std::string::String; 0]);
 
         // A verified, declared, undoable command: delegated, gated as the app's own action.
         run(&router, call("21"))

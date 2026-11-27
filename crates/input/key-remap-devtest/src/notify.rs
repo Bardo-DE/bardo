@@ -67,7 +67,7 @@ impl Notifications {
     /// Every message so far, oldest first.
     #[must_use]
     pub fn all(&self) -> Vec<Note> {
-        self.notes.lock().map(|n| n.clone()).unwrap_or_default()
+        self.notes.lock().map_or_default(|n| n.clone())
     }
 
     /// The arrival times of the messages that are exactly `text`.

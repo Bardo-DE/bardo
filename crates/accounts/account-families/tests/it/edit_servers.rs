@@ -249,7 +249,7 @@ async fn another_protocol_than_the_accounts_is_not_this_edit() {
     )
     .await;
     assert_eq!(step, SignInStep::Failed(SignInFault::Unreadable));
-    assert!(world.imap.attempts().is_empty());
+    assert_eq!(world.imap.attempts(), [] as [account_fake_servers::Attempt; 0]);
 }
 
 #[tokio::test]

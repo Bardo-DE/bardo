@@ -480,7 +480,7 @@ async fn removing_the_account_revokes_it_at_google_and_forgets_its_secrets() {
         .invoke(&common::key(&format!("accounts.{id}.remove")))
         .await
         .expect("removed");
-    assert!(world.service.registry().accounts.is_empty());
+    assert_eq!(world.service.registry().accounts, [] as [account_core::Account; 0]);
     assert!(!world.google.issuer.refresh_is_live(&refresh));
     assert!(world.google.issuer.events().iter().any(|e| matches!(
         e,

@@ -623,7 +623,7 @@ async fn chunks_that_make_no_progress_do_not_reset_the_idle_timeout() {
     };
     let result = run(ep, &post("/chat/completions", Framing::Sse), &mut seen).await;
     assert_eq!(result, Err(HttpError::Timeout));
-    assert!(!seen.chunks.is_empty());
+    assert_ne!(seen.chunks, [] as [std::vec::Vec<u8>; 0]);
 }
 
 #[tokio::test(flavor = "current_thread")]
@@ -640,7 +640,7 @@ async fn the_sinks_total_deadline_ends_a_stream_that_keeps_making_progress() {
     )
     .await;
     assert_eq!(result, Err(HttpError::Timeout));
-    assert!(!seen.chunks.is_empty());
+    assert_ne!(seen.chunks, [] as [std::vec::Vec<u8>; 0]);
 }
 
 #[tokio::test(flavor = "current_thread")]

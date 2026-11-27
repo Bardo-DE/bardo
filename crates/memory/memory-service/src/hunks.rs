@@ -179,7 +179,7 @@ impl<B: Backend> Open<B> {
             })
             .collect();
         let gone: Vec<String> = parse_topic(before.as_str())
-            .map(|old| {
+            .map_or_default(|old| {
                 old.blocks
                     .into_iter()
                     .filter_map(|b| match b {
@@ -189,8 +189,7 @@ impl<B: Backend> Open<B> {
                         _ => None,
                     })
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         self.index_drop(&gone);
         let stored = self.stored()?;
         let docs = now_facts

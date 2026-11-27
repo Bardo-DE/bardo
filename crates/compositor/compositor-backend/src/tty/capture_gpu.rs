@@ -219,13 +219,12 @@ pub fn merged_formats(first: Vec<Format>, second: Vec<Format>) -> Vec<Format> {
 /// The `Argb8888` and `Xrgb8888` formats `renderer` binds a dma-buf as a render target with.
 pub fn renderable_formats<R: Bind<Dmabuf>>(renderer: &R) -> Vec<Format> {
     Bind::<Dmabuf>::supported_formats(renderer)
-        .map(|set| {
+        .map_or_default(|set| {
             set.iter()
                 .filter(|format| matches!(format.code, Fourcc::Argb8888 | Fourcc::Xrgb8888))
                 .copied()
                 .collect()
         })
-        .unwrap_or_default()
 }
 
 #[cfg(test)]

@@ -172,7 +172,7 @@ fn halts_cancels_and_a_spent_budget_finish_the_loop() {
         for input in [LoopInput::Halted, LoopInput::Cancelled] {
             let (s, e) = agent_step(live(phase), input);
             assert_eq!(s.phase, LoopPhase::Finished(FinishedAs::Cancelled));
-            assert!(s.pending.is_empty());
+            assert_eq!(s.pending, [] as [action_vocab::CallId; 0]);
             assert_eq!(
                 e,
                 [
@@ -411,7 +411,7 @@ fn the_report_of_a_run_the_task_started_gives_it_a_planner_turn_and_asks_nobody(
         state(LoopPhase::Idle, &[]),
         LoopInput::Completed(note(ReportStatus::Progress, Attention::Starter)),
     );
-    assert!(e.is_empty());
+    assert_eq!(e, [] as [agent_loop::LoopEffect; 0]);
 }
 
 #[test]

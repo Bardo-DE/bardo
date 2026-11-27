@@ -49,8 +49,7 @@ pub fn output_of(view: &DesktopView, first: &str) -> String {
     view.windows
         .iter()
         .find(|window| window.identifier == first)
-        .map(|window| window.output.clone())
-        .unwrap_or_default()
+        .map_or_default(|window| window.output.clone())
 }
 
 #[cfg(test)]

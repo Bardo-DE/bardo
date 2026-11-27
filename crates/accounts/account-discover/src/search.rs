@@ -241,8 +241,7 @@ async fn search<H: Http, D: Dns>(
     }
     let host = crate::mx::mx_hosts(&records).into_iter().next();
     let candidates = host
-        .map(|host| ispdb_candidates(&host, &domain))
-        .unwrap_or_default();
+        .map_or_default(|host| ispdb_candidates(&host, &domain));
     for candidate in candidates {
         let Ok(url) = WebUrl::parse(&ispdb_url(&candidate)) else {
             continue;

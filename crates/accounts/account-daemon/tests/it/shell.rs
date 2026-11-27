@@ -20,7 +20,7 @@ async fn the_shell_is_told_of_a_refusal_and_a_recovery_and_reads_the_account() {
         .client_as(caller("org.bardo.Shell", CallerRole::SheetHost))
         .await;
     let manager = ManagerProxy::new(&shell).await.expect("proxy");
-    assert!(manager.needing_reauth().await.expect("list").is_empty());
+    assert_eq!(manager.needing_reauth().await.expect("list"), [] as [(zbus::zvariant::OwnedObjectPath, std::string::String); 0]);
     // An app that has called accountd does not hear.
     let other = rig.client("org.bardo.Mail").await;
     account_dbus::accounts::IdentitiesProxy::new(&other)
@@ -40,10 +40,9 @@ async fn the_shell_is_told_of_a_refusal_and_a_recovery_and_reads_the_account() {
     // A publish tells whoever is to be told.
     publish(&rig).await;
     // An absence, proved in a short window by design: a slow machine can only make it pass.
-    assert!(
+    assert_eq!(
         heard(&mut other_hears, Duration::from_millis(300))
-            .await
-            .is_empty()
+            .await, [] as [std::string::String; 0]
     );
     assert_eq!(
         heard_names(&mut shell_changes, &["PropertiesChanged"]).await,

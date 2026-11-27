@@ -67,13 +67,11 @@ fn roster_line(line: &RosterLine) -> String {
             let told = full
                 .told
                 .as_ref()
-                .map(|t| format!(" | you told it: \"{}\"", t.as_str()))
-                .unwrap_or_default();
+                .map_or_default(|t| format!(" | you told it: \"{}\"", t.as_str()));
             let last = full
                 .last
                 .as_ref()
-                .map(|s| format!(" | last: {}", step_line(s, &[])))
-                .unwrap_or_default();
+                .map_or_default(|s| format!(" | last: {}", step_line(s, &[])));
             without_ids(&format!("- {who}: {}{last}{told}", shown(&full.goal)))
         }
     }
@@ -110,8 +108,7 @@ fn episode_line(episode: &EpisodeLine, actions: &[ActionCard]) -> String {
     let narrative = episode
         .narrative
         .as_ref()
-        .map(|h| format!(" (account #{})", h.0))
-        .unwrap_or_default();
+        .map_or_default(|h| format!(" (account #{})", h.0));
     without_ids(&format!(
         "- {} in {} {}: {}{narrative}",
         agent(&episode.agent),
@@ -159,8 +156,7 @@ fn handle_line(card: &HandleCard, history: &[StepLine]) -> String {
     let by = match reader_origin(card.handle, history) {
         Some(origin) => format!(": {origin}"),
         None => made_by(card.handle, history)
-            .map(|step| format!(", returned by {step}"))
-            .unwrap_or_default(),
+            .map_or_default(|step| format!(", returned by {step}")),
     };
     format!("- #{} {shape}{by}", card.handle.0)
 }

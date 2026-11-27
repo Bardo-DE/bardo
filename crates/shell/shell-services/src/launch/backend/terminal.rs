@@ -42,6 +42,5 @@ impl Terminal {
 /// terminal at all (the caller then runs the bare `Exec`).
 pub(crate) fn wrapper(search: &TerminalSearch) -> Vec<String> {
     choose(search)
-        .map(|terminal| terminal.wrapper())
-        .unwrap_or_default()
+        .map_or_default(|terminal| terminal.wrapper())
 }

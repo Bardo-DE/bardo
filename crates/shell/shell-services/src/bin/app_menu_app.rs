@@ -65,8 +65,7 @@ async fn main() {
     if handshake {
         let unique = connection
             .unique_name()
-            .map(ToString::to_string)
-            .unwrap_or_default();
+            .map_or_default(ToString::to_string);
         println!("app_menu_app: connected {unique}");
         let mut go = String::new();
         let _ = std::io::stdin().read_line(&mut go);

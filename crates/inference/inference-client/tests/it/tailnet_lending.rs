@@ -243,7 +243,7 @@ async fn a_missing_shipped_file_changes_nothing_and_asks_nothing_of_the_manager(
         "{error:?}"
     );
     assert!(!s.user_dir().exists());
-    assert!(units.calls().is_empty());
+    assert_eq!(units.calls(), [] as [std::string::String; 0]);
     // And a file that is there cannot be the shipped one.
     s.put(SHIPPED);
     assert_eq!(lending.state(), LendingState::Differs);

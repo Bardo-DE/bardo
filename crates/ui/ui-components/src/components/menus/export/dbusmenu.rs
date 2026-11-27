@@ -254,12 +254,11 @@ impl MenuTree {
         };
         let children = depth
             .below()
-            .map(|deeper| {
+            .map_or_default(|deeper| {
                 rows.iter()
                     .filter_map(|row| self.layout(row.id, deeper, names))
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         Some(DbusLayout { item, children })
     }
 

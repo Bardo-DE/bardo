@@ -124,12 +124,11 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
     let (need_text, class, usage) = (to_text(&need()), "photos", "interactive");
 
     // Nothing is granted yet, and the app learns only that it may ask.
-    assert!(
+    assert_eq!(
         proxy
             .candidates(&need_text, class, usage)
             .await
-            .expect("candidates")
-            .is_empty()
+            .expect("candidates"), [] as [(zbus::zvariant::OwnedObjectPath, std::string::String, std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>); 0]
     );
     assert_eq!(
         proxy
@@ -225,12 +224,11 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
 
     // Revoking is the app's own, once.
     proxy.revoke(chosen.grant.as_str()).await.expect("revoked");
-    assert!(
+    assert_eq!(
         proxy
             .candidates(&need_text, class, usage)
             .await
-            .expect("candidates")
-            .is_empty()
+            .expect("candidates"), [] as [(zbus::zvariant::OwnedObjectPath, std::string::String, std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>); 0]
     );
     let again = proxy
         .revoke(chosen.grant.as_str())
@@ -254,7 +252,7 @@ async fn a_grant_is_the_apps_own_and_an_endpoint_outside_it_is_refused() {
     let files = rig.client("org.bardo.Files").await;
     let other = grants_of(&files).await;
     let held: Vec<Grant> = from_text(&other.grants().await.expect("grants")).expect("grants");
-    assert!(held.is_empty());
+    assert_eq!(held, [] as [account_core::consent::Grant; 0]);
     for failed in [
         other
             .open_authenticated(chosen.grant.as_str(), endpoint.as_str())

@@ -260,7 +260,7 @@ fn a_peek_that_fails_still_gives_the_files_own_facts() {
     let Body::Unavailable(reason) = &peeked.body else {
         panic!("an undecodable png is unavailable, not a peek");
     };
-    assert!(!reason.label().is_empty());
+    assert_ne!(reason.label(), "");
     let labels: Vec<&str> = rows(&peeked.facts)
         .into_iter()
         .map(|(label, _)| label)

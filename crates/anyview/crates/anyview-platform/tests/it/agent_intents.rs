@@ -37,7 +37,7 @@ fn the_shipped_manifest_validates_and_only_reads() {
     let valid = validate(manifest).unwrap();
     let manifest = valid.manifest();
     assert_eq!(manifest.app.as_str(), AGENT_BUS_NAME);
-    assert!(!manifest.actions.is_empty());
+    assert_ne!(manifest.actions, [] as [action_manifest::ActionDecl; 0]);
     // Nothing the viewer offers an agent writes, sends or deletes.
     for action in &manifest.actions {
         assert_eq!(action.effect, Effect::Read, "{}", action.name);

@@ -156,8 +156,7 @@ impl Engines {
         match routed {
             Ok((_, pinned)) => pinned
                 .model
-                .map(|model| hardware_notes(&self.facts_for(&model, gate)))
-                .unwrap_or_default(),
+                .map_or_default(|model| hardware_notes(&self.facts_for(&model, gate))),
             // refused, or placed nowhere: no fact to give
             Err(_) => Vec::new(),
         }

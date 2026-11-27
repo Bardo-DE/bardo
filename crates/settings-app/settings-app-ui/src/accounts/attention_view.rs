@@ -33,8 +33,7 @@ pub(super) fn AttentionBanner(
             detail: Some(TextLine::from(reauth_help(account.sign_in))),
             common: Common {
                 data: DataName::parse("accounts")
-                    .map(|name| vec![DataAttr::new(name, "attention")])
-                    .unwrap_or_default(),
+                    .map_or_default(|name| vec![DataAttr::new(name, "attention")]),
                 ..Common::default()
             },
             actions: rsx! {

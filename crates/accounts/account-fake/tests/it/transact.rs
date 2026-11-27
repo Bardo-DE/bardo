@@ -376,8 +376,8 @@ async fn an_account_removed_while_its_consent_sheet_is_open_gets_no_grant() {
     };
     let (reply, ()) = tokio::join!(choosing, removing);
     assert_eq!(reply, AccountsReply::Refused(Refusal::Dismissed));
-    assert!(service.registry().grants.is_empty());
-    assert!(service.registry().accounts.is_empty());
+    assert_eq!(service.registry().grants, [] as [account_core::consent::Grant; 0]);
+    assert_eq!(service.registry().accounts, [] as [account_core::Account; 0]);
     let granted =
         |e: &account_service_core::audit::AuditEntry| matches!(e.event, AuditEvent::Granted { .. });
     assert!(!audit.entries().iter().any(granted));

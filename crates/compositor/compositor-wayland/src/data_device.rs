@@ -84,7 +84,7 @@ pub fn on_selection(
     kind: SelectionKind,
     source: Option<&SelectionSource>,
 ) -> Vec<Event> {
-    let offered = source.map(SelectionSource::mime_types).unwrap_or_default();
+    let offered = source.map_or_default(SelectionSource::mime_types);
     part.selections.insert(kind, offered);
     Vec::new()
 }

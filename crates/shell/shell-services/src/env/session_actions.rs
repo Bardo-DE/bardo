@@ -79,7 +79,7 @@ impl DryRunActions {
 
     /// The actions chosen so far, oldest first.
     pub fn ran(&self) -> Vec<SessionAction> {
-        self.ran.lock().map(|ran| ran.clone()).unwrap_or_default()
+        self.ran.lock().map_or_default(|ran| ran.clone())
     }
 }
 

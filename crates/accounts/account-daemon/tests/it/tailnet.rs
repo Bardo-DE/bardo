@@ -565,7 +565,7 @@ async fn removing_the_account_does_not_sign_tailscale_out() {
         .remove_with_revoke(&id)
         .await
         .expect("removed");
-    assert!(world.service.registry().accounts.is_empty());
+    assert_eq!(world.service.registry().accounts, [] as [account_core::Account; 0]);
     // The accounts service asked Tailscale nothing that signs it out: no request of any kind but reads.
     assert!(
         world
@@ -637,12 +637,11 @@ async fn machines_is_empty_with_no_account_and_with_one_that_is_not_working() {
         vec![tailscale_account(AccountState::Ok)],
     );
     let world = World::start(scene, true).await;
-    assert!(
+    assert_eq!(
         world
             .machines_as(CallerRole::Terminal)
             .await
-            .expect("list")
-            .is_empty()
+            .expect("list"), [] as [tailscale_types::Machine; 0]
     );
 
     // An account that is off: empty, even though Tailscale answers a list.
@@ -653,12 +652,11 @@ async fn machines_is_empty_with_no_account_and_with_one_that_is_not_working() {
     );
     // Not followed, so the account stays as the registry has it.
     let world = World::start(scene, false).await;
-    assert!(
+    assert_eq!(
         world
             .machines_as(CallerRole::Terminal)
             .await
-            .expect("list")
-            .is_empty()
+            .expect("list"), [] as [tailscale_types::Machine; 0]
     );
 }
 

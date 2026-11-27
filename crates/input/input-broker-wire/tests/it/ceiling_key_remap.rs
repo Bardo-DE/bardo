@@ -64,7 +64,7 @@ fn a_pointer_keeps_what_the_original_had_and_gains_the_suffix() {
     assert_eq!(spec.keys, [BTN_LEFT, BTN_TOOL_FINGER, BTN_TOUCH]);
     assert_eq!(spec.abs.len(), 2);
     assert_eq!(spec.props, [0, 2]);
-    assert!(spec.leds.is_empty());
+    assert_eq!(spec.leds, [] as [u16; 0]);
 }
 
 #[test]

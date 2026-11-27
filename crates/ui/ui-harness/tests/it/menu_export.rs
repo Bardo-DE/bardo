@@ -171,8 +171,7 @@ fn connect(bus: &PrivateBus) -> (Connection, String) {
         .expect("the client connects to the private bus");
     let unique = connection
         .unique_name()
-        .map(ToString::to_string)
-        .unwrap_or_default();
+        .map_or_default(ToString::to_string);
     (connection, unique)
 }
 

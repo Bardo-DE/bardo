@@ -141,7 +141,7 @@ async fn a_dry_run_prints_the_preview_and_asks_nobody() {
     let doc = json(&report);
     assert_eq!(doc["preview"]["kind"], "message");
     assert_eq!(desk.sheets(), 0);
-    assert!(desk.router.seams.link.mail.sent().is_empty());
+    assert_eq!(desk.router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
     // A dry run of a hidden action is refused, not previewed.
     let hidden = desk
         .bardo(&["memory", "forget", "memory.fact:f1", "--dry-run"])

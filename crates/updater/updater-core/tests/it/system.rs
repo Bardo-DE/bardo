@@ -231,7 +231,7 @@ fn a_system_listing_that_does_not_match_the_bundle_is_refused() {
 #[test]
 fn a_release_without_system_files_has_none() {
     let release = Release::parse(Doc::good().render().as_bytes()).expect("parses");
-    assert!(release.system.is_empty());
+    assert_eq!(release.system, [] as [updater_core::SystemFile; 0]);
     assert_eq!(placements(&release).expect("placements"), Vec::new());
 }
 

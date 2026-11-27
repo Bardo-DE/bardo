@@ -71,7 +71,7 @@ fn the_offered_counter_counts_writes_and_a_bare_start_keeps_the_models() {
     assert_eq!((bare.seen, bare.models.len()), (2, 1));
     assert_eq!(bare.in_use.as_deref(), Some("sonnet"));
     let signed_in = offered(Start::SignedIn, &[]).after(Some(&bare));
-    assert!(signed_in.models.is_empty());
+    assert_eq!(signed_in.models, [] as [agent_registry::offered::Named; 0]);
     let text = signed_in.render().expect("render");
     assert_eq!(Offered::parse(&text), Ok(signed_in));
 }

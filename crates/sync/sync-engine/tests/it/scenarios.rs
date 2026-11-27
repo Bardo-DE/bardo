@@ -168,7 +168,7 @@ async fn crossing_edits_are_a_stored_conflict_and_neither_side_is_overwritten() 
     assert_eq!(engine.journal().conflicts().expect("conflicts").len(), 1);
     // It stays: a later cycle neither piles up conflicts nor touches either side.
     let later = settle(&engine, 3).await;
-    assert!(later.conflicts.is_empty());
+    assert_eq!(later.conflicts, [] as [sync_core::StoredConflict; 0]);
     assert_eq!(engine.journal().conflicts().expect("conflicts").len(), 1);
     assert_eq!(world.dataset.get("a.txt"), Some(b"mine".to_vec()));
 }
@@ -205,7 +205,7 @@ async fn a_conflict_settles_either_way_and_the_sides_converge() {
             files(&[("a.txt", winner)]),
             "{how:?}"
         );
-        assert!(engine.journal().conflicts().expect("conflicts").is_empty());
+        assert_eq!(engine.journal().conflicts().expect("conflicts"), [] as [sync_core::StoredConflict; 0]);
         assert!(states(&engine).iter().all(|(_, s)| *s == ItemState::Synced));
     }
 }
@@ -283,7 +283,7 @@ async fn a_local_delete_removes_remotely_keeps_a_tombstone_until_the_feed_shows_
     let kept = engine.journal().tombstones().expect("tombstones");
     assert_eq!(kept.len(), 1, "kept until acknowledged");
     assert_eq!(kept[0].ack, Acknowledgement::Pending);
-    assert!(engine.journal().items().expect("items").is_empty());
+    assert_eq!(engine.journal().items().expect("items"), [] as [sync_core::JournalItem; 0]);
     engine.sync_once().await.expect("cycle");
     assert!(
         engine

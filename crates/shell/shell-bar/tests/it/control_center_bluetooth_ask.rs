@@ -113,7 +113,7 @@ fn the_tile_asks_before_off_and_only_turn_off_or_return_sends_it() {
 
     // The panel has the keyboard back: Escape now closes the control center.
     assert!(running.harness.focus_of(".shell-cc"));
-    assert!(running.reports().is_empty());
+    assert_eq!(running.reports(), [] as [cc_support::live::Report; 0]);
     running.harness.send(Input::key(ShortcutKey::Escape));
     running.harness.advance(ms(400));
     assert_eq!(running.reports().last(), Some(&Report::Closed));

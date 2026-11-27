@@ -119,7 +119,7 @@ async fn a_files_grant_on_a_google_account_mirrors_the_app_data_folder_both_ways
     // The relay authenticated every request, and only the Drive's bearer was ever presented.
     let want = format!("Bearer {DRIVE_BEARER}");
     let hits = rig.google.hits();
-    assert!(!hits.is_empty());
+    assert_ne!(hits, [] as [account_fake_servers::Hit; 0]);
     assert!(
         hits.iter()
             .all(|h| h.authorization.as_deref() == Some(want.as_str())),
@@ -311,7 +311,7 @@ async fn the_dataset_follows_the_grant_and_an_account_removal_wipes_the_mirror()
         Vec::<String>::new(),
         "the grant is gone"
     );
-    assert!(rig.supervisor.datasets().is_empty());
+    assert_eq!(rig.supervisor.datasets(), [] as [sync_driver::hub::DatasetName; 0]);
     assert!(
         local(&rig, "keep.txt").exists(),
         "the files are the person's"

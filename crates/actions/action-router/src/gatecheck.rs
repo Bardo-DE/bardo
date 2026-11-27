@@ -181,14 +181,13 @@ impl<S: Seams> Router<S> {
                     .locked()
                     .registry
                     .get(&ask.app)
-                    .map(|m| {
+                    .map_or_default(|m| {
                         m.manifest()
                             .actions
                             .iter()
                             .flat_map(|a| a.classes.clone())
                             .collect()
-                    })
-                    .unwrap_or_default();
+                    });
                 // Only an always-allow request is remembered; "ask every run" is asked again.
                 let classes = match level {
                     Level::AlwaysAllow => classes,

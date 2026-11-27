@@ -39,8 +39,7 @@ fn card_of(decl: &ActionDecl, manifest: &action_manifest::Manifest) -> ActionCar
         lasting: decl.lasting,
         related: manifest
             .related_kind(&decl.name)
-            .map(|e| e.relations.clone())
-            .unwrap_or_default(),
+            .map_or_default(|e| e.relations.clone()),
     }
 }
 
@@ -341,8 +340,7 @@ impl<S: Seams> Router<S> {
             let said = record
                 .turns
                 .last()
-                .map(|t| t.text.clone())
-                .unwrap_or_default();
+                .map_or_default(|t| t.text.clone());
             let mut lines = vec![ArgLine {
                 label: words("You said"),
                 value: Shown::Plain(said),

@@ -108,7 +108,7 @@ fn scope_style(material: Material, radius: Option<Corner>) -> Option<String> {
     let style = format!(
         "{}{}",
         accent_text_style(material),
-        radius.map(radius_style).unwrap_or_default()
+        radius.map_or_default(radius_style)
     );
     (!style.is_empty()).then_some(style)
 }

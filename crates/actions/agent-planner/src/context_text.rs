@@ -75,8 +75,7 @@ pub(crate) fn context_text(view: &ContextView) -> String {
         HereView::View { view, query } => {
             let query = query
                 .as_ref()
-                .map(|q| format!(",\"query\":{}", words(q)))
-                .unwrap_or_default();
+                .map_or_default(|q| format!(",\"query\":{}", words(q)));
             parts.push(format!(
                 "\"here\":{{\"view\":{}{query}}}",
                 json(&view.as_str())

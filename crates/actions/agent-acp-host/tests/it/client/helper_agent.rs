@@ -177,7 +177,7 @@ async fn a_missing_sign_in_is_the_helper_waiting_with_the_agents_own_names_not_a
 
     // We said we can run a sign-in in a terminal; no turn was given; the process was ended.
     assert_eq!(kept[0].agent.client_caps()["auth"]["terminal"], json!(true));
-    assert!(kept[0].agent.prompts().is_empty());
+    assert_eq!(kept[0].agent.prompts(), [] as [serde_json::Value; 0]);
     assert_eq!(kept[0].spawned.killed(), 1);
     assert!(!helper.is_open());
 }
@@ -237,7 +237,7 @@ async fn a_terminal_way_is_handed_to_the_shell_and_the_agent_is_asked_again_afte
     };
     assert_eq!(login.args, ["--login"]);
     // Nothing was sent to the agent for it, and no process started for it.
-    assert!(kept[0].agent.authenticated().is_empty());
+    assert_eq!(kept[0].agent.authenticated(), [] as [serde_json::Value; 0]);
     assert_eq!(starts.lock().expect("starts").len(), 1);
 
     // The shell says the window closed: the agent is asked again, with no way chosen.

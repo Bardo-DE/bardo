@@ -71,7 +71,7 @@ async fn a_target_of_this_space_or_every_space_or_unknown_does_not_ask() {
     for key in ["t1", "t2", "t-unknown"] {
         let _ = perform(&router, call("mail.thread.read", &[key], vec![])).await;
     }
-    assert!(router.seams.confirmer.requests().is_empty());
+    assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
 }
 
 #[tokio::test]

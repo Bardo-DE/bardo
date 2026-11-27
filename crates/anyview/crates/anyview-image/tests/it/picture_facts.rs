@@ -121,7 +121,7 @@ fn a_picture_with_nothing_recorded_lists_only_its_colour() {
     let labels: Vec<_> = facts.rows().iter().map(|row| row.label).collect();
     assert_eq!(labels, [FactLabel::Colour]);
     let facts = picture_facts(b"not an image", &sniffed(&bytes("plain.jpg"), "plain.jpg"));
-    assert!(facts.rows().is_empty());
+    assert_eq!(facts.rows(), []);
 }
 
 #[test]

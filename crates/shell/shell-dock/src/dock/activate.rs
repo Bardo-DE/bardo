@@ -27,8 +27,7 @@ pub fn activation(
             let front = all.active();
             let hidden = front
                 .filter(|f| !mine.iter().any(|m| m.key == f.key))
-                .map(|f| minimize_app(all, &f.app_id))
-                .unwrap_or_default();
+                .map_or_default(|f| minimize_app(all, &f.app_id));
             std::iter::once(raise).chain(hidden).collect()
         }
         ActivateMode::HideOthers => {

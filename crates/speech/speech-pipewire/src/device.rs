@@ -42,7 +42,7 @@ impl AudioDevice for PipeWireDevice {
     }
 
     async fn sources(&self) -> Vec<AudioNode> {
-        self.snapshot().await.map(|s| s.sources).unwrap_or_default()
+        self.snapshot().await.map_or_default(|s| s.sources)
     }
 
     async fn default_source(&self) -> Option<String> {

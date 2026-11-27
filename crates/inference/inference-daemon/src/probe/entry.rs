@@ -99,8 +99,8 @@ outputs = [{}]
         model.id.as_str(),
         outputs.join(", "),
     );
-    text.push_str(&llm.map(chat_tables).unwrap_or_default());
-    text.push_str(&embed.map(embed_table).unwrap_or_default());
+    text.push_str(&llm.map_or_default(chat_tables));
+    text.push_str(&embed.map_or_default(embed_table));
     text.push_str(
         "\n[[engine]]\nkind = \"llama_server\"\nargs = []\nweights = { kind = \"gguf\", v = { model = \"probed.gguf\" } }\n",
     );

@@ -186,12 +186,11 @@ fn default_features(manifest: &str, feature: &str) -> (bool, Vec<String>) {
     let default = features
         .get("default")
         .and_then(|d| d.as_array())
-        .map(|d| {
+        .map_or_default(|d| {
             d.iter()
                 .filter_map(|f| f.as_str().map(str::to_owned))
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     (features.contains_key(feature), default)
 }
 

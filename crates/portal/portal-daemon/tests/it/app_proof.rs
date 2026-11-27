@@ -346,11 +346,10 @@ async fn an_app_with_no_id_is_remembered_by_the_id_of_its_entry() {
         "an app that is not proven has no id and is not kept"
     );
     assert_eq!(keeper.revoke(REMOTE_ID).await, Some(1));
-    assert!(
+    assert_eq!(
         keeper
             .book()
             .await
-            .resolve(&token, &id, &screen, unix_now())
-            .is_empty()
+            .resolve(&token, &id, &screen, unix_now()), [] as [portal_core::CastSource; 0]
     );
 }

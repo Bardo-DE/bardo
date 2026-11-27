@@ -142,8 +142,7 @@ impl SpaceBook {
         let path = self
             .file
             .as_ref()
-            .map(|f| f.path().display().to_string())
-            .unwrap_or_default();
+            .map_or_default(|f| f.path().display().to_string());
         format!(
             "the Spaces file {path} cannot be read ({why}). It was left as it is; no Space can be \
              made or changed until it is mended or moved away."

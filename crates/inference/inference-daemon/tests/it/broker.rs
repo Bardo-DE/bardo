@@ -341,7 +341,7 @@ async fn with_no_accountd_on_the_bus_a_question_is_ask_again_and_a_report_is_unr
             .map(drop),
         Err(AccountdFault::Unreachable)
     );
-    assert!(broker.servers().await.is_empty());
+    assert_eq!(broker.servers().await, [] as [inference_daemon::OwnServer; 0]);
     assert!(matches!(
         broker
             .report(Runtime::Ollama, &[], Standing::Online)

@@ -33,7 +33,7 @@ impl Transport for Recording {
 
 impl Recording {
     fn proposed_for(&self) -> Vec<Option<Actor>> {
-        let seen = self.0.lock().map(|s| s.clone()).unwrap_or_default();
+        let seen = self.0.lock().map_or_default(|s| s.clone());
         seen.into_iter()
             .filter_map(|r| match r {
                 MemoryRequest::Propose(_, draft) => Some(draft.on_behalf),

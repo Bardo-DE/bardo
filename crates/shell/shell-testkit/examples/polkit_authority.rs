@@ -60,8 +60,7 @@ impl Authority {
     ) -> zbus::fdo::Result<()> {
         let sender = header
             .sender()
-            .map(std::string::ToString::to_string)
-            .unwrap_or_default();
+            .map_or_default(std::string::ToString::to_string);
         say(&format!(
             "registered {}",
             subject_text(&subject, &object_path)

@@ -304,7 +304,7 @@ fn the_divider_moves_within_its_limits() {
             share: Fraction(300),
         })],
     );
-    assert!(kept(&alone).is_empty());
+    assert_eq!(kept(&alone), [] as [compositor_core::space::SpaceContent; 0]);
 }
 
 fn command(command: DesktopCommand) -> Op {
@@ -335,7 +335,7 @@ fn the_key_command_tiles_the_key_window_like_the_menu_entry() {
         vec![plug("HEADLESS-1")],
         vec![command(DesktopCommand::SplitTile(SplitSide::Left))],
     );
-    assert!(kept(&nobody).is_empty());
+    assert_eq!(kept(&nobody), [] as [compositor_core::space::SpaceContent; 0]);
 }
 
 #[test]

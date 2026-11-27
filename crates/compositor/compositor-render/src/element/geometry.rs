@@ -17,8 +17,7 @@ pub(crate) fn geometry_origin(surface: &WlSurface) -> Point<i32, Logical> {
             .get::<SurfaceCachedState>()
             .current()
             .geometry
-            .map(|geometry| geometry.loc)
-            .unwrap_or_default()
+            .map_or_default(|geometry| geometry.loc)
     })
 }
 

@@ -112,7 +112,7 @@ fn copying_into_its_own_folder_makes_a_second_one_without_asking() {
     let mut host = Script::default();
     rig.exec
         .run(&OpPlan::Copy(rig.transfer(&["dest/a.txt"])), &mut host);
-    assert!(host.asked.is_empty());
+    assert_eq!(host.asked, [] as [files_core::Conflict; 0]);
     assert_eq!(rig.names("dest"), ["a 2.txt", "a.txt"]);
 }
 
@@ -190,7 +190,7 @@ fn a_cancelled_copy_stops_and_leaves_no_half_made_item() {
     let plan = OpPlan::Copy(rig.transfer(&["home/one", "home/two"]));
     let ran = rig.exec.run(&plan, &mut host);
     assert_eq!(ran.finish, Finish::Stopped);
-    assert!(rig.names("dest").is_empty());
+    assert_eq!(rig.names("dest"), [] as [std::string::String; 0]);
 
     // Stop after the first item is done: that one stays, the next is not begun.
     let mut host = Script::stopping_after(3);

@@ -28,8 +28,7 @@ pub fn AppMenuTitles(output: OutputInfo) -> Element {
     let on = output.name.map(OutputName);
     let front = front_app(&toplevels(), &apps(), on.as_ref());
     let titles = AppMenuState::of(front.as_ref(), &menus())
-        .map(|state| state.titles.menus)
-        .unwrap_or_default();
+        .map_or_default(|state| state.titles.menus);
     rsx! {
         for (index , menu) in titles.into_iter().enumerate() {
             AppMenuTitle { key: "{menu.id}", index: u16::try_from(index).unwrap_or(u16::MAX), title: menu.title }

@@ -383,7 +383,7 @@ impl Tile {
         };
         let item = place.map(|at| &items[at]);
         let editing = item.is_some_and(|item| item.edit.is_some());
-        let state = item.map(|item| item.drop).unwrap_or_default();
+        let state = item.map_or_default(|item| item.drop);
         let selection = place.is_some_and(selected);
         Tile {
             node,

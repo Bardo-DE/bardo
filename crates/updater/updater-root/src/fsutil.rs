@@ -8,8 +8,7 @@ use std::path::{Path, PathBuf};
 fn sibling(path: &Path, suffix: &str) -> PathBuf {
     let mut name = path
         .file_name()
-        .map(std::ffi::OsStr::to_os_string)
-        .unwrap_or_default();
+        .map_or_default(std::ffi::OsStr::to_os_string);
     name.push(suffix);
     path.with_file_name(name)
 }

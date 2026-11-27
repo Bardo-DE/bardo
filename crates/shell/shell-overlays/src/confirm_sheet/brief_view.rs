@@ -43,8 +43,8 @@ pub(super) struct BriefState {
 /// so the hooks run in the same order whatever the sheet is.
 pub(super) fn use_brief(view: &SheetView) -> BriefState {
     let start = view.brief.clone();
-    let text = use_signal(|| start.as_ref().map(|b| b.text.clone()).unwrap_or_default());
-    let flags = use_signal(|| start.as_ref().map(|b| b.flags.clone()).unwrap_or_default());
+    let text = use_signal(|| start.as_ref().map_or_default(|b| b.text.clone()));
+    let flags = use_signal(|| start.as_ref().map_or_default(|b| b.flags.clone()));
     let reach = use_signal(|| Reach::of_text(&text.peek()));
     BriefState { text, flags, reach }
 }

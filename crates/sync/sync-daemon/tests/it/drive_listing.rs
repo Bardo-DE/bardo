@@ -195,7 +195,7 @@ async fn a_whole_drive_is_listed_into_its_journal_and_read_by_path_and_id() {
         journal.entry_at(&path("Docs/none.txt")).expect("read"),
         None
     );
-    assert!(journal.children(&path("c.txt")).expect("read").is_empty());
+    assert_eq!(journal.children(&path("c.txt")).expect("read"), [] as [sync_journal_sqlite::DriveEntry; 0]);
     // Listing only: no item's content was asked for.
     assert!(
         !fake.hits().iter().any(|h| h.target.ends_with("/content")),

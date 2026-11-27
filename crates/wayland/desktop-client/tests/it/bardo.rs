@@ -587,7 +587,7 @@ fn the_switcher_collects_its_apps_then_shows_and_clears() {
     );
     events.push(shell(ShellEvent::SwitcherHidden));
     let hidden = run(events);
-    assert!(hidden.bardo.shell().switcher.apps().is_empty());
+    assert_eq!(hidden.bardo.shell().switcher.apps(), []);
     assert!(!hidden.bardo.shell().switcher.is_shown());
 }
 
@@ -790,7 +790,7 @@ fn the_overview_layout_is_applied_at_its_done() {
     let slots = next.bardo.shell().overview.slots();
     assert_eq!(slots.len(), 1);
     assert_eq!(slots[0].window, ToplevelIdentifier::new("w3"));
-    assert!(next.bardo.shell().overview.spaces().is_empty());
+    assert_eq!(next.bardo.shell().overview.spaces(), []);
 }
 
 #[test]
@@ -885,7 +885,7 @@ fn state_change() -> WindowChange {
 #[test]
 fn the_handle_first_then_the_window_links_at_the_window_identifier() {
     let mut linker = Linker::default();
-    assert!(linker.listed(tk(1), &id("a")).is_empty());
+    assert_eq!(linker.listed(tk(1), &id("a")), [] as [desktop_client::DesktopEvent; 0]);
     let events = linker.identified(obj(9), id("a"));
     assert_eq!(
         events,
@@ -913,13 +913,12 @@ fn the_window_first_holds_its_events_until_the_handle_names_it() {
         linker.change(obj(9), state_change()).is_empty(),
         "before the identifier"
     );
-    assert!(linker.identified(obj(9), id("a")).is_empty());
-    assert!(
+    assert_eq!(linker.identified(obj(9), id("a")), [] as [desktop_client::DesktopEvent; 0]);
+    assert_eq!(
         linker
-            .change(obj(9), WindowChange::Emphasis(Emphasis::Key))
-            .is_empty()
+            .change(obj(9), WindowChange::Emphasis(Emphasis::Key)), [] as [desktop_client::DesktopEvent; 0]
     );
-    assert!(linker.done(obj(9)).is_empty());
+    assert_eq!(linker.done(obj(9)), [] as [desktop_client::DesktopEvent; 0]);
     assert_eq!(linker.key_of(obj(9)), None);
     let events = linker.listed(tk(4), &id("a"));
     let want = vec![
@@ -958,11 +957,11 @@ fn a_closed_window_reports_once_and_a_waiting_one_is_forgotten() {
         linker.closed(obj(9)),
         vec![DesktopEvent::Window(WindowEvent::Closed(tk(1)))]
     );
-    assert!(linker.closed(obj(9)).is_empty());
+    assert_eq!(linker.closed(obj(9)), [] as [desktop_client::DesktopEvent; 0]);
     assert_eq!(linker.object_of(tk(1)), None);
 
     linker.identified(obj(10), id("never"));
-    assert!(linker.closed(obj(10)).is_empty());
+    assert_eq!(linker.closed(obj(10)), [] as [desktop_client::DesktopEvent; 0]);
     assert!(
         linker.listed(tk(2), &id("never")).is_empty(),
         "nothing is waiting any more"
@@ -974,7 +973,7 @@ fn a_second_identifier_for_a_linked_window_is_ignored() {
     let mut linker = Linker::default();
     linker.listed(tk(1), &id("a"));
     linker.identified(obj(9), id("a"));
-    assert!(linker.identified(obj(9), id("b")).is_empty());
+    assert_eq!(linker.identified(obj(9), id("b")), [] as [desktop_client::DesktopEvent; 0]);
     assert_eq!(linker.key_of(obj(9)), Some(tk(1)));
 }
 
@@ -983,7 +982,7 @@ fn a_handle_that_closed_no_longer_links_new_windows() {
     let mut linker = Linker::default();
     linker.listed(tk(1), &id("a"));
     linker.unlisted(tk(1));
-    assert!(linker.identified(obj(9), id("a")).is_empty());
+    assert_eq!(linker.identified(obj(9), id("a")), [] as [desktop_client::DesktopEvent; 0]);
     assert_eq!(linker.key_of(obj(9)), None);
 }
 

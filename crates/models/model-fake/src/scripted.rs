@@ -43,8 +43,7 @@ impl ScriptedProvider {
     pub fn requests(&self) -> Vec<TurnRequest> {
         self.seen
             .lock()
-            .map(|seen| seen.clone())
-            .unwrap_or_default()
+            .map_or_default(|seen| seen.clone())
     }
 }
 

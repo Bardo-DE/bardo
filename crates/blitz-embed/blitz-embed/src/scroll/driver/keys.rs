@@ -66,8 +66,7 @@ impl ScrollDriver {
         pointer: Option<ViewPoint>,
     ) -> Option<Scroller> {
         let chain = pointer
-            .map(|at| doc::chain_at(doc, at, axis))
-            .unwrap_or_default();
+            .map_or_default(|at| doc::chain_at(doc, at, axis));
         let remembered = self
             .last_gesture
             .filter(|latch| latch.axis == axis)

@@ -137,8 +137,7 @@ impl Model {
         let held: Vec<&Window> = self
             .apps
             .get(app)
-            .map(|record| record.windows.as_slice())
-            .unwrap_or_default()
+            .map_or_default(|record| record.windows.as_slice())
             .iter()
             .filter_map(|id| self.windows.get(id))
             .filter(|window| !matches!(window.state, WindowState::Minimised { .. }))

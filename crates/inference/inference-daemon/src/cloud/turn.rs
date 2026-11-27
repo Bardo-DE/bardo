@@ -70,8 +70,7 @@ pub fn remote_target(model: &RemoteModel) -> Target {
             .capabilities
             .text_out
             .as_ref()
-            .map(|text| JsonReply::of(&text.structured))
-            .unwrap_or_default(),
+            .map_or_default(|text| JsonReply::of(&text.structured)),
     }
 }
 

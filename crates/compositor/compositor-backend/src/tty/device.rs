@@ -79,15 +79,14 @@ impl TtyDevices {
         let events = self
             .devices
             .remove(path)
-            .map(|device| {
+            .map_or_default(|device| {
                 device
                     .known
                     .0
                     .into_values()
                     .map(|facts| ConnectorEvent::Unplugged(facts.key))
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         self.released(events)
     }
 

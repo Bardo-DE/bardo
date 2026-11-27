@@ -47,8 +47,7 @@ pub(crate) fn RunningModels() -> Element {
 fn ModelRow(row: RunRowView, onpress: EventHandler<String>) -> Element {
     let common = Common {
         data: DataName::parse("run")
-            .map(|name| vec![DataAttr::new(name, row.standing.slug())])
-            .unwrap_or_default(),
+            .map_or_default(|name| vec![DataAttr::new(name, row.standing.slug())]),
         ..Common::default()
     };
     let availability = if row.in_flight {

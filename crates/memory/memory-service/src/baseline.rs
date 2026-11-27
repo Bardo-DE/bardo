@@ -71,7 +71,7 @@ impl Baseline {
     pub(crate) fn fact_ids(&self, topic: &TopicPath) -> Vec<FactId> {
         self.get(topic)
             .and_then(|text| parse_topic(text).ok())
-            .map(|file| {
+            .map_or_default(|file| {
                 file.blocks
                     .into_iter()
                     .filter_map(|b| match b {
@@ -80,7 +80,6 @@ impl Baseline {
                     })
                     .collect()
             })
-            .unwrap_or_default()
     }
 
     /// The baseline without `gone`: forgetting a fact forgets it here too, so a pending edit's

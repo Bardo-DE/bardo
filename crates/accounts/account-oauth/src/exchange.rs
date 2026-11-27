@@ -50,8 +50,7 @@ impl TokenResponse {
     pub fn granted_scopes(&self) -> Vec<String> {
         self.scope
             .as_deref()
-            .map(|s| s.split_whitespace().map(str::to_owned).collect())
-            .unwrap_or_default()
+            .map_or_default(|s| s.split_whitespace().map(str::to_owned).collect())
     }
 
     /// When the access token expires, given the time of the request.

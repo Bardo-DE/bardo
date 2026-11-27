@@ -74,8 +74,7 @@ pub fn completion_line(note: &CompletionNote) -> Option<String> {
     };
     let because = note
         .why
-        .map(|why| format!(" ({})", why.words()))
-        .unwrap_or_default();
+        .map_or_default(|why| format!(" ({})", why.words()));
     Some(format!(
         "{who} finished: {how}{because}, {}, {}",
         plural(note.steps.0, "step"),

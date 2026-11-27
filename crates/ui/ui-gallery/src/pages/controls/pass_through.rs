@@ -35,8 +35,7 @@ pub fn MoreGlyphs() -> Element {
 /// consumer word).
 fn folder(path: &str) -> Vec<DataAttr> {
     DataName::parse("folder")
-        .map(|name| vec![DataAttr::new(name, path)])
-        .unwrap_or_default()
+        .map_or_default(|name| vec![DataAttr::new(name, path)])
 }
 
 /// Buttons with the consumer's own attribute and class on the element itself: mailo's folder

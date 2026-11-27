@@ -95,8 +95,7 @@ impl AtspiTree for BusTree {
             Ok(action) => action
                 .get_actions()
                 .await
-                .map(|all| all.into_iter().map(|a| a.name).collect())
-                .unwrap_or_default(),
+                .map_or_default(|all| all.into_iter().map(|a| a.name).collect()),
             Err(_) => Vec::new(),
         };
         Ok(RawNode {

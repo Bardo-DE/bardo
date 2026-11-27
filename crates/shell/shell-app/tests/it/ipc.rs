@@ -21,8 +21,7 @@ fn temp_door(name: &str) -> (service_locator::Agent, service_locator::Listening)
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_nanos())
-            .unwrap_or_default()
+            .map_or_default(|d| d.as_nanos())
     ));
     let env = service_locator::Environment {
         runtime_dir: Some(dir.as_os_str().to_owned()),

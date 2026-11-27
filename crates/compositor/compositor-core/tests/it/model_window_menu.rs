@@ -126,5 +126,5 @@ fn a_dimmed_entry_or_a_gone_window_changes_nothing() {
             entry: WindowEntry::Fill,
         }))],
     );
-    assert!(last(&gone).is_empty());
+    assert_eq!(last(&gone), []);
 }

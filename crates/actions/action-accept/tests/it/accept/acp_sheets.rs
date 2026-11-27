@@ -32,13 +32,12 @@ fn answers<'a>(
         }
         let ids = request["params"]["options"]
             .as_array()
-            .map(|options| {
+            .map_or_default(|options| {
                 options
                     .iter()
                     .filter_map(|o| o["optionId"].as_str().map(str::to_owned))
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         offered.push(ids);
         Some(selected(sheet))
     }
@@ -88,7 +87,7 @@ async fn the_editors_reject_on_the_sheet_refuses_the_call() {
         !performed.iter().any(|a| a.contains("forward")),
         "{performed:?}"
     );
-    assert!(world.app.messages().is_empty());
+    assert_eq!(world.app.messages(), [] as [action_accept::provider::Message; 0]);
     assert!(world.sheet.shown().is_empty(), "shell was not asked");
 }
 

@@ -31,18 +31,14 @@ pub fn effect_commands(effect: &DockEffect, ctx: &EffectCtx<'_>) -> Vec<DockComm
     let item = |tile: &TileId| ctx.items.iter().find(|i| i.tile == *tile);
     match effect {
         DockEffect::Launch { tile, instance } => item(tile)
-            .map(|item| launch(item, *instance, ctx))
-            .unwrap_or_default(),
+            .map_or_default(|item| launch(item, *instance, ctx)),
         DockEffect::Activate { tile, mode } => item(tile)
-            .map(|item| activate(item, *mode, ctx))
-            .unwrap_or_default(),
+            .map_or_default(|item| activate(item, *mode, ctx)),
         DockEffect::SpringOpen { tile } => item(tile)
-            .map(|item| activate(item, ActivateMode::Raise, ctx))
-            .unwrap_or_default(),
+            .map_or_default(|item| activate(item, ActivateMode::Raise, ctx)),
         DockEffect::ShowInFiles { tile } => item(tile)
             .and_then(|item| item.kind.app_id().cloned())
-            .map(|app| pick_commands(&DockPick::ShowInFiles(app)))
-            .unwrap_or_default(),
+            .map_or_default(|app| pick_commands(&DockPick::ShowInFiles(app))),
         DockEffect::Reorder { tile, to } => item(tile)
             .and_then(|item| reorder(item, *to, ctx.pins))
             .map(DockCommand::Pins)

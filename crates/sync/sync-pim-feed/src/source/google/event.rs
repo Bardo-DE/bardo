@@ -183,8 +183,7 @@ fn mailto(address: &str) -> Option<String> {
 
 fn common_name(name: Option<&str>) -> String {
     name.filter(|n| !n.is_empty())
-        .map(|n| format!(";CN={}", param(n)))
-        .unwrap_or_default()
+        .map_or_default(|n| format!(";CN={}", param(n)))
 }
 
 fn attendee_line(attendee: &Attendee) -> Option<String> {

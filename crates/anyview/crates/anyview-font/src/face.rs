@@ -70,8 +70,7 @@ fn face_of(font: &FontRef<'_>) -> Face {
     let named = |id: StringId| {
         font.localized_strings(id)
             .english_or_first()
-            .map(|name| name.to_string())
-            .unwrap_or_default()
+            .map_or_default(|name| name.to_string())
     };
     let variable = match font.axes().len() {
         0 => Variation::Fixed,

@@ -57,8 +57,7 @@ fn capitalised(text: &str) -> String {
     let mut letters = text.chars();
     letters
         .next()
-        .map(|first| first.to_uppercase().chain(letters).collect())
-        .unwrap_or_default()
+        .map_or_default(|first| first.to_uppercase().chain(letters).collect())
 }
 
 fn standard_name(action: StandardAction) -> String {

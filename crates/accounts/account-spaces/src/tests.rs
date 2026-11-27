@@ -26,7 +26,7 @@ async fn a_first_start_writes_an_empty_list_once() {
     let scratch = Scratch::new("spaces");
     let (book, said) = SpaceBook::open(Some(&store(&scratch))).await;
     assert_eq!(said, None);
-    assert!(book.list().is_empty());
+    assert_eq!(book.list(), []);
     assert!(scratch.path().join("accounts/spaces.json").exists());
 }
 
@@ -171,7 +171,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
     std::fs::write(dir.join("spaces.json"), "{ not the spaces").expect("write");
     let (mut book, said) = SpaceBook::open(Some(&store(&scratch))).await;
     assert!(said.is_some_and(|s| s.contains("spaces.json")));
-    assert!(book.list().is_empty());
+    assert_eq!(book.list(), []);
     assert!(matches!(
         book.create(
             &app("org.bardo.Photos"),

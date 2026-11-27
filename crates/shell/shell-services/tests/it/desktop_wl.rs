@@ -309,8 +309,7 @@ fn a_window_is_on_the_active_workspace_of_its_output() {
         all.windows
             .iter()
             .find(|w| w.key == WindowKey(key))
-            .map(|w| w.workspaces.clone())
-            .unwrap_or_default()
+            .map_or_default(|w| w.workspaces.clone())
     };
     assert_eq!(on(1), [WorkspaceKey(10)]);
     assert_eq!(on(2), [WorkspaceKey(20)]);

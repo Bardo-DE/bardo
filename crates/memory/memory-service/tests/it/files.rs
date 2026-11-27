@@ -248,6 +248,6 @@ fn timeline_rows_hide_erased_things() {
             by: EraseCause::HeaderOnly
         }
     );
-    assert!(rows[1].things.is_empty());
+    assert_eq!(rows[1].things, [] as [memory_core::ThingView; 0]);
     assert_eq!(rows[1].kind.as_str(), "thing.archived");
 }

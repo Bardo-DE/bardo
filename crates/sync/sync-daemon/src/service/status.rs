@@ -109,7 +109,7 @@ pub fn held_details(dataset: &DatasetName, held: Option<&MassDelete>) -> Details
 /// What `Progress` carries for one finished cycle.
 pub fn progress_details(fetched: u64, uploaded: u64) -> Details {
     let json = json!({ "fetched": fetched, "uploaded": uploaded });
-    json.as_object().map(to_vardict).unwrap_or_default()
+    json.as_object().map_or_default(to_vardict)
 }
 
 /// What `Conflict` carries: the `number` (what `Resolve` takes; absent only for a conflict not
@@ -134,7 +134,7 @@ pub fn conflict_details(stored: &StoredConflict) -> Details {
         "base": base,
         "at": stored.at.0,
     });
-    json.as_object().map(to_vardict).unwrap_or_default()
+    json.as_object().map_or_default(to_vardict)
 }
 
 #[cfg(test)]

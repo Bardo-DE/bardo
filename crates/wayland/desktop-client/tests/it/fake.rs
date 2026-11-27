@@ -41,7 +41,7 @@ fn drain_events_returns_what_was_applied_once() {
     let drained = desktop.drain_events();
     assert_eq!(drained.len(), 2);
     assert!(matches!(drained[0], DesktopEvent::Toplevel(_)));
-    assert!(desktop.drain_events().is_empty());
+    assert_eq!(desktop.drain_events(), [] as [desktop_client::DesktopEvent; 0]);
 }
 
 #[test]
@@ -60,7 +60,7 @@ fn commands_are_checked_against_the_offer_and_recorded() {
     ));
     assert_eq!(desktop.sent().len(), 1);
     assert_eq!(desktop.take_sent().len(), 1);
-    assert!(desktop.sent().is_empty());
+    assert_eq!(desktop.sent(), []);
 }
 
 #[test]
@@ -193,7 +193,7 @@ fn a_bardo_command_naming_nothing_is_refused_and_not_recorded() {
         desktop.send(DesktopCommand::HideApp(AppKey::new(9))),
         Err(CommandError::UnknownApp(AppKey::new(9)))
     );
-    assert!(desktop.sent().is_empty());
+    assert_eq!(desktop.sent(), []);
 }
 
 #[test]

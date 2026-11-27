@@ -16,7 +16,7 @@ const CUT: &str = "(more rows left out)";
 /// The menus of the app called `name`: its own menu (the app's first menu, then the shell's own
 /// `own` rows), then each menu the app sent.
 pub fn listing(name: &str, own: &[OwnGroup], served: Option<&ServedMenu>) -> String {
-    let sent = served.map(titles).unwrap_or_default();
+    let sent = served.map_or_default(titles);
     let mut lines = vec![name.to_owned()];
     if let Some((_, rows)) = &sent.app {
         rows_lines(rows, 1, &mut lines);

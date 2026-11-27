@@ -82,7 +82,7 @@ async fn a_narrative_is_written_after_thirty_quiet_seconds_from_the_skeleton_alo
     );
     assert_eq!(narrated[0].kind, EpisodeKind::Task);
     assert_eq!(narrated[0].skeleton.label.integrity, Integrity::Trusted);
-    assert!(w.companion.idle.queue.is_empty());
+    assert_eq!(w.companion.idle.queue, [] as [agent_loop::EpisodeJob; 0]);
 
     // Written once.
     w.set_time(1_000 + 90);

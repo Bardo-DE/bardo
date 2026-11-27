@@ -106,8 +106,7 @@ pub(crate) fn root_texts(doc: &BaseDocument, root: NodeId) -> Vec<NodeId> {
         .get_node(root)
         .and_then(|node| node.element_data())
         .and_then(|element| element.inline_layout_data.as_ref())
-        .map(|text| text.layout.inline_boxes().map(|b| b.id).collect())
-        .unwrap_or_default();
+        .map_or_default(|text| text.layout.inline_boxes().map(|b| b.id).collect());
     let mut found = Vec::new();
     collect_laid(doc, root, &boxes, &mut found);
     found

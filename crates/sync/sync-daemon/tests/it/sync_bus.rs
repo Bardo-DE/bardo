@@ -90,7 +90,7 @@ async fn with_no_dataset_every_name_answers_the_refusal_and_a_bad_name_is_invali
     let rig = rig().await;
     let me = client(&rig.bus, &rig.known, "org.example.App", CallerRole::App).await;
     let sync = proxy(&me).await;
-    assert!(sync.datasets().await.expect("datasets").is_empty());
+    assert_eq!(sync.datasets().await.expect("datasets"), [] as [std::string::String; 0]);
     for dataset in ["acct/pim", "a1/photos_originals"] {
         for err in [
             sync.status(dataset).await.map(drop).expect_err("status"),

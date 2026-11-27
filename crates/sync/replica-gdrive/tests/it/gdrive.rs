@@ -345,7 +345,7 @@ async fn a_dataset_folder_sees_only_itself_and_makes_itself() {
     // A folder that is not there yet is made by the first listing and written into by a put.
     let fresh = server.replica("Photos/Metadata", 10, Uploads::default());
     let (none, _) = listing(&fresh).await;
-    assert!(none.is_empty());
+    assert_eq!(none, [] as [sync_core::Change; 0]);
     fresh
         .put(new_item("dev.json", b"{}"), BaseVersion::Absent)
         .await

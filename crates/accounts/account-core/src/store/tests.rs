@@ -158,7 +158,7 @@ fn a_file_that_cannot_be_read_is_refused_not_emptied() {
 /// (`a_document_frozen_at_each_vocabulary_since_the_first_stored_one_reads` has one per version).
 #[test]
 fn a_version_without_a_migration_row_is_read_as_it_was() {
-    assert!(MIGRATIONS.is_empty());
+    assert_eq!(MIGRATIONS, []);
     let stored = filled().to_json().expect("json").replacen(
         &format!("\"vocab\": {}", VocabVersion::CURRENT.0),
         &format!("\"vocab\": {}", FIRST_PERSISTED.0),

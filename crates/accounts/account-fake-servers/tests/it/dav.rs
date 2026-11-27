@@ -210,7 +210,7 @@ async fn caldav_and_carddav_collections_list_and_sync() {
         dav("REPORT", "/remote.php/dav/calendars/alice/tasks", "pw").with_body(sync),
     )
     .await;
-    assert!(hrefs(&tasks).is_empty());
+    assert_eq!(hrefs(&tasks), [] as [std::string::String; 0]);
 }
 
 #[tokio::test]

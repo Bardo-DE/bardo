@@ -17,7 +17,7 @@ pub struct DaemonEnv<'a> {
 }
 
 fn engine_cache(root: Option<&Path>) -> Vec<(&'static str, String)> {
-    root.map(|root| {
+    root.map_or_default(|root| {
         let root = root.display();
         vec![
             ("VLLM_CACHE_ROOT", format!("{root}/vllm")),
@@ -25,7 +25,6 @@ fn engine_cache(root: Option<&Path>) -> Vec<(&'static str, String)> {
             ("TORCHINDUCTOR_CACHE_DIR", format!("{root}/inductor")),
         ]
     })
-    .unwrap_or_default()
 }
 
 /// What only one daemon is told.

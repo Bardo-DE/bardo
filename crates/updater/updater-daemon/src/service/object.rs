@@ -88,8 +88,7 @@ impl Updates {
         self.engine
             .snapshot()
             .current
-            .map(|v| v.to_string())
-            .unwrap_or_default()
+            .map_or_default(|v| v.to_string())
     }
 
     /// The newer version on offer, empty when none.
@@ -98,8 +97,7 @@ impl Updates {
         self.engine
             .snapshot()
             .available
-            .map(|v| v.to_string())
-            .unwrap_or_default()
+            .map_or_default(|v| v.to_string())
     }
 
     /// The notes of the version on offer.
@@ -132,8 +130,7 @@ impl Updates {
         self.engine
             .snapshot()
             .kind
-            .map(|k| k.plain().to_owned())
-            .unwrap_or_default()
+            .map_or_default(|k| k.plain().to_owned())
     }
 
     /// What kind of failure it was, a stable word for programs and never shown to a person, empty
@@ -143,7 +140,6 @@ impl Updates {
         self.engine
             .snapshot()
             .kind
-            .map(|kind| kind.kind().to_owned())
-            .unwrap_or_default()
+            .map_or_default(|kind| kind.kind().to_owned())
     }
 }

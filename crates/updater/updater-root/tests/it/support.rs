@@ -243,11 +243,10 @@ impl Sandbox {
 
     pub fn releases(&self) -> Vec<String> {
         let mut names: Vec<String> = std::fs::read_dir(self.layout.releases_dir())
-            .map(|d| {
+            .map_or_default(|d| {
                 d.map(|e| e.expect("entry").file_name().to_string_lossy().into_owned())
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         names.sort();
         names
     }

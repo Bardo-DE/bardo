@@ -151,7 +151,7 @@ async fn with_inferd_up_consolidation_drafts_over_the_bus() {
     let rig = rig(Some(r#"{"hunks":[]}"#)).await;
     let consolidator = InferdConsolidator::new(Arc::clone(&rig.link));
     let draft = consolidator.draft(input()).await.expect("a draft");
-    assert!(draft.hunks.is_empty());
+    assert_eq!(draft.hunks, [] as [memory_core::Hunk; 0]);
     let seen = rig.seen.lock().expect("lock").clone();
     // Nothing is classed in an empty input: the app's own data. (A mixed input takes the most
     // sensitive class present: `the_class_of_a_request_is_the_most_sensitive_of_its_labels`.)

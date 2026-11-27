@@ -175,11 +175,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         self.runtimes
             .values()
             .find(|rt| &rt.agent == agent)
-            .map(|rt| {
+            .map_or_default(|rt| {
                 let _ = since;
                 (rt.steps.clone(), Some(rt.session.clone()))
             })
-            .unwrap_or_default()
     }
 
     /// Any session of the companion in `space`, to hand an episode to the router through.

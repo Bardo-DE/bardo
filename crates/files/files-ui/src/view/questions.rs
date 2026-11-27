@@ -22,8 +22,7 @@ pub(super) fn Questions(browse: Browse) -> Element {
         Question::DeleteForGood(items) => {
             let first = items
                 .first()
-                .map(|item| item.original.name.display().into_owned())
-                .unwrap_or_default();
+                .map_or_default(|item| item.original.name.display().into_owned());
             let title = erase_words(Some((items.len(), first)));
             erase(browse, title, "Delete Immediately")
         }

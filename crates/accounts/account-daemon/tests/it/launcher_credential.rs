@@ -96,7 +96,7 @@ async fn a_credential_is_a_sealed_key_on_a_descriptor_and_the_key_is_in_no_line(
         .issue_process_credential("g-always", PROGRAM)
         .await
         .expect("issued");
-    assert!(!id.is_empty());
+    assert_ne!(id, "");
     assert_eq!(key_of(&handle), KEY);
 
     launcher

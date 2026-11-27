@@ -380,11 +380,10 @@ fn step_message(request: &TurnRequest) -> Vec<Part> {
         .iter()
         .rev()
         .find(|m| m.role == Role::User && !images_of(&m.parts).is_empty())
-        .map(|m| {
+        .map_or_default(|m| {
             // The window's text of an earlier step is not replayed: it is out of date.
             let kept =
                 |part: &&Part| !matches!(part, Part::Text(t) if t.starts_with(prompt::TREE_HEADER));
             m.parts.iter().filter(kept).cloned().collect()
         })
-        .unwrap_or_default()
 }

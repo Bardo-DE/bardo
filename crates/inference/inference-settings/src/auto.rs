@@ -104,7 +104,7 @@ mod tests {
         assert_eq!(resolved.policy, AutoPolicy::default());
         assert_eq!(resolved.policy.allow_evict, AutoEvict::IdleOnly);
         assert!(resolved.policy.show_reason);
-        assert!(resolved.rejected.is_empty());
+        assert_eq!(resolved.rejected, [] as [&str; 0]);
     }
 
     #[test]
@@ -115,7 +115,7 @@ mod tests {
         let resolved = config.auto.resolve();
         assert_eq!(resolved.policy.allow_evict, AutoEvict::Never);
         assert!(!resolved.policy.show_reason);
-        assert!(resolved.rejected.is_empty());
+        assert_eq!(resolved.rejected, [] as [&str; 0]);
     }
 
     #[test]

@@ -75,7 +75,7 @@ impl FileBus {
 impl DdcBus for FileBus {
     fn probe(&self) -> Vec<Endpoint> {
         self.load()
-            .map(|monitors| {
+            .map_or_default(|monitors| {
                 monitors
                     .displays
                     .into_iter()
@@ -86,7 +86,6 @@ impl DdcBus for FileBus {
                     })
                     .collect()
             })
-            .unwrap_or_default()
     }
 
     fn read(&self, id: DdcId, feature: Feature) -> Result<Level, DdcError> {

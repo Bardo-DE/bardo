@@ -98,8 +98,7 @@ impl OnEngines {
         )
         .await
         .and_then(Result::ok)
-        .map(|rows| rows.rows)
-        .unwrap_or_default()
+        .map_or_default(|rows| rows.rows)
     }
 
     fn row(&self, kind: EngineKind, reported: &[LocalEngine]) -> EngineRow {

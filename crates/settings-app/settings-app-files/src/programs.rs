@@ -65,8 +65,7 @@ fn app_of(path: &Path, text: &str, origin: SchemaOrigin) -> Option<DesktopApp> {
         id: app_id(path)?,
         name: entry
             .string("Name")
-            .map(Cow::into_owned)
-            .unwrap_or_default(),
+            .map_or_default(Cow::into_owned),
         exec: first("Exec"),
         try_exec: first("TryExec"),
         flatpak: entry.string("X-Flatpak").map(Cow::into_owned),

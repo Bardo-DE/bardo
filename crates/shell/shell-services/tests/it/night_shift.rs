@@ -74,13 +74,12 @@ fn skip_in(settings: &std::path::Path) -> Vec<String> {
         .get("night_light")
         .and_then(|section| section.get("skip_outputs"))
         .and_then(toml::Value::as_array)
-        .map(|entries| {
+        .map_or_default(|entries| {
             entries
                 .iter()
                 .filter_map(|entry| entry.as_str().map(str::to_owned))
                 .collect()
         })
-        .unwrap_or_default()
 }
 
 async fn until(

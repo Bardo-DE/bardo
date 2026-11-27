@@ -73,8 +73,7 @@ fn sentence_case(word: &str) -> String {
     let mut chars = word.chars();
     chars
         .next()
-        .map(|first| first.to_uppercase().chain(chars).collect())
-        .unwrap_or_default()
+        .map_or_default(|first| first.to_uppercase().chain(chars).collect())
 }
 
 /// The account a key path names and the rest of the path after it: an id may hold dots, so the

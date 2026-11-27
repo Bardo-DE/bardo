@@ -290,7 +290,7 @@ async fn a_helper_is_listed_with_its_conversation_and_its_jobs_from_its_card() {
     assert_eq!(rows[0].name.as_str(), "Research");
     assert_eq!(rows[0].session.as_str(), "s-61");
     assert_eq!(helpers.jobs(&helper(1)), vec![done_job()]);
-    assert!(helpers.jobs(&helper(2)).is_empty());
+    assert_eq!(helpers.jobs(&helper(2)), [] as [companion_wire::JobLine; 0]);
 }
 
 #[tokio::test]
@@ -310,7 +310,7 @@ async fn a_sentence_the_board_tells_arrives_once_the_daemon_says_something_chang
 #[tokio::test]
 async fn an_editor_goes_without_helpers_when_the_daemon_is_not_there() {
     let mut none = LiveHelpers::over(None).await;
-    assert!(none.rows().is_empty());
+    assert_eq!(none.rows(), [] as [agent_acp_server::HelperRow; 0]);
     none.open_job(&helper(1)).await.unwrap_err();
 }
 

@@ -36,8 +36,7 @@ impl OnDisk {
     fn keep(&self, chosen: &Path) -> AddOutcome {
         let name = chosen
             .file_name()
-            .map(|name| name.to_string_lossy().into_owned())
-            .unwrap_or_default();
+            .map_or_default(|name| name.to_string_lossy().into_owned());
         if !is_picture(chosen) {
             eprintln!(
                 "bardo-settings: wallpaper: {} is not a kind of picture the desktop draws",

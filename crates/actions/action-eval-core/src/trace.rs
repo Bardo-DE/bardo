@@ -246,7 +246,7 @@ impl CaseTrace {
         let setup_audit = slice(records, 0, first);
         let played = case.expanded();
         for (cut, ending) in cuts.into_iter().zip(&result.steps) {
-            let plan = played.get(steps.len()).map(plan_line).unwrap_or_default();
+            let plan = played.get(steps.len()).map_or_default(plan_line);
             let upto = cut.records.min(records.len());
             let sheet_to = cut.sheets.min(sheets.len());
             steps.push(StepTrace {

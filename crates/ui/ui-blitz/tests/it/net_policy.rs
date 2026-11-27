@@ -33,7 +33,7 @@ fn swatch() -> PathBuf {
 
 /// The one directory the swatch is in, as the roots an app that shows it names.
 fn roots() -> FileRoots {
-    FileRoots::new([swatch().parent().map(PathBuf::from).unwrap_or_default()])
+    FileRoots::new([swatch().parent().map_or_default(PathBuf::from)])
 }
 
 /// The same PNG's bytes, for a handler to answer with.

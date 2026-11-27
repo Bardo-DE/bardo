@@ -99,8 +99,7 @@ impl Rig {
 
     fn items(&self, name: &str) -> Vec<String> {
         self.calendar(name)
-            .map(|dir| items_in(&dir, PimKind::Calendar))
-            .unwrap_or_default()
+            .map_or_default(|dir| items_in(&dir, PimKind::Calendar))
     }
 
     /// The text of the item of calendar `name` that holds `needle`.

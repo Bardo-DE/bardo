@@ -153,8 +153,7 @@ fn ncx_points(
         let title = point
             .children()
             .find(|node| node.has_tag_name("navLabel"))
-            .map(words)
-            .unwrap_or_default();
+            .map_or_default(words);
         let section = point
             .children()
             .find(|node| node.has_tag_name("content"))

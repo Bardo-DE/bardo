@@ -31,7 +31,7 @@ impl FeedCursor for SyncCursor {
             SyncCursor::Paging { page, sync } => format!(
                 "page:{}:{}",
                 encode(page),
-                sync.as_deref().map(encode).unwrap_or_default()
+                sync.as_deref().map_or_default(encode)
             ),
         }
     }
@@ -84,7 +84,7 @@ fn optional(text: &str) -> Option<String> {
 
 impl FeedCursor for TaskCursor {
     fn encode(&self) -> String {
-        let text = |value: &Option<String>| value.as_deref().map(encode).unwrap_or_default();
+        let text = |value: &Option<String>| value.as_deref().map_or_default(encode);
         match self {
             TaskCursor::Since(since) => format!("since:{}", text(since)),
             TaskCursor::Paging {

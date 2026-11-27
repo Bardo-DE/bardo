@@ -11,7 +11,7 @@ use crate::common::*;
 #[test]
 fn undo_works_only_after_a_change_that_can_be_taken_back() {
     let (browser, effects) = loaded(vec![]).step(Input::Undo, at(0));
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
     assert!(!browser.can_undo());
 
     let (browser, _) = browser.step(
@@ -71,7 +71,7 @@ fn a_taken_name_is_a_question_and_the_answer_goes_to_the_worker() {
         vec![Effect::Answer(Resolution::once(Answer::Stop))]
     );
     let (_, stray) = answered.step(Input::Answer(answer), at(0));
-    assert!(stray.is_empty());
+    assert_eq!(stray, [] as [files_model::Effect; 0]);
 }
 
 #[test]

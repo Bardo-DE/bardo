@@ -219,7 +219,7 @@ mod tests {
         }
         let taken = memory.take();
         assert_eq!(taken.iter().map(|e| e.n).collect::<Vec<_>>(), [1, 2]);
-        assert!(memory.take().is_empty());
+        assert_eq!(memory.take(), [] as [action_core::ModelExchange; 0]);
         assert_eq!(taken[0].tier, "fast");
         assert_eq!(taken[0].class, "prompt");
     }

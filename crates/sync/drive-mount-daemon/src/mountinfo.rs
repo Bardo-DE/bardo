@@ -64,8 +64,7 @@ pub fn parse(table: &str) -> Vec<Entry> {
 #[must_use]
 pub fn read() -> Vec<Entry> {
     std::fs::read_to_string("/proc/self/mountinfo")
-        .map(|table| parse(&table))
-        .unwrap_or_default()
+        .map_or_default(|table| parse(&table))
 }
 
 /// The topmost mount at `path` in `entries`, if any.

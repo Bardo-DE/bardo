@@ -8,8 +8,7 @@ use ui_components::root::pass_through::{DataAttr, DataName};
 pub(crate) fn marked(name: &'static str, value: &str) -> Common {
     Common {
         data: DataName::parse(name)
-            .map(|name| vec![DataAttr::new(name, value.to_owned())])
-            .unwrap_or_default(),
+            .map_or_default(|name| vec![DataAttr::new(name, value.to_owned())]),
         ..Common::default()
     }
 }

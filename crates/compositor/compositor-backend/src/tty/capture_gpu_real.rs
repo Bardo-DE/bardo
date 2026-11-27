@@ -69,8 +69,7 @@ impl CaptureGpu for RealCaptureGpu {
         // Busy means a frame is being drawn with it: offer nothing now.
         self.renderer
             .try_borrow()
-            .map(|renderer| renderable_formats(&*renderer))
-            .unwrap_or_default()
+            .map_or_default(|renderer| renderable_formats(&*renderer))
     }
 
     fn write_dmabuf(

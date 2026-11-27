@@ -34,8 +34,7 @@ impl Screens {
                 .iter()
                 .find(|s| matches!(s, CastSource::Output(n) if n == name))
                 .or(outputs.first())
-                .map(|s| vec![(*s).clone()])
-                .unwrap_or_default(),
+                .map_or_default(|s| vec![(*s).clone()]),
         }
     }
 }

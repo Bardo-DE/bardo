@@ -189,7 +189,7 @@ async fn offer_shows_the_picker_answers_the_pick_and_grants_nothing() {
     assert_eq!(offered, ["fake-storage", "fake-mail"]);
     // Nothing was granted, and no token went anywhere: the answer is the three words above.
     let registry = rig.service.registry();
-    assert!(registry.grants.is_empty());
+    assert_eq!(registry.grants, [] as [account_core::consent::Grant; 0]);
     // The sheet was taken down once the person had picked.
     eventually("the picker to be taken down", || {
         rig.host_log.calls().closed.len() == 1
@@ -255,7 +255,7 @@ async fn a_hint_that_fits_no_identity_or_is_no_provider_shows_nothing() {
     );
     let bad = app.offer("Not A Provider", "").await.expect_err("bad hint");
     assert_eq!(error_name(&bad), INVALID_ARGS);
-    assert!(rig.host_log.calls().opened.is_empty());
+    assert_eq!(rig.host_log.calls().opened, [] as [(std::string::String, std::string::String, std::string::String); 0]);
 }
 
 #[tokio::test(flavor = "multi_thread")]

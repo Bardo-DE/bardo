@@ -292,7 +292,7 @@ async fn a_call_is_audited_as_the_agent_program_and_a_read_runs_without_a_questi
         served.value.expect("text").value,
         Value::Text("fn main() {}".into())
     );
-    assert!(w.sheets().is_empty());
+    assert_eq!(w.sheets(), [] as [action_core::ConfirmRequest; 0]);
     assert_eq!(w.performed(), [FILES_READ]);
     let actors: Vec<Actor> = w
         .records()
@@ -359,7 +359,7 @@ async fn only_the_host_of_the_session_may_make_the_agents_calls() {
     )
     .await;
     assert_eq!(reply, IntentsReply::Refused(WireRefusal::NotAllowed));
-    assert!(w.performed().is_empty());
+    assert_eq!(w.performed(), [] as [std::string::String; 0]);
 }
 
 #[tokio::test]

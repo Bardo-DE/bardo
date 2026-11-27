@@ -114,8 +114,7 @@ fn render(mut table: Table, pins: &DockPins) -> String {
     let kept: Vec<Value> = table
         .get("dock")
         .and_then(Value::as_array)
-        .map(|rows| rows.iter().filter(|row| !is_ours(row)).cloned().collect())
-        .unwrap_or_default();
+        .map_or_default(|rows| rows.iter().filter(|row| !is_ours(row)).cloned().collect());
     let rows = pins
         .pinned
         .iter()

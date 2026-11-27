@@ -142,8 +142,7 @@ impl<B: Backend> Open<B> {
         let h = &entry.header;
         let body = present(entry);
         let texts: Vec<String> = body
-            .map(|b| b.index_texts().into_iter().map(|t| t.text).collect())
-            .unwrap_or_default();
+            .map_or_default(|b| b.index_texts().into_iter().map(|t| t.text).collect());
         RecentEntry {
             summary: self.summary(entry),
             effect: h.effect,
@@ -167,8 +166,7 @@ impl<B: Backend> Open<B> {
             kind: h.kind.clone(),
             actor: h.actor.clone(),
             things: present(entry)
-                .map(|b| b.things().into_iter().map(|(v, _)| v.clone()).collect())
-                .unwrap_or_default(),
+                .map_or_default(|b| b.things().into_iter().map(|(v, _)| v.clone()).collect()),
         }
     }
 
@@ -279,8 +277,7 @@ impl<B: Backend> Open<B> {
                     let summary = stored
                         .iter()
                         .find(|s| s.topic == topic && s.state == memory_core::FactState::Active)
-                        .map(|s| s.fact.text.as_str().to_owned())
-                        .unwrap_or_default();
+                        .map_or_default(|s| s.fact.text.as_str().to_owned());
                     memory_files_format::PrimerEntry {
                         title: UserText::new(topic.to_string()),
                         summary: UserText::new(summary),

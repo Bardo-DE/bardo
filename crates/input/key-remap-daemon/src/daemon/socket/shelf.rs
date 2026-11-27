@@ -188,7 +188,7 @@ mod tests {
                 message: ToClient::Keymap(shelf.state().clone())
             }]
         );
-        assert!(!shelf.state().overrides.is_empty());
+        assert_ne!(shelf.state().overrides, "");
         shelf.call(b, KeymapCall::Watch);
 
         let told = shelf

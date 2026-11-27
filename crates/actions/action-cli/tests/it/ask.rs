@@ -271,7 +271,7 @@ async fn a_companion_that_is_not_there_is_unavailable() {
             .stderr
             .starts_with("bardo-do: the assistant is not running")
     );
-    assert!(run.report.stdout.is_empty());
+    assert_eq!(run.report.stdout, "");
 }
 
 #[tokio::test]

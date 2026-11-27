@@ -203,7 +203,7 @@ async fn a_request_in_a_message_is_still_gated_as_the_receivers_own_call() {
     };
     let refused = perform(&router, entity_call).await.expect_err("asks");
     assert_eq!(refused, CallRefusal::Unconfirmed(ConfirmEnd::Dismissed));
-    assert!(router.seams.link.mail.sent().is_empty());
+    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
     assert_eq!(router.seams.reviewer.call_count(), 0);
 }
 

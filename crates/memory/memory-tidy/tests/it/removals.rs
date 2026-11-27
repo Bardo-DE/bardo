@@ -41,12 +41,12 @@ const DELETE_HISTORY: Removal = Removal {
 #[test]
 fn a_note_stands_until_it_is_struck_out() {
     let notes = Removals::new(MemLedger::default());
-    assert!(notes.open().is_empty());
+    assert_eq!(notes.open(), [] as [(memory_core::SpaceId, memory_core::Removal); 0]);
     notes.begin(&space("old"), Removal::KEEP_ALL).expect("note");
     notes.begin(&space("old"), DELETE_HISTORY).expect("replace");
     assert_eq!(notes.open(), vec![(space("old"), DELETE_HISTORY)]);
     notes.finish(&space("old")).expect("strike");
-    assert!(notes.open().is_empty());
+    assert_eq!(notes.open(), [] as [(memory_core::SpaceId, memory_core::Removal); 0]);
 }
 
 #[test]

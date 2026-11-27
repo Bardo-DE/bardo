@@ -16,12 +16,11 @@ pub fn local_target(model: &LocalModel) -> Target {
     Target {
         name: model.name.clone(),
         sampling: DefaultSampling::Entry(model.sampling()),
-        max_output: model.caps().map(|caps| caps.max_output).unwrap_or_default(),
+        max_output: model.caps().map_or_default(|caps| caps.max_output),
         flavor: model.flavor,
         json: model
             .caps()
-            .map(|caps| JsonReply::of(&caps.output))
-            .unwrap_or_default(),
+            .map_or_default(|caps| JsonReply::of(&caps.output)),
     }
 }
 

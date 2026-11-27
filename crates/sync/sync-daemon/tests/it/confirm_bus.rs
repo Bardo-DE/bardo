@@ -352,7 +352,7 @@ async fn the_shell_hears_a_hold_and_its_end_but_no_data_of_a_dataset_it_does_not
     let mut conflicts = sync.receive_conflict().await.expect("stream");
     // The shell asks for no data: it only joins the ones that are told.
     sync.watch().await.expect("watch");
-    assert!(sync.datasets().await.expect("datasets").is_empty());
+    assert_eq!(sync.datasets().await.expect("datasets"), [] as [std::string::String; 0]);
     emptied(&rig).await;
 
     let started = next_hold(&rig, &mut holds, parts!()).await;

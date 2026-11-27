@@ -119,7 +119,7 @@ impl Manager {
 
     #[zbus(property)]
     fn block_inhibited(&self) -> String {
-        self.blocked.lock().map(|b| b.clone()).unwrap_or_default()
+        self.blocked.lock().map_or_default(|b| b.clone())
     }
 
     #[zbus(property)]

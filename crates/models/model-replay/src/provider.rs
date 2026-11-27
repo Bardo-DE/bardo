@@ -67,8 +67,7 @@ impl ReplayProvider {
     pub fn misses(&self) -> Vec<ReplayError> {
         self.cursor
             .lock()
-            .map(|c| c.misses.clone())
-            .unwrap_or_default()
+            .map_or_default(|c| c.misses.clone())
     }
 
     fn pick(&self, got: &RequestPrint) -> Result<Interaction, ReplayError> {

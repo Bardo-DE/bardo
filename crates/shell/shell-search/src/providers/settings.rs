@@ -103,8 +103,7 @@ impl SettingsProvider {
         }
         guard
             .as_ref()
-            .map(|cached| cached.index.clone())
-            .unwrap_or_default()
+            .map_or_default(|cached| cached.index.clone())
     }
 }
 

@@ -151,7 +151,7 @@ async fn a_model_inferd_does_not_run_is_refused_in_plain_words() {
         let refused = inference.start(unknown).await.expect_err("start");
         assert!(name_of(&refused).ends_with("InvalidArgs"), "{refused:?}");
     }
-    assert!(running(&inference).await.is_empty());
+    assert_eq!(running(&inference).await, [] as [inference_dbus::inference::RunningModel; 0]);
 }
 
 #[tokio::test(flavor = "multi_thread")]

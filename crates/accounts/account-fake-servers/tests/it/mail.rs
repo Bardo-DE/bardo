@@ -430,7 +430,7 @@ async fn rewrite_points_mail_rows_at_the_fake() {
         .iter()
         .filter(|r| r.family == account_core::Family::Imap)
         .collect();
-    assert!(!imap_rows.is_empty());
+    assert_ne!(imap_rows, [] as [&account_provider::CapabilityRow; 0]);
     assert!(
         imap_rows
             .iter()

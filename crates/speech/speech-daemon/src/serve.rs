@@ -46,6 +46,7 @@ pub struct Running {
 
 impl Running {
     /// The daemon's connection.
+    #[must_use]
     pub fn connection(&self) -> &zbus::Connection {
         &self.connection
     }

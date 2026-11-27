@@ -16,8 +16,7 @@ pub fn published(
             let output = group
                 .outputs
                 .first()
-                .map(|name| name.0.clone())
-                .unwrap_or_default();
+                .map_or_default(|name| name.0.clone());
             let look_of = &look_of;
             group
                 .workspaces

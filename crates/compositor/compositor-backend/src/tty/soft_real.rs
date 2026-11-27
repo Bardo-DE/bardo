@@ -95,8 +95,7 @@ impl SoftScanout {
             transform: transform_of(config.transform),
         };
         let drawable: Vec<Format> = Bind::<Dmabuf>::supported_formats(&*renderer.borrow())
-            .map(|set| set.iter().copied().collect())
-            .unwrap_or_default();
+            .map_or_default(|set| set.iter().copied().collect());
         let compositor: SoftCompositor = DrmCompositor::new(
             picture,
             surface,

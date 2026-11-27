@@ -111,7 +111,7 @@ impl Running {
 
     /// Everything reported so far.
     pub fn reports(&self) -> Vec<Report> {
-        self.reports.lock().map(|r| r.clone()).unwrap_or_default()
+        self.reports.lock().map_or_default(|r| r.clone())
     }
 }
 

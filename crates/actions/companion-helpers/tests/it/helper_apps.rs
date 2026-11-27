@@ -36,7 +36,7 @@ async fn an_app_helper_takes_a_board_job_and_its_words_are_the_answer() {
         apps.goals.lock().expect("goals").clone(),
         vec![("Coder".to_owned(), "compare the three offers".to_owned())]
     );
-    assert!(w.infer.asked().is_empty());
+    assert_eq!(w.infer.asked(), [] as [inference_core::ChatRequest; 0]);
     assert_eq!(state_of(&hub, &coder), HelperState::Idle);
     assert_eq!(
         hub.card(&coder).expect("card").kind,

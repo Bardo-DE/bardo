@@ -194,7 +194,7 @@ fn a_schema_file_from_before_the_mark_loads_every_key_hands_off() {
         .collect::<Vec<_>>()
         .concat();
     let schema = Schema::from_toml(&old).unwrap_or_else(|e| panic!("{old}: {e}"));
-    assert!(!schema.key.is_empty());
+    assert_ne!(schema.key, [] as [settings_types::schema::KeySpec; 0]);
     assert!(schema.key.iter().all(|k| k.agent == AgentSetting::HandsOff));
 }
 
@@ -744,7 +744,7 @@ mod notes_and_footnotes {
             "{older}"
         );
         let back = Schema::from_toml(&older).unwrap_or_else(|e| panic!("{older}: {e}"));
-        assert!(back.footnotes.is_empty());
+        assert_eq!(back.footnotes, [] as [settings_types::schema::Footnote; 0]);
         assert!(back.key.iter().all(|k| k.ends.is_none()));
     }
 }

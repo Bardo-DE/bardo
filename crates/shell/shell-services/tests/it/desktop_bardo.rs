@@ -478,7 +478,7 @@ fn a_command_for_something_gone_is_refused_before_anything_is_sent() {
             "{name}: {refused:?}"
         );
     }
-    assert!(arm.desktop_mut().take_sent().is_empty());
+    assert_eq!(arm.desktop_mut().take_sent(), [] as [desktop_client::DesktopCommand; 0]);
 }
 
 #[test]
@@ -863,7 +863,7 @@ async fn the_compositor_on_the_bus_hands_the_shell_a_connected_socket() {
         .await
         .unwrap_or_else(|| panic!("the stand-in hands a socket"));
     assert_eq!(
-        roles.lock().map(|roles| roles.clone()).unwrap_or_default(),
+        roles.lock().map_or_default(|roles| roles.clone()),
         ["shell"]
     );
     UnixStream::from(fd)
@@ -908,7 +908,7 @@ fn a_picture_of_a_space_is_asked_for_by_output_and_comes_back_as_a_png_note() {
     );
     // Still going: nothing is said.
     arm.pictures(|_, _| None);
-    assert!(arm.sink().is_empty());
+    assert_eq!(arm.sink().as_slice(), []);
     // Finished: one note, once.
     let finished = |arm: &mut BardoArm<FakeDesktop, Vec<ShellNote>>| {
         arm.pictures(|desktop, id| {

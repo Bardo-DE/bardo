@@ -739,8 +739,7 @@ impl TtyBackend {
         let gpu = self
             .devices
             .capture_gpu()
-            .map(|gpu| gpu.formats())
-            .unwrap_or_default();
+            .map_or_default(|gpu| gpu.formats());
         merged_formats(gpu, self.readback.capture_formats())
     }
 
@@ -760,7 +759,7 @@ impl TtyBackend {
         use smithay::backend::allocator::Buffer as _;
         let wanted = target.format();
         let mut gpu = self.devices.capture_gpu();
-        let listed = gpu.as_ref().map(|gpu| gpu.formats()).unwrap_or_default();
+        let listed = gpu.as_ref().map_or_default(|gpu| gpu.formats());
         if let Some(gpu) = gpu.as_mut().filter(|_| listed.contains(&wanted)) {
             match gpu.write_dmabuf(target, frame) {
                 Ok(()) => return Ok(()),

@@ -77,8 +77,7 @@ pub fn paste_text(socket: &Path) -> Vec<u8> {
     wl("wl-paste", socket)
         .args(["--no-newline", "--type", "text"])
         .output()
-        .map(|out| out.stdout)
-        .unwrap_or_default()
+        .map_or_default(|out| out.stdout)
 }
 
 /// `wl-copy --clear`: the nested selection empty again.

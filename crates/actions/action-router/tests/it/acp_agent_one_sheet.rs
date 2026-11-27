@@ -74,7 +74,7 @@ async fn an_allow_once_covers_only_the_asker_and_the_waiter_gets_its_own_sheet()
         CallRefusal::Unconfirmed(ConfirmEnd::Refused)
     );
     assert_eq!(w.sheets().len(), 2);
-    assert!(grants_of(&w).is_empty());
+    assert_eq!(grants_of(&w), [] as [permission_core::StandingGrant; 0]);
 }
 
 #[tokio::test]

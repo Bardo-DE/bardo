@@ -235,7 +235,7 @@ impl SessionLog for MemoryLog {
         size: PageSize,
     ) -> Result<LogPage, LogError> {
         let all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
-        let rows = all.get(session).map(Vec::as_slice).unwrap_or_default();
+        let rows = all.get(session).map_or_default(Vec::as_slice);
         let start = from
             .map_or(0, |s| usize::try_from(s.0).unwrap_or(usize::MAX))
             .min(rows.len());

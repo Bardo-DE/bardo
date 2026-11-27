@@ -54,8 +54,7 @@ impl StylesGuard {
         let file = guard.file();
         let hash = styles.fingerprint();
         let earlier = std::fs::read_to_string(&file)
-            .map(|text| parse(&text))
-            .unwrap_or_default();
+            .map_or_default(|text| parse(&text));
         let load = decide(&earlier, hash);
         if load {
             let mut records = earlier;
@@ -92,8 +91,7 @@ impl StylesGuard {
         }
         let file = self.file();
         let mut records = std::fs::read_to_string(&file)
-            .map(|text| parse(&text))
-            .unwrap_or_default();
+            .map_or_default(|text| parse(&text));
         if let Some(last) = records.last_mut().filter(|last| last.hash == self.hash) {
             last.good = true;
             write(&file, &records);

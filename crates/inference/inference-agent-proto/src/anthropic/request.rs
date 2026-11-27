@@ -258,12 +258,11 @@ pub fn parse(body: &[u8], class: DataClass) -> Result<Parsed, Unmapped> {
     let stop = root
         .get("stop_sequences")
         .and_then(Value::as_array)
-        .map(|all| {
+        .map_or_default(|all| {
             all.iter()
                 .filter_map(|s| s.as_str().map(str::to_owned))
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     Ok(Parsed {
         top_logprobs: None,
         model,

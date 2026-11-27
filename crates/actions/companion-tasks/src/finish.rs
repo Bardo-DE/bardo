@@ -143,8 +143,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         let (thread, goal) = rt
             .inbox
             .first()
-            .map(|m| (Some(m.thread.clone()), Some(m.id.clone())))
-            .unwrap_or_default();
+            .map_or_default(|m| (Some(m.thread.clone()), Some(m.id.clone())));
         let words = format!("{} steps taken", rt.steps.len());
         let draft = action_core::MessageDraft {
             to: parent,

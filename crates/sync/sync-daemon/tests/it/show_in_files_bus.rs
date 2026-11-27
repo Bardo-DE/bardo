@@ -349,7 +349,7 @@ async fn show_in_files_the_person_does_not_agree_to_reads_off_with_a_plain_line(
     assert!(registry.grants.is_empty(), "nothing was granted");
     assert!(!claims_whole_drive(&registry.accounts[0]));
     rig.supervisor.tick().await;
-    assert!(rig.supervisor.drives().is_empty());
+    assert_eq!(rig.supervisor.drives(), [] as [sync_xdg::AccountDir; 0]);
     for word in ["scope", "token", "consent", "WebDAV", "FUSE", "mount"] {
         assert!(!FILES_NOT_ON.contains(word), "{word}");
     }
@@ -372,7 +372,7 @@ async fn turning_show_in_files_off_stops_the_listing_and_keeps_it_so_on_again_as
 
     rig.settings.set(&row(), &word(false)).await.expect("off");
     assert_eq!(rig.settings.get(&row()).await.expect("get"), word(false));
-    assert!(service(&rig).registry().grants.is_empty());
+    assert_eq!(service(&rig).registry().grants, [] as [account_core::consent::Grant; 0]);
     rig.supervisor.tick().await;
     assert!(rig.supervisor.drives().is_empty(), "the listing stopped");
     assert!(listed(&rig, "Docs/Plan.txt"), "the listing's journal stays");

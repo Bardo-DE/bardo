@@ -16,8 +16,7 @@ const CONSUMER_CSS: &str = ".row-reveal { opacity: 0; transition: opacity var(--
 fn Page() -> Element {
     let class = ExtraClass::parse("row-reveal").ok();
     let data = DataName::parse("folder")
-        .map(|name| vec![DataAttr::new(name, "INBOX")])
-        .unwrap_or_default();
+        .map_or_default(|name| vec![DataAttr::new(name, "INBOX")]);
     rsx! {
         Button { common: Common { extra_class: class, data, ..Common::default() }, size: ControlSize::Mini, label: "Reply", onclick: |_| {} }
     }

@@ -121,7 +121,7 @@ fn put_replaces_by_local_id_and_the_other_ops_undo_their_rows() {
         journal.anchor().expect("anchor").map(|a| a.anchor.0),
         Some("y".into())
     );
-    assert!(journal.conflicts().expect("conflicts").is_empty());
+    assert_eq!(journal.conflicts().expect("conflicts"), [] as [sync_core::StoredConflict; 0]);
     journal.apply(&[Op::CompactTombstones]).expect("compact");
     let left = journal.tombstones().expect("tombstones");
     assert_eq!(left, vec![tombstone("r2", Acknowledgement::Pending)]);
@@ -129,7 +129,7 @@ fn put_replaces_by_local_id_and_the_other_ops_undo_their_rows() {
         .apply(&[Op::ClearAnchor, Op::DeleteItem(LocalId("a".into()))])
         .expect("clear");
     assert_eq!(journal.anchor().expect("anchor"), None);
-    assert!(journal.items().expect("items").is_empty());
+    assert_eq!(journal.items().expect("items"), [] as [sync_core::JournalItem; 0]);
     assert_eq!(journal.writes(), 4);
 }
 

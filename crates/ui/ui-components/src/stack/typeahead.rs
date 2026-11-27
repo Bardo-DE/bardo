@@ -37,7 +37,7 @@ impl Typeahead {
         // narrows from it.
         let (needle, skip) = if repeated {
             (
-                buffer.chars().next().map(String::from).unwrap_or_default(),
+                buffer.chars().next().map_or_default(String::from),
                 1,
             )
         } else if buffer.chars().count() == 1 {

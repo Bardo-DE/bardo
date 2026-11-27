@@ -160,7 +160,7 @@ fn response(node: Node<'_, '_>) -> Response {
         }
     }
     Response {
-        href: children(node, "href").next().map(text).unwrap_or_default(),
+        href: children(node, "href").next().map_or_default(text),
         status: children(node, "status")
             .next()
             .and_then(|s| parse_status_line(&text(s))),

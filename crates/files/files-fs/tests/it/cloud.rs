@@ -39,7 +39,7 @@ fn state_of(clouds: &FakeClouds) -> CloudState {
 #[test]
 fn a_download_moves_only_when_told_and_ends_downloaded() {
     let clouds = fake(DriveState::Ready);
-    assert!(clouds.download(&[report()]).unwrap().is_empty());
+    assert_eq!(clouds.download(&[report()]).unwrap(), [] as [files_core::Refused; 0]);
     assert_eq!(state_of(&clouds), CloudState::Downloading);
     clouds.advance(&report(), Share::from_ratio(0.5));
     let details = clouds.items(&[report()]).unwrap()[0].1.clone();
@@ -111,7 +111,7 @@ fn save_a_copy_names_the_files_and_refuses_what_has_no_format() {
     let refused = clouds
         .save_copy(&[at("Survey.gform"), at("Report.docx")])
         .unwrap();
-    assert!(refused.saved.is_empty());
+    assert_eq!(refused.saved, [] as [files_core::Saved; 0]);
     assert_eq!(refused.refused[0].words.as_str(), NO_FILE_FORMAT_WORDS);
     assert_eq!(refused.refused.len(), 2);
 }

@@ -53,7 +53,7 @@ fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
     });
     let kept = source.machine();
     assert_eq!(kept.overrides, second.overrides, "the last good copy stays");
-    assert!(!kept.problems.is_empty());
+    assert_ne!(kept.problems, [] as [std::string::String; 0]);
     assert_eq!(kept.origin, Origin::Daemon);
 
     // It loads as a keymap too, with the person's change in it.
@@ -62,7 +62,7 @@ fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
             desktop: keymap::Desktop::Ours,
         })
         .expect("loads");
-    assert!(!keymap.bindings(keymap::Context::Normal).is_empty());
+    assert_ne!(keymap.bindings(keymap::Context::Normal), []);
 }
 
 #[test]

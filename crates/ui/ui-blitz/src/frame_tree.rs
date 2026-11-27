@@ -47,6 +47,5 @@ pub(crate) fn in_frame<T>(
 /// Every `iframe` element in `doc`.
 fn iframes(doc: &BaseDocument) -> Vec<NodeId> {
     doc.query_selector_all("iframe")
-        .map(|found| found.into_iter().collect())
-        .unwrap_or_default()
+        .map_or_default(|found| found.into_iter().collect())
 }

@@ -217,8 +217,7 @@ impl Scan<'_> {
             let selector = self
                 .open
                 .last()
-                .map(|element| element.selector.clone())
-                .unwrap_or_default();
+                .map_or_default(|element| element.selector.clone());
             self.out
                 .push(three_dots(selector, line, column, text.trim()));
         }

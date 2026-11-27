@@ -584,13 +584,12 @@ fn installed_targets() -> BTreeSet<String> {
     Command::new("rustup")
         .args(["target", "list", "--installed"])
         .output()
-        .map(|out| {
+        .map_or_default(|out| {
             String::from_utf8_lossy(&out.stdout)
                 .lines()
                 .map(|l| l.trim().to_owned())
                 .collect()
         })
-        .unwrap_or_default()
 }
 
 #[cfg(test)]

@@ -68,7 +68,7 @@ fn a_changed_choice_arranges_the_rows_again_and_a_new_tab_keeps_it() {
     let browser = loaded(vec![file("a"), folder("b")]);
     assert_eq!(shown(&browser), vec!["a", "b"]);
     let (browser, effects) = browser.step(Input::Behave(first()), at(0));
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
     assert_eq!(shown(&browser), vec!["b", "a"]);
     assert_eq!(browser.behaviour(), first());
 
@@ -117,7 +117,7 @@ fn another_program_asking_to_empty_the_trash_is_always_asked_about() {
         .with_behaviour(behaviour)
         .step(Input::AskEmptyTrash, at(0));
     assert_eq!(browser.question(), &Question::EmptyTrash);
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
 }
 
 fn renamed(

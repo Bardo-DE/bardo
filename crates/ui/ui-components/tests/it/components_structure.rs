@@ -174,7 +174,7 @@ fn a_tab_view_holds_six_tabs_at_most() {
     let case = CASES
         .iter()
         .find(|case| case.component == "tab_view" && case.state == "six-at-most");
-    let html = case.map(render).unwrap_or_default();
+    let html = case.map_or_default(render);
     assert_eq!(html.matches("ds-segmented-segment").count(), 6);
 }
 
@@ -182,7 +182,7 @@ fn document_tabs(state: &str) -> String {
     let case = CASES
         .iter()
         .find(|case| case.component == "document_tabs" && case.state == state);
-    case.map(render).unwrap_or_default()
+    case.map_or_default(render)
 }
 
 #[test]
@@ -213,7 +213,7 @@ fn only_a_drag_of_several_things_carries_a_badge() {
         let case = CASES
             .iter()
             .find(|case| case.component == "drag_ghost" && case.state == state);
-        let html = case.map(render).unwrap_or_default();
+        let html = case.map_or_default(render);
         assert_eq!(
             html.matches("ds-drag-ghost-count").count(),
             badges,

@@ -245,8 +245,7 @@ impl<T: GrantsLink + 'static> PimSource for GraphCalendarSource<T> {
             .path()
             .split('/')
             .rfind(|part| !part.is_empty())
-            .map(decode)
-            .unwrap_or_default();
+            .map_or_default(decode);
         GraphCalendarFeed {
             http: Arc::clone(&self.http),
             base: origin(&self.base),

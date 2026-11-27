@@ -194,8 +194,7 @@ async fn portal(connection: &Connection) -> zbus::Result<Proxy<'static>> {
 async fn answers(connection: &Connection, handle: &str) -> zbus::Result<Answers> {
     let sender = connection
         .unique_name()
-        .map(|name| name.as_str().to_owned())
-        .unwrap_or_default();
+        .map_or_default(|name| name.as_str().to_owned());
     let request = Proxy::new(connection, DESKTOP, request_path(&sender, handle), REQUEST).await?;
     let signals = request.receive_signal("Response").await?;
     let owner = request.receive_owner_changed().await?;

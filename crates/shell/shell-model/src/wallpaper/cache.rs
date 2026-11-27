@@ -41,8 +41,7 @@ pub fn source_hash(path: &Path, len: u64, modified_unix_nanos: u128) -> u64 {
 pub fn backdrop_file(image: &Path) -> PathBuf {
     let stem = image
         .file_stem()
-        .map(|stem| stem.to_string_lossy().into_owned())
-        .unwrap_or_default();
+        .map_or_default(|stem| stem.to_string_lossy().into_owned());
     let name = match image.extension() {
         Some(extension) => format!("{stem}-backdrop.{}", extension.to_string_lossy()),
         None => format!("{stem}-backdrop"),

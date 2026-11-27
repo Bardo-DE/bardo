@@ -252,8 +252,8 @@ async fn a_server_signed_by_another_ca_is_a_tls_error() {
     let mut seen = Seen::default();
     let result = run(endpoint("localhost", server.port), other.roots(), &mut seen).await;
     assert_eq!(result, Err(HttpError::Tls));
-    assert!(seen.chunks.is_empty());
-    assert!(server.seen.lock().unwrap().request.is_empty());
+    assert_eq!(seen.chunks, [] as [std::vec::Vec<u8>; 0]);
+    assert_eq!(server.seen.lock().unwrap().request, "");
 }
 
 #[tokio::test(flavor = "current_thread")]
@@ -280,7 +280,7 @@ async fn a_certificate_for_another_name_is_a_tls_error() {
     )
     .await;
     assert_eq!(result, Err(HttpError::Tls));
-    assert!(server.seen.lock().unwrap().request.is_empty());
+    assert_eq!(server.seen.lock().unwrap().request, "");
 }
 
 #[tokio::test(flavor = "current_thread")]

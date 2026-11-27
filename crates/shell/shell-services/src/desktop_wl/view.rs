@@ -53,8 +53,7 @@ fn window(toplevel: &Toplevel) -> WindowView {
         output: toplevel
             .outputs
             .first()
-            .map(|o| o.0.clone())
-            .unwrap_or_default(),
+            .map_or_default(|o| o.0.clone()),
         emphasis: emphasis(toplevel.active),
         placement: placement(toplevel.sizing),
         role: WindowRole::Document,
@@ -138,8 +137,7 @@ fn spaces(state: &DesktopState) -> Vec<SpaceView> {
                     kind: SpaceKind::Desktop,
                     output: group_of(state, workspace)
                         .and_then(|g| g.outputs.first())
-                        .map(|o| o.as_str().to_owned())
-                        .unwrap_or_default(),
+                        .map_or_default(|o| o.as_str().to_owned()),
                     position,
                     shown: if workspace.flags.contains(&WorkspaceFlag::Active) {
                         Shown::Shown

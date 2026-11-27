@@ -92,7 +92,7 @@ impl FakeColorPicker {
 
     /// The app labels asked about so far.
     pub fn asked(&self) -> Vec<String> {
-        self.asked.lock().map(|a| a.clone()).unwrap_or_default()
+        self.asked.lock().map_or_default(|a| a.clone())
     }
 }
 

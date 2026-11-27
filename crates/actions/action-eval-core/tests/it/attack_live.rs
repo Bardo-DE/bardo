@@ -178,7 +178,7 @@ fn a_trace_has_one_step_for_each_call_the_planner_made() {
     );
     assert!(t.why.contains("ended: done"), "{}", t.why);
     let nothing = trace(&clean, vec![]);
-    assert!(nothing.steps.is_empty());
+    assert_eq!(nothing.steps, [] as [action_eval_core::StepTrace; 0]);
 }
 
 #[test]

@@ -15,7 +15,7 @@ use crate::icons::ThemeIcons;
 /// specification's defaults).
 pub fn xdg_dirs() -> XdgDirs {
     let xdg = Xdg::process();
-    let home = xdg.home().map(Path::to_path_buf).unwrap_or_default();
+    let home = xdg.home().map_or_default(Path::to_path_buf);
     XdgDirs {
         data_home: xdg
             .data_home()
@@ -24,14 +24,13 @@ pub fn xdg_dirs() -> XdgDirs {
         config_home: xdg.config_home().unwrap_or_else(|_| home.join(".config")),
         config_dirs: xdg.config_dirs(),
         current_desktops: std::env::var("XDG_CURRENT_DESKTOP")
-            .map(|value| {
+            .map_or_default(|value| {
                 value
                     .split(':')
                     .filter(|part| !part.is_empty())
                     .map(str::to_owned)
                     .collect()
-            })
-            .unwrap_or_default(),
+            }),
     }
 }
 

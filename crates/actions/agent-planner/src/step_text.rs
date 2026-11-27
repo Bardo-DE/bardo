@@ -376,8 +376,7 @@ fn returned_text(value: Option<&Reveal<Value>>, handles: &[HandleCard]) -> Strin
     match value.and_then(returned) {
         Some((hs, false)) => hs
             .first()
-            .map(|h| format!(" → {}", named(*h, handles)))
-            .unwrap_or_default(),
+            .map_or_default(|h| format!(" → {}", named(*h, handles))),
         Some((hs, true)) => {
             let names = bounded(hs.iter().map(|h| named(*h, handles)).collect());
             format!(" → [{}]{}", names.join(", "), items_text(hs.len()))
@@ -439,31 +438,28 @@ fn step_line_raw(step: &StepLine, seen: &Seen<'_>) -> String {
     match (&step.shown, &step.end) {
         (StepShown::Masked, StepEnd::Done { said, undo, value }) => {
             let said = said.as_ref().map_or("done", |s| s.as_str());
-            let undo = undo.map(|_| ", can be undone").unwrap_or_default();
+            let undo = undo.map_or_default(|_| ", can be undone");
             let got = returned_text(value.as_ref(), handles);
             format!("{head}{got} [outcome: {said}{undo}]")
         }
         (_, StepEnd::Done { said, value, undo }) => {
             let said = said
                 .as_ref()
-                .map(|s| format!(" \"{}\"", s.as_str()))
-                .unwrap_or_default();
+                .map_or_default(|s| format!(" \"{}\"", s.as_str()));
             let value = value
                 .as_ref()
-                .map(|v| match v {
+                .map_or_default(|v| match v {
                     Reveal::Plain(v) => format!(" value {}", value_text(v, handles)),
                     Reveal::Handle(h) => format!(" value {}", named(*h, handles)),
-                })
-                .unwrap_or_default();
+                });
             // The undo token is not a handle: a number here read as one (`undo #1` beside a
             // thing #1).
-            let undo = undo.map(|_| " (can be undone)").unwrap_or_default();
+            let undo = undo.map_or_default(|_| " (can be undone)");
             format!("{head} done{said}{value}{undo}")
         }
         (_, StepEnd::Refused(refusal)) => {
             let hint = refusal_hint(refusal, step, seen)
-                .map(|h| format!(": {h}"))
-                .unwrap_or_default();
+                .map_or_default(|h| format!(": {h}"));
             // A needed argument's choices go in the hint by key; the whole refusal would carry titles.
             let said = match refusal {
                 CallRefusal::App(AppRefusal::NeedsParam { .. }) => "needs_param".to_owned(),

@@ -179,7 +179,7 @@ fn watching_follows_a_folder_until_it_is_left() {
     );
 
     rig.edge.run_in(TabId::FIRST, vec![Effect::Unwatch(place)]);
-    assert!(rig.watcher.watched().is_empty());
+    assert_eq!(rig.watcher.watched(), [] as [files_core::FolderPath; 0]);
 }
 
 #[test]

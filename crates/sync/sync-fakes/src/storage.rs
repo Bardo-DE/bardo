@@ -514,8 +514,7 @@ impl World {
     fn free_name(&self, document: &Path, extension: &str) -> PathBuf {
         let stem = document
             .file_stem()
-            .map(|stem| stem.to_string_lossy().into_owned())
-            .unwrap_or_default();
+            .map_or_default(|stem| stem.to_string_lossy().into_owned());
         (1..=u32::MAX)
             .map(|n| match n {
                 1 => document.with_file_name(format!("{stem}.{extension}")),
@@ -987,8 +986,7 @@ pub const HELP: &str = "commands: offline <drive> | online <drive> | signin <dri
 fn online_url(path: &Path) -> String {
     let name = path
         .file_stem()
-        .map(|stem| stem.to_string_lossy().replace(' ', "-"))
-        .unwrap_or_default();
+        .map_or_default(|stem| stem.to_string_lossy().replace(' ', "-"));
     format!("https://docs.example.test/document/{name}")
 }
 
@@ -1014,8 +1012,7 @@ fn link_file(url: &str) -> String {
 fn other_version(path: &Path) -> PathBuf {
     let stem = path
         .file_stem()
-        .map(|stem| stem.to_string_lossy().into_owned())
-        .unwrap_or_default();
+        .map_or_default(|stem| stem.to_string_lossy().into_owned());
     let name = match path.extension() {
         Some(extension) => format!("{stem}{OTHER_VERSION}.{}", extension.to_string_lossy()),
         None => format!("{stem}{OTHER_VERSION}"),
@@ -1321,8 +1318,7 @@ mod tests {
             names.push(
                 Path::new(&copy)
                     .file_name()
-                    .map(|name| name.to_string_lossy().into_owned())
-                    .unwrap_or_default(),
+                    .map_or_default(|name| name.to_string_lossy().into_owned()),
             );
         }
         assert_eq!(names, ["Plan.docx", "Plan 2.docx", "Plan 3.docx"]);

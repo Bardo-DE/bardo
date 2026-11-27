@@ -106,5 +106,5 @@ async fn each_role_is_refused_what_is_not_its_own() {
         );
     }
     // Nothing was shown to anyone.
-    assert!(rig.host_log.calls().opened.is_empty());
+    assert_eq!(rig.host_log.calls().opened, [] as [(std::string::String, std::string::String, std::string::String); 0]);
 }

@@ -385,7 +385,7 @@ where
         };
         let known = state.screencopy_output(&output);
         let target = known.as_ref().and_then(|known| known.target(region));
-        let dmabuf = known.map(|known| known.dmabuf).unwrap_or_default();
+        let dmabuf = known.map_or_default(|known| known.dmabuf);
         let announced = target.as_ref().map(|target| target.area);
         let frame = data_init.init(
             frame,

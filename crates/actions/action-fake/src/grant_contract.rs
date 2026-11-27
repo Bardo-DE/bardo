@@ -162,7 +162,7 @@ fn standing_survives_and_revokes<S: GrantStore>(
     open: &impl Fn(&Path) -> S,
 ) {
     let store = open(path);
-    assert!(store.standing().is_empty());
+    assert_eq!(store.standing(), [] as [permission_core::StandingGrant; 0]);
     let (a, b) = (contract_standing("/w/a"), contract_standing("/w/b"));
     store.add_standing(a.clone());
     store.add_standing(b.clone());
@@ -217,5 +217,5 @@ fn unreadable_standing_is_not_empty<S: GrantStore>(
     let store = open(path);
     store.add_standing(contract_standing("/w/a"));
     assert!(blocker.is_dir(), "left alone");
-    assert!(store.standing().is_empty());
+    assert_eq!(store.standing(), [] as [permission_core::StandingGrant; 0]);
 }

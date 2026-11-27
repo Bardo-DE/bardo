@@ -105,7 +105,7 @@ async fn writer_failure_means_every_non_read_call_is_outside() {
         .expect_err("outside the policy: asks");
     assert_eq!(refused, CallRefusal::Unconfirmed(ConfirmEnd::Dismissed));
     assert_eq!(router.seams.reviewer.call_count(), 0);
-    assert!(router.seams.link.mail.sent().is_empty());
+    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
 }
 
 #[tokio::test]

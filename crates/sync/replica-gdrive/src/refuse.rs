@@ -77,8 +77,7 @@ mod tests {
 
     fn answer(status: u16, retry: Option<&str>, reason: Option<&str>) -> Response<Vec<u8>> {
         let body = reason
-            .map(|r| format!(r#"{{"error":{{"errors":[{{"reason":"{r}"}}]}}}}"#).into_bytes())
-            .unwrap_or_default();
+            .map_or_default(|r| format!(r#"{{"error":{{"errors":[{{"reason":"{r}"}}]}}}}"#).into_bytes());
         retry
             .into_iter()
             .fold(Response::builder().status(status), |b, v| {

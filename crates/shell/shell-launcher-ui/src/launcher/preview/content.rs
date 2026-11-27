@@ -321,13 +321,12 @@ fn facts(icon: Icon, title: &str, rows: Vec<(&str, String)>) -> PaneContent {
 
 fn file_name(path: &Path) -> String {
     path.file_name()
-        .map(|name| name.to_string_lossy().into_owned())
-        .unwrap_or_default()
+        .map_or_default(|name| name.to_string_lossy().into_owned())
 }
 
 /// The folder as the rows word it: `~/…` under the home folder.
 fn folder(path: &Path) -> String {
-    let parent = path.parent().map(Path::to_path_buf).unwrap_or_default();
+    let parent = path.parent().map_or_default(Path::to_path_buf);
     let home = base_xdg::Xdg::process().home().map(Path::to_path_buf);
     match home.and_then(|home| parent.strip_prefix(&home).ok().map(Path::to_path_buf)) {
         Some(inside) if inside.as_os_str().is_empty() => "~".to_owned(),

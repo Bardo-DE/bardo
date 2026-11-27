@@ -102,14 +102,13 @@ impl Rig {
             .emitter
             .batches
             .last()
-            .map(|batch| {
+            .map_or_default(|batch| {
                 batch
                     .iter()
                     .filter(|e| e.kind == EV_KEY)
                     .map(|e| (e.code, e.value))
                     .collect()
             })
-            .unwrap_or_default()
     }
 }
 

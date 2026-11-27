@@ -40,8 +40,7 @@ fn person_on(bus: &BusSource) -> Arc<dyn PersonLink> {
             PathBuf::from("/etc/passwd"),
             Xdg::process()
                 .home()
-                .map(Path::to_path_buf)
-                .unwrap_or_default(),
+                .map_or_default(Path::to_path_buf),
         )),
         BusSource::Absent | BusSource::Address(..) => Arc::new(NoPerson),
     }

@@ -121,8 +121,7 @@ pub fn AppSwitcher(
     let name = drawn
         .iter()
         .find(|(app, _)| app.key == selected)
-        .map(|(app, _)| app.name.clone())
-        .unwrap_or_default();
+        .map_or_default(|(app, _)| app.name.clone());
     #[expect(
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,

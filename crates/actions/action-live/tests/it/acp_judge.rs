@@ -65,7 +65,7 @@ fn the_checks_that_look_inside_the_planner_are_not_made_for_an_agent() {
     }));
     // The planner's run lists nothing as not applicable.
     let planner = judge_in(None, Flow::InjectedThread, &evidence(vec![]));
-    assert!(planner.not_applicable.is_empty());
+    assert_eq!(planner.not_applicable, [] as [std::string::String; 0]);
 }
 
 #[test]

@@ -132,8 +132,7 @@ impl StampClock {
     fn record(mut self, ticks: u64, arrival: Mono) -> Self {
         let gap = self
             .last_arrival
-            .map(|l| arrival.since(l))
-            .unwrap_or_default();
+            .map_or_default(|l| arrival.since(l));
         if self.fit.is_none() && gap > COLLECT_GAP_MAX {
             self.samples.clear();
             self.window_start = None;

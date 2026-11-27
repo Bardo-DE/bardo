@@ -66,7 +66,7 @@ fn contract(vault: &impl Vault) {
         vault.list(&p("pending")).expect("list"),
         vec![p("pending/c.md")]
     );
-    assert!(vault.list(&p("nothing")).expect("list").is_empty());
+    assert_eq!(vault.list(&p("nothing")).expect("list"), [] as [memory_store::VaultPath; 0]);
     vault.remove(&p("facts/a.md")).expect("remove");
     assert_eq!(
         vault.remove(&p("facts/a.md")),

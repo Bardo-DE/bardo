@@ -35,8 +35,7 @@ fn count(value: u32) -> Accessory {
 fn place(name: &str) -> Common {
     Common {
         data: DataName::parse("place")
-            .map(|attribute| vec![DataAttr::new(attribute, name)])
-            .unwrap_or_default(),
+            .map_or_default(|attribute| vec![DataAttr::new(attribute, name)]),
         ..Common::default()
     }
 }
@@ -186,8 +185,7 @@ fn DropPlaces() -> Element {
 /// `data-folder="<path>"`.
 fn folder(path: &str) -> Vec<DataAttr> {
     DataName::parse("folder")
-        .map(|name| vec![DataAttr::new(name, path)])
-        .unwrap_or_default()
+        .map_or_default(|name| vec![DataAttr::new(name, path)])
 }
 
 /// A folder's drop state: the one under the pointer is the target, every other one accepts.

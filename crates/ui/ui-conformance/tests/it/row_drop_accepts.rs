@@ -24,8 +24,7 @@ const PLACES: [(&str, Icon, DropState); 3] = [
 /// `data-place="<name>"`.
 fn place(name: &str) -> Vec<DataAttr> {
     DataName::parse("place")
-        .map(|attribute| vec![DataAttr::new(attribute, name)])
-        .unwrap_or_default()
+        .map_or_default(|attribute| vec![DataAttr::new(attribute, name)])
 }
 
 #[expect(

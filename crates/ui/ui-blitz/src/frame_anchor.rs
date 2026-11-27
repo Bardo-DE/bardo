@@ -63,8 +63,7 @@ fn facts(doc: &BaseDocument, node: NodeId) -> Option<LinkFacts> {
 /// Every anchor with an `href` in `doc`.
 fn anchors(doc: &BaseDocument) -> Vec<NodeId> {
     doc.query_selector_all("a[href]")
-        .map(|found| found.into_iter().collect())
-        .unwrap_or_default()
+        .map_or_default(|found| found.into_iter().collect())
 }
 
 /// `text` with every run of whitespace one space, trimmed: what a reader sees.

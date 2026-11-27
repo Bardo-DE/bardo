@@ -52,8 +52,7 @@ fn Editor() -> Element {
     let handle = use_edit_handle();
     HANDLE.with(|slot| *slot.borrow_mut() = Some(handle));
     let data = DataName::parse("draft")
-        .map(|name| vec![DataAttr::new(name, "42")])
-        .unwrap_or_default();
+        .map_or_default(|name| vec![DataAttr::new(name, "42")]);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,
             div { style: "padding:20px; width:300px; font-size:16px; line-height:20px",

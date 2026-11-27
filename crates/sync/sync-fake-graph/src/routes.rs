@@ -270,8 +270,7 @@ fn aim_of(drive: &Drive, address: &Address) -> Aim {
             } else {
                 let (name, folders) = names
                     .split_last()
-                    .map(|(name, folders)| (name.clone(), folders.to_vec()))
-                    .unwrap_or_default();
+                    .map_or_default(|(name, folders)| (name.clone(), folders.to_vec()));
                 Aim::New(from.clone(), folders, name)
             }
         }

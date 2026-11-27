@@ -27,8 +27,7 @@ type Dict = HashMap<String, OwnedValue>;
 fn name_of(connection: &Connection) -> String {
     connection
         .unique_name()
-        .map(ToString::to_string)
-        .unwrap_or_default()
+        .map_or_default(ToString::to_string)
 }
 
 pub fn introduce(peers: &Peers, who: &Connection, standing: Option<Standing>) {

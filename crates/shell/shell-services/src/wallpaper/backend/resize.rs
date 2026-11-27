@@ -41,8 +41,7 @@ pub fn ensure_cached(
         .modified()
         .ok()
         .and_then(|time| time.duration_since(UNIX_EPOCH).ok())
-        .map(|since| since.as_nanos())
-        .unwrap_or_default();
+        .map_or_default(|since| since.as_nanos());
     check_target(width, height, path)?;
     let hash = source_hash(path, metadata.len(), modified_unix_nanos);
     let cached = cache_dir.join(cache_file_name(hash, width, height));

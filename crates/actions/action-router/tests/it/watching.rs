@@ -204,7 +204,7 @@ async fn a_watcher_is_told_before_the_sheet_and_the_sheet_waits_for_proceed() {
         for _ in 0..5 {
             tokio::task::yield_now().await;
         }
-        assert!(router.seams.confirmer.requests().is_empty());
+        assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
         remote.proceed.raise();
         id
     };
@@ -237,7 +237,7 @@ async fn a_request_withdrawn_before_proceed_draws_no_sheet() {
             ConfirmEnd::Cancelled
         )))
     );
-    assert!(router.seams.confirmer.requests().is_empty());
+    assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
 }
 
 #[tokio::test]

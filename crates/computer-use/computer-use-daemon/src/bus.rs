@@ -124,8 +124,7 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
         self.supervisor
             .sight_note()
             .await
-            .map(str::to_owned)
-            .unwrap_or_default()
+            .map_or_default(str::to_owned)
     }
 
     #[zbus(signal)]

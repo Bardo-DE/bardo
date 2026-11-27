@@ -56,7 +56,7 @@ fn mimeapps_list_groups_are_read_and_the_rest_skipped() {
     assert_eq!(apps.defaults_for(&plain), ids(&["a.desktop", "b.desktop"]));
     assert_eq!(apps.added_for(&plain), ids(&["c.desktop"]));
     assert_eq!(apps.removed_for(&plain), ids(&["d.desktop"]));
-    assert!(apps.defaults_for(&mt("image/png")).is_empty());
+    assert_eq!(apps.defaults_for(&mt("image/png")), []);
 }
 
 #[test]
@@ -69,7 +69,7 @@ fn mimeinfo_cache_reads_only_its_group() {
         ids(&["a.desktop", "b.desktop"])
     );
     assert_eq!(cache.apps_for(&mt("image/png")), ids(&["c.desktop"]));
-    assert!(cache.apps_for(&mt("video/mp4")).is_empty());
+    assert_eq!(cache.apps_for(&mt("video/mp4")), []);
 }
 
 const HIGH: &str = "[Default Applications]\ntext/plain=gone.desktop;editor.desktop\n\
@@ -107,7 +107,7 @@ fn a_removal_only_reaches_downward_and_a_default_only_its_own_file() {
         ids(&["x.desktop"])
     );
     let above = assoc(&[removed, added], &[], &[]);
-    assert!(above.apps_for(&mt("text/plain"), &db()).is_empty());
+    assert_eq!(above.apps_for(&mt("text/plain"), &db()), [] as [ui_helpers::DesktopId; 0]);
 
     let own = "[Default Applications]\ntext/plain=a.desktop\n[Removed Associations]\ntext/plain=a.desktop\n";
     let next = "[Default Applications]\ntext/plain=b.desktop\n";

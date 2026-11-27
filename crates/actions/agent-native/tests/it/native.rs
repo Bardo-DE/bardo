@@ -349,7 +349,7 @@ async fn a_turn_in_a_helpers_conversation_asks_as_the_helper_and_in_its_role() {
     let asked_as =
         inference_core::OpenOptions::default().with_asker(inference_core::Asker::Helper(helper));
     let opened = w.infer.opened();
-    assert!(!opened.is_empty());
+    assert_ne!(opened, [] as [inference_core::OpenOptions; 0]);
     assert!(opened.iter().all(|o| *o == asked_as), "{opened:?}");
     let system = w.infer.system_text(0);
     assert!(system.contains("You are Inbox"), "{system}");

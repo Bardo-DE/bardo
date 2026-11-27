@@ -156,7 +156,7 @@ impl<B: Backend> Open<B> {
     ) -> Result<[u8; 10], BackendError> {
         let now = cx.now();
         self.minted += 1;
-        let head = self.rt.log.head().map(|h| h.seq.0).unwrap_or_default();
+        let head = self.rt.log.head().map_or_default(|h| h.seq.0);
         let mut hasher = blake3::Hasher::new_keyed(self.digest.expose());
         hasher.update(b"QID1");
         hasher.update(&self.minted.to_be_bytes());

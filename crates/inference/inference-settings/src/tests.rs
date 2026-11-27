@@ -91,7 +91,7 @@ fn no_file_is_the_proposed_settings() {
     let resolved = resolve(&AiSettings::default());
     assert_eq!(resolved.settings.policy, Policy::proposed());
     assert_eq!(resolved.settings.spend.warn_at, Permille(800));
-    assert!(resolved.rejected.is_empty());
+    assert_eq!(resolved.rejected, [] as [std::string::String; 0]);
 }
 
 #[test]
@@ -289,10 +289,9 @@ fn the_warn_line_is_the_rows_permille() {
         assert_eq!(resolved.rejected, vec![SPEND_WARN.to_owned()], "{bad}");
     }
     for edge in ["1", "1000"] {
-        assert!(
+        assert_eq!(
             resolve(&config(&format!("[ai.spend]\nwarn_permille = {edge}\n")))
-                .rejected
-                .is_empty()
+                .rejected, [] as [std::string::String; 0]
         );
     }
 }
@@ -479,7 +478,7 @@ fn automatics_pool_is_read_per_slot_and_a_row_naming_no_model_is_dropped_and_sai
         picked(&got, Slot::Text),
         Some(Pick::Auto { pool, .. }) if pool.len() == 2
     ));
-    assert!(got.tiers.pool(Slot::Embeddings).is_empty());
+    assert_eq!(got.tiers.pool(Slot::Embeddings), []);
     let resolved = resolve(&config(
         "[ai.auto.pool]\ntext = [\"local/tiny-chat\", \"sonnet\"]\nnot_a_slot = []\n",
     ));
@@ -550,7 +549,7 @@ fn a_helper_pool_is_its_own_and_the_old_key_stays_the_assistants() {
         ["beta"]
     );
     let other = inference_core::Chooser::Helper(account_core::HelperId::parse("h-2").expect("id"));
-    assert!(tiers.pool_of(&other, inference_core::Slot::Text).is_empty());
+    assert_eq!(tiers.pool_of(&other, inference_core::Slot::Text), []);
     let bad = resolve(&config("[ai.auto.pool]\n\"text.helper.\" = []\n"));
     assert_eq!(bad.rejected, vec!["ai.auto.pool.text.helper.".to_owned()]);
 }

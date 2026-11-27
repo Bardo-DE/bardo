@@ -95,7 +95,7 @@ mod tests {
         let record = of_opening(None, None, &choices(&["login"])).expect("record");
         assert_eq!(record.start, Start::SignedIn);
         assert_eq!(record.ways.len(), 1);
-        assert!(record.models.is_empty());
+        assert_eq!(record.models, [] as [agent_registry::offered::Named; 0]);
     }
 
     #[test]

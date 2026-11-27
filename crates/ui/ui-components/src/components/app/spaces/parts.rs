@@ -35,8 +35,7 @@ where
             .spaces()
             .peek()
             .get(space)
-            .map(|space| space.name.clone())
-            .unwrap_or_default()
+            .map_or_default(|space| space.name.clone())
     });
     let pending = handle.pending_as(space);
     let new = pending.is_some();

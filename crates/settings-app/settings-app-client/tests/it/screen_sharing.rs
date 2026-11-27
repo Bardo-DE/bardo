@@ -31,5 +31,5 @@ async fn removing_an_app_takes_it_back_and_it_leaves_the_list() {
     let Live::Ready(ready) = sharing.live().state() else {
         panic!("the list is there");
     };
-    assert!(ready.grants.is_empty());
+    assert_eq!(ready.grants, [] as [settings_app_model::ScreenGrant; 0]);
 }

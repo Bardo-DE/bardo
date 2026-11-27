@@ -489,8 +489,7 @@ impl Collection {
             .store()
             .collections
             .get(&self.name)
-            .map(|c| c.label.clone())
-            .unwrap_or_default()
+            .map_or_default(|c| c.label.clone())
     }
 
     #[zbus(property)]

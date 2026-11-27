@@ -174,7 +174,7 @@ fn a_stream_cut_inside_a_header_or_a_body_is_an_error_not_a_reply() {
     let whole = conversation();
     for cut in [1, 3, 5, 9] {
         let (replies, ended) = serve(whole[..cut].to_vec(), Vec::new());
-        assert!(replies.is_empty());
+        assert_eq!(replies, [] as [speech_provider::HostOut; 0]);
         assert!(!ended, "cut {cut}");
     }
 }

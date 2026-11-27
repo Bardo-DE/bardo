@@ -38,7 +38,7 @@ pub fn list(apps: &Apps, roots: &Roots) -> Printed {
     let mut rows: Vec<Value> = Vec::new();
     for skill in &found.skills {
         let (word, why) = state(skill, apps);
-        let tail = why.as_ref().map(|w| format!(" ({w})")).unwrap_or_default();
+        let tail = why.as_ref().map_or_default(|w| format!(" ({w})"));
         lines.push(format!(
             "{:<20} {:<8} {:<11} {}  [{}, {}]{tail}",
             skill.id,

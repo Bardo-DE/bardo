@@ -168,8 +168,7 @@ impl<B: ReadAt> CodeLines<B> {
     pub fn new(highlighter: &Highlighter, text: TextLines<B>, syntax: Option<SyntaxId>) -> Self {
         let saved = syntax
             .and_then(|id| highlighter.set.syntaxes().get(id.0))
-            .map(|reference| vec![LineState::start(reference)])
-            .unwrap_or_default();
+            .map_or_default(|reference| vec![LineState::start(reference)]);
         CodeLines {
             text,
             syntax,

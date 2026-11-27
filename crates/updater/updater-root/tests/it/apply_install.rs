@@ -8,7 +8,7 @@ fn a_first_install_unpacks_switches_and_links() {
         .install(&build(&Recipe::new("0.1.0")))
         .expect("install");
     assert_eq!(applied.version, v("0.1.0"));
-    assert!(applied.conflicts.is_empty());
+    assert_eq!(applied.conflicts, [] as [std::string::String; 0]);
     assert_eq!(sandbox.current(), Some(v("0.1.0")));
     assert_eq!(sandbox.previous(), None);
     let current = sandbox.layout.current();

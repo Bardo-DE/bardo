@@ -160,8 +160,7 @@ fn removal_question(model: &HelpersModel, id: &HelperId, say: &Say) -> Element {
     }
     let name = model
         .line(id)
-        .map(|line| line.name.as_str().to_owned())
-        .unwrap_or_default();
+        .map_or_default(|line| line.name.as_str().to_owned());
     let question = remove_question(&name);
     let (keep, remove, helper) = (say.clone(), say.clone(), id.clone());
     rsx! {

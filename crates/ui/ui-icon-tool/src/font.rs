@@ -351,7 +351,7 @@ mod tests {
             .filter(|(_, _, p)| p.0[3] > 0.0)
             .map(|(x, y, _)| (x, y))
             .collect();
-        assert!(!inked.is_empty());
+        assert_ne!(inked, [] as [(u32, u32); 0]);
         assert!(
             inked
                 .iter()

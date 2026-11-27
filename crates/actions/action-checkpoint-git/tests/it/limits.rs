@@ -90,5 +90,5 @@ async fn a_failed_command_keeps_the_tail_of_its_stderr_for_the_log_only() {
     });
     let (command, stderr) = exit.expect("an exit was logged");
     assert_eq!(command, "update-ref");
-    assert!(!stderr.is_empty());
+    assert_ne!(stderr, "");
 }

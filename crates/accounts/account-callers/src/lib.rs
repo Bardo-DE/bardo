@@ -153,8 +153,7 @@ impl CallerRow {
         self.unit
             .as_deref()
             .and_then(images::daemon_name)
-            .map(|name| installed(Install::Libexec, name))
-            .unwrap_or_default()
+            .map_or_default(|name| installed(Install::Libexec, name))
     }
 }
 

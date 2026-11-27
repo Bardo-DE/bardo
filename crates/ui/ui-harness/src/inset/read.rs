@@ -259,7 +259,7 @@ impl Walk<'_> {
 /// `^` before them (a field's frame has no size of its own; the field around it does).
 fn tokens(doc: &BaseDocument, node: &Node) -> Vec<String> {
     let parent = node.parent.and_then(|parent| doc.get_node(parent));
-    let above = parent.map(marks).unwrap_or_default();
+    let above = parent.map_or_default(marks);
     classes(node)
         .into_iter()
         .chain(marks(node))
@@ -269,13 +269,12 @@ fn tokens(doc: &BaseDocument, node: &Node) -> Vec<String> {
 
 fn classes(node: &Node) -> Vec<String> {
     node.attr(LocalName::from("class"))
-        .map(|classes| {
+        .map_or_default(|classes| {
             classes
                 .split_ascii_whitespace()
                 .map(str::to_owned)
                 .collect()
         })
-        .unwrap_or_default()
 }
 
 /// The short `data-*` attributes of `node` as `[data-size=mini]`: what an [`Allow`] names beside

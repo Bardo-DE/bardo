@@ -77,7 +77,7 @@ async fn flow_a_with_an_agent_forwards_to_accounting_through_the_edge() {
         report.failures,
         said(&report)
     );
-    assert!(report.not_applicable.is_empty());
+    assert_eq!(report.not_applicable, [] as [std::string::String; 0]);
     let t = said(&report);
     assert!(t.contains("the turn ended Done"), "{t}");
     // The bridge listed the actions and the three calls went through it.
@@ -352,7 +352,7 @@ fn the_command_prints_and_writes_nothing_of_the_login() {
     );
     let mut files = Vec::new();
     files_under(&out, &mut files);
-    assert!(!files.is_empty());
+    assert_ne!(files, [] as [std::path::PathBuf; 0]);
     for file in &files {
         let bytes = std::fs::read(file).unwrap_or_default();
         assert!(

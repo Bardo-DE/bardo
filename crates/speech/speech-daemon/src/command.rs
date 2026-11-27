@@ -93,7 +93,7 @@ impl Handle {
 
     /// The caller behind a message header.
     pub(crate) async fn caller(&self, header: &Header<'_>) -> Caller {
-        let unique = header.sender().map(ToString::to_string).unwrap_or_default();
+        let unique = header.sender().map_or_default(ToString::to_string);
         let role = self.peers.role(&unique).await;
         Caller { unique, role }
     }

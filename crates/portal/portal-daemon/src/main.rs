@@ -159,8 +159,7 @@ fn appearance_file() -> PathBuf {
 fn screenshots(link: BusLink, display: DisplayName) -> ScreenshotSetup {
     let pictures = Xdg::process()
         .home()
-        .map(|home| home.join("Pictures"))
-        .unwrap_or_default();
+        .map_or_default(|home| home.join("Pictures"));
     let stamp = SystemClock.now().0.to_string();
     ScreenshotSetup::new(
         OutputGrab::new(display, Box::new(LiveLayout), Box::new(ExtOpen)),

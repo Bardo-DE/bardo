@@ -58,13 +58,12 @@ pub fn make_readable(path: &std::path::Path) {
 /// The names in `dir`, sorted.
 pub fn names(dir: &std::path::Path) -> Vec<String> {
     let mut names: Vec<String> = std::fs::read_dir(dir)
-        .map(|entries| {
+        .map_or_default(|entries| {
             entries
                 .filter_map(Result::ok)
                 .map(|entry| entry.file_name().to_string_lossy().into_owned())
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     names.sort();
     names
 }

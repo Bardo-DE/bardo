@@ -195,8 +195,7 @@ pub fn bundled_faces() -> FontFaces {
 fn home_dir() -> PathBuf {
     Xdg::process()
         .home()
-        .map(Path::to_path_buf)
-        .unwrap_or_default()
+        .map_or_default(Path::to_path_buf)
 }
 
 fn first_ttf_sorted(dir: &Path) -> Option<PathBuf> {

@@ -77,8 +77,7 @@ pub fn current_user_principal(status: &Multistatus) -> Option<String> {
 pub fn home_set(status: &Multistatus, home: Home) -> Vec<String> {
     status
         .first_found_items(home.property())
-        .map(<[String]>::to_vec)
-        .unwrap_or_default()
+        .map_or_default(<[String]>::to_vec)
 }
 
 /// The hrefs among the responses whose `resourcetype` is a `home` collection (a calendar or an
@@ -328,8 +327,7 @@ impl Walk {
         self.homes
             .iter()
             .find(|(h, _)| *h == home)
-            .map(|(_, urls)| urls.clone())
-            .unwrap_or_default()
+            .map_or_default(|(_, urls)| urls.clone())
     }
 
     fn list_next(&mut self, mut queue: VecDeque<(Home, Uri)>) -> Next {

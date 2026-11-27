@@ -39,7 +39,7 @@ pub(crate) fn use_osd(link: &OsdLink, output: OutputId, now_times: OsdTimes) -> 
     let latest = use_watch(link.subscribe());
     let clock = use_hook(FrameClock::started);
     // A surface respawned after a close does not replay the change before it.
-    let mut seen = use_hook(|| CopyValue::new(link.now().map(|c| c.serial).unwrap_or_default()));
+    let mut seen = use_hook(|| CopyValue::new(link.now().map_or_default(|c| c.serial)));
     let mut shown = use_signal(|| None::<OsdChange>);
     let mut phase = use_signal(OsdHold::default);
     let mut waking = use_hook(|| CopyValue::new(None::<Task>));

@@ -30,11 +30,10 @@ fn options_of(app: &Manifest, action: &str, flag: &str) -> Vec<String> {
     visible(app)
         .find(|a| short_name(app, a) == action)
         .and_then(|a| a.params.iter().find(|p| p.name.as_str() == wanted))
-        .map(|p| match &p.ty {
+        .map_or_default(|p| match &p.ty {
             ParamType::Choice(options) => options.iter().map(|o| o.id.to_string()).collect(),
             _ => vec![],
         })
-        .unwrap_or_default()
 }
 
 fn slugs(apps: &Apps) -> Vec<String> {
@@ -54,7 +53,7 @@ pub fn candidates(apps: &Apps, typed: &[String]) -> Vec<String> {
             .chain(slugs(apps))
             .collect(),
         [first] if first == "describe" => slugs(apps),
-        [first, app] if first == "describe" => apps.app(app).map(actions).unwrap_or_default(),
+        [first, app] if first == "describe" => apps.app(app).map_or_default(actions),
         [first] if first == "undo" => vec!["--last".to_owned()],
         [app] => match apps.app(app) {
             Ok(m) => ACTIONLESS
@@ -66,10 +65,9 @@ pub fn candidates(apps: &Apps, typed: &[String]) -> Vec<String> {
         },
         [app, action, .., last] if last.starts_with("--") && !GLOBALS.contains(&last.as_str()) => {
             apps.app(app)
-                .map(|m| options_of(m, action, last))
-                .unwrap_or_default()
+                .map_or_default(|m| options_of(m, action, last))
         }
-        [app, action, ..] => apps.app(app).map(|m| flags(m, action)).unwrap_or_default(),
+        [app, action, ..] => apps.app(app).map_or_default(|m| flags(m, action)),
     };
     found
         .into_iter()

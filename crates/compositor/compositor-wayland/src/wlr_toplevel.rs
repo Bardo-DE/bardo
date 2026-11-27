@@ -430,8 +430,7 @@ fn bring_up_to_date(held: &mut Held, facts: &Facts) {
     let wire_outputs = |output: &Output| -> Vec<WlOutput> {
         handle
             .client()
-            .map(|client| output.client_outputs(&client).collect())
-            .unwrap_or_default()
+            .map_or_default(|client| output.client_outputs(&client).collect())
     };
     for output in &diff.left {
         for wl in wire_outputs(output) {

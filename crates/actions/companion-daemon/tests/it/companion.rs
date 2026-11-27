@@ -69,16 +69,15 @@ fn nothing_is_added_to_a_finished_or_absent_front_task_or_for_progress() {
         pending: vec![],
         guard: Guard::default(),
     };
-    assert!(
-        completion_effects(&note(ReportStatus::Done, Attention::Quiet), Some(&finished)).is_empty()
+    assert_eq!(
+        completion_effects(&note(ReportStatus::Done, Attention::Quiet), Some(&finished)), [] as [agent_loop::LoopEffect; 0]
     );
-    assert!(completion_effects(&note(ReportStatus::Done, Attention::Quiet), None).is_empty());
-    assert!(
+    assert_eq!(completion_effects(&note(ReportStatus::Done, Attention::Quiet), None), [] as [agent_loop::LoopEffect; 0]);
+    assert_eq!(
         completion_effects(
             &note(ReportStatus::Progress, Attention::Quiet),
             Some(&working())
-        )
-        .is_empty()
+        ), [] as [agent_loop::LoopEffect; 0]
     );
 }
 

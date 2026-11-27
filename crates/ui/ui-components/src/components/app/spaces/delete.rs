@@ -31,8 +31,7 @@ where
             spaces.count(),
             spaces
                 .get(space)
-                .map(|one| one.name.clone())
-                .unwrap_or_default(),
+                .map_or_default(|one| one.name.clone()),
         )
     };
     if count <= 1 {

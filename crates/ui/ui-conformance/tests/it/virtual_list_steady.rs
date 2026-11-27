@@ -71,13 +71,12 @@ fn scroll_rows(harness: &mut Harness, rows: f32) {
 fn mounted(harness: &Harness) -> Vec<u32> {
     harness.with_doc(|doc| {
         doc.query_selector_all(".item")
-            .map(|found| {
+            .map_or_default(|found| {
                 found
                     .into_iter()
                     .filter_map(|id| doc.get_node(id)?.text_content().trim().parse().ok())
                     .collect()
             })
-            .unwrap_or_default()
     })
 }
 

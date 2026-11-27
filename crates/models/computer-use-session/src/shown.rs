@@ -76,14 +76,13 @@ fn rewrite_action(action: &mut Map<String, Value>, profile: ActionProfile) {
     let base: Vec<String> = action
         .get("enum")
         .and_then(Value::as_array)
-        .map(|names| {
+        .map_or_default(|names| {
             names
                 .iter()
                 .filter_map(Value::as_str)
                 .map(str::to_owned)
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     // A verb the profile adds to the convention: it has no verb of the base to replace.
     let added: Vec<VerbAlias> = profile
         .aliases

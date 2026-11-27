@@ -30,7 +30,7 @@ fn a_copy_is_undone_by_trashing_the_copies() {
     assert_eq!(rig.names("dest"), ["a.txt", "tree"]);
 
     assert_eq!(undo(&mut rig), Finish::Done);
-    assert!(rig.names("dest").is_empty());
+    assert_eq!(rig.names("dest"), [] as [std::string::String; 0]);
     assert_eq!(
         rig.read("home/a.txt"),
         "alpha",
@@ -53,7 +53,7 @@ fn a_move_is_undone_by_moving_back() {
 
     assert_eq!(undo(&mut rig), Finish::Done);
     assert_eq!(rig.read("home/a.txt"), "alpha");
-    assert!(rig.names("dest").is_empty());
+    assert_eq!(rig.names("dest"), [] as [std::string::String; 0]);
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn a_new_folder_is_undone_only_while_it_is_empty() {
     };
     run(&mut rig, &plan);
     assert_eq!(undo(&mut rig), Finish::Done);
-    assert!(rig.names("home").is_empty());
+    assert_eq!(rig.names("home"), [] as [std::string::String; 0]);
 
     run(&mut rig, &plan);
     rig.write("home/untitled folder/kept.txt", "k");
@@ -96,12 +96,12 @@ fn a_move_to_the_trash_is_undone_by_putting_back() {
         items: vec![rig.item("home/a.txt"), rig.item("home/b.txt")],
     };
     assert_eq!(run(&mut rig, &plan), Finish::Done);
-    assert!(rig.names("home").is_empty());
+    assert_eq!(rig.names("home"), [] as [std::string::String; 0]);
     assert_eq!(rig.trash.list().unwrap().len(), 2);
 
     assert_eq!(undo(&mut rig), Finish::Done);
     assert_eq!(rig.names("home"), ["a.txt", "b.txt"]);
-    assert!(rig.trash.list().unwrap().is_empty());
+    assert_eq!(rig.trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
 }
 
 #[test]
@@ -138,14 +138,14 @@ fn erasing_for_good_cannot_be_undone() {
     let trashed = rig.trash.trash(&[rig.item("home/a.txt")]).unwrap();
     let plan = OpPlan::DeleteForGood { items: trashed };
     run(&mut rig, &plan);
-    assert!(rig.trash.list().unwrap().is_empty());
+    assert_eq!(rig.trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
     assert!(rig.journal.is_empty());
 
     rig.write("home/b.txt", "beta");
     rig.trash.trash(&[rig.item("home/b.txt")]).unwrap();
     let plan = OpPlan::EmptyTrash;
     run(&mut rig, &plan);
-    assert!(rig.trash.list().unwrap().is_empty());
+    assert_eq!(rig.trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
     assert!(rig.journal.is_empty());
 }
 

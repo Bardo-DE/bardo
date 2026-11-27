@@ -97,12 +97,11 @@ impl Offered {
         let server = params["mcpServers"].get(0)?;
         let strings = |v: &Value| -> Vec<String> {
             v.as_array()
-                .map(|a| {
+                .map_or_default(|a| {
                     a.iter()
                         .filter_map(|s| s.as_str().map(str::to_owned))
                         .collect()
                 })
-                .unwrap_or_default()
         };
         Some(Self {
             name: server["name"].as_str()?.to_owned(),

@@ -61,8 +61,7 @@ pub fn load(dir: &Path, cases: &[Case]) -> Result<Vec<Regression>, RegressError>
         .map(|file| {
             let name = file
                 .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default();
+                .map_or_default(|n| n.to_string_lossy().into_owned());
             let id = name.trim_end_matches(".cassette.jsonl").to_owned();
             let case = cases
                 .iter()

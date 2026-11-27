@@ -79,8 +79,7 @@ impl KeyRemapSource {
         let person = Xdg::new(&lookup)
             .config_home()
             .ok()
-            .map(|dir| dir.join("bardo/key-remap").join(KEYMAP_FILE))
-            .unwrap_or_default();
+            .map_or_default(|dir| dir.join("bardo/key-remap").join(KEYMAP_FILE));
         KeyRemapSource::new(
             non_empty("BARDO_KEY_REMAP_SOCKET").unwrap_or_else(|| SOCKET_PATH.to_owned()),
             Path::new(&config).join(KEYMAP_FILE),

@@ -250,8 +250,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     pub(crate) fn helper_lines(&self) -> Vec<action_core::HelperRosterLine> {
         self.desk
             .as_ref()
-            .map(|desk| desk.roster_lines(self.as_helper.as_ref().map(|h| &h.id)))
-            .unwrap_or_default()
+            .map_or_default(|desk| desk.roster_lines(self.as_helper.as_ref().map(|h| &h.id)))
     }
 
     /// The same companion, handing a turn to the coding agent the person chose through `hand`.
@@ -532,8 +531,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                     })
                 })
             })
-            .map(|g| LeadText::of(&g).as_str().to_owned())
-            .unwrap_or_default();
+            .map_or_default(|g| LeadText::of(&g).as_str().to_owned());
         RosterLine {
             agent: rt.agent.clone(),
             space: rt.space.clone(),

@@ -253,10 +253,9 @@ async fn a_hear_stage_whose_host_is_down_ends_the_turn_not_hangs_it() {
         ),
         "{events:?}"
     );
-    assert!(
+    assert_eq!(
         world.engines["tiny-chat"]
-            .bodies("/v1/chat/completions")
-            .is_empty()
+            .bodies("/v1/chat/completions"), [] as [serde_json::Value; 0]
     );
     // The session is still usable: the next plain chat is answered.
     session
@@ -324,9 +323,8 @@ async fn cancel_during_hear_stops_both_stages() {
     assert!(after.is_err(), "no more events after the cancel: {after:?}");
     seen.extend(rest);
     assert_eq!(notes(&seen, StageRole::Answer), 0, "{seen:?}");
-    assert!(
+    assert_eq!(
         world.engines["tiny-chat"]
-            .bodies("/v1/chat/completions")
-            .is_empty()
+            .bodies("/v1/chat/completions"), [] as [serde_json::Value; 0]
     );
 }

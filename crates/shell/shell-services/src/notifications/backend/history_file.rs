@@ -131,8 +131,7 @@ mod tests {
         assert_eq!(load(&path), stored);
         assert_eq!(
             std::fs::read_dir(path.parent().unwrap_or(&dir))
-                .map(std::iter::Iterator::count)
-                .unwrap_or_default(),
+                .map_or_default(std::iter::Iterator::count),
             1,
             "no temporary file is left beside the history"
         );

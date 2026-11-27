@@ -75,8 +75,7 @@ fn window(state: &DesktopState, window: &BardoWindow) -> Option<WindowView> {
         output: window
             .output
             .as_ref()
-            .map(|output| output.as_str().to_owned())
-            .unwrap_or_default(),
+            .map_or_default(|output| output.as_str().to_owned()),
         emphasis: window.emphasis,
         placement: window.placement,
         role: window.role,
@@ -114,8 +113,7 @@ fn space(state: &DesktopState, space: &BardoSpace) -> Option<SpaceView> {
         output: space
             .output
             .as_ref()
-            .map(|output| output.as_str().to_owned())
-            .unwrap_or_default(),
+            .map_or_default(|output| output.as_str().to_owned()),
         position: space.position,
         shown: state.space_shown(space.key),
     })

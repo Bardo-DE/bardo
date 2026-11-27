@@ -124,8 +124,8 @@ fn members_come_in_catalogue_order() {
 #[test]
 fn an_engine_that_is_not_here_gives_no_members() {
     let catalogue = catalogue();
-    assert!(slot_members(Slot::Text, &catalogue, &[EngineKind::Vllm]).is_empty());
-    assert!(slot_members(Slot::Text, &catalogue, &[]).is_empty());
+    assert_eq!(slot_members(Slot::Text, &catalogue, &[EngineKind::Vllm]), [] as [&model_catalog::ModelEntry; 0]);
+    assert_eq!(slot_members(Slot::Text, &catalogue, &[]), [] as [&model_catalog::ModelEntry; 0]);
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn a_narrowed_engine_offers_only_what_it_passes() {
     let llama = [EngineKind::LlamaServer];
     assert_eq!(ids(slot_members(Slot::Text, &catalogue, &llama)), ["mm"]);
     assert_eq!(ids(slot_members(Slot::ImageIn, &catalogue, &llama)), ["mm"]);
-    assert!(slot_members(Slot::VoiceIn, &catalogue, &llama).is_empty());
+    assert_eq!(slot_members(Slot::VoiceIn, &catalogue, &llama), [] as [&model_catalog::ModelEntry; 0]);
     let both = [EngineKind::LlamaServer, EngineKind::Vllm];
     assert_eq!(ids(slot_members(Slot::VoiceIn, &catalogue, &both)), ["mm"]);
     // Only the narrowed engine is on this computer: audio is not offered even though the model

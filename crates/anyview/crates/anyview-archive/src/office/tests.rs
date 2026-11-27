@@ -173,7 +173,7 @@ fn the_facts_list_what_the_document_has_in_order() {
             (FactLabel::Pages, "1 page"),
         ]
     );
-    assert!(OfficeLook::default().facts().rows().is_empty());
+    assert_eq!(OfficeLook::default().facts().rows(), []);
 }
 
 #[test]

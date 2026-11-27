@@ -148,7 +148,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
         .expect("a plan");
     assert_eq!(plan.changed, [file("notes.txt")]);
     assert_eq!(plan.removed, [file("extra.txt")]);
-    assert!(plan.added.is_empty());
+    assert_eq!(plan.added, [] as [action_core::WorkPath; 0]);
 
     // A restore asked while the turn runs is refused, the sheet as well as the act.
     let call = restore_call(&session, 1, &plan.digest.0);

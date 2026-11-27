@@ -63,8 +63,7 @@ pub fn dock_items(
         let windows = groups
             .iter()
             .find(|(group, _)| group.app_id() == Some(id))
-            .map(|(_, windows)| windows.as_slice())
-            .unwrap_or_default();
+            .map_or_default(|(_, windows)| windows.as_slice());
         item(ItemKind::Pinned(id.clone()), windows)
     });
     let running = groups

@@ -72,5 +72,5 @@ fn losing_focus_releases_what_is_held() {
             },
         ]
     );
-    assert!(held.release_all().is_empty());
+    assert_eq!(held.release_all(), [] as [compositor_core::input::InputKind; 0]);
 }

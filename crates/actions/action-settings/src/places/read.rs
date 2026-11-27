@@ -28,8 +28,7 @@ fn rows<'a>(doc: &'a toml::Table, key: &str) -> Vec<&'a toml::Table> {
         .and_then(toml::Value::as_table)
         .and_then(|a| a.get(key))
         .and_then(toml::Value::as_array)
-        .map(|rows| rows.iter().filter_map(toml::Value::as_table).collect())
-        .unwrap_or_default()
+        .map_or_default(|rows| rows.iter().filter_map(toml::Value::as_table).collect())
 }
 
 fn word<T: Copy>(

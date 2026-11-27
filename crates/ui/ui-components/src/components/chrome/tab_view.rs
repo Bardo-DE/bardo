@@ -32,8 +32,7 @@ pub fn TabView<T: Clone + PartialEq + 'static>(
     let name = tabs
         .iter()
         .find(|tab| tab.value == value)
-        .map(|tab| tab.label.plain_text())
-        .unwrap_or_default();
+        .map_or_default(|tab| tab.label.plain_text());
     let data = common.data_attributes();
     rsx! {
         div {

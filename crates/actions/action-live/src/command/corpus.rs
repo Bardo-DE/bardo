@@ -279,13 +279,12 @@ pub(super) async fn corpus(
     }
     let over: Vec<String> = args
         .fnr_max_permille
-        .map(|max| {
+        .map_or_default(|max| {
             outcomes
                 .iter()
                 .flat_map(|outcome| over_target(&outcome.report, max))
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     for line in &over {
         eprintln!("agent-live: {line}");
     }

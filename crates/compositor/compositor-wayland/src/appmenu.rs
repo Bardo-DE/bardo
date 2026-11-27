@@ -69,8 +69,7 @@ pub fn on_released(part: &mut AppMenuPart, window: WindowId, mapped: bool) -> Ve
 pub fn on_mapped(part: &AppMenuPart, window: WindowId) -> Vec<Event> {
     part.declared
         .get(&window)
-        .map(|source| announce(window, source.clone(), true))
-        .unwrap_or_default()
+        .map_or_default(|source| announce(window, source.clone(), true))
 }
 
 /// The window is gone: its address is forgotten (the model drops the window with it).

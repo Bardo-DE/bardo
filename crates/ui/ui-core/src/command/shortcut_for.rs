@@ -30,8 +30,7 @@ pub fn shortcut_text_for(keymap: &Keymap, action: &Action) -> Option<String> {
 #[must_use]
 pub fn shortcut_caps_for(keymap: &Keymap, action: &Action) -> Vec<KeyRemap> {
     shortcut_text_for(keymap, action)
-        .map(|text| caps_of(&text))
-        .unwrap_or_default()
+        .map_or_default(|text| caps_of(&text))
 }
 
 fn caps_of(text: &str) -> Vec<KeyRemap> {

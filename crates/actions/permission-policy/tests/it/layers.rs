@@ -108,7 +108,7 @@ fn a_person_forbid_makes_a_read_ask() {
         &with_extra(file(Layer::Person, "mine.cedar", NO_READS)),
     )
     .expect("loads");
-    assert!(layered.skipped.is_empty());
+    assert_eq!(layered.skipped, [] as [permission_policy::Rejected; 0]);
     assert_eq!(
         layered.pdp.decide(&base(Effect::Read)),
         Ruling::Ask(vec![AskReason::Rule(PolicyId("no-reads".to_owned()))])
@@ -197,7 +197,7 @@ fn a_bad_preset_falls_back_to_the_built_in_one() {
     assert_eq!(ids(&layered.pdp).len(), CORE_IDS.len() + PRESET_IDS.len());
     // No preset at all is the built-in one, and nothing is reported.
     let none = Pdp::layered(SCHEMA, &[PolicySource::core()]).expect("loads");
-    assert!(none.skipped.is_empty());
+    assert_eq!(none.skipped, [] as [permission_policy::Rejected; 0]);
     assert_eq!(ids(&none.pdp).len(), CORE_IDS.len() + PRESET_IDS.len());
 }
 
@@ -280,7 +280,7 @@ fn a_generated_rule_loads_in_its_layer_and_asks_or_refuses_where_its_limit_cover
         .chain([file(Layer::Assistant, "assistant.cedar", &rule_text(&ask))])
         .collect();
     let layered = Pdp::layered(SCHEMA, &only_ask).expect("loads");
-    assert!(layered.skipped.is_empty());
+    assert_eq!(layered.skipped, [] as [permission_policy::Rejected; 0]);
     let ruling = layered.pdp.decide(&base(Effect::UndoableWrite));
     assert!(
         matches!(&ruling, Ruling::Ask(why) if why.iter().any(

@@ -122,7 +122,7 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
         .answer_from(&app("org.bardo.Memory"), Answering::Absent);
     let opened = w.open("work").await;
     Box::pin(w.say(&opened.session, "What is the capital of Taiwan?")).await;
-    assert!(memory.asked().is_empty());
+    assert_eq!(memory.asked(), [] as [std::string::String; 0]);
     assert!(!w.infer.user_text(0).contains("memory.recall"));
     assert_eq!(
         w.companion
@@ -138,5 +138,5 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
     w.companion.config.assembler.recall = base_ids::Tokens(0);
     let opened = w.open("work").await;
     Box::pin(w.say(&opened.session, "What is the capital of Taiwan?")).await;
-    assert!(memory.asked().is_empty());
+    assert_eq!(memory.asked(), [] as [std::string::String; 0]);
 }

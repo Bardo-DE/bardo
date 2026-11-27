@@ -89,7 +89,7 @@ fn more_calls_than_the_limit_is_unreadable() {
         .collect();
     let reply = go(&frames);
     assert_eq!(reply.end, Err(Refused::Decoding(CodecError::Unreadable)));
-    assert!(done(&reply).is_empty());
+    assert_eq!(done(&reply), [] as [&model_provider::ToolCall; 0]);
 }
 
 #[test]

@@ -169,14 +169,12 @@ fn target_word(target: PlaceTarget) -> String {
     PLACE_TARGETS
         .iter()
         .find(|(_, known)| *known == target)
-        .map(|(name, _)| (*name).to_owned())
-        .unwrap_or_default()
+        .map_or_default(|(name, _)| (*name).to_owned())
 }
 
 fn side_word(side: SplitSide) -> String {
     SPLIT_SIDES
         .iter()
         .find(|(_, known)| *known == side)
-        .map(|(name, _)| (*name).to_owned())
-        .unwrap_or_default()
+        .map_or_default(|(name, _)| (*name).to_owned())
 }

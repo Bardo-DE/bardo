@@ -68,8 +68,7 @@ pub fn company_of(family: &str) -> String {
             let mut letters = other.chars();
             letters
                 .next()
-                .map(|first| first.to_uppercase().chain(letters).collect())
-                .unwrap_or_default()
+                .map_or_default(|first| first.to_uppercase().chain(letters).collect())
         }
     }
 }

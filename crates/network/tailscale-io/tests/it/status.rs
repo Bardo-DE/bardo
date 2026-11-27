@@ -75,7 +75,7 @@ async fn a_signed_out_tailscale_answers_and_gives_its_page_only_after_a_sign_in_
     let before = api.status().await.expect("status");
     assert_eq!(before.standing(), Standing::SignedOut);
     assert_eq!(before.auth_url, None);
-    assert!(before.machines().is_empty());
+    assert_eq!(before.machines(), [] as [tailscale_types::Machine; 0]);
     api.start_login().await.expect("login");
     assert_eq!(fake.logins(), 1);
     let after = api.status().await.expect("status");
@@ -88,7 +88,7 @@ async fn a_tailscale_in_the_middle_of_changing_says_so() {
     let status = api.status().await.expect("status");
     assert_eq!(status.backend, Backend::Starting);
     assert_eq!(status.standing(), Standing::Changing);
-    assert!(status.machines().is_empty());
+    assert_eq!(status.machines(), [] as [tailscale_types::Machine; 0]);
 }
 
 #[tokio::test]

@@ -268,7 +268,7 @@ fn an_unchanged_frame_damages_nothing() {
     let mut tracker = tracker(SIZE, 1.0);
     let first = mixed(&ids, still, &mut renderer);
     let (drawn, _) = renderer.draw(&mut target, &mut tracker, SIZE, &first, 0);
-    assert!(!drawn.damage.is_empty());
+    assert_ne!(drawn.damage, [] as [compositor_core::geometry::PhysicalRect; 0]);
     assert_eq!(drawn.sync, RenderSync::Done);
     let again = mixed(&ids, still, &mut renderer);
     let (drawn, _) = renderer.draw(&mut target, &mut tracker, SIZE, &again, 1);

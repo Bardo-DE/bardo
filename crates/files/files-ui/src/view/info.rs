@@ -50,8 +50,7 @@ fn cloud_rows(state: &Browser, info: &Info) -> Vec<InfoRow> {
     }
     state
         .cloud_of(&info.name)
-        .map(item_rows)
-        .unwrap_or_default()
+        .map_or_default(item_rows)
 }
 
 /// What the sheet holds for each state of the panel.

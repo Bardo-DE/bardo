@@ -90,8 +90,7 @@ fn RuntimeRow(runtime: Runtime, onopen: EventHandler<()>) -> Element {
         .to_ascii_uppercase();
     let common = Common {
         data: DataName::parse("runtime")
-            .map(|name| vec![DataAttr::new(name, state)])
-            .unwrap_or_default(),
+            .map_or_default(|name| vec![DataAttr::new(name, state)]),
         ..Common::default()
     };
     rsx! {

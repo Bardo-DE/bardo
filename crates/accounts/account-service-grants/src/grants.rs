@@ -299,6 +299,6 @@ impl<E: Ports> Grants<'_, E> {
             .await;
         // A registry that cannot be saved ends nothing: the grants stay, and the next end of
         // the session takes them.
-        ended.map(|written| written.value).unwrap_or_default()
+        ended.map_or_default(|written| written.value)
     }
 }

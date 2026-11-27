@@ -81,8 +81,7 @@ impl RecordedChildren {
     pub fn started(&self) -> Vec<Start> {
         self.started
             .lock()
-            .map(|started| started.clone())
-            .unwrap_or_default()
+            .map_or_default(|started| started.clone())
     }
 }
 

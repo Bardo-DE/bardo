@@ -94,7 +94,7 @@ async fn record_search_inject_forget_over_the_bus() {
         })
         .await
         .expect("inject");
-    assert!(!injected.is_empty());
+    assert_ne!(injected, [] as [memory_core::RecallHit; 0]);
 
     // The person forgets the thing: plan, then apply exactly the plan.
     let plan = shell

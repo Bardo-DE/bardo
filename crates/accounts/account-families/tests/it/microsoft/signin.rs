@@ -250,7 +250,7 @@ async fn declining_the_consent_page_cancels_and_nothing_is_exchanged() {
     rig.issuer.set_consent(Consent::Deny);
     let (_, step) = to_review(&rig).await;
     assert_eq!(step, SignInStep::Failed(SignInFault::Cancelled));
-    assert!(grant_types(&rig).is_empty());
+    assert_eq!(grant_types(&rig), [] as [std::string::String; 0]);
 }
 
 #[tokio::test]
@@ -261,7 +261,7 @@ async fn a_build_with_no_client_id_says_so_before_opening_anything() {
         signin.next(SignInInput::Start).await,
         SignInStep::Failed(SignInFault::NeedsClientId)
     );
-    assert!(rig.issuer.events().is_empty());
+    assert_eq!(rig.issuer.events(), [] as [account_fake_servers::IssuerEvent; 0]);
 }
 
 /// ux-2: a client id written to the person's clients file while the provider is running (what

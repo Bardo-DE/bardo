@@ -164,8 +164,7 @@ impl<H: Host, C> AccountsSettings<H, C> {
                     .clients
                     .iter()
                     .find(|c| c.issuer == issuer && c.channel == channel())
-                    .map(|c| c.client_id.0.clone())
-                    .unwrap_or_default(),
+                    .map_or_default(|c| c.client_id.0.clone()),
             ),
             // The application secret is the same for every user of the client and is no
             // person's credential (Google says so of desktop clients): Settings shows it back.
@@ -176,8 +175,7 @@ impl<H: Host, C> AccountsSettings<H, C> {
                     .iter()
                     .find(|c| c.issuer == issuer && c.channel == channel())
                     .and_then(|c| c.client_secret.as_ref())
-                    .map(|s| s.expose().to_owned())
-                    .unwrap_or_default(),
+                    .map_or_default(|s| s.expose().to_owned()),
             ),
             key @ Key::Account(..) => {
                 read(&key, &view.registry, &view.used, &self.directory()).ok_or_else(unknown)
@@ -416,8 +414,7 @@ impl<H, C> AccountsSettings<H, C> {
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
             let before = match file.read() {
                 Ok(bytes) => bytes
-                    .map(|bytes| String::from_utf8_lossy(&bytes).into_owned())
-                    .unwrap_or_default(),
+                    .map_or_default(|bytes| String::from_utf8_lossy(&bytes).into_owned()),
                 Err(e) => return Err(failed(e)),
             };
             let text =

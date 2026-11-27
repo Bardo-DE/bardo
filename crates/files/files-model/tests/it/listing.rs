@@ -11,7 +11,7 @@ fn an_answer_for_a_place_already_left_is_ignored() {
         .clone()
         .step(Input::Listed(home(), Ok(vec![file("old")])), at(0));
     assert_eq!(after, browser);
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
     assert_eq!(after.listing(), &Listing::Loading);
 }
 
@@ -26,7 +26,7 @@ fn a_failed_listing_is_kept_with_its_reason_and_clears_the_rows() {
         browser.listing(),
         &Listing::Failed(FolderListError::NoPermission)
     );
-    assert!(browser.rows().is_empty());
+    assert_eq!(browser.rows(), []);
     assert_eq!(
         FolderListError::NoPermission.to_string(),
         "You don't have permission to open that folder."

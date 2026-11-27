@@ -62,8 +62,7 @@ async fn visible<H: Host, C: Callers>(
     let registry = core.host.registry();
     let path = header
         .path()
-        .map(zbus::zvariant::ObjectPath::as_str)
-        .unwrap_or_default();
+        .map_or_default(zbus::zvariant::ObjectPath::as_str);
     account_at(&registry.accounts, path)
         .filter(|_| sees(&caller))
         .cloned()
@@ -143,8 +142,7 @@ impl<H: Host, C: Callers> AccountServer for AccountObject<H, C> {
         let registry = self.0.host.registry();
         let path = header
             .path()
-            .map(zbus::zvariant::ObjectPath::as_str)
-            .unwrap_or_default();
+            .map_or_default(zbus::zvariant::ObjectPath::as_str);
         let account = account_at(&registry.accounts, path)
             .filter(|_| sees(&caller))
             .map(|account| account.id.clone())

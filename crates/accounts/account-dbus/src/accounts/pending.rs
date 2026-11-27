@@ -123,8 +123,7 @@ impl Sheet {
     #[must_use]
     pub fn options(&self) -> Details {
         OwnedValue::try_from(Value::from(self.token.clone()))
-            .map(|token| Details::from([(OPTION_HANDLE_TOKEN.to_owned(), token)]))
-            .unwrap_or_default()
+            .map_or_default(|token| Details::from([(OPTION_HANDLE_TOKEN.to_owned(), token)]))
     }
 
     /// Where the Request object is when the daemon honours [`Sheet::options`]; `Closer` for a

@@ -82,12 +82,11 @@ fn write_drives(file: &Path, list: &str, id: &str, listed: bool) -> std::io::Res
         let mut ids: BTreeSet<String> = storage
             .get(list)
             .and_then(Item::as_array)
-            .map(|ids| {
+            .map_or_default(|ids| {
                 ids.iter()
                     .filter_map(|id| id.as_str().map(str::to_owned))
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         if listed {
             ids.insert(id.to_owned())
         } else {

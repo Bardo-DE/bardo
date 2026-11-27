@@ -12,6 +12,5 @@ pub(crate) fn word_label(key: &KeySpec, word: &str) -> String {
     let mut chars = spaced.chars();
     chars
         .next()
-        .map(|first| first.to_uppercase().chain(chars).collect())
-        .unwrap_or_default()
+        .map_or_default(|first| first.to_uppercase().chain(chars).collect())
 }

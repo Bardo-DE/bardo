@@ -215,8 +215,7 @@ pub(super) fn apply(
     }
     let member = header
         .member()
-        .map(|m| m.as_str().to_owned())
-        .unwrap_or_default();
+        .map_or_default(|m| m.as_str().to_owned());
     let body = message.body();
     match member.as_str() {
         "Package" => {

@@ -195,8 +195,7 @@ impl<V: Vault> Store<V> {
                 let kept = self
                     .read(&file.topic)
                     .ok()
-                    .map(|t| t.blocks)
-                    .unwrap_or_default();
+                    .map_or_default(|t| t.blocks);
                 for block in file.blocks {
                     let Block::Fact(fact) = block else { continue };
                     let there = kept

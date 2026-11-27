@@ -200,8 +200,7 @@ impl OutputPowers {
             .controls
             .iter()
             .find(|control| control.id == id)
-            .map(|control| control.modes.clone())
-            .unwrap_or_default()
+            .map_or_default(|control| control.modes.clone())
     }
 
     /// Destroys a control.

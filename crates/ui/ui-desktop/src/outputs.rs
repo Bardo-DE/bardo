@@ -221,7 +221,7 @@ mod tests {
     #[test]
     fn no_shell_is_an_empty_list() {
         assert_eq!(Outputs::default().of_physical((1920, 1080)), None);
-        assert!(Outputs::default().areas().is_empty());
+        assert_eq!(Outputs::default().areas(), []);
     }
 
     #[test]

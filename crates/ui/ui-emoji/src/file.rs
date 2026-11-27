@@ -181,8 +181,7 @@ fn named_for_colrv1(path: &Path) -> bool {
     let name = path
         .file_name()
         .and_then(|name| name.to_str())
-        .map(str::to_ascii_lowercase)
-        .unwrap_or_default();
+        .map_or_default(str::to_ascii_lowercase);
     name.contains("colrv1") && (name.ends_with(".ttf") || name.ends_with(".otf"))
 }
 

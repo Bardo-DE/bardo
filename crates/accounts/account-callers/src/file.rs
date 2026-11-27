@@ -144,7 +144,7 @@ mod tests {
     fn text_that_is_no_table_is_a_typed_error_that_names_a_file_when_it_came_from_one() {
         let error = table_from_toml("[[caller]]\napp = \"not a name\"\nrole = \"app\"\n")
             .expect_err("a bad app name");
-        assert!(!error.message.is_empty());
+        assert_ne!(error.message, "");
         assert_eq!(error.to_string(), error.message);
         let path = PathBuf::from("/x/callers.toml");
         let in_file = error.clone().in_file(&path);

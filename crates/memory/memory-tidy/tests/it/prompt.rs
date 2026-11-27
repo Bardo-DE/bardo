@@ -204,7 +204,7 @@ fn a_supersede_and_a_flag_are_built_and_pass_the_check() {
         matches!(&draft.hunks[0], Hunk::Supersede { old, new } if *old == fact_id() && new.supersedes == vec![fact_id()])
     );
     assert!(matches!(&draft.hunks[1], Hunk::Flag { facts, .. } if facts == &vec![fact_id()]));
-    assert!(check_draft(&input, draft).dropped.is_empty());
+    assert_eq!(check_draft(&input, draft).dropped, [] as [(usize, memory_tidy::HunkFault); 0]);
 }
 
 #[test]

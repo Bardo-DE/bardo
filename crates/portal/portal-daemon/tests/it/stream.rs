@@ -34,7 +34,7 @@ fn frames_reach_the_sink_and_the_end_is_reported() {
     assert_eq!(pump.turn().expect("turn"), PumpOutcome::SourceEnded);
     let sink = pump.into_sink();
     assert_eq!(sink.received, vec![0, 1_000_000]);
-    assert!(sink.resizes.is_empty());
+    assert_eq!(sink.resizes, [] as [portal_core::Extent; 0]);
 }
 
 #[test]

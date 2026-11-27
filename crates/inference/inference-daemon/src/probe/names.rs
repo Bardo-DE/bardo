@@ -41,8 +41,7 @@ impl Listing {
         };
         if response.status().is_success() {
             serde_json::from_slice(response.body())
-                .map(|body| Self::of(runtime, &body))
-                .unwrap_or_default()
+                .map_or_default(|body| Self::of(runtime, &body))
         } else {
             Self::default()
         }

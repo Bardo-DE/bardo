@@ -49,8 +49,7 @@ impl Icons {
         let (kind, guess) = match opens(entry) {
             Opens::Folder => {
                 let kind = folder
-                    .map(|folder| self.places.folder_kind(&folder.join(&entry.name)))
-                    .unwrap_or_default();
+                    .map_or_default(|folder| self.places.folder_kind(&folder.join(&entry.name)));
                 (FolderFacts::Folder(kind), MimeType::new(MimeType::FOLDER))
             }
             Opens::File | Opens::Nothing => (FolderFacts::NotAFolder, self.type_of(entry)),

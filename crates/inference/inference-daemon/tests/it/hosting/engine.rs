@@ -406,12 +406,11 @@ pub async fn serve<S: AsyncRead + AsyncWrite + Unpin>(
             let dims = state.lock().expect("lock").1;
             let inputs: Vec<String> = seen.body["input"]
                 .as_array()
-                .map(|all| {
+                .map_or_default(|all| {
                     all.iter()
                         .map(|v| v.as_str().unwrap_or_default().to_owned())
                         .collect()
-                })
-                .unwrap_or_default();
+                });
             let data: Vec<Value> = inputs
                 .iter()
                 .enumerate()

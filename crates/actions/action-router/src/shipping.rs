@@ -62,7 +62,6 @@ impl<S: Seams> Router<S> {
         self.locked()
             .shadow
             .get(app)
-            .map(|all| all.values().cloned().collect())
-            .unwrap_or_default()
+            .map_or_default(|all| all.values().cloned().collect())
     }
 }

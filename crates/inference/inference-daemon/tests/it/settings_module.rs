@@ -656,7 +656,7 @@ async fn the_shell_may_set_a_helpers_pool_and_it_is_written_and_in_force() {
     let tiers = rig.engines.settings().tiers.clone();
     assert_eq!(tiers.pool_of(&helper("h.1"), Slot::Text).len(), 1);
     assert!(tiers.pool(Slot::Text).is_empty(), "not the assistant's");
-    assert!(tiers.pool_of(&helper("h.2"), Slot::Text).is_empty());
+    assert_eq!(tiers.pool_of(&helper("h.2"), Slot::Text), []);
     let written = std::fs::read_to_string(&rig.file).expect("the file");
     assert!(written.contains("\"text.helper.h.1\""), "{written}");
     // Settings reads it back through the settings module by the same key.
@@ -674,7 +674,7 @@ async fn the_shell_may_set_a_helpers_pool_and_it_is_written_and_in_force() {
         .await
         .expect("clear");
     let tiers = rig.engines.settings().tiers.clone();
-    assert!(tiers.pool_of(&helper("h.1"), Slot::Text).is_empty());
+    assert_eq!(tiers.pool_of(&helper("h.1"), Slot::Text), []);
     let written = std::fs::read_to_string(&rig.file).expect("the file");
     assert!(!written.contains("helper"), "{written}");
 }

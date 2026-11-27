@@ -40,7 +40,7 @@ pub fn describe(head: &Head, connector: Option<&Connector>) -> DisplayOutput {
     let edid: Option<Edid> = connector.and_then(|c| edid::parse(&c.edid).ok());
     let size = edid.as_ref().and_then(|e| e.size).or(head.physical);
     let native = edid.as_ref().and_then(|e| e.native).or(head.current);
-    let pixels = native.map(|m| m.pixels).unwrap_or_default();
+    let pixels = native.map_or_default(|m| m.pixels);
     DisplayOutput {
         name: head.name.clone(),
         identity: edid.as_ref().map_or_else(

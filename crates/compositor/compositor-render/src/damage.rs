@@ -76,8 +76,7 @@ pub fn render_output<R: Compositor>(
         })?;
     let damage = result
         .damage
-        .map(|rects| rects.iter().copied().map(ours).collect())
-        .unwrap_or_default();
+        .map_or_default(|rects| rects.iter().copied().map(ours).collect());
     let sync = if result.sync.is_reached() {
         RenderSync::Done
     } else {

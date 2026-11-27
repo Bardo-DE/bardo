@@ -297,8 +297,7 @@ impl HostState {
     pub(crate) fn adapter_label(&self) -> String {
         self.gpu
             .as_ref()
-            .map(|gpu| gpu.adapter().label())
-            .unwrap_or_default()
+            .map_or_default(|gpu| gpu.adapter().label())
     }
 }
 

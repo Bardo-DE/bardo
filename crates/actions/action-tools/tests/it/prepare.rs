@@ -37,7 +37,7 @@ fn the_listing_is_the_tools_of_the_registry_with_their_labels() {
 #[test]
 fn the_menu_narrows_the_listing() {
     let registry = memory();
-    assert!(listing(&registry, |_| false).is_empty());
+    assert_eq!(listing(&registry, |_| false), [] as [(action_tools::ToolSpec, std::string::String); 0]);
     let only_recall = listing(&registry, |a| a.name.as_str() == "memory.recall");
     assert_eq!(only_recall.len(), 1);
     assert_eq!(only_recall[0].0.name.as_str(), "memory__memory_recall");

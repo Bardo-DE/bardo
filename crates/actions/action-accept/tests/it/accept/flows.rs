@@ -254,7 +254,7 @@ async fn flow_c_an_injected_body_never_reaches_the_planner_and_the_send_still_as
         "{:?}",
         ask.taint
     );
-    assert!(world.app.messages().is_empty());
+    assert_eq!(world.app.messages(), [] as [action_accept::provider::Message; 0]);
 }
 
 /// The same thread, but the planner replies to its sender, which it can only name through the
@@ -306,7 +306,7 @@ async fn flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted(
         "{:?}",
         ask.taint
     );
-    assert!(world.app.messages().is_empty());
+    assert_eq!(world.app.messages(), [] as [action_accept::provider::Message; 0]);
 }
 
 /// SPEC 5(a) steps 7 and 8: a plan card streams, and while the sheet is up the answer shows

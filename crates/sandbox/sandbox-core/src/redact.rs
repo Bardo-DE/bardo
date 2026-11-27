@@ -69,7 +69,7 @@ fn url_password(word: &str) -> Option<String> {
         .map_or((rest, None), |(a, t)| (a, Some(t)));
     let (info, host) = authority.rsplit_once('@')?;
     let (user, _) = info.split_once(':')?;
-    let tail = tail.map(|t| format!("/{t}")).unwrap_or_default();
+    let tail = tail.map_or_default(|t| format!("/{t}"));
     Some(format!("{scheme}://{user}:{MASK}@{host}{tail}"))
 }
 

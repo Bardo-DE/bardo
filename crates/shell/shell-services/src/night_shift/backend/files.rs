@@ -149,14 +149,13 @@ pub(super) fn write_skip(dir: &Path, skip: &[OutputName]) -> Result<Skipping, Fi
         .get(SECTION)
         .and_then(|section| section.get(SKIP_KEY))
         .and_then(Value::as_array)
-        .map(|entries| {
+        .map_or_default(|entries| {
             entries
                 .iter()
                 .filter_map(Value::as_str)
                 .map(str::to_owned)
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     let wanted = skip_list(&existing, skip);
     if wanted == existing {
         return Ok(Skipping::AsWas);
@@ -521,8 +520,7 @@ mod tests {
         let text = std::fs::read_to_string(&real).unwrap_or_default();
         assert!(text.contains("mode = \"scheduled\""), "{text}");
         let mode = std::fs::metadata(&real)
-            .map(|m| m.permissions().mode() & 0o777)
-            .unwrap_or_default();
+            .map_or_default(|m| m.permissions().mode() & 0o777);
         assert_eq!(mode, 0o640);
     }
 

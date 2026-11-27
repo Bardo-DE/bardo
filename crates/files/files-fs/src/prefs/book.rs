@@ -99,8 +99,7 @@ impl PrefBook {
         let tables = table
             .get("folder")
             .and_then(toml::Value::as_array)
-            .map(Vec::as_slice)
-            .unwrap_or_default();
+            .map_or_default(Vec::as_slice);
         let mut book = PrefBook::default();
         for entry in tables.iter().filter_map(toml::Value::as_table) {
             let path = entry

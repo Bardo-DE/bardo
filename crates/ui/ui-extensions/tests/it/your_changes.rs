@@ -41,7 +41,7 @@ fn setting_a_picture_copies_it_under_the_icon_name_and_writes_the_manifest() {
     assert_eq!(installed.len(), 1);
     assert_eq!(installed[0].manifest.id.as_str(), YOUR_CHANGES_ID);
     assert_eq!(installed[0].manifest.name, YOUR_CHANGES_NAME);
-    assert!(resolved.problems().is_empty());
+    assert_eq!(resolved.problems(), [] as [ui_extensions::Problem; 0]);
 }
 
 #[test]

@@ -116,8 +116,7 @@ impl Opened {
             .ok()?;
         Some(
             all.get(NAMESPACE)
-                .map(prefs_from_namespace)
-                .unwrap_or_default(),
+                .map_or_default(prefs_from_namespace),
         )
     }
 

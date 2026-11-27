@@ -43,7 +43,7 @@ async fn a_request_for_our_own_tool_is_answered_once_with_no_sheet_and_no_ruling
     );
     let (rig, events) = Box::pin(ask(request, 0)).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
-    assert!(rig.sheets().is_empty());
+    assert_eq!(rig.sheets(), [] as [action_core::ConfirmRequest; 0]);
     let recorded = events.iter().any(|e| {
         matches!(e, BackendEvent::Call(CallEvent::Ended(l))
             if l.action.name.as_str() == "acpagent.reported.other")
@@ -56,7 +56,7 @@ async fn a_fetch_kind_for_our_tool_is_answered_the_same_way() {
     let request = mcp_request("fetch", Some(ours(READ)), &json!({}), &agy_options());
     let (rig, _) = Box::pin(ask(request, 0)).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
-    assert!(rig.sheets().is_empty());
+    assert_eq!(rig.sheets(), [] as [action_core::ConfirmRequest; 0]);
 }
 
 #[tokio::test]
@@ -108,7 +108,7 @@ async fn listing_our_own_servers_resources_is_answered_once_and_nothing_wider_is
     );
     let (rig, _) = Box::pin(ask(list, 0)).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
-    assert!(rig.sheets().is_empty());
+    assert_eq!(rig.sheets(), [] as [action_core::ConfirmRequest; 0]);
     for raw in [
         json!({"ServerName": "elsewhere"}),
         json!({"ServerName": "bardo", "Uri": "file:///x"}),

@@ -66,8 +66,7 @@ pub(crate) mod bus {
             let activatable = proxy
                 .list_activatable_names()
                 .await
-                .map(|names| names.into_iter().map(|n| n.to_string()).collect())
-                .unwrap_or_default();
+                .map_or_default(|names| names.into_iter().map(|n| n.to_string()).collect());
             Some(Side { proxy, activatable })
         }
 

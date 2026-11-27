@@ -734,8 +734,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
         let added = self
             .computers
             .as_ref()
-            .map(|computers| computers.tailnet_nodes())
-            .unwrap_or_default();
+            .map_or_default(|computers| computers.tailnet_nodes());
         Ok(tailnet
             .candidates()
             .await
@@ -822,8 +821,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
         Ok(self
             .tailnet
             .as_ref()
-            .map(|tailnet| tailnet.guests().rows())
-            .unwrap_or_default()
+            .map_or_default(|tailnet| tailnet.guests().rows())
             .into_iter()
             .map(guest_row)
             .collect())

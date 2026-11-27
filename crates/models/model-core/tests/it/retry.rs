@@ -293,7 +293,7 @@ fn a_refusal_or_a_bad_request_is_not_retried() {
     ] {
         let (result, waits, _, _) = run(vec![fail(error.clone()), delta()]);
         assert_eq!(result, Err(error));
-        assert!(waits.is_empty());
+        assert_eq!(waits, [] as [std::time::Duration; 0]);
     }
 }
 

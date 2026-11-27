@@ -104,8 +104,7 @@ pub(crate) fn frame_bytes(frame: &WireFrame, framing: Framing) -> Vec<u8> {
             let event = frame
                 .event
                 .as_ref()
-                .map(|e| format!("event: {}\n", e.0))
-                .unwrap_or_default();
+                .map_or_default(|e| format!("event: {}\n", e.0));
             let mut data = String::new();
             for line in frame.data.split('\n') {
                 writeln!(data, "data: {line}").expect("writing to a String cannot fail");
@@ -300,7 +299,7 @@ mod tests {
     #[test]
     fn an_empty_body_has_no_chunks() {
         let empty = WireBody::Whole(String::new());
-        assert!(chunks(&empty, Framing::Whole, ChunkPlan::Whole).is_empty());
-        assert!(chunks(&WireBody::Frames(vec![]), Framing::Sse, ChunkPlan::Lines).is_empty());
+        assert_eq!(chunks(&empty, Framing::Whole, ChunkPlan::Whole), [] as [std::vec::Vec<u8>; 0]);
+        assert_eq!(chunks(&WireBody::Frames(vec![]), Framing::Sse, ChunkPlan::Lines), [] as [std::vec::Vec<u8>; 0]);
     }
 }

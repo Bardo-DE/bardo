@@ -22,8 +22,7 @@ const VIEW: Viewport = Viewport {
 fn Thread() -> Element {
     let mut mounted = use_signal(|| 0u32);
     let data = DataName::parse("hc")
-        .map(|name| vec![DataAttr::new(name, "thread:7")])
-        .unwrap_or_default();
+        .map_or_default(|name| vec![DataAttr::new(name, "thread:7")]);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
             div { style: "width:380px",

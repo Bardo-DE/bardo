@@ -84,8 +84,7 @@ impl<M: 'static> HostCtx<M> {
             .lock
             .as_ref()
             .filter(|active| active.id == id)
-            .map(|active| active.surfaces.iter().map(|(&o, &s)| (o, s)).collect())
-            .unwrap_or_default()
+            .map_or_default(|active| active.surfaces.iter().map(|(&o, &s)| (o, s)).collect())
     }
 }
 

@@ -158,7 +158,7 @@ fn taking_over_stops_the_input_and_handing_back_tells_the_model_the_person_acted
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::Off))));
     assert_eq!(kinds(&d.effects), ["computer_use.taken_over"]);
     d.feed(RunInput::UserTakeOver);
-    assert!(d.effects.is_empty());
+    assert_eq!(d.effects, [] as [computer_use_run::RunEffect; 0]);
     d.feed(RunInput::UserHandBack);
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
     assert_eq!(kinds(&d.effects), ["computer_use.handed_back"]);

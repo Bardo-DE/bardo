@@ -105,8 +105,7 @@ impl Session {
                 .iter()
                 .chain(&self.apps)
                 .find(|app| app.app == *id)
-                .map(verb)
-                .unwrap_or_default(),
+                .map_or_default(verb),
         }
     }
 }

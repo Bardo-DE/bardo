@@ -113,6 +113,7 @@ impl DbusTransport {
     }
 
     /// The connection.
+    #[must_use]
     pub fn connection(&self) -> &memory_dbus::BusConnection {
         &self.connection
     }

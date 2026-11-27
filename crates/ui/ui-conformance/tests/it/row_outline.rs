@@ -30,8 +30,7 @@ fn ms(n: u64) -> Duration {
 fn place(path: &str) -> Common {
     Common {
         data: DataName::parse("place")
-            .map(|name| vec![DataAttr::new(name, path)])
-            .unwrap_or_default(),
+            .map_or_default(|name| vec![DataAttr::new(name, path)]),
         ..Common::default()
     }
 }

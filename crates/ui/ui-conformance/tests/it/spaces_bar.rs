@@ -60,10 +60,10 @@ fn Hung(held: Option<bool>) -> Element {
             on_hidden: move |()| log.with_mut(|log| log.push("hidden".to_owned())),
         }
         p { class: "log", {log().join(",")} }
-        p { class: "reported-add", {layout().add.map(whole).unwrap_or_default()} }
+        p { class: "reported-add", {layout().add.map_or_default(whole)} }
         for rects in layout().spaces {
             p { class: "reported-tile", {whole(rects.tile)} }
-            p { class: "reported-card", {rects.card.map(whole).unwrap_or_default()} }
+            p { class: "reported-card", {rects.card.map_or_default(whole)} }
         }
     }
 }

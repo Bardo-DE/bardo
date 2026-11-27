@@ -134,8 +134,7 @@ fn unique_name(name: &str, taken: impl Fn(&str) -> bool) -> String {
     let ending = path
         .extension()
         .and_then(|e| e.to_str())
-        .map(|e| format!(".{e}"))
-        .unwrap_or_default();
+        .map_or_default(|e| format!(".{e}"));
     (2..)
         .map(|number| format!("{stem} {number}{ending}"))
         .find(|candidate| !taken(candidate))

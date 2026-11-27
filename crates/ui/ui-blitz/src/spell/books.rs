@@ -135,14 +135,13 @@ impl Books {
     /// The user's learned words for the installed dictionary `lang`, one per line.
     fn user_words(&self, lang: &Lang) -> Vec<String> {
         read_text_capped(&self.user_file(lang), USER_WORDS_CAP)
-            .map(|text| {
+            .map_or_default(|text| {
                 text.lines()
                     .map(str::trim)
                     .filter(|line| !line.is_empty())
                     .map(str::to_owned)
                     .collect()
             })
-            .unwrap_or_default()
     }
 
     fn append(&mut self, lang: &Lang, word: &str) -> std::io::Result<()> {

@@ -99,7 +99,7 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     let proxy = CompanionProxy::new(&me).await.expect("proxy");
     let roster: Roster =
         serde_json::from_str(&proxy.roster().await.expect("roster")).expect("json");
-    assert!(roster.entries.is_empty());
+    assert_eq!(roster.entries, [] as [action_core::RosterLine; 0]);
     let front: FrontTask =
         serde_json::from_str(&proxy.front().await.expect("front")).expect("json");
     assert_eq!(front.task, None);

@@ -217,8 +217,7 @@ impl Float {
         let content = self
             .surface
             .rect()
-            .map(|rect| rect.size)
-            .unwrap_or_default();
+            .map_or_default(|rect| rect.size);
         Some(place(anchor, content, bounds, want, gap))
     }
 

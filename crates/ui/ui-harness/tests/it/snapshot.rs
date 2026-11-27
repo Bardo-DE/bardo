@@ -161,8 +161,7 @@ fn data_and_file_images_land_before_the_snapshot() {
     // The app names the directory its file lives in, or the document would read no file.
     let roots = FileRoots::new([green_file()
         .parent()
-        .map(std::path::PathBuf::from)
-        .unwrap_or_default()]);
+        .map_or_default(std::path::PathBuf::from)]);
     let config = HarnessConfig::new(view).with_file_roots(roots);
     let frame = snapshot_with(ImageApp, config, &[Duration::from_secs(10)])
         .expect("renders")

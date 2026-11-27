@@ -94,7 +94,7 @@ pub(crate) fn body(menu: BarMenu, state: &BarState, icon: RowIcon) -> PopupBody 
                 .tray
                 .items
                 .get(usize::from(slot.0))
-                .map(|item| {
+                .map_or_default(|item| {
                     menu_items(
                         &|entry| BarPick::Tray {
                             item: item.id.clone(),
@@ -103,8 +103,7 @@ pub(crate) fn body(menu: BarMenu, state: &BarState, icon: RowIcon) -> PopupBody 
                         &item.menu,
                         icon,
                     )
-                })
-                .unwrap_or_default(),
+                }),
         ),
         BarMenu::System => PopupBody::Menu(system_menu(state.session)),
         BarMenu::App => PopupBody::Menu(app_menu(state.app.as_ref(), state.menus.as_ref(), icon)),

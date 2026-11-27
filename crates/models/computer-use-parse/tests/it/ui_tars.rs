@@ -28,7 +28,7 @@ fn ui_tars_examples_parse() {
         Some("Click on the search bar at the top of the page.")
     );
     assert_eq!(image_actions(&p), [left_click(at(459, 203))]);
-    assert!(p.dropped.is_empty());
+    assert_eq!(p.dropped, [] as [computer_use_parse::Dropped; 0]);
 
     let p = ui_tars(&fixture("hotkey.txt")).unwrap();
     let chord = Chord::new(BTreeSet::from([Modifier::Ctrl]), Key::Character("c".into())).unwrap();
@@ -174,7 +174,7 @@ fn unknown_verbs_are_dropped_not_guessed() {
     for verb in ["press_home", "long_press", "mouse_down", "navigate"] {
         let p = ui_tars(&format!("Action: {verb}(x='1')")).unwrap();
         assert_eq!(drops(&p), [(verb, DropReason::UnsupportedVerb)]);
-        assert!(image_actions(&p).is_empty());
+        assert_eq!(image_actions(&p), []);
     }
 }
 

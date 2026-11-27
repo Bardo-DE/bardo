@@ -291,7 +291,7 @@ mod tests {
         assert_eq!(out.held(), ["leftctrl"]);
         send(&release("leftctrl"));
         out.expect("-leftctrl SYN").unwrap();
-        assert!(out.held().is_empty());
+        assert_eq!(out.held(), [] as [std::string::String; 0]);
     }
 
     #[test]

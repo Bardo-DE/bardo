@@ -207,8 +207,7 @@ where
         // An agent app that answered is signed in: the agent said so by opening its session.
         let answered_by_app = answer.as_ref().is_some_and(|a| a.hold == Hold::Leave);
         let evicted = answer
-            .map(|answer| self.with_state(|state| state.answers.keep(job, answer)))
-            .unwrap_or_default();
+            .map_or_default(|answer| self.with_state(|state| state.answers.keep(job, answer)));
         if let Some(ways) = ways {
             self.with_state(|state| state.logins.wants_sign_in(&running.helper, ways));
         }

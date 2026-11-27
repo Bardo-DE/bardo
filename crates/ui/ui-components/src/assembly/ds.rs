@@ -143,8 +143,7 @@ pub fn Ds(
     let frame = FrameVars::of(&look, resolved.scheme);
     let layers = use_frame_layers(&frame.gradient);
     let corner = radius
-        .map(crate::root::surface::radius_style)
-        .unwrap_or_default();
+        .map_or_default(crate::root::surface::radius_style);
     let pixels = PixelToken::style_attr(scale);
     let style = format!(
         "{}{}{corner}{pixels}",

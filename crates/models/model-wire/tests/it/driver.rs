@@ -142,7 +142,7 @@ fn a_failing_status_is_classified_from_its_head_and_never_decoded() {
     );
     let mut sink = Keep::default();
     assert_eq!(turn(&d, &mut sink), Err(ProviderError::Unauthorized));
-    assert!(sink.events.is_empty());
+    assert_eq!(sink.events, [] as [model_provider::TurnEvent; 0]);
 }
 
 #[test]
@@ -179,7 +179,7 @@ fn an_html_page_served_as_200_is_classified_not_decoded() {
         turn(&d, &mut sink),
         Err(ProviderError::Unreadable("html 18 bytes".into()))
     );
-    assert!(sink.events.is_empty());
+    assert_eq!(sink.events, [] as [model_provider::TurnEvent; 0]);
 }
 
 #[test]
@@ -339,7 +339,7 @@ fn an_unencodable_request_never_reaches_the_transport() {
             "unsupported shape for this wire".into()
         ))
     );
-    assert!(d.transport().asked().is_empty());
+    assert_eq!(d.transport().asked(), [] as [model_http::Exchange; 0]);
 }
 
 #[test]
@@ -428,8 +428,8 @@ fn embed_refuses_a_wrong_count_or_width_before_a_vector_reaches_a_store() {
 fn embed_with_no_inputs_asks_nothing() {
     let d = embedder(vec![]);
     let end = block_on(d.embed(&embed_turn(&[], Knob::Off))).unwrap();
-    assert!(end.vectors.is_empty());
-    assert!(d.transport().asked().is_empty());
+    assert_eq!(end.vectors, [] as [model_provider::EmbedVector; 0]);
+    assert_eq!(d.transport().asked(), [] as [model_http::Exchange; 0]);
 }
 
 #[test]

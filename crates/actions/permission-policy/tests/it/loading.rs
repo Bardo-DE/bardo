@@ -7,7 +7,7 @@ use permission_policy::{CORE_POLICIES, Pdp, PolicyError, SCHEMA};
 #[test]
 fn schema_and_default_policies_validate() {
     let pdp = Pdp::built_in().unwrap_or_else(|e| panic!("{e}"));
-    assert!(!pdp.policy_ids().is_empty());
+    assert_ne!(pdp.policy_ids(), [] as [permission_core::PolicyId; 0]);
 }
 
 #[test]

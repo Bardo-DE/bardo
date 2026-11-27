@@ -279,7 +279,7 @@ fn feedback_for_a_render_gpu_without_formats_is_empty_but_names_the_main_device(
     let plan = RenderPlan::new(render, BTreeMap::new());
     let feedback = feedback_for(&plan, &FormatTable::default());
     assert_eq!(feedback.main_device, render);
-    assert!(feedback.tranches.is_empty());
+    assert_eq!(feedback.tranches, [] as [compositor_core::gpu::Tranche; 0]);
 }
 
 #[test]

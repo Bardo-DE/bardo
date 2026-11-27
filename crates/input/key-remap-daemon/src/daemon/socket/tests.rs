@@ -558,7 +558,7 @@ fn a_bad_edit_keeps_what_watchers_hold_and_tells_them_why() {
         panic!("no problem report");
     };
     assert_eq!(kept.overrides, good.overrides);
-    assert!(!kept.problems.is_empty());
+    assert_ne!(kept.problems, [] as [key_remap_proto::KeymapProblem; 0]);
 }
 
 #[test]

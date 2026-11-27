@@ -64,8 +64,7 @@ impl<A: Accounts + 'static> Hosts for BroughtHosts<A> {
         let rewind = self
             .live
             .entry(&self.program)
-            .map(|entry| entry.rewind)
-            .unwrap_or_default();
+            .map_or_default(|entry| entry.rewind);
         AgentHost::new(
             backend,
             self.live.court.clone(),

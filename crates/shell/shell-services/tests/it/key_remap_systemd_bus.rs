@@ -191,7 +191,7 @@ async fn a_failed_unit_is_failed_and_the_person_is_told() {
     assert_eq!(posting.summary, notice_text(&Attention::Failed).summary);
     assert_eq!(posting.body.text(), notice_text(&Attention::Failed).body);
     assert_eq!(posting.replaces, None);
-    assert!(posting.actions.is_empty());
+    assert_eq!(posting.actions, [] as [shell_model::notifications::Action; 0]);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -226,7 +226,7 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
     );
     tokio::time::sleep(SHORT).await;
     assert_eq!(*handle.state.borrow(), KeyRemapState::Unknown);
-    assert!(lock(&shared).calls.is_empty());
+    assert_eq!(lock(&shared).calls, [] as [std::string::String; 0]);
     notices.try_recv().unwrap_err();
 }
 
@@ -307,5 +307,5 @@ async fn without_a_system_bus_nothing_is_asked_and_the_state_stays_unknown() {
     tokio::time::sleep(SHORT * 2).await;
     assert_eq!(*rig.state.borrow(), KeyRemapState::Unknown);
     rig.notices.try_recv().unwrap_err();
-    assert!(lock(&shared).calls.is_empty());
+    assert_eq!(lock(&shared).calls, [] as [std::string::String; 0]);
 }

@@ -189,8 +189,7 @@ fn stats(ctx: &mut HostCtx<Command>, demo: &Demo) {
         Held::Locked(id) => ("locked", Some(id)),
     };
     let surfaces: Vec<serde_json::Value> = id
-        .map(|id| ctx.lock_surfaces(id))
-        .unwrap_or_default()
+        .map_or_default(|id| ctx.lock_surfaces(id))
         .into_iter()
         .filter_map(|(output, surface)| {
             let stats = ctx.stats(surface)?;
@@ -205,7 +204,7 @@ fn stats(ctx: &mut HostCtx<Command>, demo: &Demo) {
             }))
         })
         .collect();
-    let typed = TYPED.lock().map(|typed| typed.clone()).unwrap_or_default();
+    let typed = TYPED.lock().map_or_default(|typed| typed.clone());
     let line = serde_json::json!({
         "phase": phase,
         "surfaces": surfaces,

@@ -125,8 +125,7 @@ async fn models(bus: &BusSource) -> Vec<ServerModel> {
     )
     .await
     .and_then(Result::ok)
-    .map(|described| server_models(&described))
-    .unwrap_or_default()
+    .map_or_default(|described| server_models(&described))
 }
 
 /// Makes one change; why not when it was refused.

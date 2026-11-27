@@ -95,7 +95,7 @@ async fn signing_in_again_is_the_same_two_steps_and_still_holds_nothing() {
     let SignInStep::Done(signed) = sign_in.next(SignInInput::Confirm(Vec::new())).await else {
         panic!("done");
     };
-    assert!(signed.credentials.is_empty());
+    assert_eq!(signed.credentials, [] as [(account_core::SecretPurpose, account_core::Credential); 0]);
 }
 
 #[tokio::test]

@@ -68,8 +68,7 @@ impl LocalView {
         self.engine
             .as_deref()
             .and_then(|id| self.engines.iter().find(|engine| engine.id == id))
-            .map(|engine| engine.models.as_slice())
-            .unwrap_or_default()
+            .map_or_default(|engine| engine.models.as_slice())
     }
 }
 

@@ -120,12 +120,11 @@ pub fn read_agents(agents_toml: &str, records: &impl AgentRecords) -> Agents {
     let rows = doc
         .get("agent")
         .and_then(toml::Value::as_array)
-        .map(|list| {
+        .map_or_default(|list| {
             list.iter()
                 .filter_map(toml::Value::as_table)
                 .filter_map(|entry| row(entry, records))
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     Agents { rows }
 }

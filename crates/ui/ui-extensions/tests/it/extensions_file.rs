@@ -57,7 +57,7 @@ fn the_file_round_trips_and_names_the_ids_a_scan_takes() {
         ConfigRoot::Scratch(scratch.path().to_path_buf()),
         AppName::BARDO,
     );
-    assert!(ExtensionsFile::default().off_ids().is_empty());
+    assert_eq!(ExtensionsFile::default().off_ids(), [] as [ui_extensions::ExtensionId; 0]);
 
     let turned_off = ExtensionsFile::default()
         .extensions
@@ -92,5 +92,5 @@ fn a_blank_row_names_no_extension() {
         ..ExtensionsFile::default()
     };
     assert_eq!(file.extensions.off.len(), 1);
-    assert!(file.off_ids().is_empty());
+    assert_eq!(file.off_ids(), [] as [ui_extensions::ExtensionId; 0]);
 }

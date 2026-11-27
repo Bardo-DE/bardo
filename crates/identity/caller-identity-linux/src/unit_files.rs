@@ -140,7 +140,7 @@ fn resolved<P: ProcFs>(fs: &P, dir: &Path) -> Option<PathBuf> {
             if hops > LINK_HOPS_MAX {
                 return None;
             }
-            let base = prefix.parent().map(Path::to_path_buf).unwrap_or_default();
+            let base = prefix.parent().map_or_default(Path::to_path_buf);
             let rest = path.strip_prefix(&prefix).ok()?.to_path_buf();
             path = base.join(target).join(rest);
             continue 'restart;

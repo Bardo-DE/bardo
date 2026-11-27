@@ -72,7 +72,7 @@ fn the_sheet_of_apps_opens_for_a_selection_and_closes_with_a_pick() {
 
     let (closed, effects) = browser.clone().step(Input::CloseChooseApp, at(0));
     assert!(!closed.chooser_open());
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
 
     let (picked, effects) = browser.clone().step(Input::OpenWith(pick()), at(0));
     assert!(!picked.chooser_open());

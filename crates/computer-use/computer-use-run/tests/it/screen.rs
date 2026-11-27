@@ -549,7 +549,7 @@ fn a_verdict_names_each_cause_once_and_never_more_than_the_limit() {
 #[test]
 fn a_clear_verdict_has_no_reasons_and_a_suspicious_one_is_never_empty() {
     assert_eq!(ScreenVerdict::of(vec![]), ScreenVerdict::Clear);
-    assert!(ScreenVerdict::Clear.reasons().is_empty());
+    assert_eq!(ScreenVerdict::Clear.reasons(), []);
     let one = ScreenVerdict::of(vec![Reason::Reader]);
     assert_eq!(
         one.kinds(),

@@ -158,7 +158,7 @@ fn a_drag_from_the_cursor_needs_to_know_the_cursor() {
         None,
         r#"{"action":"drag","coordinate":[300,400]}"#,
     );
-    assert!(grid_actions(&p).is_empty());
+    assert_eq!(grid_actions(&p), []);
     assert_eq!(drops(&p), [("drag", DropReason::MissingArgument)]);
     // A cursor past the grid's top is refused, never clamped.
     let far = Some(CursorAt { x: 1000, y: 0 });

@@ -121,7 +121,7 @@ async fn the_outputs_are_read_and_a_change_is_followed() {
     let shell = bus.connect().await;
 
     // No shell: the portable fallback, an empty list.
-    assert!(Outputs::read_on(&client).await.areas().is_empty());
+    assert_eq!(Outputs::read_on(&client).await.areas(), []);
     assert!(
         !Desktop::probe_on(Some(&client), None)
             .await
@@ -239,6 +239,6 @@ async fn a_shell_that_holds_the_name_and_never_answers_reads_as_no_outputs() {
     let outputs = tokio::time::timeout(Duration::from_secs(15), Outputs::read_on(&client))
         .await
         .expect("the read ends by its own deadline");
-    assert!(outputs.areas().is_empty());
+    assert_eq!(outputs.areas(), []);
     assert!(started.elapsed() < Duration::from_secs(10));
 }

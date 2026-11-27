@@ -111,8 +111,7 @@ impl Disks {
                     .iter()
                     .find(|(interface, _)| interface.as_str() == FILESYSTEM)
             })
-            .map(|(_, props)| mount_points(props))
-            .unwrap_or_default()
+            .map_or_default(|(_, props)| mount_points(props))
     }
 
     /// The programs using any of `mounts`, searched off the bus's thread.

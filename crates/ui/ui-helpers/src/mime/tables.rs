@@ -90,8 +90,7 @@ impl Subclasses {
     pub fn parents_of(&self, mime: &MimeType) -> &[MimeType] {
         self.parents
             .get(mime)
-            .map(Vec::as_slice)
-            .unwrap_or_default()
+            .map_or_default(Vec::as_slice)
     }
 }
 

@@ -206,7 +206,7 @@ impl Fetcher {
 
 /// `dest` with `.part` after its name.
 fn part_of(dest: &Path) -> PathBuf {
-    let mut name: OsString = dest.file_name().map(OsString::from).unwrap_or_default();
+    let mut name: OsString = dest.file_name().map_or_default(OsString::from);
     name.push(".part");
     dest.with_file_name(name)
 }

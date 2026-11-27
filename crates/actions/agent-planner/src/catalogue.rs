@@ -209,8 +209,7 @@ impl Catalogue {
                         decl: decl.clone(),
                         related: manifest
                             .related_kind(&decl.name)
-                            .map(|e| e.relations.clone())
-                            .unwrap_or_default(),
+                            .map_or_default(|e| e.relations.clone()),
                     });
                 }
             }

@@ -100,8 +100,7 @@ impl Rig {
     /// Every collection directory of the account.
     fn dirs(&self) -> Vec<PathBuf> {
         std::fs::read_dir(self.account_dir())
-            .map(|entries| entries.filter_map(Result::ok).map(|e| e.path()).collect())
-            .unwrap_or_default()
+            .map_or_default(|entries| entries.filter_map(Result::ok).map(|e| e.path()).collect())
     }
 
     /// The directory of the collection of `kind` the server calls `name` (directories are named
@@ -120,8 +119,7 @@ impl Rig {
 
     fn items(&self, name: &str, kind: PimKind) -> Vec<String> {
         self.collection(name, kind)
-            .map(|dir| items_in(&dir, kind))
-            .unwrap_or_default()
+            .map_or_default(|dir| items_in(&dir, kind))
     }
 
     /// The text of the item of the collection `name` that holds `needle`.
@@ -756,9 +754,9 @@ async fn a_tasks_grant_without_a_calendar_grant_mirrors_only_tasks() {
         "{:?}",
         rig.dirs()
     );
-    assert!(rig.hits_under("/calendar/v3/").is_empty());
-    assert!(rig.hits_under("/v1/people/").is_empty());
-    assert!(!rig.hits_under("/tasks/v1/").is_empty());
+    assert_eq!(rig.hits_under("/calendar/v3/"), [] as [account_fake_servers::Hit; 0]);
+    assert_eq!(rig.hits_under("/v1/people/"), [] as [account_fake_servers::Hit; 0]);
+    assert_ne!(rig.hits_under("/tasks/v1/"), [] as [account_fake_servers::Hit; 0]);
     let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     assert_eq!(rig.hub.names_for(&settings).len(), 2);
 }

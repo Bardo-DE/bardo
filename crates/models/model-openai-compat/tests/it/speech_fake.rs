@@ -132,8 +132,7 @@ async fn read_request<S: AsyncReadExt + Unpin>(stream: &mut S) -> Option<Seen> {
 async fn write_reply<S: AsyncWriteExt + Unpin>(stream: &mut S, reply: &Reply) -> bool {
     let retry = reply
         .retry_after
-        .map(|s| format!("Retry-After: {s}\r\n"))
-        .unwrap_or_default();
+        .map_or_default(|s| format!("Retry-After: {s}\r\n"));
     let head = format!(
         "HTTP/1.1 {}\r\nContent-Type: {}\r\n{retry}Transfer-Encoding: chunked\r\n\r\n",
         reply.status, reply.content_type
@@ -180,7 +179,7 @@ pub fn fake(handler: impl Fn(&Seen) -> Reply + Send + Sync + 'static) -> Fake {
         }
     });
     Fake {
-        dir: path.parent().map(PathBuf::from).unwrap_or_default(),
+        dir: path.parent().map_or_default(PathBuf::from),
         endpoint: endpoint(HttpTarget::Unix(path)),
         seen,
         peer_closed,

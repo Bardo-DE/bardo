@@ -188,8 +188,7 @@ fn common_name(address: &Address) -> String {
         .name
         .as_deref()
         .filter(|n| !n.is_empty())
-        .map(|n| format!(";CN={}", param(n)))
-        .unwrap_or_default()
+        .map_or_default(|n| format!(";CN={}", param(n)))
 }
 
 fn attendee_line(attendee: &Attendee) -> Option<String> {

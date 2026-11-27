@@ -25,7 +25,7 @@ impl RecordingSink {
 
     /// Everything appended so far.
     pub fn records(&self) -> Vec<AuditRecord> {
-        self.records.lock().map(|r| r.clone()).unwrap_or_default()
+        self.records.lock().map_or_default(|r| r.clone())
     }
 
     /// Forgets everything appended.
@@ -96,7 +96,7 @@ impl MemoryGrants {
 
     /// The rules files as written so far.
     pub fn rule_texts(&self) -> RuleTexts {
-        self.rules.lock().map(|r| r.clone()).unwrap_or_default()
+        self.rules.lock().map_or_default(|r| r.clone())
     }
 
     /// A store that starts with these grants.
@@ -113,7 +113,7 @@ impl MemoryGrants {
 
 impl GrantStore for MemoryGrants {
     fn grants(&self) -> Vec<ActionGrant> {
-        self.grants.lock().map(|g| g.clone()).unwrap_or_default()
+        self.grants.lock().map_or_default(|g| g.clone())
     }
 
     fn record(&self, grant: ActionGrant) {
@@ -123,7 +123,7 @@ impl GrantStore for MemoryGrants {
     }
 
     fn standing(&self) -> Vec<StandingGrant> {
-        self.standing.lock().map(|g| g.clone()).unwrap_or_default()
+        self.standing.lock().map_or_default(|g| g.clone())
     }
 
     fn add_standing(&self, grant: StandingGrant) {
@@ -175,7 +175,7 @@ impl GrantStore for MemoryGrants {
     }
 
     fn limits(&self) -> Vec<Limit> {
-        self.limits.lock().map(|l| l.clone()).unwrap_or_default()
+        self.limits.lock().map_or_default(|l| l.clone())
     }
 
     fn add_limit(&self, limit: Limit) {

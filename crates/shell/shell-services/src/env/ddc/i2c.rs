@@ -87,7 +87,7 @@ impl DdcBus for I2cBuses {
             found.push(Endpoint {
                 id,
                 connector: Some(connector),
-                product: edid::parse(&block).map(|e| e.name).unwrap_or_default(),
+                product: edid::parse(&block).map_or_default(|e| e.name),
             });
             open.insert(id, device);
         }

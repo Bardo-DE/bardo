@@ -67,7 +67,7 @@ async fn next_change(stream: &mut SpaceChangedStream) -> Option<(String, String)
 async fn any_identified_app_lists_and_creates_and_a_stranger_is_denied() {
     let rig = start(Options::default()).await;
     let app = spaces(&rig.client("org.bardo.Photos").await).await;
-    assert!(listed(&app).await.is_empty());
+    assert_eq!(listed(&app).await, [] as [(std::string::String, std::string::String); 0]);
     let id = app
         .create("Work", r#"{"colour":"teal"}"#)
         .await
@@ -168,7 +168,7 @@ async fn only_settings_and_the_shell_rename_restyle_and_remove() {
     shell.set_look(&id, "red").await.expect("look");
     assert_eq!(listed(&app).await, [(id.clone(), "Office".to_owned())]);
     shell.remove(&id).await.expect("remove");
-    assert!(listed(&app).await.is_empty());
+    assert_eq!(listed(&app).await, [] as [(std::string::String, std::string::String); 0]);
 
     let gone = settings.rename(&id, "Back").await.expect_err("gone");
     assert_eq!(error_name(&gone), "org.freedesktop.DBus.Error.InvalidArgs");

@@ -220,7 +220,7 @@ async fn the_typed_servers_are_tried_and_handed_back_with_the_name_and_the_passw
     let (_, _, password) = edited.into_parts();
     assert_eq!(password.as_ref().map(SecretText::expose), Some(PASSWORD));
     // Nothing was stored: the service still holds no account.
-    assert!(service.registry().accounts.is_empty());
+    assert_eq!(service.registry().accounts, [] as [account_core::Account; 0]);
     let attempts = [world.imap.attempts(), world.smtp.attempts()].concat();
     assert!(attempts.len() >= 2, "{attempts:?}");
     assert!(attempts.iter().all(|a| a.accepted), "{attempts:?}");

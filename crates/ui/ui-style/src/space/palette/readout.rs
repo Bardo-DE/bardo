@@ -52,8 +52,7 @@ pub fn readout(space: &SpaceLook, scheme: Scheme) -> Vec<ContrastCheck> {
     };
     let roles = accent_of(Accent::Blue, scheme);
     let wash = Hex::parse(post.surface)
-        .map(|surface| roles.fill.over(roles.wash, surface).css())
-        .unwrap_or_default();
+        .map_or_default(|surface| roles.fill.over(roles.wash, surface).css());
     vec![
         ContrastCheck {
             label: "Sidebar text on the colour",

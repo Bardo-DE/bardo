@@ -68,7 +68,7 @@ fn going_somewhere_new_forgets_what_lay_ahead() {
     assert!(!browser.can_go_forward());
     let (browser, effects) = browser.step(Input::Forward, at(0));
     assert_eq!(path_of(browser.location()), "/b");
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
 }
 
 #[test]
@@ -80,7 +80,7 @@ fn back_and_enclosing_stop_at_their_ends() {
     assert!(!browser.can_go_enclosing());
     let (after, effects) = browser.clone().step(Input::Enclosing, at(0));
     assert_eq!(after, browser);
-    assert!(effects.is_empty());
+    assert_eq!(effects, [] as [files_model::Effect; 0]);
     let (browser, _) = Browser::new(home());
     assert!(browser.can_go_enclosing());
 }
@@ -105,7 +105,7 @@ fn arriving_forgets_the_old_listing_and_selection_but_keeps_the_hidden_choice() 
     );
     let (browser, _) = browser.step(Input::Go(dir("/x")), at(0));
     assert_eq!(browser.listing(), &files_model::Listing::Loading);
-    assert!(browser.rows().is_empty());
+    assert_eq!(browser.rows(), []);
     assert!(browser.selection().is_empty());
     assert!(browser.show_hidden());
 }

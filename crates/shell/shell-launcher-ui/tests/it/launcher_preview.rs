@@ -322,8 +322,7 @@ fn shift_tab_with_nothing_typed_reaches_emoji_alone() {
         .feeds
         .searches
         .lock()
-        .map(|l| l.clone())
-        .unwrap_or_default();
+        .map_or_default(|l| l.clone());
     assert!(
         searches.iter().any(|c| matches!(
             c,

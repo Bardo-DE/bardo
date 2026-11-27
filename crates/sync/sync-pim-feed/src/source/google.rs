@@ -184,8 +184,7 @@ pub(super) fn id_in(url: &WebUrl) -> String {
     url.path()
         .split('/')
         .rfind(|part| !part.is_empty())
-        .map(super::graph::decode)
-        .unwrap_or_default()
+        .map_or_default(super::graph::decode)
 }
 
 #[cfg(test)]

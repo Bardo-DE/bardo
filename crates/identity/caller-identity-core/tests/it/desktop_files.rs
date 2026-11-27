@@ -29,14 +29,13 @@ fn table() -> Table {
 
 fn subdirs(dir: &Path) -> Vec<PathBuf> {
     let mut found: Vec<PathBuf> = std::fs::read_dir(dir)
-        .map(|entries| {
+        .map_or_default(|entries| {
             entries
                 .filter_map(Result::ok)
                 .map(|e| e.path())
                 .filter(|p| p.is_dir())
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     found.sort();
     found
 }
@@ -52,8 +51,7 @@ fn unit_files() -> BTreeMap<String, PathBuf> {
         for top in tops {
             for sub in ["dist", "dbus", "dist/systemd"] {
                 let mut files: Vec<PathBuf> = std::fs::read_dir(top.join(sub))
-                    .map(|entries| entries.filter_map(Result::ok).map(|e| e.path()).collect())
-                    .unwrap_or_default();
+                    .map_or_default(|entries| entries.filter_map(Result::ok).map(|e| e.path()).collect());
                 files.sort();
                 for file in files {
                     let name = file.file_name().expect("a name").to_string_lossy();

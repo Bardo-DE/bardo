@@ -99,8 +99,7 @@ impl UseBook {
         let path = book
             .file
             .as_ref()
-            .map(|f| f.path().display().to_string())
-            .unwrap_or_default();
+            .map_or_default(|f| f.path().display().to_string());
         let said = format!(
             "the identity uses file {path} cannot be read ({refused}). It was left as it is; no \
              use can be recorded until it is mended or moved away."
@@ -124,8 +123,7 @@ impl UseBook {
         self.doc
             .uses
             .get(identity)
-            .map(|apps| apps.iter().cloned().collect())
-            .unwrap_or_default()
+            .map_or_default(|apps| apps.iter().cloned().collect())
     }
 
     /// Records that `app` uses `identity`. An app that is recorded already changes nothing and

@@ -29,8 +29,7 @@ impl Show {
             startup_id: self
                 .startup
                 .as_ref()
-                .map(|id| id.as_str().to_owned())
-                .unwrap_or_default(),
+                .map_or_default(|id| id.as_str().to_owned()),
         }
     }
 }

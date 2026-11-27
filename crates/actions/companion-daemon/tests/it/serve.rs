@@ -341,7 +341,7 @@ async fn only_the_shell_speaks_for_the_person() {
     .expect("json");
     refused.open(&open).await.unwrap_err();
     assert!(refused.close("s-1").await.is_err());
-    assert!(companion.lock().await.roster().entries.is_empty());
+    assert_eq!(companion.lock().await.roster().entries, [] as [action_core::RosterLine; 0]);
 
     // The shell is heard: a turn said to a subagent shows on the roster at once.
     let proxy = CompanionProxy::new(&shell).await.expect("proxy");

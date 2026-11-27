@@ -244,7 +244,7 @@ async fn nobody_listening_is_connect_and_a_bad_content_type_is_never_sent() {
         run(endpoint(target, AuthHeader::None), &bad, &mut seen).await,
         Err(HttpError::Connect)
     );
-    assert!(request.lock().unwrap().head.is_empty());
+    assert_eq!(request.lock().unwrap().head, "");
     assert!(seen.head.is_none());
 }
 

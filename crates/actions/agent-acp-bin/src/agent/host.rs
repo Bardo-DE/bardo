@@ -150,7 +150,7 @@ pub async fn open_on<A: Accounts + 'static>(
         let entry = live.entry(&program);
         (
             entry.and_then(|entry| entry.label.clone()),
-            entry.map(|entry| entry.rewind).unwrap_or_default(),
+            entry.map_or_default(|entry| entry.rewind),
             entry.and_then(|entry| entry.registry.clone()),
         )
     };

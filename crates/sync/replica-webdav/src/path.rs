@@ -192,7 +192,7 @@ mod tests {
                 "/remote.php/dav/files/ada/Photos%20/a/b"
             ]
         );
-        assert!(parents_of(&root, &root.id_for(&ItemPath("c.jpg".into())).expect("id")).is_empty());
+        assert_eq!(parents_of(&root, &root.id_for(&ItemPath("c.jpg".into())).expect("id")), [] as [sync_core::RemoteId; 0]);
     }
 
     #[test]

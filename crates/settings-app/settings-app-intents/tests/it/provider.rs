@@ -419,7 +419,7 @@ async fn previews_describe_a_key_and_list_a_page() {
     let Preview::List(keys) = world.preview(&entity("settings.page", "dock")).await else {
         panic!("a page previews as a list")
     };
-    assert!(!keys.is_empty());
+    assert_ne!(keys, [] as [action_vocab::EntityRef; 0]);
     assert_eq!(
         world.preview(&entity("settings.page", "nowhere")).await,
         Preview::None

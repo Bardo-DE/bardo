@@ -271,8 +271,7 @@ pub fn line_of(card: &HelperCard, board: &Board, answer: Option<HelperNeeds>) ->
         HelperState::Idle if board.running(&card.id).is_some() => {
             let doing = board
                 .running(&card.id)
-                .map(|j| LeadText::of(j.goal.as_str()).as_str().to_owned())
-                .unwrap_or_default();
+                .map_or_default(|j| LeadText::of(j.goal.as_str()).as_str().to_owned());
             (HelperPhase::Working, doing, answer, None)
         }
         HelperState::Idle => {
@@ -290,8 +289,7 @@ pub fn line_of(card: &HelperCard, board: &Board, answer: Option<HelperNeeds>) ->
         HelperState::Working(at) => {
             let doing = board
                 .job(at.job)
-                .map(|j| LeadText::of(j.goal.as_str()).as_str().to_owned())
-                .unwrap_or_default();
+                .map_or_default(|j| LeadText::of(j.goal.as_str()).as_str().to_owned());
             (
                 HelperPhase::Working,
                 doing,

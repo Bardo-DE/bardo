@@ -139,5 +139,5 @@ fn hiding_files_drops_a_hidden_selection() {
             Input::ToggleHidden,
         ],
     );
-    assert!(selected(&browser).is_empty());
+    assert_eq!(selected(&browser), [] as [std::string::String; 0]);
 }

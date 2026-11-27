@@ -426,8 +426,7 @@ impl Diagnostics {
     #[must_use]
     pub fn tail(&self, id: &EngineId) -> Tail {
         let live = self.notes().get(id).map(|note| Arc::clone(&note.live));
-        live.map(|live| live.lock().unwrap_or_else(PoisonError::into_inner).tail())
-            .unwrap_or_default()
+        live.map_or_default(|live| live.lock().unwrap_or_else(PoisonError::into_inner).tail())
     }
 }
 

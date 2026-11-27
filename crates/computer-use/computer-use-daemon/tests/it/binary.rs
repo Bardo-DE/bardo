@@ -84,7 +84,7 @@ async fn computer_use_daemon_without_a_compositor_serves_its_names_and_says_the_
     let manager = ManagerProxy::new(&me).await.expect("manager");
     assert_eq!(manager.backend().await.expect("backend"), "none");
     assert!(manager.modes().await.expect("modes").is_empty());
-    assert!(manager.runs().await.expect("runs").is_empty());
+    assert_eq!(manager.runs().await.expect("runs"), [] as [zbus::zvariant::OwnedObjectPath; 0]);
 
     sigterm(daemon.pid());
     assert!(daemon.wait().success(), "SIGTERM is a clean stop");

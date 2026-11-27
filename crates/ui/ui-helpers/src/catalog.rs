@@ -238,7 +238,7 @@ mod tests {
         let video = catalog.get(&cap("video-playback")).expect("declared");
         assert_eq!(video.tool, "mpv");
         assert_eq!(video.candidates(Family::Apt)[0].as_str(), "mpv");
-        assert!(video.candidates(Family::Pacman).is_empty());
+        assert_eq!(video.candidates(Family::Pacman), []);
         let probe = catalog.get(&cap("media-probe")).expect("declared");
         let dnf: Vec<_> = probe
             .candidates(Family::Dnf)

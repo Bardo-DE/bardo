@@ -100,8 +100,7 @@ pub struct PictureTile {
 /// The words of a file's name: the ending off, `_` and `-` read as spaces.
 fn name_of(path: &Path) -> String {
     path.file_stem()
-        .map(|stem| stem.to_string_lossy().replace(['_', '-'], " "))
-        .unwrap_or_default()
+        .map_or_default(|stem| stem.to_string_lossy().replace(['_', '-'], " "))
 }
 
 /// The tile of `picture`, marked when its path is `current`.

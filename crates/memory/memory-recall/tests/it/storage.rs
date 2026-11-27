@@ -115,10 +115,9 @@ fn fts_upsert_replaces_by_id_and_remove_counts() {
     let mut f = fts();
     f.upsert(&[doc("f:1", "first version")]).expect("upsert");
     f.upsert(&[doc("f:1", "second version")]).expect("upsert");
-    assert!(
+    assert_eq!(
         f.search("first", TopK(5), &Allow::Everything)
-            .expect("s")
-            .is_empty()
+            .expect("s"), [] as [memory_recall::Ranked; 0]
     );
     assert_eq!(
         ids(&f.search("second", TopK(5), &Allow::Everything).expect("s")),
@@ -144,10 +143,9 @@ fn fts_clear_empties_and_facets_are_stored() {
         ("narrative", "mail", "untrusted", 7)
     );
     f.clear().expect("clear");
-    assert!(
+    assert_eq!(
         f.search("words", TopK(5), &Allow::Everything)
-            .expect("s")
-            .is_empty()
+            .expect("s"), [] as [memory_recall::Ranked; 0]
     );
 }
 
@@ -194,10 +192,9 @@ fn exact_scan_orders_by_cosine_and_respects_allow_and_k() {
         vec!["b", "c"]
     );
     x.clear().expect("clear");
-    assert!(
+    assert_eq!(
         x.nearest(&q, TopK(5), &Allow::Everything)
-            .expect("n")
-            .is_empty()
+            .expect("n"), [] as [memory_recall::Ranked; 0]
     );
 }
 
@@ -405,11 +402,10 @@ async fn a_long_document_is_chunked_and_still_found() {
 async fn search_with_an_empty_query_returns_nothing() {
     let e = FakeEmbedder::new();
     let index = index_over(e.card().clone());
-    assert!(
+    assert_eq!(
         index
             .search(&query("  ", 5), &e)
             .await
-            .expect("s")
-            .is_empty()
+            .expect("s"), [] as [memory_store::Fused; 0]
     );
 }

@@ -48,7 +48,7 @@ fn a_withheld_sandbox_refuses_and_runs_nothing() {
             shell.create(&launch(&["ls"])),
             Err(ShellError::Start(StartError::Cannot(why)))
         );
-        assert!(seen.started().is_empty());
+        assert_eq!(seen.started(), [] as [sandbox::RunSpec; 0]);
         assert_eq!(shell.open(), 0);
     }
 }

@@ -24,7 +24,7 @@ mod tests {
 
     #[test]
     fn an_unset_variable_is_an_empty_table_and_a_set_one_is_parsed() {
-        assert!(parse(None).expect("unset").rules().is_empty());
+        assert_eq!(parse(None).expect("unset").rules(), []);
         let table = parse(Some("bardo-shell=bardo-shell.service")).expect("set");
         assert_eq!(table.rules().len(), 1);
         parse(Some("nonsense")).unwrap_err();

@@ -43,18 +43,18 @@ mod tests {
     #[test]
     fn the_shipped_rules_read_and_cover_every_table() {
         let rules = parse_rules(SHIPPED_RULES).expect("the shipped file reads");
-        assert!(!rules.injection.groups.is_empty());
-        assert!(!rules.injection.together.is_empty());
-        assert!(!rules.injection.addressees.is_empty());
-        assert!(!rules.injection.directives.is_empty());
-        assert!(!rules.windows.apps.is_empty());
-        assert!(!rules.windows.money_titles.is_empty());
-        assert!(!rules.windows.compose_words.is_empty());
-        assert!(!rules.windows.mail_apps.is_empty());
-        assert!(!rules.windows.credential_titles.is_empty());
-        assert!(!rules.windows.admin_titles.is_empty());
-        assert!(!rules.commit.pay.is_empty());
-        assert!(!rules.commit.also.is_empty());
+        assert_ne!(rules.injection.groups, [] as [computer_use_run::PhraseGroup; 0]);
+        assert_ne!(rules.injection.together, [] as [computer_use_run::Together; 0]);
+        assert_ne!(rules.injection.addressees, [] as [std::string::String; 0]);
+        assert_ne!(rules.injection.directives, [] as [std::string::String; 0]);
+        assert_ne!(rules.windows.apps, [] as [computer_use_run::ClassFragments; 0]);
+        assert_ne!(rules.windows.money_titles, [] as [computer_use_run::ClassFragments; 0]);
+        assert_ne!(rules.windows.compose_words, [] as [std::string::String; 0]);
+        assert_ne!(rules.windows.mail_apps, [] as [std::string::String; 0]);
+        assert_ne!(rules.windows.credential_titles, [] as [std::string::String; 0]);
+        assert_ne!(rules.windows.admin_titles, [] as [std::string::String; 0]);
+        assert_ne!(rules.commit.pay, [] as [std::string::String; 0]);
+        assert_ne!(rules.commit.also, [] as [std::string::String; 0]);
         assert_eq!(shipped_rules(), rules);
     }
 

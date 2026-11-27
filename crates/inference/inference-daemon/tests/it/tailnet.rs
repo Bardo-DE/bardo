@@ -320,7 +320,7 @@ async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_
         .connect_as(CallerRole::Settings, app("org.bardo.Settings"))
         .await;
     let settings = proxy(&settings).await;
-    assert!(settings.candidates().await.expect("candidates").is_empty());
+    assert_eq!(settings.candidates().await.expect("candidates"), [] as [(std::string::String, std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>); 0]);
     assert_eq!(q.pi.tailscale.as_ref().unwrap().whois_asked(), 0);
     let refused = settings
         .add_tailnet_computer("nPI")
@@ -358,7 +358,7 @@ async fn adding_a_computer_that_is_not_there_or_twice_is_refused_in_plain_words(
         "computer:pi"
     );
     // Once added it is no longer offered, and adding it again is refused.
-    assert!(settings.candidates().await.expect("candidates").is_empty());
+    assert_eq!(settings.candidates().await.expect("candidates"), [] as [(std::string::String, std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>); 0]);
     let twice = settings
         .add_tailnet_computer("nPI")
         .await

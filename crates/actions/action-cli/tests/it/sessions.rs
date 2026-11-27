@@ -101,7 +101,7 @@ async fn the_list_holds_the_terminals_own_sessions_and_not_another_apps() {
     ] {
         let refused = desk.tty(&words).await;
         assert_ne!(refused.exit, Exit::Done, "{words:?}: {refused:?}");
-        assert!(refused.stdout.is_empty());
+        assert_eq!(refused.stdout, "");
     }
 }
 

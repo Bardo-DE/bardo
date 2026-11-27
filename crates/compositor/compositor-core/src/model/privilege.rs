@@ -209,8 +209,7 @@ impl Privilege {
                 let subject = standing.subject();
                 let trusted = standing
                     .service_role()
-                    .map(trusted_powers)
-                    .unwrap_or_default();
+                    .map_or_default(trusted_powers);
                 if trusted.contains(&power) {
                     decide_trusted(&self.floor, &self.book, subject.as_ref(), power)
                 } else {

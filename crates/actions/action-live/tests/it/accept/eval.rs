@@ -160,7 +160,7 @@ async fn a_run_becomes_a_cassette_that_replays_the_same_run() {
             .map(|(_, t)| t.judgement)
             .collect::<Vec<_>>()
     );
-    assert!(second.note.missed.is_empty());
+    assert_eq!(second.note.missed, [] as [std::string::String; 0]);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]

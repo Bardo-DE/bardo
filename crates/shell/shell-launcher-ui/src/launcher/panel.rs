@@ -253,7 +253,7 @@ fn use_aside(
                 icon: selected
                     .as_ref()
                     .and_then(|item| icon_source(icons.tile(item))),
-                actions: selected.map(|item| item.actions).unwrap_or_default(),
+                actions: selected.map_or_default(|item| item.actions),
                 focused: shown.pane.preview.focus,
                 shown: true,
                 serial: shown.session.serial,

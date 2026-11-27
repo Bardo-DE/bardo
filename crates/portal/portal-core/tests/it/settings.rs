@@ -88,7 +88,7 @@ fn namespace_patterns() {
 #[test]
 fn only_what_differs_is_a_change() {
     let a = dark();
-    assert!(changes(&a, &a).is_empty());
+    assert_eq!(changes(&a, &a), [] as [(portal_core::SettingKey, portal_core::SettingValue); 0]);
     let b = Appearance {
         scheme: Scheme::Light,
         ..a

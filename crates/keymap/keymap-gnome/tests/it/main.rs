@@ -102,12 +102,11 @@ fn a_missing_dump_is_the_conventions() {
 
 #[test]
 fn a_folder_instead_of_a_dump_is_an_error_in_words() {
-    let folder = fixture().parent().map(PathBuf::from).unwrap_or_default();
+    let folder = fixture().parent().map_or_default(PathBuf::from);
     let error = GnomeSource::new(folder)
         .load(GNOME)
         .err()
-        .map(|e| e.to_string())
-        .unwrap_or_default();
+        .map_or_default(|e| e.to_string());
     assert!(
         error.starts_with("couldn't read the shortcut settings at "),
         "{error}"

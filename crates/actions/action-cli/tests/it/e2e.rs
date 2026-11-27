@@ -261,7 +261,7 @@ async fn the_real_bardo_do_reaches_the_real_actiond_on_a_private_bus() {
         .bardo(&["mail", "thread.archive", "t1", "--dry-run"])
         .await;
     assert_eq!(code(&dry), 0, "{}", say(&dry));
-    assert!(desk.shell.shown().is_empty());
+    assert_eq!(desk.shell.shown(), [] as [action_core::ConfirmRequest; 0]);
     assert!(!desk.mail.0.is_archived("t1"));
 
     // A write asks. The person answers once, and it runs.

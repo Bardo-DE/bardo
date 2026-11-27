@@ -34,7 +34,7 @@ impl Manager {
     fn needing_reauth(&self) -> zbus::fdo::Result<Vec<(OwnedObjectPath, String)>> {
         let refused = self
             .refusals
-            .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |n| n.checked_sub(1))
+            .try_update(Ordering::SeqCst, Ordering::SeqCst, |n| n.checked_sub(1))
             .is_ok();
         if refused {
             return Err(zbus::fdo::Error::AccessDenied(

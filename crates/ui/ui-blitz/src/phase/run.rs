@@ -284,8 +284,7 @@ impl Phase {
                     let range = watch.now();
                     let found = range
                         .as_ref()
-                        .map(|range| selection_boxes(doc, watch.node, range))
-                        .unwrap_or_default();
+                        .map_or_default(|range| selection_boxes(doc, watch.node, range));
                     (watch.id, range, found)
                 })
                 .collect();

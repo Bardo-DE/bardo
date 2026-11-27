@@ -25,7 +25,7 @@ pub(super) fn LocalRows(
     // asks to download it instead of setting anything.
     let board = try_use_context::<Board>();
     let wanted: Vec<(String, String)> = board
-        .map(|board| {
+        .map_or_default(|board| {
             board
                 .state
                 .read()
@@ -35,8 +35,7 @@ pub(super) fn LocalRows(
                 .filter(|row| !view.engines.iter().any(|engine| engine.label == row.name))
                 .map(|row| (row.id.clone(), row.name.clone()))
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     if view.engines.is_empty() && wanted.is_empty() {
         return rsx! { NoEngine { path, note: view.note.clone(), availability, onask } };
     }

@@ -288,7 +288,7 @@ fn keep(history: History, note: Notification) -> History {
     let key = note.app.key();
     let (mut mine, others): (Vec<AppGroup>, Vec<AppGroup>) =
         history.groups.into_iter().partition(|g| g.key == key);
-    let mut notes = mine.pop().map(|g| g.notes).unwrap_or_default();
+    let mut notes = mine.pop().map_or_default(|g| g.notes);
     notes.insert(0, note);
     let groups = std::iter::once(AppGroup { key, notes })
         .chain(others)

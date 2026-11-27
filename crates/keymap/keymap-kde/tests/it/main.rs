@@ -43,7 +43,7 @@ fn shortcuts_group_maps_names_alternatives_and_none() {
     );
     assert_eq!(chords(&import, StandardAction::Redo), ["Ctrl+Y"]);
     assert_eq!(chords(&import, StandardAction::Quit), ["Ctrl+Alt+Q"]);
-    assert!(chords(&import, StandardAction::Undo).is_empty());
+    assert_eq!(chords(&import, StandardAction::Undo), [] as [std::string::String; 0]);
     assert!(
         import
             .bindings
@@ -98,8 +98,7 @@ fn an_unreadable_path_is_an_error_in_words() {
     let error = KdeSource::new(dir)
         .load(KDE)
         .err()
-        .map(|e| e.to_string())
-        .unwrap_or_default();
+        .map_or_default(|e| e.to_string());
     assert!(
         error.starts_with("couldn't read the shortcut settings at "),
         "{error}"

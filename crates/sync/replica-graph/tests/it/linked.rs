@@ -219,5 +219,5 @@ async fn an_origin_the_declaration_does_not_name_is_never_reached() {
         ),
         "{fetched:?}"
     );
-    assert!(graph.link_hits().is_empty());
+    assert_eq!(graph.link_hits(), [] as [account_fake_servers::Hit; 0]);
 }

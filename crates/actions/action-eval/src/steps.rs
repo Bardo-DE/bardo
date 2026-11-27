@@ -175,8 +175,7 @@ impl<'a, S: Rig> Player<'a, S> {
         let st = state_of(self.router);
         st.registry
             .action(&action)
-            .map(|def| def.params.clone())
-            .unwrap_or_default()
+            .map_or_default(|def| def.params.clone())
     }
 
     /// One argument as the planner passes it, or the reason the case file names one that

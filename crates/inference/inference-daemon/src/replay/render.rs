@@ -168,8 +168,7 @@ fn wire_reply(wire: &WireReply) -> Vec<Vec<u8>> {
                 let event = one
                     .event
                     .as_ref()
-                    .map(|e| format!("event: {}\n", e.0))
-                    .unwrap_or_default();
+                    .map_or_default(|e| format!("event: {}\n", e.0));
                 let data = one.data.split('\n').fold(String::new(), |mut out, line| {
                     let _ = writeln!(out, "data: {line}");
                     out

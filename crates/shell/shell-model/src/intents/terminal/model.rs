@@ -55,8 +55,7 @@ fn capitalised(text: &str) -> String {
     let mut chars = text.chars();
     chars
         .next()
-        .map(|first| first.to_uppercase().chain(chars).collect())
-        .unwrap_or_default()
+        .map_or_default(|first| first.to_uppercase().chain(chars).collect())
 }
 
 /// `app:action` (`org.bardo.Shell:shell.dock.pin`), the way a person names a grant on the command

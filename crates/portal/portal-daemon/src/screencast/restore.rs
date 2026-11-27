@@ -336,7 +336,7 @@ pub struct MemoryStore {
 
 impl RestoreStore for MemoryStore {
     fn load(&self) -> Result<RestoreBook, StoreError> {
-        Ok(self.book.lock().map(|b| b.clone()).unwrap_or_default())
+        Ok(self.book.lock().map_or_default(|b| b.clone()))
     }
 
     fn save(&self, book: &RestoreBook) -> Result<(), StoreError> {

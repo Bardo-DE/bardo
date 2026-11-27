@@ -111,8 +111,7 @@ fn principals(prefix: &[u8], tree: &[u8]) -> Option<Vec<u8>> {
 pub fn reach_for(endpoint: &ServiceEndpoint) -> Reach {
     let family = endpoint.family;
     let prefix = base_url::percent::decode_checked(endpoint.url.path())
-        .map(trimmed)
-        .unwrap_or_default();
+        .map_or_default(trimmed);
     if !confined(family) || prefix.is_empty() {
         return Reach::origin();
     }

@@ -38,8 +38,7 @@ impl Outputs {
 async fn read_areas(proxy: &Outputs1Proxy<'_>) -> Outputs {
     answered(proxy.work_areas())
         .await
-        .map(Outputs::of_wire)
-        .unwrap_or_default()
+        .map_or_default(Outputs::of_wire)
 }
 
 /// The outputs as of now, and each change after.
@@ -83,8 +82,7 @@ impl OutputsWatch {
             let changed = poll_fn(|cx| Pin::new(&mut self.changes).poll_next(cx)).await?;
             let now = answered(changed.get())
                 .await
-                .map(Outputs::of_wire)
-                .unwrap_or_default();
+                .map_or_default(Outputs::of_wire);
             if now != self.seen {
                 self.seen.clone_from(&now);
                 return Some(now);

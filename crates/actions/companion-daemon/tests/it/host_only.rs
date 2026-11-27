@@ -27,5 +27,5 @@ fn the_external_agents_pseudo_app_is_not_in_the_planners_tools_or_cards() {
         Catalogue::from_manifests(&others).cards(),
         "the other apps are listed as before, the pseudo-app not at all"
     );
-    assert!(!listed.tools().is_empty());
+    assert_ne!(listed.tools(), []);
 }

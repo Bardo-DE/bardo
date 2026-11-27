@@ -67,19 +67,17 @@ mod tests {
 
     fn mode(path: &std::path::Path) -> u32 {
         std::fs::metadata(path)
-            .map(|m| m.permissions().mode() & 0o777)
-            .unwrap_or_default()
+            .map_or_default(|m| m.permissions().mode() & 0o777)
     }
 
     fn names(dir: &std::path::Path) -> Vec<String> {
         let mut names: Vec<String> = std::fs::read_dir(dir)
-            .map(|entries| {
+            .map_or_default(|entries| {
                 entries
                     .filter_map(std::result::Result::ok)
                     .map(|e| e.file_name().to_string_lossy().into_owned())
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         names.sort();
         names
     }

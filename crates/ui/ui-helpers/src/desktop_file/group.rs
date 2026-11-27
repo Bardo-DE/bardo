@@ -100,8 +100,7 @@ impl DesktopGroup {
         self.keys
             .get(key)
             .and_then(|key| key.pick(locales))
-            .map(split_list)
-            .unwrap_or_default()
+            .map_or_default(split_list)
     }
 
     /// `key` as a boolean: `true` and `false` are the only values the specification has. None

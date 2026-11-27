@@ -202,7 +202,7 @@ impl EngineInstalls {
     /// See [`StartError`].
     pub fn start(&self, engine: EngineKind, scope: Scope) -> Result<(), StartError> {
         let offer = self.inner.manifest.offer(engine, &self.inner.host);
-        let ways = self.choice(engine).map(|c| c.scopes).unwrap_or_default();
+        let ways = self.choice(engine).map_or_default(|c| c.scopes);
         if !ways.contains(&scope) {
             return Err(StartError::Nothing);
         }

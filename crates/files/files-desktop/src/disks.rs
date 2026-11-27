@@ -192,8 +192,7 @@ fn text(props: &HashMap<String, OwnedValue>, key: &str) -> String {
     props
         .get(key)
         .and_then(|value| <&str>::try_from(value).ok())
-        .map(str::to_owned)
-        .unwrap_or_default()
+        .map_or_default(str::to_owned)
 }
 
 fn text_path(props: &HashMap<String, OwnedValue>, key: &str) -> Option<String> {

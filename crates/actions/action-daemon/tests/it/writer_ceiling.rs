@@ -109,14 +109,14 @@ async fn a_ceiling_higher_than_needed_is_cut_as_before_and_is_no_correction() {
     .await
     .expect("policy");
     assert_eq!(derived.policy.ceiling, Effect::UndoableWrite);
-    assert!(derived.corrected.is_empty());
+    assert_eq!(derived.corrected, [] as [action_core::Corrected; 0]);
     let enough = derive(
         draft(&["mail.thread.archive"], &json!([]), "undoable_write"),
         "archive the newsletters",
     )
     .await
     .expect("policy");
-    assert!(enough.corrected.is_empty());
+    assert_eq!(enough.corrected, [] as [action_core::Corrected; 0]);
 }
 
 #[tokio::test]
@@ -148,7 +148,7 @@ async fn an_app_grant_alone_is_not_a_floor_for_the_ceiling() {
         .await
         .expect("policy");
     assert_eq!(derived.policy.ceiling, Effect::Read);
-    assert!(derived.corrected.is_empty());
+    assert_eq!(derived.corrected, [] as [action_core::Corrected; 0]);
 }
 
 #[tokio::test]
@@ -162,5 +162,5 @@ async fn a_named_action_outside_the_catalogue_is_still_dropped_and_raises_nothin
         .expect("policy");
     assert!(derived.policy.actions.is_empty());
     assert_eq!(derived.policy.ceiling, Effect::Read);
-    assert!(derived.corrected.is_empty());
+    assert_eq!(derived.corrected, [] as [action_core::Corrected; 0]);
 }

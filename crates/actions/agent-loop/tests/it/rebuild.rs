@@ -138,7 +138,7 @@ fn finishing_the_front_task_and_closing_episodes_end_their_roster_lines() {
     };
     let rebuilt = rebuild(&[opened.clone(), finished]);
     assert_eq!(rebuilt.front, None);
-    assert!(rebuilt.roster().entries.is_empty());
+    assert_eq!(rebuilt.roster().entries, [] as [action_core::RosterLine; 0]);
     let ledger = TaskLedger {
         task: task("t-2"),
         agent: worker("t-2"),

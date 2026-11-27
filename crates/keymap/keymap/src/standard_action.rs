@@ -276,8 +276,7 @@ impl StandardAction {
             other => NAMED
                 .iter()
                 .find(|(action, _)| *action == other)
-                .map(|(_, slug)| (*slug).to_owned())
-                .unwrap_or_default(),
+                .map_or_default(|(_, slug)| (*slug).to_owned()),
         }
     }
 

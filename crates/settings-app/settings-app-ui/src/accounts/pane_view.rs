@@ -114,8 +114,7 @@ fn Ready(
         .as_ref()
         .and_then(|question| ready.pane.owner(&question.row))
         .and_then(|account| account.remove.clone())
-        .map(|(_, name)| name)
-        .unwrap_or_default();
+        .map_or_default(|(_, name)| name);
     // The row the list's minus runs: the selected account's remove row.
     let removal_row = ready
         .selected

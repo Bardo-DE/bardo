@@ -539,5 +539,5 @@ fn an_entry_with_no_window_to_serve_passes_none() {
         ..nemotron.engines[0].clone()
     };
     let unit = command(&nemotron, &profile, &paths(), &socket("s"));
-    assert!(window_args(&unit, "--max-model-len").is_empty());
+    assert_eq!(window_args(&unit, "--max-model-len"), [] as [&str; 0]);
 }

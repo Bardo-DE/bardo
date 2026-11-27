@@ -120,7 +120,7 @@ fn a_minimum_that_cannot_be_met_is_reported() {
         .collect();
     assert_eq!(unmet, vec![WindowId(1), WindowId(2)]);
     let fine = RustScene.arrange(&split(full, 500, ANY_SIZE, ANY_SIZE), &knobs());
-    assert!(fine.reports.is_empty());
+    assert_eq!(fine.reports, [] as [compositor_layout::LayoutReport; 0]);
 }
 
 #[test]
@@ -141,7 +141,7 @@ fn a_pair_with_a_window_the_space_lacks_gets_no_target() {
     let mut spec = split(rect(0, 0, 1920, 1080), 500, ANY_SIZE, ANY_SIZE);
     spec.outputs[0].spaces[0].windows.truncate(1);
     let got = RustScene.arrange(&spec, &knobs());
-    assert!(got.windows.is_empty());
+    assert_eq!(got.windows, [] as [compositor_layout::WindowTarget; 0]);
 }
 
 fn max_size(w: u32, h: u32) -> SizeLimits {

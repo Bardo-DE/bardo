@@ -346,7 +346,7 @@ fn a_skill_whose_action_is_hidden_from_the_companion_is_kept_but_not_offered() {
     assert!(matches!(reach(&s, &manifests), Reach::Hidden(_)));
     let library = Library::check(vec![s], &manifests);
     assert_eq!(library.all().len(), 1);
-    assert!(library.offered(&manifests).is_empty());
+    assert_eq!(library.offered(&manifests), [] as [&agent_skills::Skill; 0]);
 }
 
 fn kind(text: &str) -> EntityKind {

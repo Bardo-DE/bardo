@@ -90,8 +90,7 @@ impl AppFacts {
             .windows
             .iter()
             .find_map(|id| view.model.windows().get(id))
-            .map(|window| window.claimed_id.as_str().to_owned())
-            .unwrap_or_default();
+            .map_or_default(|window| window.claimed_id.as_str().to_owned());
         let subject = held
             .windows
             .iter()

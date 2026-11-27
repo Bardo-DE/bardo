@@ -115,8 +115,7 @@ impl FakeMenu {
     pub fn classified(&self) -> Vec<String> {
         self.classified
             .lock()
-            .map(|c| c.clone())
-            .unwrap_or_default()
+            .map_or_default(|c| c.clone())
     }
 
     fn item_of(inv: &Invocation) -> Option<String> {

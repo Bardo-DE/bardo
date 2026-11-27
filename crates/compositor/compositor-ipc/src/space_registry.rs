@@ -161,8 +161,7 @@ impl SpaceRegistry for ZbusSpaceRegistry {
     fn failures(&mut self) -> Vec<RegisterFailure> {
         self.worker
             .as_ref()
-            .map(Worker::failures)
-            .unwrap_or_default()
+            .map_or_default(Worker::failures)
     }
 }
 

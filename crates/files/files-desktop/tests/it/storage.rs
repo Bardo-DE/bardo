@@ -117,7 +117,7 @@ async fn a_download_moves_and_ends_downloaded_and_the_news_says_so() {
     let refused = within(rig.storage.download(std::slice::from_ref(&beach)))
         .await
         .unwrap();
-    assert!(refused.is_empty());
+    assert_eq!(refused, [] as [files_core::Refused; 0]);
     let mut seen = Vec::new();
     within(async {
         while let Some(heard) = news.recv().await {
@@ -148,11 +148,10 @@ async fn keeping_and_removing_are_asked_and_a_refusal_comes_back_in_words() {
     let rig = rig().await;
     let report = item(&rig, "OneDrive/Documents/Report.docx");
     let plan = item(&rig, "Google Drive/Projects/Plan.gdoc");
-    assert!(
+    assert_eq!(
         within(rig.storage.keep(std::slice::from_ref(&report), true))
             .await
-            .unwrap()
-            .is_empty()
+            .unwrap(), [] as [files_core::Refused; 0]
     );
     let kept = within(rig.storage.items(std::slice::from_ref(&report)))
         .await
@@ -163,7 +162,7 @@ async fn keeping_and_removing_are_asked_and_a_refusal_comes_back_in_words() {
         .unwrap();
     assert_eq!(refused.len(), 1);
     assert_eq!(refused[0].item, plan);
-    assert!(!refused[0].words.as_str().is_empty());
+    assert_ne!(refused[0].words.as_str(), "");
     let refused = within(rig.storage.remove_download(&[report]))
         .await
         .unwrap();

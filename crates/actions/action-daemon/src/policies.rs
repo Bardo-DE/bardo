@@ -144,8 +144,7 @@ fn read_layer(layer: Layer, dir: &Path) -> Vec<PolicySource> {
 pub fn read_sources(dirs: &PolicyDirs) -> Vec<PolicySource> {
     let folder = dirs
         .preset()
-        .map(|(dir, _)| read_layer(Layer::Preset, &dir))
-        .unwrap_or_default();
+        .map_or_default(|(dir, _)| read_layer(Layer::Preset, &dir));
     std::iter::once(PolicySource::core())
         .chain(folder)
         .chain(read_layer(Layer::Person, &dirs.person))

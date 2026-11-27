@@ -123,8 +123,7 @@ fn other(refusal: Refusal) -> Response {
     Response {
         code: ResponseCode::Other,
         results: reason
-            .map(|value| Details::from([(REFUSAL_KEY.to_owned(), value)]))
-            .unwrap_or_default(),
+            .map_or_default(|value| Details::from([(REFUSAL_KEY.to_owned(), value)])),
     }
 }
 

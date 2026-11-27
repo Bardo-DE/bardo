@@ -83,7 +83,7 @@ fn a_shell_role_is_held_by_one_surface() {
         Some(LayerKey(1)),
         "a role another surface holds is not given twice"
     );
-    assert!(last(&again).is_empty());
+    assert_eq!(last(&again), []);
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn a_bar_and_a_dock_are_held_once_per_output() {
         Some(LayerKey(1)),
         "a second bar on the same output is not given the role"
     );
-    assert!(last(&again).is_empty());
+    assert_eq!(last(&again), []);
 }
 
 #[test]

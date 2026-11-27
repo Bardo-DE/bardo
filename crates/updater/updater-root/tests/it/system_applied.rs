@@ -29,7 +29,7 @@ fn a_system_file_is_placed_replaced_and_dropped_with_the_releases() {
     let applied = sandbox
         .install(&build(&placing("0.1.0", "v1")))
         .expect("install");
-    assert!(applied.conflicts.is_empty());
+    assert_eq!(applied.conflicts, [] as [std::string::String; 0]);
     assert_eq!(read(&at), "v1");
     assert!(
         !std::fs::symlink_metadata(&at)

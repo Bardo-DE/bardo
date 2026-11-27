@@ -97,8 +97,7 @@ fn style_word(style: IconStyle) -> &'static str {
 fn stem(path: &std::path::Path) -> String {
     let raw = path
         .file_stem()
-        .map(|stem| stem.to_string_lossy().into_owned())
-        .unwrap_or_default();
+        .map_or_default(|stem| stem.to_string_lossy().into_owned());
     let kept: String = raw
         .chars()
         .map(|c| {

@@ -299,6 +299,7 @@ impl Daemon {
     }
 
     /// The daemon's connection to the bus.
+    #[must_use]
     pub fn connection(&self) -> &Connection {
         &self.connection
     }

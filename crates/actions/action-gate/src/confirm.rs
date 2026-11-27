@@ -92,14 +92,13 @@ fn detail(p: &Prepared, preview: Option<&Preview>) -> ConfirmDetail {
 
 fn taint_note(record: Option<&SessionRecord>) -> TaintNote {
     let sources: BTreeSet<Source> = record
-        .map(|r| {
+        .map_or_default(|r| {
             r.seen
                 .iter()
                 .filter(|l| l.integrity == Integrity::Untrusted)
                 .flat_map(|l| l.sources.iter().cloned())
                 .collect()
-        })
-        .unwrap_or_default();
+        });
     if sources.is_empty() {
         TaintNote::Clean
     } else {

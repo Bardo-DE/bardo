@@ -183,8 +183,7 @@ pub fn use_roster_from<K: Clone + PartialEq + 'static>(
                 pitches
                     .0
                     .try_peek()
-                    .map(|book| book.clone())
-                    .unwrap_or_default(),
+                    .map_or_default(|book| book.clone()),
             )
         },
         move |RosterOut::Settled(key), _| {

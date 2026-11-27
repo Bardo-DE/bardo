@@ -199,13 +199,12 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                 return Err(refused("Say what to call it and what it is for."));
             };
             let apps = text_of(call, "apps")
-                .map(|apps| {
+                .map_or_default(|apps| {
                     apps.split(',')
                         .map(|app| app.trim().to_owned())
                         .filter(|app| !app.is_empty())
                         .collect()
-                })
-                .unwrap_or_default();
+                });
             desk.propose(Proposal {
                 name,
                 role,

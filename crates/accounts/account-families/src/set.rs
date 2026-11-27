@@ -85,14 +85,13 @@ pub fn load_specs(dirs: &[(Layer, PathBuf)]) -> Loaded {
     let mut out = Loaded::default();
     for (layer, dir) in dirs {
         let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
-            .map(|entries| {
+            .map_or_default(|entries| {
                 entries
                     .filter_map(Result::ok)
                     .map(|e| e.path())
                     .filter(|p| p.extension().is_some_and(|e| e == "toml"))
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         files.sort();
         for file in files {
             let checked = read(&file).and_then(|spec| match layer {

@@ -7,7 +7,7 @@ const SHIPPED: &str = include_str!("../../../dist/desktop-callers.toml");
 #[test]
 fn the_shipped_table_reads() {
     let table = Table::from_toml(SHIPPED).expect("dist/desktop-callers.toml reads");
-    assert!(!table.rows().is_empty());
+    assert_ne!(table.rows(), []);
 }
 
 #[test]

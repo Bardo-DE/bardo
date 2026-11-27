@@ -242,8 +242,7 @@ impl TtySession for FakeSession {
         let slept = self
             .sleep
             .as_ref()
-            .map(SleepInbox::take)
-            .unwrap_or_default();
+            .map_or_default(SleepInbox::take);
         for note in slept {
             match note {
                 SessionNote::Paused => self.set(Activity::Inactive),

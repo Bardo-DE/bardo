@@ -144,5 +144,5 @@ fn a_session_hangs_on_its_caller_and_on_the_frontend() {
     .expect("room");
     assert_eq!(book.held_by(":1.7"), vec![key(1)]);
     assert_eq!(book.held_by(":1.2"), vec![key(1), key(2)]);
-    assert!(book.held_by(":1.99").is_empty());
+    assert_eq!(book.held_by(":1.99"), [] as [portal_daemon::table::SessionKey; 0]);
 }

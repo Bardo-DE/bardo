@@ -298,14 +298,13 @@ impl Job for Extend {
             .ctx
             .catalog()
             .get(&self.provider)
-            .map(|spec| {
+            .map_or_default(|spec| {
                 self.kinds
                     .iter()
                     .flat_map(|kind| spec.on_use_rows(*kind))
                     .map(|row| row.capability.clone())
                     .collect()
-            })
-            .unwrap_or_default();
+            });
         at.store_extended(caller, &self.account, signed, &given)
             .await
     }

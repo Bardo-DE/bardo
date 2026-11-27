@@ -255,7 +255,7 @@ async fn start(
             delete_saved(connection, old).await;
         }
     }
-    let specific = access.as_ref().map(ObjectPath::from).unwrap_or_default();
+    let specific = access.as_ref().map_or_default(ObjectPath::from);
     let settings = connection_of(ssid, security, &attempt.secret, attempt.reach.visibility());
     let (added, _active) = manager
         .add_and_activate_connection(settings, &device, &specific)

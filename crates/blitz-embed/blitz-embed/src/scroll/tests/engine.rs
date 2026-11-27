@@ -336,7 +336,7 @@ fn the_systems_momentum_is_applied_one_to_one_and_the_engine_adds_no_glide() {
         "total is the sum of the deltas"
     );
     assert_eq!(sim.engine, Engine::Idle, "no glide after the tail");
-    assert!(sim.run(3.0).is_empty());
+    assert_eq!(sim.run(3.0), [] as [(f64, f64); 0]);
     assert!((sim.offset() - want).abs() < 1e-9);
     assert_eq!(sim.when(NotifyPhase::MomentumBegan), None);
 }

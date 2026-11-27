@@ -298,7 +298,7 @@ fn terminate_words_come_from_summary_or_text() {
     assert_eq!(words(&p), done(""));
     let p = qwen(r#"{"action":"terminate","status":"success","answer":"42","note":"x"}"#);
     assert_eq!(words(&p), done(""));
-    assert!(p.dropped.is_empty());
+    assert_eq!(p.dropped, [] as [computer_use_parse::Dropped; 0]);
 
     // `answer` keeps reading `text` only, as before.
     let p = qwen(r#"{"action":"answer","text":"42"}"#);

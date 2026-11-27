@@ -101,8 +101,7 @@ pub(super) fn cached_menu(client: &Client, destination: &str) -> Vec<TrayMenuEnt
     items
         .get(destination)
         .and_then(|(_, menu)| menu.as_ref())
-        .map(|menu| to_menu_entries(&menu.submenus))
-        .unwrap_or_default()
+        .map_or_default(|menu| to_menu_entries(&menu.submenus))
 }
 
 /// The dbusmenu object path `destination`'s item advertised (`StatusNotifierItem::menu`),

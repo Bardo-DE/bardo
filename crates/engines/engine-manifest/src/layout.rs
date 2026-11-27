@@ -144,8 +144,7 @@ impl InstallDir {
         let name = self
             .0
             .file_name()
-            .map(|name| name.to_string_lossy().into_owned())
-            .unwrap_or_default();
+            .map_or_default(|name| name.to_string_lossy().into_owned());
         self.0.with_file_name(format!(".{name}.partial"))
     }
 }

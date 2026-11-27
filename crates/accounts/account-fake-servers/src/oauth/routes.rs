@@ -132,8 +132,7 @@ fn consented(state: &State, client_id: &str, asked: &str, keep: bool) -> String 
         state
             .consented
             .get(client_id)
-            .map(|held| held.iter().map(String::as_str).collect())
-            .unwrap_or_default()
+            .map_or_default(|held| held.iter().map(String::as_str).collect())
     } else {
         Vec::new()
     };

@@ -192,8 +192,7 @@ impl PrivateBus {
         let socket = dir.join("bus.sock");
         let config = dir.join("bus.conf");
         let services = servicedir
-            .map(|d| format!("<servicedir>{}</servicedir>", d.display()))
-            .unwrap_or_default();
+            .map_or_default(|d| format!("<servicedir>{}</servicedir>", d.display()));
         let text = CONFIG
             .replace("BUSTYPE", bus_type)
             .replace("RULES", policy.rules())

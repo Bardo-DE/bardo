@@ -61,7 +61,7 @@ fn make_executable(path: &Path) {
 }
 
 fn words(terminal: Option<Terminal>) -> Vec<String> {
-    terminal.map(|t| t.wrapper()).unwrap_or_default()
+    terminal.map_or_default(|t| t.wrapper())
 }
 
 #[test]

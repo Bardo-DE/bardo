@@ -40,8 +40,7 @@ fn readable(id: &str) -> String {
             let mut letters = word.chars();
             letters
                 .next()
-                .map(|first| first.to_uppercase().chain(letters).collect::<String>())
-                .unwrap_or_default()
+                .map_or_default(|first| first.to_uppercase().chain(letters).collect::<String>())
         })
         .collect::<Vec<_>>()
         .join(" ")

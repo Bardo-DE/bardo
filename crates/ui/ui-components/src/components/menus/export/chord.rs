@@ -45,8 +45,7 @@ fn name_of(key: ShortcutKey) -> String {
         other => NAMED
             .iter()
             .find(|(named, _)| *named == other)
-            .map(|(_, name)| (*name).to_owned())
-            .unwrap_or_default(),
+            .map_or_default(|(_, name)| (*name).to_owned()),
     }
 }
 

@@ -68,5 +68,5 @@ async fn a_restart_with_nothing_to_rebuild_opens_nothing() {
     let opened = w.companion.resume(rebuild(&[])).await.expect("resumed");
     assert_eq!(opened, None);
     assert_eq!(w.companion.front, None);
-    assert!(w.companion.roster().entries.is_empty());
+    assert_eq!(w.companion.roster().entries, [] as [action_core::RosterLine; 0]);
 }

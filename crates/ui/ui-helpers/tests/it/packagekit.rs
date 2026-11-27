@@ -70,7 +70,7 @@ async fn an_already_installed_package_installs_nothing() {
         installer.install(&request(&["mpv"])).await,
         Outcome::Installed
     );
-    assert!(calls.installed().is_empty());
+    assert_eq!(calls.installed(), [] as [std::string::String; 0]);
 }
 
 #[tokio::test]
@@ -81,7 +81,7 @@ async fn a_cancelled_password_prompt_is_declined() {
         installer.install(&request(&["mpv"])).await,
         Outcome::Declined
     );
-    assert!(calls.installed().is_empty());
+    assert_eq!(calls.installed(), [] as [std::string::String; 0]);
 }
 
 #[tokio::test]
@@ -101,7 +101,7 @@ async fn no_candidate_in_the_repositories_is_not_found() {
     let (_bus, installer, calls) = setup(Behaviour::default().available(&["other"])).await;
     let outcome = installer.install(&request(&["mpv", "mpv-nox"])).await;
     assert_eq!(outcome, Outcome::NotFound(missing(&["mpv", "mpv-nox"])));
-    assert!(calls.installed().is_empty());
+    assert_eq!(calls.installed(), [] as [std::string::String; 0]);
 }
 
 #[tokio::test]

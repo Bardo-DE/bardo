@@ -280,11 +280,11 @@ fn permitted(answer: Option<&Answer>) -> bool {
 }
 
 fn whys_of(answer: Option<&Answer>) -> BTreeMap<PolicyId, String> {
-    answer.map(|a| a.whys.clone()).unwrap_or_default()
+    answer.map_or_default(|a| a.whys.clone())
 }
 
 fn ids_of(answer: Option<Answer>) -> Vec<PolicyId> {
-    answer.map(|a| a.ids).unwrap_or_default()
+    answer.map_or_default(|a| a.ids)
 }
 
 /// The ruling for one request, and every fault met on the way. A fault never permits: a query

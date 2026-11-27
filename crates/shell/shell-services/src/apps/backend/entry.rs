@@ -90,8 +90,7 @@ pub fn parse_entry(
 fn words(entry: &DesktopGroup, key: &str, locales: &[EntryLocale]) -> String {
     entry
         .localized(key, locales)
-        .map(Cow::into_owned)
-        .unwrap_or_default()
+        .map_or_default(Cow::into_owned)
 }
 
 /// `X-Flatpak-RenamedFrom`: each old desktop file name as an id, the `.desktop` suffix dropped as

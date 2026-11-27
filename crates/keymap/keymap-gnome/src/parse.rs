@@ -74,7 +74,7 @@ mod tests {
     fn values_split_into_their_strings() {
         assert_eq!(strings("['<Super>h', '<Alt>F9']"), ["<Super>h", "<Alt>F9"]);
         assert_eq!(strings("'<Super>l'"), ["<Super>l"]);
-        assert!(strings("@as []").is_empty());
+        assert_eq!(strings("@as []"), [] as [std::string::String; 0]);
         assert_eq!(strings("[\"<Super>x\"]"), ["<Super>x"]);
     }
 }

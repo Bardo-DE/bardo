@@ -137,8 +137,7 @@ impl ClientRegistry {
                     traits
                         .iter()
                         .find(|(i, c, _)| *i == issuer && *c == channel)
-                        .map(|(_, _, t)| *t)
-                        .unwrap_or_default()
+                        .map_or_default(|(_, _, t)| *t)
                 })
         };
         row(&self.own, &self.own_traits)
@@ -210,7 +209,7 @@ struct RawRow {
 /// clients file, so it is valid TOML of the clients schema.
 fn traits_of(text: &str) -> Vec<TraitRow> {
     toml::from_str::<RawFile>(text)
-        .map(|file| {
+        .map_or_default(|file| {
             file.clients
                 .into_iter()
                 .map(|row| {
@@ -222,7 +221,6 @@ fn traits_of(text: &str) -> Vec<TraitRow> {
                 })
                 .collect()
         })
-        .unwrap_or_default()
 }
 
 fn read_clients(path: &Path) -> Result<(ClientsFile, Vec<TraitRow>), RegistryError> {

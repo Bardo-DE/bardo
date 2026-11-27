@@ -40,7 +40,7 @@ fn command_shift_tab_reverses_without_taking_shift_from_the_held_key() {
         (release(0, "tab"), "-tab SYN"),
         (release(0, "leftmeta"), "-leftalt SYN"),
     ]);
-    assert!(rig.down().is_empty());
+    assert_eq!(rig.down(), [] as [&str; 0]);
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn command_held_across_a_focus_switch_uses_the_new_profile_for_the_next_key() {
         (release(0, "c"), "-c SYN"),
         (release(0, "leftmeta"), "-leftctrl SYN"),
     ]);
-    assert!(rig.down().is_empty());
+    assert_eq!(rig.down(), [] as [&str; 0]);
 }
 
 #[test]
@@ -94,7 +94,7 @@ fn device_gone_mid_chord_releases_what_it_wrote_and_nothing_more() {
         (release(0, "left"), ""),
         (release(0, "leftmeta"), ""),
     ]);
-    assert!(rig.down().is_empty());
+    assert_eq!(rig.down(), [] as [&str; 0]);
 }
 
 #[test]
@@ -120,7 +120,7 @@ fn release_all_mid_map_writes_the_release_and_later_releases_are_silent() {
         (release(0, "left"), ""),
         (release(0, "leftmeta"), ""),
     ]);
-    assert!(rig.down().is_empty());
+    assert_eq!(rig.down(), [] as [&str; 0]);
 }
 
 #[test]
@@ -139,7 +139,7 @@ fn escape_chord_drains_stops_mapping_and_resume_starts_again() {
         (press(0, "a"), "+a SYN"),
         (release(0, "a"), "-a SYN"),
     ]);
-    assert!(rig.down().is_empty());
+    assert_eq!(rig.down(), [] as [&str; 0]);
 }
 
 #[test]

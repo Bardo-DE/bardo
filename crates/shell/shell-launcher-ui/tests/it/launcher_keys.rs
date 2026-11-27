@@ -44,8 +44,7 @@ fn three_downs_and_enter_run_the_fourth_row() {
         .feeds
         .searches
         .lock()
-        .map(|log| log.clone())
-        .unwrap_or_default();
+        .map_or_default(|log| log.clone());
     assert!(
         chosen
             .iter()

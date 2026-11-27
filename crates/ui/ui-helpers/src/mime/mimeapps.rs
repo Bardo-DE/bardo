@@ -17,7 +17,7 @@ fn desktop_ids(value: &str) -> Vec<DesktopId> {
 }
 
 fn lookup<'a>(table: &'a Table, mime: &MimeType) -> &'a [DesktopId] {
-    table.get(mime).map(Vec::as_slice).unwrap_or_default()
+    table.get(mime).map_or_default(Vec::as_slice)
 }
 
 /// One `mimeapps.list` file.

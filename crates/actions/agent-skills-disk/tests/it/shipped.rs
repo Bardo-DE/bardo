@@ -36,7 +36,7 @@ fn desktop_basics_validates_is_always_and_fits_a_kilobyte() {
             .all(|u| u.app.as_str() == "org.bardo.Companion")
     );
     let library = Library::check(vec![skill], &manifests());
-    assert!(library.hidden.is_empty());
+    assert_eq!(library.hidden, [] as [agent_skills::Hidden; 0]);
     assert_eq!(library.offered(&manifests()).len(), 1);
 }
 

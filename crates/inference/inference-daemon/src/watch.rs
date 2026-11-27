@@ -245,7 +245,7 @@ impl<H: Http + 'static> Watch<H> {
             return;
         }
         let claims = match one.standing {
-            Standing::Online => one.found.as_ref().map(Found::claims).unwrap_or_default(),
+            Standing::Online => one.found.as_ref().map_or_default(Found::claims),
             Standing::Offline => Vec::new(),
         };
         let standing = one.standing;

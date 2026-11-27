@@ -185,8 +185,7 @@ pub fn List<K: Clone + PartialEq + Hash + 'static>(
                     dragged: order
                         .iter()
                         .position(|held| *held == entry.key)
-                        .map(|at| stand(&phase, &order, &measured.peek(), *began.peek(), at))
-                        .unwrap_or_default(),
+                        .map_or_default(|at| stand(&phase, &order, &measured.peek(), *began.peek(), at)),
                     entry,
                     pitches,
                     place: SetPlace { index, len },

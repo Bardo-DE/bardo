@@ -50,20 +50,18 @@ impl Props {
             // principal or home set holds only hrefs, or `DAV:unauthenticated`, which is none.
             response
                 .found_items(name)
-                .map(|items| {
+                .map_or_default(|items| {
                     items
                         .iter()
                         .filter(|item| !item.starts_with(DAV))
                         .cloned()
                         .collect()
                 })
-                .unwrap_or_default()
         };
         Props {
             resource: response
                 .found(RESOURCETYPE)
-                .map(|v| v.split_whitespace().map(resource).collect())
-                .unwrap_or_default(),
+                .map_or_default(|v| v.split_whitespace().map(resource).collect()),
             current_user_principal: hrefs(CURRENT_USER_PRINCIPAL).into_iter().next(),
             addressbook_home_set: hrefs(ADDRESSBOOK_HOME_SET),
             display_name: found(DISPLAYNAME),

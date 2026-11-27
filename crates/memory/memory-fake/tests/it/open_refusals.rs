@@ -90,7 +90,7 @@ async fn a_full_disk_is_still_a_failure_not_a_lock() {
         status(&service).await,
         MemoryReply::Refused(Refusal::Invalid(_))
     ));
-    assert!(service.take_events().is_empty());
+    assert_eq!(service.take_events(), [] as [memory_service::ServiceEvent; 0]);
 }
 
 #[tokio::test]

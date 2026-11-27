@@ -148,7 +148,7 @@ fn a_drag_from_the_cursor_uses_the_cursor_of_the_step() {
     else {
         panic!("actions")
     };
-    assert!(actions.is_empty());
+    assert_eq!(actions, [] as [computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>; 0]);
     assert_eq!(dropped.len(), 1);
     assert_eq!(dropped[0].reason, DropReason::MissingArgument);
 }
@@ -299,7 +299,7 @@ fn a_call_in_a_foreign_form_is_not_read_and_the_repair_says_how_to_write_one() {
     let StepOutcome::Repair(repair) = s.absorb_for(&sent, reply, &m) else {
         panic!("a repair")
     };
-    assert!(repair.tools.is_empty());
+    assert_eq!(repair.tools, [] as [model_provider::ToolSpec; 0]);
     let Some(Part::Text(asked)) = repair.messages.last().and_then(|m| m.parts.last()) else {
         panic!("a repair text")
     };
