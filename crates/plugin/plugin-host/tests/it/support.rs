@@ -42,20 +42,20 @@ pub fn demo_program() -> PathBuf {
     example_program("demo_plugin")
 }
 
-/// The example called `name`, built beside the tests.
+/// The example called `name`, built beside the tests: `<profile>/examples/<name>` in the first
+/// directory above the test binary that has it (the binary's depth under the profile differs
+/// between cargo's build-directory layouts).
 pub fn example_program(name: &str) -> PathBuf {
     let exe = std::env::current_exe().expect("the test's own path");
-    let program = exe
-        .parent()
-        .and_then(|deps| deps.parent())
-        .map(|profile| profile.join("examples").join(name))
-        .expect("a target directory");
-    assert!(
-        program.is_file(),
-        "{} is missing: run the tests with `cargo test`, which builds the examples",
-        program.display()
-    );
-    program
+    exe.ancestors()
+        .map(|dir| dir.join("examples").join(name))
+        .find(|program| program.is_file())
+        .unwrap_or_else(|| {
+            panic!(
+                "no examples/{name} above {}: run the tests with `cargo test`, which builds the examples",
+                exe.display()
+            )
+        })
 }
 
 /// The request for the facts of `issues` row `1`.

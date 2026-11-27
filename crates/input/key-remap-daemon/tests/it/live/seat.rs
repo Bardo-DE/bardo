@@ -14,16 +14,18 @@ const OBSERVER_UID: u32 = 65534;
 /// can execute it whatever the permissions of the build directory above it.
 fn observer_client(scene: &Scene) -> PathBuf {
     let exe = std::env::current_exe().expect("the test binary's own path");
+    // `<profile>/examples/socket_client` in the first directory above the test binary that has it:
+    // the binary's depth under the profile differs between cargo's build-directory layouts.
     let built = exe
-        .parent()
-        .and_then(|deps| deps.parent())
-        .map(|profile| profile.join("examples").join("socket_client"))
-        .expect("the test binary lives in target/<profile>/deps");
-    assert!(
-        built.exists(),
-        "{} is missing: build the examples first (`cargo build -p key-remap-daemon --examples`)",
-        built.display()
-    );
+        .ancestors()
+        .map(|dir| dir.join("examples").join("socket_client"))
+        .find(|program| program.is_file())
+        .unwrap_or_else(|| {
+            panic!(
+                "no examples/socket_client above {}: build the examples first (`cargo build -p key-remap-daemon --examples`)",
+                exe.display()
+            )
+        });
     let copy = scene.dir().join("socket_client");
     std::fs::copy(&built, &copy).expect("copying socket_client into the scratch directory");
     std::fs::set_permissions(&copy, std::fs::Permissions::from_mode(0o755))
