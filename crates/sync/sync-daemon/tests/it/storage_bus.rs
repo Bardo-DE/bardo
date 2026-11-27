@@ -391,7 +391,10 @@ async fn a_revoked_grant_drops_the_dataset_keeps_the_files_and_a_removed_account
         Vec::<String>::new(),
         "the grant is gone"
     );
-    assert_eq!(rig.supervisor.datasets(), [] as [sync_driver::hub::DatasetName; 0]);
+    assert_eq!(
+        rig.supervisor.datasets(),
+        [] as [sync_driver::hub::DatasetName; 0]
+    );
     assert!(
         local(&rig, "keep.txt").exists(),
         "the files are the person's"

@@ -114,10 +114,7 @@ impl Opened {
             .await
             .ok()?
             .ok()?;
-        Some(
-            all.get(NAMESPACE)
-                .map_or_default(prefs_from_namespace),
-        )
+        Some(all.get(NAMESPACE).map_or_default(prefs_from_namespace))
     }
 
     /// Fold every appearance-namespace `SettingChanged` onto `tx` until the receiver is gone or

@@ -99,7 +99,10 @@ async fn a_test_build_reads_callers_from_the_proc_root_and_serves_an_empty_sync1
     );
     let client = bus.connect().await;
     let sync = SyncProxy::new(&client).await.expect("proxy");
-    assert_eq!(sync.datasets().await.expect("datasets"), [] as [std::string::String; 0]);
+    assert_eq!(
+        sync.datasets().await.expect("datasets"),
+        [] as [std::string::String; 0]
+    );
     let err = sync
         .status("a1/pim")
         .await

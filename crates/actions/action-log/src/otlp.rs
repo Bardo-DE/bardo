@@ -96,11 +96,11 @@ impl Recorder {
         }
     }
 
-    pub(crate) fn enter(&self, id: &Id) {
+    pub(crate) fn enter(id: &Id) {
         ENTERED.with_borrow_mut(|entered| entered.push(id.into_u64()));
     }
 
-    pub(crate) fn exit(&self, id: &Id) {
+    pub(crate) fn exit(id: &Id) {
         let id = id.into_u64();
         ENTERED.with_borrow_mut(|entered| {
             if let Some(at) = entered.iter().rposition(|open| *open == id) {

@@ -261,7 +261,10 @@ async fn a_build_with_no_client_id_says_so_before_opening_anything() {
         signin.next(SignInInput::Start).await,
         SignInStep::Failed(SignInFault::NeedsClientId)
     );
-    assert_eq!(rig.issuer.events(), [] as [account_fake_servers::IssuerEvent; 0]);
+    assert_eq!(
+        rig.issuer.events(),
+        [] as [account_fake_servers::IssuerEvent; 0]
+    );
 }
 
 /// ux-2: a client id written to the person's clients file while the provider is running (what

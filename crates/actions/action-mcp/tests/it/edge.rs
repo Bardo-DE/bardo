@@ -155,7 +155,10 @@ fn performs(rig: &Rig) -> Vec<CallRequest> {
 #[tokio::test]
 async fn an_edge_nobody_switched_on_lists_nothing_and_refuses_every_call() {
     let rig = rig(false).await;
-    assert_eq!(rig.client.list_all_tools().await.expect("list"), [] as [rmcp::model::Tool; 0]);
+    assert_eq!(
+        rig.client.list_all_tools().await.expect("list"),
+        [] as [rmcp::model::Tool; 0]
+    );
     let result = call(
         &rig,
         "mail__mail_thread_read",
@@ -357,14 +360,20 @@ async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
         std::fs::rename(&temp, home.path().join("bardo/actions/settings.toml")).expect("rename");
     };
     // No file: off.
-    assert_eq!(rig.client.list_all_tools().await.expect("list"), [] as [rmcp::model::Tool; 0]);
+    assert_eq!(
+        rig.client.list_all_tools().await.expect("list"),
+        [] as [rmcp::model::Tool; 0]
+    );
     // The person switches it on in the Settings app: the next request sees the tools.
     write("[agent.mcp]\nexpose = true\n");
     let tools = rig.client.list_all_tools().await.expect("list");
     assert_ne!(tools, [] as [rmcp::model::Tool; 0]);
     // And off again: no tools, and a call is refused before the router is asked.
     write("[agent.mcp]\nexpose = false\n");
-    assert_eq!(rig.client.list_all_tools().await.expect("list"), [] as [rmcp::model::Tool; 0]);
+    assert_eq!(
+        rig.client.list_all_tools().await.expect("list"),
+        [] as [rmcp::model::Tool; 0]
+    );
     let result = call(
         &rig,
         "mail__mail_thread_read",

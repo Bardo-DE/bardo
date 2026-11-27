@@ -404,13 +404,11 @@ pub async fn serve<S: AsyncRead + AsyncWrite + Unpin>(
         }
         ("POST", path) if path.ends_with("/embeddings") => {
             let dims = state.lock().expect("lock").1;
-            let inputs: Vec<String> = seen.body["input"]
-                .as_array()
-                .map_or_default(|all| {
-                    all.iter()
-                        .map(|v| v.as_str().unwrap_or_default().to_owned())
-                        .collect()
-                });
+            let inputs: Vec<String> = seen.body["input"].as_array().map_or_default(|all| {
+                all.iter()
+                    .map(|v| v.as_str().unwrap_or_default().to_owned())
+                    .collect()
+            });
             let data: Vec<Value> = inputs
                 .iter()
                 .enumerate()

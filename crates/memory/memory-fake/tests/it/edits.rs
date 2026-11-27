@@ -433,7 +433,10 @@ async fn the_daily_sweep_ages_pending_facts_nobody_asked_about() {
 async fn a_lost_key_is_announced_once_and_so_is_its_return() {
     let service = fake_service(ScriptedConsolidator::default());
     propose(&service, "people/ana", "Ana is the CFO.").await;
-    assert_eq!(service.take_events(), [] as [memory_service::ServiceEvent; 0]);
+    assert_eq!(
+        service.take_events(),
+        [] as [memory_service::ServiceEvent; 0]
+    );
 
     service.backend().memory_keys().lock();
     service.check_keys().await;
@@ -447,7 +450,10 @@ async fn a_lost_key_is_announced_once_and_so_is_its_return() {
         "a request to a locked Space does not say it again"
     );
     service.check_keys().await;
-    assert_eq!(service.take_events(), [] as [memory_service::ServiceEvent; 0]);
+    assert_eq!(
+        service.take_events(),
+        [] as [memory_service::ServiceEvent; 0]
+    );
     let summaries = shell(&service, MemoryRequest::Spaces).await;
     let MemoryReply::Spaces(spaces) = summaries else {
         panic!("{summaries:?}")

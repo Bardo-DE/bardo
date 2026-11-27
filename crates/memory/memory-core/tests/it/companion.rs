@@ -155,7 +155,10 @@ fn kind_tags_things_and_names() {
     assert_eq!(e.kind().as_str(), "companion.episode");
     // An episode's touched things are its `things`; a message has views for none.
     assert_eq!(e.things().len(), 1);
-    assert_eq!(m.things(), [] as [(&memory_core::ThingView, memory_core::ThingRole); 0]);
+    assert_eq!(
+        m.things(),
+        [] as [(&memory_core::ThingView, memory_core::ThingRole); 0]
+    );
     // But a message that references an entity is forgotten with it.
     let named = thing("org.bardo.Mail", "mail.thread", "t9");
     assert_eq!(m.thing_refs(), vec![(named.clone(), ThingRole::Source)]);
@@ -194,7 +197,8 @@ fn index_texts_are_a_pure_view_with_a_label_per_part() {
         EventBody::Memory {
             op: MemoryOp::Resumed
         }
-        .index_texts(), [] as [memory_core::IndexText; 0]
+        .index_texts(),
+        [] as [memory_core::IndexText; 0]
     );
 }
 

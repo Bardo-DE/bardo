@@ -153,8 +153,14 @@ async fn an_anthropic_chat_with_a_tool_call_and_result_streams_through_with_the_
         !lines.contains(KEY_ANTHROPIC) && !lines.contains(&endpoint.token),
         "{lines}"
     );
-    assert_eq!(files_holding(&world.scratch, KEY_ANTHROPIC), [] as [std::path::PathBuf; 0]);
-    assert_eq!(files_holding(&world.scratch, &endpoint.token), [] as [std::path::PathBuf; 0]);
+    assert_eq!(
+        files_holding(&world.scratch, KEY_ANTHROPIC),
+        [] as [std::path::PathBuf; 0]
+    );
+    assert_eq!(
+        files_holding(&world.scratch, &endpoint.token),
+        [] as [std::path::PathBuf; 0]
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

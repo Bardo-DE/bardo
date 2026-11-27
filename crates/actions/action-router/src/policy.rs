@@ -337,10 +337,7 @@ impl<S: Seams> Router<S> {
             else {
                 return ConfirmAnswer::Ended(ConfirmEnd::Cancelled);
             };
-            let said = record
-                .turns
-                .last()
-                .map_or_default(|t| t.text.clone());
+            let said = record.turns.last().map_or_default(|t| t.text.clone());
             let mut lines = vec![ArgLine {
                 label: words("You said"),
                 value: Shown::Plain(said),

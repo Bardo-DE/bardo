@@ -101,7 +101,10 @@ fn a_move_to_the_trash_is_undone_by_putting_back() {
 
     assert_eq!(undo(&mut rig), Finish::Done);
     assert_eq!(rig.names("home"), ["a.txt", "b.txt"]);
-    assert_eq!(rig.trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
+    assert_eq!(
+        rig.trash.list().unwrap(),
+        [] as [files_core::TrashedItem; 0]
+    );
 }
 
 #[test]
@@ -138,14 +141,20 @@ fn erasing_for_good_cannot_be_undone() {
     let trashed = rig.trash.trash(&[rig.item("home/a.txt")]).unwrap();
     let plan = OpPlan::DeleteForGood { items: trashed };
     run(&mut rig, &plan);
-    assert_eq!(rig.trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
+    assert_eq!(
+        rig.trash.list().unwrap(),
+        [] as [files_core::TrashedItem; 0]
+    );
     assert!(rig.journal.is_empty());
 
     rig.write("home/b.txt", "beta");
     rig.trash.trash(&[rig.item("home/b.txt")]).unwrap();
     let plan = OpPlan::EmptyTrash;
     run(&mut rig, &plan);
-    assert_eq!(rig.trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
+    assert_eq!(
+        rig.trash.list().unwrap(),
+        [] as [files_core::TrashedItem; 0]
+    );
     assert!(rig.journal.is_empty());
 }
 

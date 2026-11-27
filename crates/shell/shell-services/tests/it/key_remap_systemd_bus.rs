@@ -191,7 +191,10 @@ async fn a_failed_unit_is_failed_and_the_person_is_told() {
     assert_eq!(posting.summary, notice_text(&Attention::Failed).summary);
     assert_eq!(posting.body.text(), notice_text(&Attention::Failed).body);
     assert_eq!(posting.replaces, None);
-    assert_eq!(posting.actions, [] as [shell_model::notifications::Action; 0]);
+    assert_eq!(
+        posting.actions,
+        [] as [shell_model::notifications::Action; 0]
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

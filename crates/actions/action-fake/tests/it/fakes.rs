@@ -89,7 +89,10 @@ fn fake_router_installs_the_fixture_and_the_shipped_manifests() {
     let router = fake_router(AgentConfig::default()).expect("router");
     let state = router.state.lock().expect("lock");
     assert_eq!(state.registry.all().count(), 5);
-    assert_eq!(state.registry.unresolved(), [] as [action_manifest::ManifestError; 0]);
+    assert_eq!(
+        state.registry.unresolved(),
+        [] as [action_manifest::ManifestError; 0]
+    );
 }
 
 #[tokio::test]

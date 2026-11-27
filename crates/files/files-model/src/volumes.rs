@@ -23,8 +23,7 @@ impl Browser {
 
     fn tell_volume(self, id: &VolumeId, trouble: VolumeTrouble) -> Stepped {
         let name: Option<VolumeName> = self.volume(id).map(|volume| volume.name.clone());
-        let effects = name
-            .map_or_default(|name| vec![Effect::TellVolume { name, trouble }]);
+        let effects = name.map_or_default(|name| vec![Effect::TellVolume { name, trouble }]);
         (self, effects)
     }
 

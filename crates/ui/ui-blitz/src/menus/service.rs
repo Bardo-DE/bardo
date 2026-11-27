@@ -3,7 +3,6 @@
 use super::pace::{EVENTS_PER_CALL_MAX, Pace};
 use super::permit::{self, Caller, MenuPermit, SenderName, Verdict};
 use super::wire::{self, Layout, Props, WireError};
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Instant;
@@ -155,8 +154,8 @@ impl DbusMenu {
             .map_err(failed)
     }
 
-    fn get_property(&self, id: i32, name: String) -> fdo::Result<zbus::zvariant::OwnedValue> {
-        let prop = self.shared.state().tree.property(NodeId(id), &name);
+    fn get_property(&self, id: i32, name: &str) -> fdo::Result<zbus::zvariant::OwnedValue> {
+        let prop = self.shared.state().tree.property(NodeId(id), name);
         prop.ok_or_else(|| fdo::Error::InvalidArgs(format!("item {id} has no property {name}")))
             .and_then(|prop| {
                 wire::props(&[prop])
@@ -171,11 +170,12 @@ impl DbusMenu {
         &self,
         id: i32,
         event_id: String,
-        _data: Value<'_>,
-        _timestamp: u32,
+        data: Value<'_>,
+        timestamp: u32,
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> fdo::Result<()> {
+        let _ = (data, timestamp);
         self.admit(&header, connection).await?;
         self.click(id, &event_id)
     }
@@ -213,11 +213,25 @@ impl DbusMenu {
     }
 
     /// The menu is always current: nothing to refetch.
-    fn about_to_show(&self, _id: i32) -> bool {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
+    fn about_to_show(&self, id: i32) -> bool {
+        let _ = id;
         false
     }
 
-    fn about_to_show_group(&self, _ids: Vec<i32>) -> (Vec<i32>, Vec<i32>) {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus interface method takes its arguments by value"
+    )]
+    fn about_to_show_group(&self, ids: Vec<i32>) -> (Vec<i32>, Vec<i32>) {
+        let _ = ids;
         (Vec::new(), Vec::new())
     }
 
@@ -236,21 +250,37 @@ impl DbusMenu {
     ) -> zbus::Result<()>;
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn version(&self) -> u32 {
         3
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn text_direction(&self) -> String {
         "ltr".to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn status(&self) -> String {
         "normal".to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn icon_theme_path(&self) -> Vec<String> {
         Vec::new()
     }

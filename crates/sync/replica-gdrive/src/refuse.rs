@@ -76,8 +76,9 @@ mod tests {
     use sync_core::status::RETRY;
 
     fn answer(status: u16, retry: Option<&str>, reason: Option<&str>) -> Response<Vec<u8>> {
-        let body = reason
-            .map_or_default(|r| format!(r#"{{"error":{{"errors":[{{"reason":"{r}"}}]}}}}"#).into_bytes());
+        let body = reason.map_or_default(|r| {
+            format!(r#"{{"error":{{"errors":[{{"reason":"{r}"}}]}}}}"#).into_bytes()
+        });
         retry
             .into_iter()
             .fold(Response::builder().status(status), |b, v| {

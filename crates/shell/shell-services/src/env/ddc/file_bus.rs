@@ -74,18 +74,17 @@ impl FileBus {
 
 impl DdcBus for FileBus {
     fn probe(&self) -> Vec<Endpoint> {
-        self.load()
-            .map_or_default(|monitors| {
-                monitors
-                    .displays
-                    .into_iter()
-                    .map(|m| Endpoint {
-                        id: DdcId(m.id),
-                        connector: Some(OutputName(m.connector)),
-                        product: m.product,
-                    })
-                    .collect()
-            })
+        self.load().map_or_default(|monitors| {
+            monitors
+                .displays
+                .into_iter()
+                .map(|m| Endpoint {
+                    id: DdcId(m.id),
+                    connector: Some(OutputName(m.connector)),
+                    product: m.product,
+                })
+                .collect()
+        })
     }
 
     fn read(&self, id: DdcId, feature: Feature) -> Result<Level, DdcError> {

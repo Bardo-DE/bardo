@@ -229,7 +229,10 @@ mod tests {
     #[test]
     fn nothing_to_reconcile_when_the_objects_match_the_runs() {
         let exported: BTreeSet<RunId> = runs(&[1, 2]).into_iter().collect();
-        assert_eq!(reconcile(&exported, &runs(&[1, 2])), [] as [computer_use_host::SupervisorEvent; 0]);
+        assert_eq!(
+            reconcile(&exported, &runs(&[1, 2])),
+            [] as [computer_use_host::SupervisorEvent; 0]
+        );
     }
 
     #[test]

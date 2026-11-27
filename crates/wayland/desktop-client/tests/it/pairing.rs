@@ -42,7 +42,10 @@ fn a_different_title_or_app_id_does_not_pair() {
         (listed(1, "T", "a"), managed(10, "T", "b")),
     ];
     for (l, m) in cases {
-        assert_eq!(pairs(&[l], &[m]), [] as [(desktop_client::ToplevelKey, desktop_client::ToplevelKey); 0]);
+        assert_eq!(
+            pairs(&[l], &[m]),
+            [] as [(desktop_client::ToplevelKey, desktop_client::ToplevelKey); 0]
+        );
     }
 }
 
@@ -81,6 +84,12 @@ fn each_side_is_used_once() {
 
 #[test]
 fn nothing_to_pair() {
-    assert_eq!(pairs(&[], &[managed(10, "T", "a")]), [] as [(desktop_client::ToplevelKey, desktop_client::ToplevelKey); 0]);
-    assert_eq!(pairs(&[listed(1, "T", "a")], &[]), [] as [(desktop_client::ToplevelKey, desktop_client::ToplevelKey); 0]);
+    assert_eq!(
+        pairs(&[], &[managed(10, "T", "a")]),
+        [] as [(desktop_client::ToplevelKey, desktop_client::ToplevelKey); 0]
+    );
+    assert_eq!(
+        pairs(&[listed(1, "T", "a")], &[]),
+        [] as [(desktop_client::ToplevelKey, desktop_client::ToplevelKey); 0]
+    );
 }

@@ -102,8 +102,7 @@ impl Helpers for FakeHelpers {
         self.jobs
             .iter()
             .find(|(id, _)| id == helper)
-            .map(|(_, jobs)| jobs.clone())
-            .unwrap_or_default()
+            .map_or_default(|(_, jobs)| jobs.clone())
     }
 
     #[expect(

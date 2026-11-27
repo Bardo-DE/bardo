@@ -143,7 +143,10 @@ async fn only_settings_lists_and_takes_back_what_is_remembered() {
         .body()
         .deserialize()
         .expect("a list");
-    assert_eq!(listed, [] as [(std::string::String, std::string::String, u32, u64); 0]);
+    assert_eq!(
+        listed,
+        [] as [(std::string::String, std::string::String, u32, u64); 0]
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

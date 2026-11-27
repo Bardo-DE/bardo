@@ -294,11 +294,8 @@ impl Job for Extend {
         _answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
     ) -> Result<(), AddStoreError> {
-        let given: Vec<account_capability::Capability> = at
-            .ctx
-            .catalog()
-            .get(&self.provider)
-            .map_or_default(|spec| {
+        let given: Vec<account_capability::Capability> =
+            at.ctx.catalog().get(&self.provider).map_or_default(|spec| {
                 self.kinds
                     .iter()
                     .flat_map(|kind| spec.on_use_rows(*kind))

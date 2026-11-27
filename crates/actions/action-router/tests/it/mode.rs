@@ -123,7 +123,10 @@ async fn a_turn_that_names_manual_makes_the_next_change_ask() {
     perform_in(&router, &auto.session, archive("t1"))
         .await
         .expect("Auto: an archive inside the request runs");
-    assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
+    assert_eq!(
+        router.seams.confirmer.requests(),
+        [] as [action_core::ConfirmRequest; 0]
+    );
 
     let manual = ready_in(&router, Some(Mode::Manual)).await;
     let end = perform_in(&router, &manual.session, archive("t2")).await;

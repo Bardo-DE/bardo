@@ -239,10 +239,7 @@ impl TtySession for FakeSession {
     }
 
     fn notes(&mut self) -> Vec<SessionNote> {
-        let slept = self
-            .sleep
-            .as_ref()
-            .map_or_default(SleepInbox::take);
+        let slept = self.sleep.as_ref().map_or_default(SleepInbox::take);
         for note in slept {
             match note {
                 SessionNote::Paused => self.set(Activity::Inactive),

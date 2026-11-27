@@ -201,7 +201,10 @@ fn without_a_defaults_file_nothing_is_granted() {
     let data = tempfile::tempdir().expect("scratch");
     let store =
         FileGrants::at(data.path().join("grants.json")).with_defaults(&[data.path().to_path_buf()]);
-    assert_eq!(store.grants(), [] as [account_core::consent::Grant<permission_core::ActionGrantKey>; 0]);
+    assert_eq!(
+        store.grants(),
+        [] as [account_core::consent::Grant<permission_core::ActionGrantKey>; 0]
+    );
 }
 
 #[test]
@@ -336,7 +339,10 @@ fn limits_are_kept_beside_the_grants_and_removed_by_the_one_revoke_path() {
     store.add_limit(limit.clone());
     assert_eq!(FileGrants::at(path.clone()).limits(), vec![limit.clone()]);
     // A grant file written before limits holds none and is not disturbed.
-    assert_eq!(store.grants(), [] as [account_core::consent::Grant<permission_core::ActionGrantKey>; 0]);
+    assert_eq!(
+        store.grants(),
+        [] as [account_core::consent::Grant<permission_core::ActionGrantKey>; 0]
+    );
     assert!(store.revoke_standing(&limit.id));
     assert_eq!(store.limits(), [] as [permission_core::Limit; 0]);
     // A damaged limits file asks about everything, and is not written over.

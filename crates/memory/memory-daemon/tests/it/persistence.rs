@@ -275,8 +275,14 @@ async fn sealed_spaces_are_unreadable_at_rest_and_plain_ones_are_markdown() {
     );
     let text = std::fs::read_to_string(&topic).expect("a plain topic file");
     assert!(text.contains("- Ana is the CFO of Porto."), "{text}");
-    assert_eq!(mentions(&dirs.events_db(&space("notebook")), "Quarterly"), [] as [std::path::PathBuf; 0]);
-    assert_eq!(mentions(&dirs.index_dir(&space("notebook")), "CFO"), [] as [std::path::PathBuf; 0]);
+    assert_eq!(
+        mentions(&dirs.events_db(&space("notebook")), "Quarterly"),
+        [] as [std::path::PathBuf; 0]
+    );
+    assert_eq!(
+        mentions(&dirs.index_dir(&space("notebook")), "CFO"),
+        [] as [std::path::PathBuf; 0]
+    );
 }
 
 #[tokio::test]

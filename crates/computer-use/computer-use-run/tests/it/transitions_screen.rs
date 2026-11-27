@@ -131,7 +131,10 @@ fn a_clear_look_goes_straight_to_the_model() {
     ));
     assert_eq!(*d.phase(), RunPhase::Thinking(StepIndex(1)));
     assert!(d.has(|e| matches!(e, RunEffect::CallModel { .. })));
-    assert_eq!(screen_records(&d), [] as [(std::vec::Vec<computer_use_bus::ScreenKind>, bool); 0]);
+    assert_eq!(
+        screen_records(&d),
+        [] as [(std::vec::Vec<computer_use_bus::ScreenKind>, bool); 0]
+    );
     assert!(!d.run.track.screen.suspicious);
 }
 

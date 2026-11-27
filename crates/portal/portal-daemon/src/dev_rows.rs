@@ -11,8 +11,10 @@ use caller_identity_dbus::caller_identity_core::{Table, Uid};
 use caller_identity_dev::{DevFileError, DevRows};
 
 /// `shipped`, with the developer rows in `path` added after its own (a row never takes a unit the
-/// shipped table names). The file must be a plain file of this user's (or root's) that no one else
-/// can write, and its rows must parse; otherwise the error says why and nothing is added.
+/// shipped table names).
+///
+/// The file must be a plain file of this user's (or root's) that no one else can write, and its
+/// rows must parse; otherwise the error says why and nothing is added.
 ///
 /// # Errors
 ///

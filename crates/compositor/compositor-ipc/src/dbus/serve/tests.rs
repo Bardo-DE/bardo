@@ -19,7 +19,7 @@ struct StandInLoop {
 impl StandInLoop {
     fn run(channel: Channel<DebugCall>) -> StandInLoop {
         let seen = Arc::new(Mutex::new(Vec::new()));
-        let record = seen.clone();
+        let record = Arc::clone(&seen);
         let (signals, signal) = std::sync::mpsc::channel();
         let thread = std::thread::spawn(move || {
             let mut event_loop = calloop::EventLoop::<()>::try_new().expect("loop");

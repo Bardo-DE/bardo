@@ -328,7 +328,7 @@ fn apps_own_primary_digits_and_the_refusal_reads_in_words() {
         &app("mail"),
         &[(app_action("mail.jump"), default_chord("Ctrl+Space"))],
     );
-    let words = refused.err().map(|c| c.to_string()).unwrap_or_default();
+    let words = refused.err().map_or_default(|c| c.to_string());
     assert_eq!(
         words,
         "\u{2303}Space can't be used for mail.jump: The desktop switches the input language with it."

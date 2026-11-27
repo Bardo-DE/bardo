@@ -163,17 +163,13 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
                 chain(&error)
             ))
         })?;
-        let mut infos: Vec<SessionInfo> = wanted
-            .as_ref()
-            .map_or_default(|w| self.helper_infos(w));
-        let helpers: Vec<SessionId> = wanted
-            .as_ref()
-            .map_or_default(|w| {
-                self.helpers_in(w)
-                    .into_iter()
-                    .map(|row| row.session)
-                    .collect()
-            });
+        let mut infos: Vec<SessionInfo> = wanted.as_ref().map_or_default(|w| self.helper_infos(w));
+        let helpers: Vec<SessionId> = wanted.as_ref().map_or_default(|w| {
+            self.helpers_in(w)
+                .into_iter()
+                .map(|row| row.session)
+                .collect()
+        });
         let mut found = Vec::new();
         for session in stored {
             if helpers.contains(&session) {

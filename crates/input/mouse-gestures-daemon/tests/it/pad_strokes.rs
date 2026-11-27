@@ -121,7 +121,10 @@ fn a_claim_silences_the_scroll_pad_but_not_the_shell_stream() {
     let script = stroke(2, Axis::Y, 30.0, 40, 12.0);
     let (claimed, _) = Tracker::new(Config::default()).claim(true, Mono(0));
     let outs = outs_of(&drive(claimed, &script.records));
-    assert_eq!(pad(&outs), [] as [mouse_gestures_daemon::outputs::pad::PadFrame; 0]);
+    assert_eq!(
+        pad(&outs),
+        [] as [mouse_gestures_daemon::outputs::pad::PadFrame; 0]
+    );
     assert!(
         outs.iter().any(|o| matches!(
             o,
@@ -189,7 +192,10 @@ fn a_locked_session_has_no_swipe() {
     let script = stroke(2, Axis::X, 45.0, 45, 12.0);
     let (locked, _) = Tracker::new(Config::default()).with_session_lock(true, Mono(0));
     let outs = outs_of(&drive(locked, &script.records));
-    assert_eq!(pad(&outs), [] as [mouse_gestures_daemon::outputs::pad::PadFrame; 0]);
+    assert_eq!(
+        pad(&outs),
+        [] as [mouse_gestures_daemon::outputs::pad::PadFrame; 0]
+    );
     assert!(
         outs.iter()
             .any(|o| matches!(o, Out::Host(ToHost::Scroll { .. }))),
@@ -215,7 +221,10 @@ fn a_session_that_locks_mid_swipe_returns_and_lifts_it_at_once_and_the_rest_of_t
         "the lock call returns the row to where it landed and lifts it: {on_lock:?}"
     );
     let after = drive(t, rest);
-    assert_eq!(pad(&outs_of(&after)), [] as [mouse_gestures_daemon::outputs::pad::PadFrame; 0]);
+    assert_eq!(
+        pad(&outs_of(&after)),
+        [] as [mouse_gestures_daemon::outputs::pad::PadFrame; 0]
+    );
 }
 
 /// Two fingers `i` millimetres along a horizontal stroke.

@@ -48,9 +48,7 @@ fn cloud_rows(state: &Browser, info: &Info) -> Vec<InfoRow> {
     if state.folder() != Some(&info.folder) {
         return Vec::new();
     }
-    state
-        .cloud_of(&info.name)
-        .map_or_default(item_rows)
+    state.cloud_of(&info.name).map_or_default(item_rows)
 }
 
 /// What the sheet holds for each state of the panel.

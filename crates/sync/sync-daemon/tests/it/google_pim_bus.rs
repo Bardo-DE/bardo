@@ -754,9 +754,18 @@ async fn a_tasks_grant_without_a_calendar_grant_mirrors_only_tasks() {
         "{:?}",
         rig.dirs()
     );
-    assert_eq!(rig.hits_under("/calendar/v3/"), [] as [account_fake_servers::Hit; 0]);
-    assert_eq!(rig.hits_under("/v1/people/"), [] as [account_fake_servers::Hit; 0]);
-    assert_ne!(rig.hits_under("/tasks/v1/"), [] as [account_fake_servers::Hit; 0]);
+    assert_eq!(
+        rig.hits_under("/calendar/v3/"),
+        [] as [account_fake_servers::Hit; 0]
+    );
+    assert_eq!(
+        rig.hits_under("/v1/people/"),
+        [] as [account_fake_servers::Hit; 0]
+    );
+    assert_ne!(
+        rig.hits_under("/tasks/v1/"),
+        [] as [account_fake_servers::Hit; 0]
+    );
     let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     assert_eq!(rig.hub.names_for(&settings).len(), 2);
 }

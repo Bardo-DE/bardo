@@ -84,15 +84,12 @@ pub fn committed_kind(surface: &WlSurface) -> ContentKind {
 #[must_use]
 pub fn stored_kind(surface: &WlSurface) -> ContentKind {
     with_states(surface, |states| {
-        states
-            .data_map
-            .get::<Stored>()
-            .map_or_default(|stored| {
-                *stored
-                    .0
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner)
-            })
+        states.data_map.get::<Stored>().map_or_default(|stored| {
+            *stored
+                .0
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+        })
     })
 }
 

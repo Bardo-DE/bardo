@@ -128,7 +128,10 @@ fn two_helpers_take_two_jobs_at_once_each_its_own() {
         board,
         job_for(&research, "and the fourth", GoalOrigin::Person),
     );
-    assert_eq!(launched(&fx), [] as [(account_core::HelperId, companion_model::helper::JobId); 0]);
+    assert_eq!(
+        launched(&fx),
+        [] as [(account_core::HelperId, companion_model::helper::JobId); 0]
+    );
     let third = posted(&fx);
     assert_eq!(
         board.job(third).map(|j| j.status.clone()),
@@ -345,7 +348,10 @@ fn three_refusals_in_a_row_pause_the_helper_and_say_so_once() {
 
     // A paused helper takes no job; resuming it gives it the open one.
     let (board, fx) = step(board, BoardEvent::Take(research.clone()));
-    assert_eq!(launched(&fx), [] as [(account_core::HelperId, companion_model::helper::JobId); 0]);
+    assert_eq!(
+        launched(&fx),
+        [] as [(account_core::HelperId, companion_model::helper::JobId); 0]
+    );
     let (board, fx) = step(board, BoardEvent::Resume(research.clone()));
     assert_eq!(launched(&fx), [(research.clone(), job)]);
     assert_eq!(board.running(&research).map(|j| j.id), Some(job));
@@ -383,7 +389,10 @@ fn three_failed_jobs_in_a_row_pause_the_helper_and_a_finished_one_starts_the_cou
         let open = next.job(job).expect("job");
         assert_eq!(open.status, JobStatus::Open);
         assert_eq!(open.failed, Some(JobFault::Crashed));
-        assert_eq!(launched(&fx), [] as [(account_core::HelperId, companion_model::helper::JobId); 0]);
+        assert_eq!(
+            launched(&fx),
+            [] as [(account_core::HelperId, companion_model::helper::JobId); 0]
+        );
         let (next, fx) = step(next, BoardEvent::Take(research.clone()));
         assert!(
             launched(&fx).is_empty(),

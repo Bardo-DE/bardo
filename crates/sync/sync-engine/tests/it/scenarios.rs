@@ -205,7 +205,10 @@ async fn a_conflict_settles_either_way_and_the_sides_converge() {
             files(&[("a.txt", winner)]),
             "{how:?}"
         );
-        assert_eq!(engine.journal().conflicts().expect("conflicts"), [] as [sync_core::StoredConflict; 0]);
+        assert_eq!(
+            engine.journal().conflicts().expect("conflicts"),
+            [] as [sync_core::StoredConflict; 0]
+        );
         assert!(states(&engine).iter().all(|(_, s)| *s == ItemState::Synced));
     }
 }
@@ -283,7 +286,10 @@ async fn a_local_delete_removes_remotely_keeps_a_tombstone_until_the_feed_shows_
     let kept = engine.journal().tombstones().expect("tombstones");
     assert_eq!(kept.len(), 1, "kept until acknowledged");
     assert_eq!(kept[0].ack, Acknowledgement::Pending);
-    assert_eq!(engine.journal().items().expect("items"), [] as [sync_core::JournalItem; 0]);
+    assert_eq!(
+        engine.journal().items().expect("items"),
+        [] as [sync_core::JournalItem; 0]
+    );
     engine.sync_once().await.expect("cycle");
     assert!(
         engine

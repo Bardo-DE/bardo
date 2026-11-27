@@ -208,19 +208,18 @@ struct RawRow {
 /// The traits a clients file's rows say (`byo`, `testing`); the file was already parsed as a
 /// clients file, so it is valid TOML of the clients schema.
 fn traits_of(text: &str) -> Vec<TraitRow> {
-    toml::from_str::<RawFile>(text)
-        .map_or_default(|file| {
-            file.clients
-                .into_iter()
-                .map(|row| {
-                    let traits = ClientTraits {
-                        byo: row.byo,
-                        testing: row.testing,
-                    };
-                    (row.issuer, row.channel, traits)
-                })
-                .collect()
-        })
+    toml::from_str::<RawFile>(text).map_or_default(|file| {
+        file.clients
+            .into_iter()
+            .map(|row| {
+                let traits = ClientTraits {
+                    byo: row.byo,
+                    testing: row.testing,
+                };
+                (row.issuer, row.channel, traits)
+            })
+            .collect()
+    })
 }
 
 fn read_clients(path: &Path) -> Result<(ClientsFile, Vec<TraitRow>), RegistryError> {

@@ -92,8 +92,7 @@ fn named(id: &str) -> ProviderRow {
     let mut chars = id.chars();
     let label: String = chars
         .next()
-        .map(|first| first.to_uppercase().chain(chars).collect())
-        .unwrap_or_default();
+        .map_or_default(|first| first.to_uppercase().chain(chars).collect());
     ProviderRow {
         id: provider(id),
         label,

@@ -56,14 +56,19 @@ fn both_are_served_before_anyone_logs_in() {
     );
 }
 
+/// One refusal: its name, the kind asked for, who asks, the active user, and why it is refused.
+type Refusal = (&'static str, Kind, Caller, ActiveUid, ControlGroupError);
+
+fn assert_refused(table: Vec<Refusal>) {
+    for (name, kind, caller, active, want) in table {
+        assert_eq!(authorise(kind, &caller, active), Err(want), "{name}");
+    }
+}
+
 #[test]
-fn refusals_table() {
+fn refusals_of_the_wrong_role_or_a_weak_proof_table() {
     use ControlGroupError::*;
-    let user_mouse_gestures =
-        "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
-    let user_key_remap =
-        "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
-    let table: Vec<(&str, Kind, Caller, ActiveUid, ControlGroupError)> = vec![
+    assert_refused(vec![
         (
             "not in the table",
             Kind::MouseGesturesWheel,
@@ -130,6 +135,17 @@ fn refusals_table() {
             seat(Some(USER)),
             TooWeak,
         ),
+    ]);
+}
+
+#[test]
+fn refusals_of_the_wrong_user_or_place_table() {
+    use ControlGroupError::*;
+    let user_mouse_gestures =
+        "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
+    let user_key_remap =
+        "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
+    assert_refused(vec![
         (
             "mouse_gestures running as the logged in user",
             Kind::MouseGesturesWheel,
@@ -204,10 +220,7 @@ fn refusals_table() {
             seat(Some(USER)),
             WrongPlace,
         ),
-    ];
-    for (name, kind, caller, active, want) in table {
-        assert_eq!(authorise(kind, &caller, active), Err(want), "{name}");
-    }
+    ]);
 }
 
 /// NEW-PI-4: every proof below the unit's own is refused for every kind, in the right place and

@@ -40,11 +40,7 @@ fn three_downs_and_enter_run_the_fourth_row() {
         Some(WlCommand::Activate(WindowKey(FIREFOX_WINDOW))),
         "the fourth row is the Firefox window"
     );
-    let chosen = open
-        .feeds
-        .searches
-        .lock()
-        .map_or_default(|log| log.clone());
+    let chosen = open.feeds.searches.lock().map_or_default(|log| log.clone());
     assert!(
         chosen
             .iter()

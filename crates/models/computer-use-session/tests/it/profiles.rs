@@ -148,7 +148,10 @@ fn a_drag_from_the_cursor_uses_the_cursor_of_the_step() {
     else {
         panic!("actions")
     };
-    assert_eq!(actions, [] as [computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>; 0]);
+    assert_eq!(
+        actions,
+        [] as [computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>; 0]
+    );
     assert_eq!(dropped.len(), 1);
     assert_eq!(dropped[0].reason, DropReason::MissingArgument);
 }

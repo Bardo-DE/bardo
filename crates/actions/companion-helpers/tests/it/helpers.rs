@@ -281,7 +281,10 @@ async fn a_helper_with_no_model_waits_to_be_given_one_and_nothing_stands_in() {
         w.infer.asked().is_empty(),
         "the assistant's model was not borrowed"
     );
-    assert_eq!(research_model.opened(), [] as [inference_core::OpenOptions; 0]);
+    assert_eq!(
+        research_model.opened(),
+        [] as [inference_core::OpenOptions; 0]
+    );
 
     // The person chooses; the job runs on that model.
     hub.apply(BoardEvent::Edit {

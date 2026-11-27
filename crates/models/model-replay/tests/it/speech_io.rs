@@ -374,8 +374,14 @@ fn describe_reports_what_the_calls_show() {
         }
     );
     let none = replay(vec![], ReplayMode::InOrder);
-    assert_eq!(block_on(SpeechToText::describe(&none)).unwrap(), [] as [speech_provider::SpeechModelInfo; 0]);
-    assert_eq!(block_on(TextToSpeech::describe(&none)).unwrap(), [] as [speech_provider::SpeechModelInfo; 0]);
+    assert_eq!(
+        block_on(SpeechToText::describe(&none)).unwrap(),
+        [] as [speech_provider::SpeechModelInfo; 0]
+    );
+    assert_eq!(
+        block_on(TextToSpeech::describe(&none)).unwrap(),
+        [] as [speech_provider::SpeechModelInfo; 0]
+    );
 }
 
 #[test]

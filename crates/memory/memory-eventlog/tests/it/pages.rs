@@ -74,32 +74,32 @@ fn contract<L: LogWrite>(mut log: L, digest: &memory_seal::SubKey) {
         ..everyone()
     };
     assert_eq!(
-        log.page(&query(None, 10, untrusted))
-            .expect("page"), [] as [memory_eventlog::Entry; 0]
+        log.page(&query(None, 10, untrusted)).expect("page"),
+        [] as [memory_eventlog::Entry; 0]
     );
     let other_app = TimelineFilter {
         apps: vec![app("org.bardo.Files")],
         ..everyone()
     };
     assert_eq!(
-        log.page(&query(None, 10, other_app))
-            .expect("page"), [] as [memory_eventlog::Entry; 0]
+        log.page(&query(None, 10, other_app)).expect("page"),
+        [] as [memory_eventlog::Entry; 0]
     );
     let out_of_range = TimelineFilter {
         range: Some((UnixSeconds(1), UnixSeconds(2))),
         ..everyone()
     };
     assert_eq!(
-        log.page(&query(None, 10, out_of_range))
-            .expect("page"), [] as [memory_eventlog::Entry; 0]
+        log.page(&query(None, 10, out_of_range)).expect("page"),
+        [] as [memory_eventlog::Entry; 0]
     );
 
     let thing = view("7f3a").thing;
     let touching = log.touching(&thing, RoleFilter::Subject).expect("touching");
     assert_eq!(touching, vec![Seq(1), Seq(2)]);
     assert_eq!(
-        log.touching(&thing, RoleFilter::Source)
-            .expect("touching"), [] as [memory_core::Seq; 0]
+        log.touching(&thing, RoleFilter::Source).expect("touching"),
+        [] as [memory_core::Seq; 0]
     );
     assert_eq!(log.scan(Seq(2)).expect("scan").len(), 2);
     assert_eq!(log.head().expect("head").seq, Seq(3));

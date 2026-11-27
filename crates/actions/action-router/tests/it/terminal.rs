@@ -148,7 +148,10 @@ async fn an_outbound_call_asks_and_its_untrusted_recipient_keeps_the_grant_off_t
         ConfirmOffer::OnceOnly,
         "a recipient typed in a terminal is untrusted: no standing grant can cover it"
     );
-    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
+    assert_eq!(
+        router.seams.link.mail.sent(),
+        [] as [action_fake::SentMail; 0]
+    );
 }
 
 #[tokio::test]
@@ -224,7 +227,10 @@ async fn a_standing_grant_skips_the_ask_until_it_is_revoked() {
         .await
         .unwrap();
     assert_eq!(shown(&router).len(), 1, "the grant skipped the ask");
-    assert_eq!(router.seams.reviewer.calls(), [] as [(permission_core::Stage, action_review::ReviewRequest); 0]);
+    assert_eq!(
+        router.seams.reviewer.calls(),
+        [] as [(permission_core::Stage, action_review::ReviewRequest); 0]
+    );
     // Another action is not covered.
     run(
         &router,

@@ -88,9 +88,7 @@ impl Subclasses {
 
     /// The types `mime` is directly a special case of, as written (aliases not resolved).
     pub fn parents_of(&self, mime: &MimeType) -> &[MimeType] {
-        self.parents
-            .get(mime)
-            .map_or_default(Vec::as_slice)
+        self.parents.get(mime).map_or_default(Vec::as_slice)
     }
 }
 

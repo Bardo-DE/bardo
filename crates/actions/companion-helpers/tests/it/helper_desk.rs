@@ -360,5 +360,8 @@ async fn only_a_helpers_conversation_is_spoken_in_and_the_front_conversation_is_
         SayReply::Refused("That is not a conversation with a helper.".to_owned())
     );
     assert_eq!(w.infer.asked(), [] as [inference_core::ChatRequest; 0]);
-    assert_eq!(research_model.asked(), [] as [inference_core::ChatRequest; 0]);
+    assert_eq!(
+        research_model.asked(),
+        [] as [inference_core::ChatRequest; 0]
+    );
 }

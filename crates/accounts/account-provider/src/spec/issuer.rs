@@ -394,10 +394,12 @@ mod tests {
             [WHOLE]
         );
         assert_eq!(
-            data.grant_scopes(K::Calendar, Family::Graph, Ask::OnUse), [] as [&str; 0]
+            data.grant_scopes(K::Calendar, Family::Graph, Ask::OnUse),
+            [] as [&str; 0]
         );
         assert_eq!(
-            data.grant_scopes(K::Mail, Family::Imap, Ask::OnUse), [] as [&str; 0]
+            data.grant_scopes(K::Mail, Family::Imap, Ask::OnUse),
+            [] as [&str; 0]
         );
         let google = Issuer::Google.data();
         assert_eq!(

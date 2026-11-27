@@ -48,15 +48,13 @@ impl Props {
         let hrefs = |name: &str| -> Vec<String> {
             // The entries list an href's text and any other child by its qualified name; a
             // principal or home set holds only hrefs, or `DAV:unauthenticated`, which is none.
-            response
-                .found_items(name)
-                .map_or_default(|items| {
-                    items
-                        .iter()
-                        .filter(|item| !item.starts_with(DAV))
-                        .cloned()
-                        .collect()
-                })
+            response.found_items(name).map_or_default(|items| {
+                items
+                    .iter()
+                    .filter(|item| !item.starts_with(DAV))
+                    .cloned()
+                    .collect()
+            })
         };
         Props {
             resource: response

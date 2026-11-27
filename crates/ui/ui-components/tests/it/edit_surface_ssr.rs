@@ -55,8 +55,7 @@ const CASES: &[Case] = &[
         }
     }),
     ("controls/edit_surface/app-class-and-data", || {
-        let data = DataName::parse("draft")
-            .map_or_default(|name| vec![DataAttr::new(name, "42")]);
+        let data = DataName::parse("draft").map_or_default(|name| vec![DataAttr::new(name, "42")]);
         rsx! {
             EditSurface { common: Common { extra_class: ExtraClass::parse("c-body").ok(), data, ..Common::default() }, on_input: |_| {},
                 p { "data-edit-node": "0", "Hi" }

@@ -377,7 +377,10 @@ fn a_destructive_action_asks_for_a_hold_not_a_press() {
     // A click is not a hold.
     running.harness.send(Input::click(at));
     running.harness.advance(Duration::from_millis(1500));
-    assert_eq!(sent(&mut running), [] as [shell_model::intents::IntentsCommand; 0]);
+    assert_eq!(
+        sent(&mut running),
+        [] as [shell_model::intents::IntentsCommand; 0]
+    );
     // Let go early: abandoned.
     running.harness.send(Input::pointer_down(at));
     running.harness.advance(Duration::from_millis(600));
@@ -421,7 +424,10 @@ fn a_hold_does_not_start_while_it_arms_and_return_never_allows_a_destructive_act
     running.harness.advance(Duration::from_millis(300));
     running.harness.send(Input::pointer_up(at));
     running.harness.advance(Duration::from_millis(1500));
-    assert_eq!(sent(&mut running), [] as [shell_model::intents::IntentsCommand; 0]);
+    assert_eq!(
+        sent(&mut running),
+        [] as [shell_model::intents::IntentsCommand; 0]
+    );
     // Armed: the keyboard is on Don't Allow, which Space presses and Return does not; nothing
     // the keyboard does in one stroke allows it.
     running.harness.send(Input::key(ShortcutKey::Enter));
@@ -490,7 +496,10 @@ fn the_next_question_enters_with_its_own_arming() {
         "a new question never inherits the last one's armed buttons"
     );
     click(&mut running, ALLOW);
-    assert_eq!(sent(&mut running), [] as [shell_model::intents::IntentsCommand; 0]);
+    assert_eq!(
+        sent(&mut running),
+        [] as [shell_model::intents::IntentsCommand; 0]
+    );
     running.harness.advance(Duration::from_millis(700));
     click(&mut running, ALLOW);
     assert_eq!(

@@ -6,8 +6,6 @@
 //! by its image and unit, may press an item. There is no default: `MenuExport::start` takes the
 //! permit as an argument, so an app cannot export a menu anyone may press by leaving it out.
 
-use std::future::Future;
-
 use zbus::fdo;
 use zbus::message::Header;
 
@@ -41,6 +39,10 @@ pub struct AllowAnyCaller;
 
 #[cfg(feature = "testing")]
 impl MenuPermit for AllowAnyCaller {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _caller: &Caller) -> Verdict {
         Verdict::Allow
     }

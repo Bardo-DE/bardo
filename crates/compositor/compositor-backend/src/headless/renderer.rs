@@ -319,13 +319,12 @@ impl HeadlessRenderer for GlesRenderer {
 
 /// `Argb8888` and `Xrgb8888` of the formats `renderer` binds a dma-buf as.
 fn argb_formats<R: Bind<Dmabuf>>(renderer: &R) -> Vec<Format> {
-    Bind::<Dmabuf>::supported_formats(renderer)
-        .map_or_default(|set| {
-            set.iter()
-                .filter(|format| matches!(format.code, Fourcc::Argb8888 | Fourcc::Xrgb8888))
-                .copied()
-                .collect()
-        })
+    Bind::<Dmabuf>::supported_formats(renderer).map_or_default(|set| {
+        set.iter()
+            .filter(|format| matches!(format.code, Fourcc::Argb8888 | Fourcc::Xrgb8888))
+            .copied()
+            .collect()
+    })
 }
 
 /// The formats a software renderer draws a capture into when it has not been started: linear

@@ -79,18 +79,10 @@ pub struct InProcessSession(Never);
 enum Never {}
 
 impl InferSession for InProcessSession {
-    #[expect(
-        clippy::unused_async_trait_impl,
-        reason = "the trait method is async; this implementation has nothing to await"
-    )]
     async fn send(&mut self, _frame: ClientFrame) -> Result<(), SessionError> {
         match self.0 {}
     }
 
-    #[expect(
-        clippy::unused_async_trait_impl,
-        reason = "the trait method is async; this implementation has nothing to await"
-    )]
     async fn next(&mut self) -> Result<InferEvent, SessionError> {
         match self.0 {}
     }

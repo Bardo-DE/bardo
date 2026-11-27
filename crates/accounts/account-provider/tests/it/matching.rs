@@ -83,5 +83,8 @@ fn the_set_names_the_providers_that_claim_an_address_domain() {
         ids("example.org", &["example-org.mail.protection.outlook.com"]),
         vec![("microsoft".into(), DomainMatch::Mx)]
     );
-    assert_eq!(ids("example.org", &["mx.example.org"]), [] as [(std::string::String, account_provider::DomainMatch); 0]);
+    assert_eq!(
+        ids("example.org", &["mx.example.org"]),
+        [] as [(std::string::String, account_provider::DomainMatch); 0]
+    );
 }

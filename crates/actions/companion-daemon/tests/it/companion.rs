@@ -70,14 +70,19 @@ fn nothing_is_added_to_a_finished_or_absent_front_task_or_for_progress() {
         guard: Guard::default(),
     };
     assert_eq!(
-        completion_effects(&note(ReportStatus::Done, Attention::Quiet), Some(&finished)), [] as [agent_loop::LoopEffect; 0]
+        completion_effects(&note(ReportStatus::Done, Attention::Quiet), Some(&finished)),
+        [] as [agent_loop::LoopEffect; 0]
     );
-    assert_eq!(completion_effects(&note(ReportStatus::Done, Attention::Quiet), None), [] as [agent_loop::LoopEffect; 0]);
+    assert_eq!(
+        completion_effects(&note(ReportStatus::Done, Attention::Quiet), None),
+        [] as [agent_loop::LoopEffect; 0]
+    );
     assert_eq!(
         completion_effects(
             &note(ReportStatus::Progress, Attention::Quiet),
             Some(&working())
-        ), [] as [agent_loop::LoopEffect; 0]
+        ),
+        [] as [agent_loop::LoopEffect; 0]
     );
 }
 

@@ -178,14 +178,7 @@ pub fn use_roster_from<K: Clone + PartialEq + 'static>(
     let machine = use_machine(
         |_| RosterState::first_show(seed),
         params,
-        move || {
-            Measured(
-                pitches
-                    .0
-                    .try_peek()
-                    .map_or_default(|book| book.clone()),
-            )
-        },
+        move || Measured(pitches.0.try_peek().map_or_default(|book| book.clone())),
         move |RosterOut::Settled(key), _| {
             pitches.forget(&key);
             if let Some(on_settled) = on_settled {

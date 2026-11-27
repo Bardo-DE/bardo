@@ -154,9 +154,7 @@ impl ShellCalls for ZbusShellCalls {
     }
 
     fn failures(&mut self) -> Vec<FailedCall> {
-        self.worker
-            .as_ref()
-            .map_or_default(Worker::failures)
+        self.worker.as_ref().map_or_default(Worker::failures)
     }
 }
 

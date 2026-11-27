@@ -178,18 +178,17 @@ impl<B: Backend> Open<B> {
                 _ => None,
             })
             .collect();
-        let gone: Vec<String> = parse_topic(before.as_str())
-            .map_or_default(|old| {
-                old.blocks
-                    .into_iter()
-                    .filter_map(|b| match b {
-                        Block::Fact(f) if !now_facts.iter().any(|n| n.id == f.id) => {
-                            Some(fact_doc_id(&f.id))
-                        }
-                        _ => None,
-                    })
-                    .collect()
-            });
+        let gone: Vec<String> = parse_topic(before.as_str()).map_or_default(|old| {
+            old.blocks
+                .into_iter()
+                .filter_map(|b| match b {
+                    Block::Fact(f) if !now_facts.iter().any(|n| n.id == f.id) => {
+                        Some(fact_doc_id(&f.id))
+                    }
+                    _ => None,
+                })
+                .collect()
+        });
         self.index_drop(&gone);
         let stored = self.stored()?;
         let docs = now_facts

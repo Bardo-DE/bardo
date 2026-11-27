@@ -41,9 +41,7 @@ impl ScriptedProvider {
 
     /// Every request the provider has been given, in order.
     pub fn requests(&self) -> Vec<TurnRequest> {
-        self.seen
-            .lock()
-            .map_or_default(|seen| seen.clone())
+        self.seen.lock().map_or_default(|seen| seen.clone())
     }
 }
 

@@ -468,7 +468,10 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
 
     // It never counts as cloud: local-only stays on throughout, and no cloud spend is recorded.
     assert!(world.served.settings().policy.local_only);
-    assert_eq!(world.served.usage_of(&hosting::rig::test_app()), [] as [(std::string::String, inference_settings::UsageValue); 0]);
+    assert_eq!(
+        world.served.usage_of(&hosting::rig::test_app()),
+        [] as [(std::string::String, inference_settings::UsageValue); 0]
+    );
 }
 
 #[tokio::test]

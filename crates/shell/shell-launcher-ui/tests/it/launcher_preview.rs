@@ -318,11 +318,7 @@ fn shift_tab_with_nothing_typed_reaches_emoji_alone() {
     let shown = rows(&open);
     assert_eq!(headings(&open), ["Emoji"]);
     assert_eq!(shown.sections[0].rows, ["🎉", "👍", "🦊"]);
-    let searches = open
-        .feeds
-        .searches
-        .lock()
-        .map_or_default(|l| l.clone());
+    let searches = open.feeds.searches.lock().map_or_default(|l| l.clone());
     assert!(
         searches.iter().any(|c| matches!(
             c,

@@ -287,7 +287,10 @@ async fn revoking_sends_the_person_to_their_microsoft_account_page() {
         panic!("expected a page")
     };
     assert_eq!(page.origin().host, "account.microsoft.com");
-    assert_eq!(rig.issuer.events(), [] as [account_fake_servers::IssuerEvent; 0]);
+    assert_eq!(
+        rig.issuer.events(),
+        [] as [account_fake_servers::IssuerEvent; 0]
+    );
 }
 
 mod service {

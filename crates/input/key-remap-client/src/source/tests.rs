@@ -106,7 +106,10 @@ fn a_chord_the_desktop_keeps_is_refused_once_and_a_bad_line_is_reported() {
     assert_eq!(problems.len(), 2, "{problems:?}");
     assert!(problems.iter().any(|p| p.contains("teleport")));
     assert!(problems.iter().any(|p| p.contains("switches to a Space")));
-    assert_ne!(chords(&keymap, StandardAction::Copy), [] as [keymap::Chord; 0]);
+    assert_ne!(
+        chords(&keymap, StandardAction::Copy),
+        [] as [keymap::Chord; 0]
+    );
 }
 
 #[test]

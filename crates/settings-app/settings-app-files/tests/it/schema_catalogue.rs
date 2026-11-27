@@ -62,8 +62,7 @@ fn a_page_lists_its_basic_sections_and_one_advanced_group_after_them() {
         sections
             .iter()
             .find(|s| s.title == title)
-            .map(|s| s.keys.iter().map(|e| e.spec.path.0.clone()).collect())
-            .unwrap_or_default()
+            .map_or_default(|s| s.keys.iter().map(|e| e.spec.path.0.clone()).collect())
     };
     assert_eq!(
         paths(&dock.sections, "Dock"),

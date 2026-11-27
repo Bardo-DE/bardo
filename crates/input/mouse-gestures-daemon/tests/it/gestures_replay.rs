@@ -230,7 +230,10 @@ fn one_finger_swipe() {
         "the horizontal scroll is still emitted"
     );
     let slow = run("g4_slow");
-    assert_eq!(keys(&slow), [] as [mouse_gestures_daemon::keys::KeyCombo; 0]);
+    assert_eq!(
+        keys(&slow),
+        [] as [mouse_gestures_daemon::keys::KeyCombo; 0]
+    );
     assert!(crate::support::scrolled(&slow).0 > 0.0);
     assert!(
         keys(&run_claimed("g4_fast")).is_empty(),

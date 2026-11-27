@@ -76,17 +76,14 @@ impl TtyDevices {
 
     /// A device went away: its connectors are unplugged.
     pub fn removed(&mut self, path: &DevicePath) -> Vec<ConnectorEvent> {
-        let events = self
-            .devices
-            .remove(path)
-            .map_or_default(|device| {
-                device
-                    .known
-                    .0
-                    .into_values()
-                    .map(|facts| ConnectorEvent::Unplugged(facts.key))
-                    .collect()
-            });
+        let events = self.devices.remove(path).map_or_default(|device| {
+            device
+                .known
+                .0
+                .into_values()
+                .map(|facts| ConnectorEvent::Unplugged(facts.key))
+                .collect()
+        });
         self.released(events)
     }
 

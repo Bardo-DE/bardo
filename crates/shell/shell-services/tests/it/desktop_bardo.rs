@@ -478,7 +478,10 @@ fn a_command_for_something_gone_is_refused_before_anything_is_sent() {
             "{name}: {refused:?}"
         );
     }
-    assert_eq!(arm.desktop_mut().take_sent(), [] as [desktop_client::DesktopCommand; 0]);
+    assert_eq!(
+        arm.desktop_mut().take_sent(),
+        [] as [desktop_client::DesktopCommand; 0]
+    );
 }
 
 #[test]

@@ -155,8 +155,9 @@ fn handle_line(card: &HandleCard, history: &[StepLine]) -> String {
     // The reader's answer says what it is; any other handle says which step returned it.
     let by = match reader_origin(card.handle, history) {
         Some(origin) => format!(": {origin}"),
-        None => made_by(card.handle, history)
-            .map_or_default(|step| format!(", returned by {step}")),
+        None => {
+            made_by(card.handle, history).map_or_default(|step| format!(", returned by {step}"))
+        }
     };
     format!("- #{} {shape}{by}", card.handle.0)
 }

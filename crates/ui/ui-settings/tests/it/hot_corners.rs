@@ -129,7 +129,10 @@ bottom_right_command = ""
         "{read:?}"
     );
     let corners = &read.value.hot_corners;
-    assert_eq!(corners.top_left.0, [] as [settings_types::schema::CornerBinding; 0]);
+    assert_eq!(
+        corners.top_left.0,
+        [] as [settings_types::schema::CornerBinding; 0]
+    );
     assert_eq!(
         corners.top_right.0,
         [bind(&[], CornerDo::Desktop(CornerAction::Lock))]
@@ -138,7 +141,10 @@ bottom_right_command = ""
         corners.bottom_left.0,
         [bind(&[], CornerDo::Command("foot".to_owned()))]
     );
-    assert_eq!(corners.bottom_right.0, [] as [settings_types::schema::CornerBinding; 0]);
+    assert_eq!(
+        corners.bottom_right.0,
+        [] as [settings_types::schema::CornerBinding; 0]
+    );
     let text = saved(&scratch, &read.value);
     assert!(!text.contains("_command"), "{text}");
     assert!(!text.contains(r#"top_right = "lock""#), "{text}");

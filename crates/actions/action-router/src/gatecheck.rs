@@ -177,11 +177,8 @@ impl<S: Seams> Router<S> {
             }
             ConfirmAnswer::Allowed { .. } | ConfirmAnswer::AllowedFromTerminal { .. } => {
                 let now = self.seams.clock().now();
-                let classes: BTreeSet<DataClass> = self
-                    .locked()
-                    .registry
-                    .get(&ask.app)
-                    .map_or_default(|m| {
+                let classes: BTreeSet<DataClass> =
+                    self.locked().registry.get(&ask.app).map_or_default(|m| {
                         m.manifest()
                             .actions
                             .iter()

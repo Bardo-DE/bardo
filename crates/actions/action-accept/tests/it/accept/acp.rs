@@ -127,7 +127,10 @@ async fn an_editors_reject_means_the_app_never_runs_the_call() {
         !performed.iter().any(|a| a.contains("forward")),
         "{performed:?}"
     );
-    assert_eq!(world.app.messages(), [] as [action_accept::provider::Message; 0]);
+    assert_eq!(
+        world.app.messages(),
+        [] as [action_accept::provider::Message; 0]
+    );
     assert_eq!(world.sheet.shown(), [] as [action_core::ConfirmRequest; 0]);
 }
 

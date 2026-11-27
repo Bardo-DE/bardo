@@ -184,8 +184,7 @@ fn DropPlaces() -> Element {
 
 /// `data-folder="<path>"`.
 fn folder(path: &str) -> Vec<DataAttr> {
-    DataName::parse("folder")
-        .map_or_default(|name| vec![DataAttr::new(name, path)])
+    DataName::parse("folder").map_or_default(|name| vec![DataAttr::new(name, path)])
 }
 
 /// A folder's drop state: the one under the pointer is the target, every other one accepts.

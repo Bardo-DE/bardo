@@ -84,7 +84,7 @@ fn handle(command: &Cmd, undone: &mut Signal<u32>) {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is named like a type")]
 fn Notes() -> Element {
     let mut undone = use_signal(|| 0_u32);
     let mut picked = use_signal(Vec::<String>::new);
@@ -169,9 +169,7 @@ fn connect(bus: &PrivateBus) -> (Connection, String) {
         .expect("a unix address")
         .build()
         .expect("the client connects to the private bus");
-    let unique = connection
-        .unique_name()
-        .map_or_default(ToString::to_string);
+    let unique = connection.unique_name().map_or_default(ToString::to_string);
     (connection, unique)
 }
 
@@ -245,6 +243,10 @@ fn refusal(error: &zbus::Error) -> Refusal {
 struct OnlyFrom(String);
 
 impl MenuPermit for OnlyFrom {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, caller: &Caller) -> Verdict {
         if caller.sender.0 == self.0 {
             Verdict::Allow

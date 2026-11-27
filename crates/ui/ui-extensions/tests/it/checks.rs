@@ -35,7 +35,10 @@ fn a_stylesheet_that_climbs_out_of_the_folder_is_unreadable_and_listed_in_plain_
     let found = Search::new(&person, &[]).scan(&[]);
     let resolved = found.resolve(Capability::Look);
 
-    assert_eq!(usable(&found, Capability::Look), [] as [std::string::String; 0]);
+    assert_eq!(
+        usable(&found, Capability::Look),
+        [] as [std::string::String; 0]
+    );
     assert_eq!(resolved.unreadable.len(), 1);
     assert!(matches!(
         resolved.unreadable[0].reason,
@@ -64,7 +67,10 @@ fn an_absolute_path_and_a_link_out_of_the_folder_are_refused_too() {
     let found = Search::new(&person, &[]).scan(&[]);
     let resolved = found.resolve(Capability::Look);
 
-    assert_eq!(usable(&found, Capability::Look), [] as [std::string::String; 0]);
+    assert_eq!(
+        usable(&found, Capability::Look),
+        [] as [std::string::String; 0]
+    );
     let named: Vec<String> = resolved.problems().iter().map(|p| p.id.0.clone()).collect();
     assert_eq!(named, ["org.example.Absolute", "org.example.Linked"]);
 }
@@ -104,7 +110,10 @@ fn a_missing_sheet_or_one_that_is_not_css_is_set_aside() {
 
     let found = Search::new(&person, &[]).scan(&[]);
 
-    assert_eq!(usable(&found, Capability::Look), [] as [std::string::String; 0]);
+    assert_eq!(
+        usable(&found, Capability::Look),
+        [] as [std::string::String; 0]
+    );
     assert_eq!(found.resolve(Capability::Look).problems().len(), 2);
 }
 
@@ -177,7 +186,13 @@ fn an_extension_is_never_half_used() {
 
     let found = Search::new(&person, &[]).scan(&[]);
 
-    assert_eq!(usable(&found, Capability::Look), [] as [std::string::String; 0]);
-    assert_eq!(usable(&found, Capability::FileIcons), [] as [std::string::String; 0]);
+    assert_eq!(
+        usable(&found, Capability::Look),
+        [] as [std::string::String; 0]
+    );
+    assert_eq!(
+        usable(&found, Capability::FileIcons),
+        [] as [std::string::String; 0]
+    );
     assert_eq!(found.resolve(Capability::Look).problems().len(), 1);
 }

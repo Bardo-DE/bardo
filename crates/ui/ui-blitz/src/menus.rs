@@ -1,7 +1,8 @@
-//! Exporting an app's menu bar over the session bus (the `menus` feature): the app's
-//! [`MenuTree`] served as `com.canonical.dbusmenu` on its own connection, under a well-known
-//! name derived from its Wayland `app_id` ([`AppMenuAddress`]), so the shell's bar can show the
-//! focused app's menus and an agent can list and run them (design/27 section 5.2 rule a).
+//! Exporting an app's menu bar over the session bus (the `menus` feature).
+//!
+//! The app's [`MenuTree`] is served as `com.canonical.dbusmenu` on its own connection, under a
+//! well-known name derived from its Wayland `app_id` ([`AppMenuAddress`]), so the shell's bar can
+//! show the focused app's menus and an agent can list and run them (design/27 section 5.2 rule a).
 //!
 //! The app starts the export once, with the tree of its bar and a callback, and calls
 //! [`MenuExport::update`] whenever the bar changes (an item enables, a check flips, an item is
@@ -106,8 +107,14 @@ impl std::fmt::Debug for MenuExport {
 
 impl MenuExport {
     /// Serve `tree` for `config.app_id`. `on_activate` runs, on a bus thread, with the command
-    /// of every enabled item a client, which `permit` let press items, clicks. Fails with
-    /// [`MenuExportError::NameTaken`] when another process owns the menu's name.
+    /// of every enabled item a client, which `permit` let press items, clicks.
+    ///
+    /// # Errors
+    ///
+    /// [`MenuExportError::NameTaken`] when another process owns the menu's name;
+    /// [`MenuExportError::Address`] when the `app_id` makes no bus name;
+    /// [`MenuExportError::Tree`] when the bar cannot be exported; [`MenuExportError::Runtime`]
+    /// when there is no runtime for the bus; [`MenuExportError::Bus`] when the bus refuses.
     pub fn start(
         config: &MenuExportConfig,
         tree: MenuTree,
@@ -149,6 +156,10 @@ impl MenuExport {
 
     /// Serve `tree` from now on, and tell the clients what changed: `LayoutUpdated` always (the
     /// revision rose), and `ItemsPropertiesUpdated` too when only properties changed.
+    ///
+    /// # Errors
+    ///
+    /// [`MenuExportError::Bus`] or [`MenuExportError::Wire`] when the change cannot be announced.
     pub fn set_tree(&self, tree: MenuTree) -> Result<Change, MenuExportError> {
         let (change, revision, tree) = self.shared.replace(tree);
         service::announce(&self.connection, &change, revision, &tree)?;
@@ -156,6 +167,11 @@ impl MenuExport {
     }
 
     /// [`set_tree`](Self::set_tree) of `bar`'s tree.
+    ///
+    /// # Errors
+    ///
+    /// [`MenuExportError::Tree`] when the bar cannot be exported (an item with no command id),
+    /// otherwise those of [`set_tree`](Self::set_tree).
     pub fn update<T: AppCommand + Clone>(
         &self,
         bar: &MenuBarModel<T>,

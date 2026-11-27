@@ -54,7 +54,10 @@ fn a_markup_exception_names_the_element() {
         exceptions: INLINE,
         ..LintConfig::new(&ui_components::kits())
     };
-    assert_eq!(markup(html, ".ds-space-swatch{}", &config), [] as [ui_lint::Offence; 0]);
+    assert_eq!(
+        markup(html, ".ds-space-swatch{}", &config),
+        [] as [ui_lint::Offence; 0]
+    );
 }
 
 #[test]

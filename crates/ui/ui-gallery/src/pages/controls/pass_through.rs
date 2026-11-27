@@ -34,8 +34,7 @@ pub fn MoreGlyphs() -> Element {
 /// `data-folder="<path>"`, or nothing if the name were refused (it is not: `folder` is a plain
 /// consumer word).
 fn folder(path: &str) -> Vec<DataAttr> {
-    DataName::parse("folder")
-        .map_or_default(|name| vec![DataAttr::new(name, path)])
+    DataName::parse("folder").map_or_default(|name| vec![DataAttr::new(name, path)])
 }
 
 /// Buttons with the consumer's own attribute and class on the element itself: mailo's folder

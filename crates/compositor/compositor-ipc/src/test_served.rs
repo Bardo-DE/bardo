@@ -139,10 +139,7 @@ impl Served {
     }
 
     pub(crate) fn asks(&self) -> Vec<ConnectAsk> {
-        self.drained
-            .as_ref()
-            .map(StandInLoop::asks)
-            .unwrap_or_default()
+        self.drained.as_ref().map_or_default(StandInLoop::asks)
     }
 
     /// A new client that stands as `standing`, with a proxy on Compositor1.

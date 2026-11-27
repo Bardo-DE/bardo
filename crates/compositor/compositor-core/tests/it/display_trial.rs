@@ -128,11 +128,17 @@ fn keep_keeps_the_new_setup_and_a_late_timer_changes_nothing() {
     let kept = run_from(opened.model, vec![answer(trial, TrialAnswer::Keep)]);
     assert_eq!(config(&kept.model).scale, want);
     assert_eq!(ended(&kept.effects[0]), [trial]);
-    assert_eq!(applied(&kept.effects[0]), [] as [compositor_core::output::OutputConfig; 0]);
+    assert_eq!(
+        applied(&kept.effects[0]),
+        [] as [compositor_core::output::OutputConfig; 0]
+    );
     assert!(!kept.model.timers().is_armed(&TimerKey::DisplayTrial));
     let late = run_from(kept.model, vec![timeout()]);
     assert_eq!(config(&late.model).scale, want, "nothing to revert");
-    assert_eq!(ended(&late.effects[0]), [] as [desktop_protocols::vocab::TrialId; 0]);
+    assert_eq!(
+        ended(&late.effects[0]),
+        [] as [desktop_protocols::vocab::TrialId; 0]
+    );
 }
 
 #[test]
@@ -193,7 +199,10 @@ fn the_compositors_own_restoring_leaves_a_trial_alone() {
         vec![rescale(Requester::Restore, scaled(original, 2))],
     );
     assert!(asked(&step.effects[0]).is_none());
-    assert_eq!(ended(&step.effects[0]), [] as [desktop_protocols::vocab::TrialId; 0]);
+    assert_eq!(
+        ended(&step.effects[0]),
+        [] as [desktop_protocols::vocab::TrialId; 0]
+    );
     assert!(step.model.timers().is_armed(&TimerKey::DisplayTrial));
 }
 

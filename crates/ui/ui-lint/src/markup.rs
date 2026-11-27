@@ -109,8 +109,7 @@ fn check_tag(tag: &str, line: u32, column: u32, defined: &HashSet<String>, out: 
 
 /// The classes on `tag`.
 fn classes_of(tag: &str) -> Vec<&str> {
-    attr_value(tag, "class")
-        .map_or_default(|(value, _)| value.split_whitespace().collect())
+    attr_value(tag, "class").map_or_default(|(value, _)| value.split_whitespace().collect())
 }
 
 /// The element as an [`super::Exception`] names it: `tag.class.class`.

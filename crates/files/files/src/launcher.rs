@@ -23,14 +23,13 @@ pub fn xdg_dirs() -> XdgDirs {
         data_dirs: xdg.data_dirs(),
         config_home: xdg.config_home().unwrap_or_else(|_| home.join(".config")),
         config_dirs: xdg.config_dirs(),
-        current_desktops: std::env::var("XDG_CURRENT_DESKTOP")
-            .map_or_default(|value| {
-                value
-                    .split(':')
-                    .filter(|part| !part.is_empty())
-                    .map(str::to_owned)
-                    .collect()
-            }),
+        current_desktops: std::env::var("XDG_CURRENT_DESKTOP").map_or_default(|value| {
+            value
+                .split(':')
+                .filter(|part| !part.is_empty())
+                .map(str::to_owned)
+                .collect()
+        }),
     }
 }
 

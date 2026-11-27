@@ -29,8 +29,7 @@ pub fn shortcut_text_for(keymap: &Keymap, action: &Action) -> Option<String> {
 /// The caps of [`shortcut_text_for`]; empty when the keymap binds `action` to nothing.
 #[must_use]
 pub fn shortcut_caps_for(keymap: &Keymap, action: &Action) -> Vec<KeyRemap> {
-    shortcut_text_for(keymap, action)
-        .map_or_default(|text| caps_of(&text))
+    shortcut_text_for(keymap, action).map_or_default(|text| caps_of(&text))
 }
 
 fn caps_of(text: &str) -> Vec<KeyRemap> {

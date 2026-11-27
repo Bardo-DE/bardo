@@ -207,9 +207,7 @@ impl Privilege {
             Class::Sandboxed => Decision::Closed,
             Class::Public(standing) => {
                 let subject = standing.subject();
-                let trusted = standing
-                    .service_role()
-                    .map_or_default(trusted_powers);
+                let trusted = standing.service_role().map_or_default(trusted_powers);
                 if trusted.contains(&power) {
                     decide_trusted(&self.floor, &self.book, subject.as_ref(), power)
                 } else {

@@ -110,8 +110,7 @@ fn principals(prefix: &[u8], tree: &[u8]) -> Option<Vec<u8>> {
 /// Where a relay to `endpoint` may go.
 pub fn reach_for(endpoint: &ServiceEndpoint) -> Reach {
     let family = endpoint.family;
-    let prefix = base_url::percent::decode_checked(endpoint.url.path())
-        .map_or_default(trimmed);
+    let prefix = base_url::percent::decode_checked(endpoint.url.path()).map_or_default(trimmed);
     if !confined(family) || prefix.is_empty() {
         return Reach::origin();
     }

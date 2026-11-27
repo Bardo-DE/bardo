@@ -46,9 +46,7 @@ pub(crate) fn marked<'a, T>(rows: &'a [PaletteRow<T>], query: &str) -> Vec<Marke
         .map(|row| MarkedRow {
             row,
             marks: match &row.title {
-                TextLine::Plain(title) => {
-                    fuzzy(query, title).map_or_default(|hit| hit.marks)
-                }
+                TextLine::Plain(title) => fuzzy(query, title).map_or_default(|hit| hit.marks),
                 TextLine::Runs(_) => Vec::new(),
             },
         })

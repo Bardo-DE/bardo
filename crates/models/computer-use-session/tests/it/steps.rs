@@ -260,7 +260,10 @@ fn a_point_outside_the_frame_becomes_dropped_never_clamped() {
         .clone()
         .absorb_for(&sent, calls(&[&click_at(1000, 10)]), &m);
     let (kept, dropped) = actions(outcome);
-    assert_eq!(kept, [] as [computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>; 0]);
+    assert_eq!(
+        kept,
+        [] as [computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>; 0]
+    );
     assert_eq!(dropped[0].reason, DropReason::OutOfFrame);
 
     // With a repair left the model is told, in words that name the reason, to try again.

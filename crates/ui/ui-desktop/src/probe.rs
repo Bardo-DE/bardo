@@ -32,7 +32,6 @@ pub(crate) mod bus {
     use crate::capability::{Bus, Capability};
     use base_time::deadline::{Deadline, within};
     use std::collections::HashSet;
-    use std::future::Future;
     use zbus::Connection;
     use zbus::fdo::DBusProxy;
 

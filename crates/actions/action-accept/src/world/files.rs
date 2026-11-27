@@ -78,8 +78,8 @@ pub fn inferd_toml(root: &Path, model: &ModelSource, record: Option<&Path>) -> S
     match model {
         ModelSource::Scripted(_) => {
             let chosen = SCRIPTED_TEXT;
-            let record = record
-                .map_or_default(|p| format!("record = {:?}\n", p.display().to_string()));
+            let record =
+                record.map_or_default(|p| format!("record = {:?}\n", p.display().to_string()));
             format!(
                 "[engines.scripted]\nreplay = {:?}\n{record}\n{chosen}",
                 root.join("cassette.jsonl").display().to_string()

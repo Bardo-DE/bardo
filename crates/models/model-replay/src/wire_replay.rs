@@ -45,9 +45,7 @@ impl ReplayTransport {
 
     /// The requests that found no exchange, with what a mismatch compared.
     pub fn misses(&self) -> Vec<WireMissError> {
-        self.cursor
-            .lock()
-            .map_or_default(|c| c.misses.clone())
+        self.cursor.lock().map_or_default(|c| c.misses.clone())
     }
 
     fn pick(&self, got: &WireRequest) -> Result<WireReply, WireMissError> {

@@ -192,10 +192,7 @@ impl<V: Vault> Store<V> {
                 // Appended before the pending copy goes, so a crash between the two leaves
                 // the fact in both places rather than nowhere; settling again does not
                 // append it twice.
-                let kept = self
-                    .read(&file.topic)
-                    .ok()
-                    .map_or_default(|t| t.blocks);
+                let kept = self.read(&file.topic).ok().map_or_default(|t| t.blocks);
                 for block in file.blocks {
                     let Block::Fact(fact) = block else { continue };
                     let there = kept

@@ -148,10 +148,8 @@ async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session(
     assert!(helper.is_open() && helper.away().is_none());
     assert_eq!(helper.handle().expect("open").1, router_session);
     assert_eq!(
-        watching
-            .checkpoint_watched()
-            .await
-            .expect("watched"), [] as [companion_model::WatchedLine; 0]
+        watching.checkpoint_watched().await.expect("watched"),
+        [] as [companion_model::WatchedLine; 0]
     );
     let resumed = views[1].resumed();
     assert_eq!(resumed.len(), 1);

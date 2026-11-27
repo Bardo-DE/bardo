@@ -91,7 +91,10 @@ fn marked_corner_keys_become_one_button_and_lose_their_rows() {
         ["hot_corners.dwell_ms"],
         "the timing stays a row; the corners are in the sheet"
     );
-    assert_eq!(basic_sections(page), [] as [settings_app_model::SectionModel; 0]);
+    assert_eq!(
+        basic_sections(page),
+        [] as [settings_app_model::SectionModel; 0]
+    );
 }
 
 #[test]

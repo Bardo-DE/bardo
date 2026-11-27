@@ -213,9 +213,7 @@ pub(super) fn apply(
     if header.sender() != Some(owner) {
         return Ok(Step::More);
     }
-    let member = header
-        .member()
-        .map_or_default(|m| m.as_str().to_owned());
+    let member = header.member().map_or_default(|m| m.as_str().to_owned());
     let body = message.body();
     match member.as_str() {
         "Package" => {

@@ -50,10 +50,7 @@ fn window(toplevel: &Toplevel) -> WindowView {
         title: toplevel.title.clone(),
         state: window_state(toplevel),
         space: SpacePlaceView::Unknown,
-        output: toplevel
-            .outputs
-            .first()
-            .map_or_default(|o| o.0.clone()),
+        output: toplevel.outputs.first().map_or_default(|o| o.0.clone()),
         emphasis: emphasis(toplevel.active),
         placement: placement(toplevel.sizing),
         role: WindowRole::Document,

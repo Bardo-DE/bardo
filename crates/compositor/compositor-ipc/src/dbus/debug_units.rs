@@ -56,6 +56,11 @@ impl PeerUnitTable {
     /// Parses `"<program-or-pid>=<unit>[,...]"`: an all-digit left side is a process id, anything
     /// else a program name. Empty text is an empty table.
     ///
+    /// # Errors
+    ///
+    /// [`PeerUnitsError::BadEntry`] when an entry has no `=` or an empty side;
+    /// [`PeerUnitsError::BadUnit`] when its unit is not a `name.service` without a slash.
+    ///
     /// ```
     /// use compositor_ipc::dbus::{PeerMatch, PeerUnitTable};
     ///

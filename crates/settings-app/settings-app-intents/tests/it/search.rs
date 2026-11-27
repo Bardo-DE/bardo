@@ -79,7 +79,10 @@ fn an_empty_catalogue_still_gives_a_file_actions_service_reads() {
     let table: toml::Table = search_entries(&Catalogue::default())
         .parse()
         .expect("a TOML file");
-    assert_eq!(rows(&table), [] as [&toml::map::Map<std::string::String, toml::Value>; 0]);
+    assert_eq!(
+        rows(&table),
+        [] as [&toml::map::Map<std::string::String, toml::Value>; 0]
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

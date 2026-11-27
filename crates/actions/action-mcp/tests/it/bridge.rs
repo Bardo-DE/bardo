@@ -174,7 +174,10 @@ async fn a_refused_line_or_a_gone_host_is_a_tool_error_and_never_a_success() {
         client.call_tool(call()).await.expect("answer").is_error,
         Some(true)
     );
-    assert_eq!(client.list_all_tools().await.expect("tools"), [] as [rmcp::model::Tool; 0]);
+    assert_eq!(
+        client.list_all_tools().await.expect("tools"),
+        [] as [rmcp::model::Tool; 0]
+    );
     std::fs::remove_file(&socket).expect("socket gone");
     assert_eq!(
         client.call_tool(call()).await.expect("answer").is_error,

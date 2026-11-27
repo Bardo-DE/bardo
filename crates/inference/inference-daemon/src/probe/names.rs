@@ -40,8 +40,7 @@ impl Listing {
             return Self::default();
         };
         if response.status().is_success() {
-            serde_json::from_slice(response.body())
-                .map_or_default(|body| Self::of(runtime, &body))
+            serde_json::from_slice(response.body()).map_or_default(|body| Self::of(runtime, &body))
         } else {
             Self::default()
         }

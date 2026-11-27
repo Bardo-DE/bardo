@@ -41,7 +41,10 @@ fn return_opens_a_group_then_invokes_a_lone_card_and_closes() {
     running.harness.send(Input::key(ShortcutKey::Enter));
     advance(&mut running, 40);
     assert_eq!(running.harness.count(".ds-notification"), 4, "Mail opened");
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
     running.harness.send(Input::key(ShortcutKey::Down));
     running.harness.send(Input::key(ShortcutKey::Enter));
     advance(&mut running, 40);
@@ -68,7 +71,10 @@ fn return_on_a_stack_opens_it() {
         4,
         "the stack opened"
     );
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
 }
 
 #[test]
@@ -102,5 +108,8 @@ fn escape_closes() {
     running.harness.send(Input::key(ShortcutKey::Escape));
     advance(&mut running, 20);
     assert!(running.link.now().opening().is_none());
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
 }

@@ -87,7 +87,10 @@ async fn the_editors_reject_on_the_sheet_refuses_the_call() {
         !performed.iter().any(|a| a.contains("forward")),
         "{performed:?}"
     );
-    assert_eq!(world.app.messages(), [] as [action_accept::provider::Message; 0]);
+    assert_eq!(
+        world.app.messages(),
+        [] as [action_accept::provider::Message; 0]
+    );
     assert!(world.sheet.shown().is_empty(), "shell was not asked");
 }
 

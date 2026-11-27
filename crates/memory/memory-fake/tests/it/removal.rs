@@ -247,7 +247,10 @@ async fn deleting_instead_moves_nothing() {
     for name in ["org.bardo.Mail", FILES, SHELL] {
         let home = store(&service, &home_of(name));
         assert_eq!(home.topics().expect("t"), [] as [memory_core::TopicPath; 0]);
-        assert_eq!(home.pending().expect("p"), [] as [(memory_core::TopicPath, memory_core::Fact); 0]);
+        assert_eq!(
+            home.pending().expect("p"),
+            [] as [(memory_core::TopicPath, memory_core::Fact); 0]
+        );
     }
     assert_eq!(service.backend().removed_spaces(), vec![work()]);
 }

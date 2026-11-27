@@ -65,9 +65,7 @@ impl ReplayProvider {
     /// The turns that found no interaction, with the prints a mismatch compared (a provider
     /// can only answer `ProviderError`, so a test reads the detail here).
     pub fn misses(&self) -> Vec<ReplayError> {
-        self.cursor
-            .lock()
-            .map_or_default(|c| c.misses.clone())
+        self.cursor.lock().map_or_default(|c| c.misses.clone())
     }
 
     fn pick(&self, got: &RequestPrint) -> Result<Interaction, ReplayError> {

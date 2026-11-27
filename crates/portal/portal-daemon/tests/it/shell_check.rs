@@ -180,7 +180,7 @@ async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
 async fn a_shell_named_in_the_persons_rows_is_asked() {
     let portal = start_portal().await;
     let asker = ShellAsker::new(portal.link.clone());
-    let (shell, asked) = stand_in(&portal, Answers::Yes).await;
+    let (shell, questions) = stand_in(&portal, Answers::Yes).await;
     crate::guard::as_shell_at(
         &portal.peers,
         &shell,
@@ -190,5 +190,5 @@ async fn a_shell_named_in_the_persons_rows_is_asked() {
         ask(&asker).await.expect("the stand-in shell answers"),
         Answer::Granted
     );
-    assert_eq!(asked.load(Ordering::SeqCst), 1);
+    assert_eq!(questions.load(Ordering::SeqCst), 1);
 }

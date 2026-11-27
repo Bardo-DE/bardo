@@ -193,7 +193,10 @@ fn overrides_round_trip_through_the_settings_file() {
 fn the_default_file_has_no_overrides_and_writes_none() {
     let text = toml::to_string(&ShellFile::default().keyboard).unwrap_or_else(|e| panic!("{e}"));
     assert!(!text.contains("rejected"), "{text}");
-    assert_eq!(ShellFile::default().keyboard.overrides, [] as [shell_settings::KeyboardOverride; 0]);
+    assert_eq!(
+        ShellFile::default().keyboard.overrides,
+        [] as [shell_settings::KeyboardOverride; 0]
+    );
 }
 
 #[test]

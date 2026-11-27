@@ -260,7 +260,10 @@ fn a_warning_does_not_fail() {
     assert_eq!(warnings(css, &strict()).len(), 2);
     assert_clean(css, &strict());
     let html = "<button class=\"ds-button\"></button>";
-    assert_eq!(markup(html, ".ds-button{}", &strict()), [] as [ui_lint::Offence; 0]);
+    assert_eq!(
+        markup(html, ".ds-button{}", &strict()),
+        [] as [ui_lint::Offence; 0]
+    );
     assert_eq!(markup_warnings(html, &strict()).len(), 1);
 }
 
@@ -276,7 +279,10 @@ fn an_exception_covers_a_warning() {
         exceptions: EXCEPTIONS,
         ..strict()
     };
-    assert_eq!(warnings(".row { cursor: pointer; }", &config), [] as [ui_lint::Offence; 0]);
+    assert_eq!(
+        warnings(".row { cursor: pointer; }", &config),
+        [] as [ui_lint::Offence; 0]
+    );
     assert_clean(".row { cursor: pointer; }", &config);
 }
 

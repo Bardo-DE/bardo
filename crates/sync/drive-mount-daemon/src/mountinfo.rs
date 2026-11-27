@@ -63,8 +63,7 @@ pub fn parse(table: &str) -> Vec<Entry> {
 /// This process's table now (empty when it cannot be read).
 #[must_use]
 pub fn read() -> Vec<Entry> {
-    std::fs::read_to_string("/proc/self/mountinfo")
-        .map_or_default(|table| parse(&table))
+    std::fs::read_to_string("/proc/self/mountinfo").map_or_default(|table| parse(&table))
 }
 
 /// The topmost mount at `path` in `entries`, if any.

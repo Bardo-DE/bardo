@@ -255,7 +255,14 @@ async fn a_hint_that_fits_no_identity_or_is_no_provider_shows_nothing() {
     );
     let bad = app.offer("Not A Provider", "").await.expect_err("bad hint");
     assert_eq!(error_name(&bad), INVALID_ARGS);
-    assert_eq!(rig.host_log.calls().opened, [] as [(std::string::String, std::string::String, std::string::String); 0]);
+    assert_eq!(
+        rig.host_log.calls().opened,
+        [] as [(
+            std::string::String,
+            std::string::String,
+            std::string::String
+        ); 0]
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

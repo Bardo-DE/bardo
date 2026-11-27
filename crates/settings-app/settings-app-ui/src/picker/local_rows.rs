@@ -24,18 +24,17 @@ pub(super) fn LocalRows(
     // The engines the person could get, listed after the ones that run models now: choosing one
     // asks to download it instead of setting anything.
     let board = try_use_context::<Board>();
-    let wanted: Vec<(String, String)> = board
-        .map_or_default(|board| {
-            board
-                .state
-                .read()
-                .rows
-                .iter()
-                .filter(|row| row.needs_getting())
-                .filter(|row| !view.engines.iter().any(|engine| engine.label == row.name))
-                .map(|row| (row.id.clone(), row.name.clone()))
-                .collect()
-        });
+    let wanted: Vec<(String, String)> = board.map_or_default(|board| {
+        board
+            .state
+            .read()
+            .rows
+            .iter()
+            .filter(|row| row.needs_getting())
+            .filter(|row| !view.engines.iter().any(|engine| engine.label == row.name))
+            .map(|row| (row.id.clone(), row.name.clone()))
+            .collect()
+    });
     if view.engines.is_empty() && wanted.is_empty() {
         return rsx! { NoEngine { path, note: view.note.clone(), availability, onask } };
     }

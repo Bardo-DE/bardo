@@ -23,7 +23,10 @@ fn the_oldest_answers_beyond_the_most_kept_are_dropped_and_their_sessions_return
     let mut answers = Answers::default();
     let most = KEPT_ANSWERS as u64;
     for n in 0..most {
-        assert_eq!(answers.keep(JobId(n), answer(n, Hold::Close)), [] as [provenance::SessionId; 0]);
+        assert_eq!(
+            answers.keep(JobId(n), answer(n, Hold::Close)),
+            [] as [provenance::SessionId; 0]
+        );
     }
     // An app's session is its process's: dropping its answer closes nothing.
     let evicted = answers.keep(JobId(most), answer(most, Hold::Leave));

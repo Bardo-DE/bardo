@@ -36,10 +36,7 @@ impl Typeahead {
         // One letter, or one letter again and again, moves on from the selection; a longer word
         // narrows from it.
         let (needle, skip) = if repeated {
-            (
-                buffer.chars().next().map_or_default(String::from),
-                1,
-            )
+            (buffer.chars().next().map_or_default(String::from), 1)
         } else if buffer.chars().count() == 1 {
             (buffer.clone(), 1)
         } else {

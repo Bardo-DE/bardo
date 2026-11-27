@@ -177,10 +177,7 @@ impl<A: Accounts + 'static, P: Procs> Spawn for AgentSpawn<A, P> {
                     proc,
                     release: Some(release),
                     net: entry.network,
-                    sites: entry
-                        .reach
-                        .as_ref()
-                        .map_or_default(|r| r.sites().to_vec()),
+                    sites: entry.reach.as_ref().map_or_default(|r| r.sites().to_vec()),
                 },
                 meta: entry.claude_code.then(claude_code_meta),
                 sign_in: entry.sign_in.clone(),

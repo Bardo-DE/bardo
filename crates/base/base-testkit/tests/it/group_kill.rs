@@ -30,12 +30,11 @@ fn alive(pid: u32) -> bool {
 }
 
 fn pids_of(line: &str) -> Vec<u32> {
-    line.strip_prefix("PIDS ")
-        .map_or_default(|rest| {
-            rest.split_whitespace()
-                .filter_map(|p| p.parse().ok())
-                .collect()
-        })
+    line.strip_prefix("PIDS ").map_or_default(|rest| {
+        rest.split_whitespace()
+            .filter_map(|p| p.parse().ok())
+            .collect()
+    })
 }
 
 #[test]

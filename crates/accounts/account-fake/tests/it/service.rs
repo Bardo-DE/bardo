@@ -194,7 +194,10 @@ async fn an_opened_relay_is_audited_with_its_grant_and_endpoint_and_a_refused_on
         )
         .await;
     assert_eq!(refused.err(), Some(Refusal::EndpointNotGranted));
-    assert_eq!(opened(audit.entries()), [] as [account_service_core::audit::AuditEntry; 0]);
+    assert_eq!(
+        opened(audit.entries()),
+        [] as [account_service_core::audit::AuditEntry; 0]
+    );
 
     service
         .open_authenticated(&me, &storage.grant, &storage.endpoints[0].url)

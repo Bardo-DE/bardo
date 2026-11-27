@@ -57,7 +57,10 @@ fn the_file_round_trips_and_names_the_ids_a_scan_takes() {
         ConfigRoot::Scratch(scratch.path().to_path_buf()),
         AppName::BARDO,
     );
-    assert_eq!(ExtensionsFile::default().off_ids(), [] as [ui_extensions::ExtensionId; 0]);
+    assert_eq!(
+        ExtensionsFile::default().off_ids(),
+        [] as [ui_extensions::ExtensionId; 0]
+    );
 
     let turned_off = ExtensionsFile::default()
         .extensions

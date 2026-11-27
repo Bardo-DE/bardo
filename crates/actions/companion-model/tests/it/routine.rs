@@ -273,7 +273,10 @@ fn three_runs_that_do_not_finish_pause_the_routine_and_say_so_once() {
         RoutineState::Paused(PauseWhy::Failed3)
     );
     // A paused routine does not run, and a timer for it is not wanted.
-    assert_eq!(book.timers(), [] as [companion_model::routine::TimerEntry; 0]);
+    assert_eq!(
+        book.timers(),
+        [] as [companion_model::routine::TimerEntry; 0]
+    );
     let (_, fx) = tick(book, 5 * DAY + 8 * H);
     assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
 }
@@ -390,7 +393,10 @@ fn pause_resume_and_remove_move_the_book_and_its_records() {
     let (book, id) = made(RoutineBook::default(), &hid(1), eight(), Missed::Skip, 0);
     let (book, fx) = step(book, RoutineEvent::Pause(id));
     assert_eq!(fx.len(), 1);
-    assert_eq!(book.timers(), [] as [companion_model::routine::TimerEntry; 0]);
+    assert_eq!(
+        book.timers(),
+        [] as [companion_model::routine::TimerEntry; 0]
+    );
     // Resumed at nine, its next time is tomorrow's: the eight o'clock in between is not run.
     let (book, _) = step(
         book,

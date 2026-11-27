@@ -182,7 +182,10 @@ fn off_draws_nothing_and_a_blank_sheet_draws_no_element() {
         ..Styles::default()
     };
     assert_eq!(only_app.drawn(true).len(), 1);
-    assert_eq!(Styles::default().drawn(true), [] as [ui_style::kit::Drawn; 0]);
+    assert_eq!(
+        Styles::default().drawn(true),
+        [] as [ui_style::kit::Drawn; 0]
+    );
 }
 
 #[test]

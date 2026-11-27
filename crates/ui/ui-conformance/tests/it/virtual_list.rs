@@ -88,13 +88,12 @@ fn click(harness: &mut Harness, selector: &str) {
 /// The numbers of the rows mounted, in order.
 fn mounted(harness: &Harness) -> Vec<u32> {
     harness.with_doc(|doc| {
-        doc.query_selector_all(".item")
-            .map_or_default(|found| {
-                found
-                    .into_iter()
-                    .filter_map(|id| doc.get_node(id)?.text_content().trim().parse().ok())
-                    .collect()
-            })
+        doc.query_selector_all(".item").map_or_default(|found| {
+            found
+                .into_iter()
+                .filter_map(|id| doc.get_node(id)?.text_content().trim().parse().ok())
+                .collect()
+        })
     })
 }
 

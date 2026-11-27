@@ -57,13 +57,12 @@ fn folders(parent: &Path, manifest: &str) -> Vec<Source> {
 }
 
 fn children(folder: &Path) -> Vec<PathBuf> {
-    fs::read_dir(folder)
-        .map_or_default(|entries| {
-            entries
-                .filter_map(Result::ok)
-                .map(|entry| entry.path())
-                .collect()
-        })
+    fs::read_dir(folder).map_or_default(|entries| {
+        entries
+            .filter_map(Result::ok)
+            .map(|entry| entry.path())
+            .collect()
+    })
 }
 
 /// Reads and checks the manifest of `source`.

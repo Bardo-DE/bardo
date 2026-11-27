@@ -189,7 +189,10 @@ fn a_refusal_is_told_in_plain_words_and_the_row_stays() {
         toast.contains("Screen sharing could not be changed"),
         "{toast}"
     );
-    assert_eq!(w.portal.as_ref().expect("a portal").revoked(), [] as [std::string::String; 0]);
+    assert_eq!(
+        w.portal.as_ref().expect("a portal").revoked(),
+        [] as [std::string::String; 0]
+    );
     assert_eq!(w.harness.count(REMOVE_MEET), 1, "the app is still listed");
     // A second press works: the first refusal did not leave the list stuck. The toast sits over
     // the last row at this window size, so the press waits for it to go.

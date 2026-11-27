@@ -335,16 +335,13 @@ mod tests {
     /// The chords `source` gives the window manager's minimize action.
     fn minimize_chords(source: &KeySource) -> Vec<String> {
         let minimize = Action::Standard(StandardAction::Minimize);
-        source
-            .load()
-            .map(|keymap| {
-                keymap
-                    .chords_of(&minimize)
-                    .into_iter()
-                    .map(Chord::canonical)
-                    .collect()
-            })
-            .unwrap_or_default()
+        source.load().map_or_default(|keymap| {
+            keymap
+                .chords_of(&minimize)
+                .into_iter()
+                .map(Chord::canonical)
+                .collect()
+        })
     }
 
     const DUMP: &str = "[org/gnome/desktop/wm/keybindings]\nminimize=['<Super>h']\n";

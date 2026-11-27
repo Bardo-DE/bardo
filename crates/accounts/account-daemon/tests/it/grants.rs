@@ -128,7 +128,12 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
         proxy
             .candidates(&need_text, class, usage)
             .await
-            .expect("candidates"), [] as [(zbus::zvariant::OwnedObjectPath, std::string::String, std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>); 0]
+            .expect("candidates"),
+        [] as [(
+            zbus::zvariant::OwnedObjectPath,
+            std::string::String,
+            std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>
+        ); 0]
     );
     assert_eq!(
         proxy
@@ -228,7 +233,12 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
         proxy
             .candidates(&need_text, class, usage)
             .await
-            .expect("candidates"), [] as [(zbus::zvariant::OwnedObjectPath, std::string::String, std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>); 0]
+            .expect("candidates"),
+        [] as [(
+            zbus::zvariant::OwnedObjectPath,
+            std::string::String,
+            std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>
+        ); 0]
     );
     let again = proxy
         .revoke(chosen.grant.as_str())

@@ -91,22 +91,36 @@ impl Subscriber for Lines {
         *metadata.level() <= Level::INFO
     }
 
-    fn new_span(&self, _attrs: &Attributes<'_>) -> Id {
+    #[cfg_attr(
+        not(feature = "otlp"),
+        expect(
+            unused_variables,
+            reason = "only the span recorder reads the arguments"
+        )
+    )]
+    fn new_span(&self, span: &Attributes<'_>) -> Id {
         let id = Id::from_u64(self.spans.fetch_add(1, Ordering::Relaxed) + 1);
         #[cfg(feature = "otlp")]
         {
             if let Some(recorder) = &self.recorder {
-                recorder.new_span(_attrs, &id);
+                recorder.new_span(span, &id);
             }
         }
         id
     }
 
-    fn record(&self, _id: &Id, _values: &Record<'_>) {
+    #[cfg_attr(
+        not(feature = "otlp"),
+        expect(
+            unused_variables,
+            reason = "only the span recorder reads the arguments"
+        )
+    )]
+    fn record(&self, span: &Id, values: &Record<'_>) {
         #[cfg(feature = "otlp")]
         {
             if let Some(recorder) = &self.recorder {
-                recorder.record(_id, _values);
+                recorder.record(span, values);
             }
         }
     }
@@ -125,20 +139,34 @@ impl Subscriber for Lines {
         let _ = writeln!(std::io::stderr().lock(), "{line}");
     }
 
-    fn enter(&self, _id: &Id) {
+    #[cfg_attr(
+        not(feature = "otlp"),
+        expect(
+            unused_variables,
+            reason = "only the span recorder reads the arguments"
+        )
+    )]
+    fn enter(&self, span: &Id) {
         #[cfg(feature = "otlp")]
         {
-            if let Some(recorder) = &self.recorder {
-                recorder.enter(_id);
+            if self.recorder.is_some() {
+                otlp::Recorder::enter(span);
             }
         }
     }
 
-    fn exit(&self, _id: &Id) {
+    #[cfg_attr(
+        not(feature = "otlp"),
+        expect(
+            unused_variables,
+            reason = "only the span recorder reads the arguments"
+        )
+    )]
+    fn exit(&self, span: &Id) {
         #[cfg(feature = "otlp")]
         {
-            if let Some(recorder) = &self.recorder {
-                recorder.exit(_id);
+            if self.recorder.is_some() {
+                otlp::Recorder::exit(span);
             }
         }
     }

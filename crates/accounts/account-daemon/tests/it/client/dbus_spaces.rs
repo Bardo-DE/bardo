@@ -19,7 +19,10 @@ async fn an_app_lists_creates_and_hears_of_new_spaces() {
     let daemon = Daemon::start([]).await;
     let watcher = Bus::over(daemon.client_as(named("org.bardo.Mail")).await).spaces();
     let mut changes = watcher.watch().await.expect("watch");
-    assert_eq!(watcher.list().await.expect("list"), [] as [account_core::DesktopSpaceRecord; 0]);
+    assert_eq!(
+        watcher.list().await.expect("list"),
+        [] as [account_core::DesktopSpaceRecord; 0]
+    );
 
     let maker = Bus::over(daemon.client_as(photos()).await).spaces();
     let look = SpaceLook::parse(r#"{"colour":"teal"}"#).expect("look");

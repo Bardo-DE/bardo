@@ -90,8 +90,7 @@ mod tests {
     fn the_data_attributes_are_the_consumers_own() {
         let common = Common {
             data: DataName::parse("folder")
-                .map(|name| vec![DataAttr::new(name, "INBOX")])
-                .unwrap_or_default(),
+                .map_or_default(|name| vec![DataAttr::new(name, "INBOX")]),
             ..Common::default()
         };
         let written: Vec<_> = common

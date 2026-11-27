@@ -56,8 +56,7 @@ impl Browser {
     /// one, else nothing).
     pub(crate) fn go_to_folder(self) -> Stepped {
         let shown = self.folder().or(self.home.as_ref());
-        let draft = shown
-            .map_or_default(|folder| folder.as_path().display().to_string());
+        let draft = shown.map_or_default(|folder| folder.as_path().display().to_string());
         let goto = GoTo::Asking {
             draft,
             problem: None,

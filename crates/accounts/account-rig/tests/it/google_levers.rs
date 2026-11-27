@@ -28,6 +28,10 @@ fn post(levers: &Levers, target: &str, body: &Value) -> (u16, Value) {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario: seed, edit and remove through every lever, in order"
+)]
 async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
     let issuer = FakeIssuer::start().await.expect("issuer");
     let api = FakeGoogle::start(&issuer).await.expect("google");
@@ -74,7 +78,10 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(&levers, "/google/calendar-remove?id=cal-work", &Value::Null).0,
         200
     );
-    assert_eq!(api.events("cal-work"), [] as [(std::string::String, serde_json::Value); 0]);
+    assert_eq!(
+        api.events("cal-work"),
+        [] as [(std::string::String, serde_json::Value); 0]
+    );
 
     let person = json!({"names": [{"displayName": "Linus"}]});
     assert_eq!(
@@ -117,7 +124,10 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         .0,
         200
     );
-    assert_eq!(api.tasks("list-new"), [] as [(std::string::String, serde_json::Value); 0]);
+    assert_eq!(
+        api.tasks("list-new"),
+        [] as [(std::string::String, serde_json::Value); 0]
+    );
     assert_eq!(
         post(
             &levers,

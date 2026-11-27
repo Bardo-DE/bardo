@@ -153,8 +153,7 @@ mod tests {
         FileHit {
             name: path
                 .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default(),
+                .map_or_default(|n| n.to_string_lossy().into_owned()),
             path,
             mime: Mime(mime.to_owned()),
             modified: UnixTime(NOW.0 - days_old * 86_400),

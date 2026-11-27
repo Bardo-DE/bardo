@@ -350,6 +350,7 @@ async fn an_app_with_no_id_is_remembered_by_the_id_of_its_entry() {
         keeper
             .book()
             .await
-            .resolve(&token, &id, &screen, unix_now()), [] as [portal_core::CastSource; 0]
+            .resolve(&token, &id, &screen, unix_now()),
+        [] as [portal_core::CastSource; 0]
     );
 }

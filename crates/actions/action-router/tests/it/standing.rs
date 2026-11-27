@@ -162,7 +162,10 @@ async fn the_reviewer_still_refuses_and_the_grant_is_not_used() {
         .add_standing(grant_for(GrantCaller::Companion, scope_to(ADDRESS)));
     let refused = perform(&router, send()).await.expect_err("refused");
     assert!(matches!(refused, CallRefusal::Denied(_)), "{refused:?}");
-    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
+    assert_eq!(
+        router.seams.link.mail.sent(),
+        [] as [action_fake::SentMail; 0]
+    );
     assert_eq!(used(&router), 0, "the call never ran on the grant");
 }
 
@@ -194,7 +197,10 @@ async fn an_exhausted_budget_still_refuses() {
         .add_standing(grant_for(GrantCaller::Companion, scope_to(ADDRESS)));
     let refused = perform(&router, send()).await.expect_err("over budget");
     assert!(matches!(refused, CallRefusal::OverBudget(_)), "{refused:?}");
-    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
+    assert_eq!(
+        router.seams.link.mail.sent(),
+        [] as [action_fake::SentMail; 0]
+    );
     assert_eq!(used(&router), 0);
 }
 
@@ -226,7 +232,10 @@ async fn untrusted_arguments_into_an_outbound_still_ask() {
     });
     perform(&router, tainted).await.expect_err("asks");
     assert_eq!(router.seams.confirmer.requests().len(), 1);
-    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
+    assert_eq!(
+        router.seams.link.mail.sent(),
+        [] as [action_fake::SentMail; 0]
+    );
     assert_eq!(used(&router), 0);
 }
 
@@ -239,7 +248,10 @@ async fn revoking_takes_effect_on_the_next_call() {
     assert_eq!(router.standing_grants(), vec![g.clone()]);
     assert!(router.revoke_standing(&g.id));
     assert!(!router.revoke_standing(&g.id));
-    assert_eq!(router.standing_grants(), [] as [permission_core::StandingGrant; 0]);
+    assert_eq!(
+        router.standing_grants(),
+        [] as [permission_core::StandingGrant; 0]
+    );
     perform(&router, send()).await.expect_err("asks again");
     assert_eq!(router.seams.confirmer.requests().len(), 1);
     assert!(
@@ -339,7 +351,10 @@ async fn a_path_grant_covers_only_paths_below_its_prefix() {
     perform(&router, move_to("/home/u/docs/sub/x"))
         .await
         .expect("below the prefix runs on the grant");
-    assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
+    assert_eq!(
+        router.seams.confirmer.requests(),
+        [] as [action_core::ConfirmRequest; 0]
+    );
     assert_eq!(used(&router), 1);
     router.seams.confirmer.clear();
     perform(&router, move_to("/home/u/docsx/x"))

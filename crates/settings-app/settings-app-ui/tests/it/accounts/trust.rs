@@ -81,7 +81,10 @@ fn a_program_that_took_accountds_name_is_not_read_and_is_sent_nothing() {
         "none of its rows are shown"
     );
     assert_eq!(squatter.calls(), 0, "it was not asked for anything");
-    assert_eq!(squatter.sets(), [] as [(std::string::String, toml::Value); 0]);
+    assert_eq!(
+        squatter.sets(),
+        [] as [(std::string::String, toml::Value); 0]
+    );
     assert_no_developer_words(&harness);
 }
 

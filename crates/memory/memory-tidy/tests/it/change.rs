@@ -25,7 +25,10 @@ fn what_a_reply_changed() {
         changes(&request, &MemoryReply::Ok).is_empty(),
         "nothing stored, nothing to say"
     );
-    assert_eq!(changes(&request, &MemoryReply::Refused(Refusal::Busy)), [] as [memory_tidy::Change; 0]);
+    assert_eq!(
+        changes(&request, &MemoryReply::Refused(Refusal::Busy)),
+        [] as [memory_tidy::Change; 0]
+    );
     let pause = MemoryRequest::Pause(space("work"), UnixSeconds(1));
     assert_eq!(
         changes(&pause, &MemoryReply::Ok),
@@ -49,5 +52,8 @@ fn what_a_reply_changed() {
         ),
         vec![Change::PendingChanged(space("work"))]
     );
-    assert_eq!(changes(&propose, &MemoryReply::Proposed(fact, FactState::Active)), [] as [memory_tidy::Change; 0]);
+    assert_eq!(
+        changes(&propose, &MemoryReply::Proposed(fact, FactState::Active)),
+        [] as [memory_tidy::Change; 0]
+    );
 }

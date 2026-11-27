@@ -63,9 +63,7 @@ fn app_of(path: &Path, text: &str, origin: SchemaOrigin) -> Option<DesktopApp> {
     let first = |key: &str| entry.string(key).and_then(|line| first_word(&line));
     Some(DesktopApp {
         id: app_id(path)?,
-        name: entry
-            .string("Name")
-            .map_or_default(Cow::into_owned),
+        name: entry.string("Name").map_or_default(Cow::into_owned),
         exec: first("Exec"),
         try_exec: first("TryExec"),
         flatpak: entry.string("X-Flatpak").map(Cow::into_owned),

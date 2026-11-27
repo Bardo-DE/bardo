@@ -36,8 +36,7 @@ fn hit(path: &str) -> FileHit {
     FileHit {
         name: path
             .file_name()
-            .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_default(),
+            .map_or_default(|n| n.to_string_lossy().into_owned()),
         path,
         mime: Mime("application/pdf".to_owned()),
         modified: UnixTime(0),
@@ -85,7 +84,7 @@ fn one_ask_under_home_within_the_budget_and_its_rows_pushed() {
     let mut sink = VecSink::default();
     let query = Query::begin("  m9-rep ", &Cancel::new());
     files.query(&query, &mut sink);
-    let asks = index.asks.lock().map(|a| a.clone()).unwrap_or_default();
+    let asks = index.asks.lock().map_or_default(|a| a.clone());
     assert_eq!(
         asks,
         [FileAsk {
@@ -113,7 +112,7 @@ fn nothing_typed_asks_no_index() {
             ..Query::begin(text, &Cancel::new())
         };
         provider(Arc::<Scripted>::clone(&index)).query(&query, &mut sink);
-        let asked = index.asks.lock().map(|a| a.len()).unwrap_or_default();
+        let asked = index.asks.lock().map_or_default(|a| a.len());
         assert_eq!((asked, sink.0.len()), (0, 0), "{text:?} {scope:?}");
     }
 }
@@ -127,7 +126,7 @@ fn a_zero_budget_before_the_first_policy_asks_no_index() {
     };
     let mut sink = VecSink::default();
     files.query(&Query::begin("report", &Cancel::new()), &mut sink);
-    let asked = index.asks.lock().map(|a| a.len()).unwrap_or_default();
+    let asked = index.asks.lock().map_or_default(|a| a.len());
     assert_eq!((asked, sink.0.len()), (0, 0));
 }
 

@@ -29,9 +29,7 @@ where
         let spaces = signal.read();
         (
             spaces.count(),
-            spaces
-                .get(space)
-                .map_or_default(|one| one.name.clone()),
+            spaces.get(space).map_or_default(|one| one.name.clone()),
         )
     };
     if count <= 1 {

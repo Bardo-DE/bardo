@@ -65,8 +65,14 @@ async fn an_item_is_stored_under_its_uid_read_back_and_discarded() {
 
     mirror.discard(&stored.local).await.expect("discard");
     mirror.discard(&stored.local).await.expect("again");
-    assert_eq!(items_in(mirror.root(), PimKind::Calendar), [] as [std::string::String; 0]);
-    assert_eq!(mirror.scan().await.expect("scan"), [] as [sync_core::Scanned; 0]);
+    assert_eq!(
+        items_in(mirror.root(), PimKind::Calendar),
+        [] as [std::string::String; 0]
+    );
+    assert_eq!(
+        mirror.scan().await.expect("scan"),
+        [] as [sync_core::Scanned; 0]
+    );
 }
 
 #[tokio::test]
@@ -265,7 +271,10 @@ async fn opening_queues_every_damaged_item_to_be_fetched_again_and_nothing_else(
         None,
         "so the next cycle lists again"
     );
-    assert_eq!(journal.conflicts().expect("conflicts"), [] as [sync_core::StoredConflict; 0]);
+    assert_eq!(
+        journal.conflicts().expect("conflicts"),
+        [] as [sync_core::StoredConflict; 0]
+    );
     let scanned: Vec<String> = mirror
         .scan()
         .await

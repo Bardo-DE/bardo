@@ -252,13 +252,11 @@ impl MenuTree {
             NodeId::ROOT => &self.menus,
             _ => self.node(parent)?.children(),
         };
-        let children = depth
-            .below()
-            .map_or_default(|deeper| {
-                rows.iter()
-                    .filter_map(|row| self.layout(row.id, deeper, names))
-                    .collect()
-            });
+        let children = depth.below().map_or_default(|deeper| {
+            rows.iter()
+                .filter_map(|row| self.layout(row.id, deeper, names))
+                .collect()
+        });
         Some(DbusLayout { item, children })
     }
 

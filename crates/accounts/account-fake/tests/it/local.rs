@@ -175,7 +175,10 @@ async fn a_report_that_is_not_a_runtimes_to_make_is_refused_and_changes_nothing(
             "{provider:?} {state:?}"
         );
     }
-    assert_eq!(service.registry().accounts, [] as [account_core::Account; 0]);
+    assert_eq!(
+        service.registry().accounts,
+        [] as [account_core::Account; 0]
+    );
     assert_eq!(store.saves(), 0);
 }
 
@@ -189,5 +192,8 @@ async fn a_registry_that_cannot_be_saved_says_unavailable_and_changes_nothing() 
             .await,
         Err(LocalFault::Unavailable)
     );
-    assert_eq!(service.registry().accounts, [] as [account_core::Account; 0]);
+    assert_eq!(
+        service.registry().accounts,
+        [] as [account_core::Account; 0]
+    );
 }

@@ -9,9 +9,16 @@ use std::sync::mpsc;
 use zbus::Connection;
 
 /// Starts serving Debug1 on the bus at `address` (the jail's private one; the caller reads it
-/// from its environment). The channel carries the calls for the event loop to answer; the
-/// connection is the compositor's handle on the bus (keep it, or the name is released when the last
-/// clone goes). The thread behind it lives as long as the process.
+/// from its environment).
+///
+/// The channel carries the calls for the event loop to answer; the connection is the compositor's
+/// handle on the bus (keep it, or the name is released when the last clone goes). The thread
+/// behind it lives as long as the process.
+///
+/// # Errors
+///
+/// [`IpcError::Bus`] when the thread does not start, ends before it has connected, or cannot
+/// connect to the bus (the text says why).
 pub fn serve_debug_at(address: &str) -> Result<(Channel<DebugCall>, Connection), IpcError> {
     let (calls, channel) = channel::<DebugCall>();
     let (ready, started) = mpsc::channel::<Result<Connection, IpcError>>();
@@ -20,9 +27,11 @@ pub fn serve_debug_at(address: &str) -> Result<(Channel<DebugCall>, Connection),
         .name("compositor-debug1".to_owned())
         .spawn(move || run(&address, calls, &ready))
         .map_err(|error| IpcError::Bus(format!("the Debug1 thread did not start: {error}")))?;
-    let connection = started
-        .recv()
-        .map_err(|_| IpcError::Bus("the Debug1 thread ended before it connected".to_owned()))??;
+    let connection = started.recv().map_err(|error| {
+        IpcError::Bus(format!(
+            "the Debug1 thread ended before it connected: {error}"
+        ))
+    })??;
     Ok((channel, connection))
 }
 

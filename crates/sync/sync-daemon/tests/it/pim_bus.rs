@@ -747,8 +747,14 @@ async fn a_calendar_and_an_address_book_of_one_name_keep_apart_and_retiring_one_
             && items_in(&book, PimKind::Contacts) == ["p1.vcf"]
     })
     .await;
-    assert_eq!(items_in(&calendar, PimKind::Contacts), [] as [std::string::String; 0]);
-    assert_eq!(items_in(&book, PimKind::Calendar), [] as [std::string::String; 0]);
+    assert_eq!(
+        items_in(&calendar, PimKind::Contacts),
+        [] as [std::string::String; 0]
+    );
+    assert_eq!(
+        items_in(&book, PimKind::Calendar),
+        [] as [std::string::String; 0]
+    );
 
     // The Contacts grant is withdrawn: the address book goes, the calendar of that name stays.
     rig.service

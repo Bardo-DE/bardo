@@ -158,8 +158,7 @@ pub fn memory_line(entry: &TimelineEntry, programs: &ProgramLabels) -> (String, 
         Some(thing) => format!("{who} {verb} {}", thing.title.as_str()),
         None => format!("{who} {verb}"),
     };
-    let app = thing
-        .map_or_default(|thing| last_element(thing.thing.app.as_str()));
+    let app = thing.map_or_default(|thing| last_element(thing.thing.app.as_str()));
     (title, app)
 }
 

@@ -30,12 +30,15 @@ pub struct EffectCtx<'a> {
 pub fn effect_commands(effect: &DockEffect, ctx: &EffectCtx<'_>) -> Vec<DockCommand> {
     let item = |tile: &TileId| ctx.items.iter().find(|i| i.tile == *tile);
     match effect {
-        DockEffect::Launch { tile, instance } => item(tile)
-            .map_or_default(|item| launch(item, *instance, ctx)),
-        DockEffect::Activate { tile, mode } => item(tile)
-            .map_or_default(|item| activate(item, *mode, ctx)),
-        DockEffect::SpringOpen { tile } => item(tile)
-            .map_or_default(|item| activate(item, ActivateMode::Raise, ctx)),
+        DockEffect::Launch { tile, instance } => {
+            item(tile).map_or_default(|item| launch(item, *instance, ctx))
+        }
+        DockEffect::Activate { tile, mode } => {
+            item(tile).map_or_default(|item| activate(item, *mode, ctx))
+        }
+        DockEffect::SpringOpen { tile } => {
+            item(tile).map_or_default(|item| activate(item, ActivateMode::Raise, ctx))
+        }
         DockEffect::ShowInFiles { tile } => item(tile)
             .and_then(|item| item.kind.app_id().cloned())
             .map_or_default(|app| pick_commands(&DockPick::ShowInFiles(app))),

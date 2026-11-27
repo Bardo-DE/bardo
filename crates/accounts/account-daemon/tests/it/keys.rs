@@ -101,7 +101,10 @@ async fn after_a_dont_allow_the_app_is_refused_with_no_sheet() {
         request(&app).await.expect("asked"),
         AccountsReply::Refused(Refusal::Denied)
     );
-    assert_eq!(rig.sheets.asked(), [] as [account_core::consent::ConsentAsk; 0]);
+    assert_eq!(
+        rig.sheets.asked(),
+        [] as [account_core::consent::ConsentAsk; 0]
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

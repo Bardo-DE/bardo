@@ -290,8 +290,8 @@ fn the_warn_line_is_the_rows_permille() {
     }
     for edge in ["1", "1000"] {
         assert_eq!(
-            resolve(&config(&format!("[ai.spend]\nwarn_permille = {edge}\n")))
-                .rejected, [] as [std::string::String; 0]
+            resolve(&config(&format!("[ai.spend]\nwarn_permille = {edge}\n"))).rejected,
+            [] as [std::string::String; 0]
         );
     }
 }

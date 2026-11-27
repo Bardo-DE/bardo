@@ -79,14 +79,15 @@ fn read_drives(file: &Path, list: &str) -> BTreeSet<String> {
 /// Writes to `file` that the drive `id` is in `[storage] <list>`, or not, keeping the rest of it.
 fn write_drives(file: &Path, list: &str, id: &str, listed: bool) -> std::io::Result<()> {
     edit_storage(file, |storage| {
-        let mut ids: BTreeSet<String> = storage
-            .get(list)
-            .and_then(Item::as_array)
-            .map_or_default(|ids| {
-                ids.iter()
-                    .filter_map(|id| id.as_str().map(str::to_owned))
-                    .collect()
-            });
+        let mut ids: BTreeSet<String> =
+            storage
+                .get(list)
+                .and_then(Item::as_array)
+                .map_or_default(|ids| {
+                    ids.iter()
+                        .filter_map(|id| id.as_str().map(str::to_owned))
+                        .collect()
+                });
         if listed {
             ids.insert(id.to_owned())
         } else {

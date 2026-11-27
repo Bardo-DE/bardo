@@ -36,9 +36,7 @@ impl FakeEngineHost {
     }
 
     pub fn calls(&self) -> Vec<HostCall> {
-        self.calls
-            .lock()
-            .map_or_default(|calls| calls.clone())
+        self.calls.lock().map_or_default(|calls| calls.clone())
     }
 
     fn record(&self, call: HostCall) {

@@ -101,9 +101,7 @@ impl SettingsProvider {
                 index: SettingsIndex::build(&schemas),
             });
         }
-        guard
-            .as_ref()
-            .map_or_default(|cached| cached.index.clone())
+        guard.as_ref().map_or_default(|cached| cached.index.clone())
     }
 }
 

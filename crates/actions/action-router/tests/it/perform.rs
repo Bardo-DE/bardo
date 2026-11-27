@@ -78,7 +78,10 @@ async fn read_runs_without_confirm() {
         .await
         .expect("ran");
     assert!(outcome.value.is_some());
-    assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
+    assert_eq!(
+        router.seams.confirmer.requests(),
+        [] as [action_core::ConfirmRequest; 0]
+    );
     assert_eq!(router.seams.reviewer.call_count(), 0);
 }
 
@@ -128,7 +131,10 @@ async fn under_default_an_outbound_act_always_asks_whatever_is_trusted() {
         0,
         "QUESTIONS S1: no reviewer stands in for the person under Default"
     );
-    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
+    assert_eq!(
+        router.seams.link.mail.sent(),
+        [] as [action_fake::SentMail; 0]
+    );
 }
 
 fn archive() -> CallRequest {
@@ -184,7 +190,10 @@ async fn an_untrusted_recipient_asks_whatever_the_judge_says() {
         0,
         "a hijacked judge is never consulted"
     );
-    assert_eq!(router.seams.link.mail.sent(), [] as [action_fake::SentMail; 0]);
+    assert_eq!(
+        router.seams.link.mail.sent(),
+        [] as [action_fake::SentMail; 0]
+    );
     let requests = router.seams.confirmer.requests();
     assert_eq!(requests.len(), 1);
     assert!(
@@ -861,7 +870,10 @@ async fn the_persons_own_launcher_act_skips_policy_and_leaves_no_session_behind(
         "{reply:?}"
     );
     assert!(router.seams.link.mail.is_archived("t2"));
-    assert_eq!(router.seams.confirmer.requests(), [] as [action_core::ConfirmRequest; 0]);
+    assert_eq!(
+        router.seams.confirmer.requests(),
+        [] as [action_core::ConfirmRequest; 0]
+    );
     assert!(router.state.lock().expect("lock").sessions.is_empty());
 }
 

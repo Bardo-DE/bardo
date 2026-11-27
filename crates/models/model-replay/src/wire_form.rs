@@ -299,7 +299,13 @@ mod tests {
     #[test]
     fn an_empty_body_has_no_chunks() {
         let empty = WireBody::Whole(String::new());
-        assert_eq!(chunks(&empty, Framing::Whole, ChunkPlan::Whole), [] as [std::vec::Vec<u8>; 0]);
-        assert_eq!(chunks(&WireBody::Frames(vec![]), Framing::Sse, ChunkPlan::Lines), [] as [std::vec::Vec<u8>; 0]);
+        assert_eq!(
+            chunks(&empty, Framing::Whole, ChunkPlan::Whole),
+            [] as [std::vec::Vec<u8>; 0]
+        );
+        assert_eq!(
+            chunks(&WireBody::Frames(vec![]), Framing::Sse, ChunkPlan::Lines),
+            [] as [std::vec::Vec<u8>; 0]
+        );
     }
 }

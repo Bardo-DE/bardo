@@ -519,8 +519,7 @@ mod tests {
         );
         let text = std::fs::read_to_string(&real).unwrap_or_default();
         assert!(text.contains("mode = \"scheduled\""), "{text}");
-        let mode = std::fs::metadata(&real)
-            .map_or_default(|m| m.permissions().mode() & 0o777);
+        let mode = std::fs::metadata(&real).map_or_default(|m| m.permissions().mode() & 0o777);
         assert_eq!(mode, 0o640);
     }
 

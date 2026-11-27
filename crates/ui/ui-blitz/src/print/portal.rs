@@ -34,8 +34,8 @@ const PEER: &str = "The print service";
 pub(super) enum Attempt {
     /// The dialog was shown; this is how it ended.
     Answered(Result<PrintOutcome, PrintError>),
-    /// There is no portal, or it cannot print: nothing was shown.
-    Unavailable,
+    /// There is no portal, or it cannot print: nothing was shown. The text says why.
+    Unavailable(String),
 }
 
 /// How a portal request ended (its `Response` code).
@@ -63,13 +63,15 @@ pub(super) fn print(pdf: &[u8], title: &str) -> Attempt {
 }
 
 async fn print_async(pdf: &[u8], title: &str) -> Attempt {
-    let Ok(Ok(connection)) = within(Deadline::READ, PEER, Connection::session()).await else {
-        return Attempt::Unavailable;
+    let connection = match within(Deadline::READ, PEER, Connection::session()).await {
+        Ok(Ok(connection)) => connection,
+        Ok(Err(error)) => return Attempt::Unavailable(error.to_string()),
+        Err(silent) => return Attempt::Unavailable(silent.to_string()),
     };
     let prepared = match prepare(&connection, title).await {
         Ok(Some(prepared)) => prepared,
         Ok(None) => return Attempt::Answered(Ok(PrintOutcome::Cancelled)),
-        Err(Stage::Before) => return Attempt::Unavailable,
+        Err(Stage::Before(why)) => return Attempt::Unavailable(why),
         Err(Stage::After(error)) => return Attempt::Answered(Err(error)),
     };
     Attempt::Answered(submit(&connection, title, pdf, prepared).await)
@@ -79,7 +81,8 @@ async fn print_async(pdf: &[u8], title: &str) -> Attempt {
 /// that does not answer: fall back to the viewer), or after, when the person has seen a dialog and
 /// must hear why.
 enum Stage {
-    Before,
+    /// Why the portal could not be used.
+    Before(String),
     After(PrintError),
 }
 
@@ -93,13 +96,15 @@ async fn prepare(connection: &Connection, title: &str) -> Result<Option<Prepared
     let handle = handle_token("prepare");
     let mut answers = answers(connection, &handle)
         .await
-        .map_err(|_| Stage::Before)?;
+        .map_err(|error| Stage::Before(error.to_string()))?;
     let empty: HashMap<&str, Value<'_>> = HashMap::new();
     let options: HashMap<&str, Value<'_>> = HashMap::from([
         ("handle_token", Value::from(handle.as_str())),
         ("modal", Value::from(true)),
     ]);
-    let portal = portal(connection).await.map_err(|_| Stage::Before)?;
+    let portal = portal(connection)
+        .await
+        .map_err(|error| Stage::Before(error.to_string()))?;
     let shown = within(
         Deadline::ACTION,
         PEER,
@@ -109,8 +114,10 @@ async fn prepare(connection: &Connection, title: &str) -> Result<Option<Prepared
         ),
     )
     .await;
-    if !matches!(shown, Ok(Ok(_))) {
-        return Err(Stage::Before);
+    match shown {
+        Ok(Ok(_)) => {}
+        Ok(Err(error)) => return Err(Stage::Before(error.to_string())),
+        Err(silent) => return Err(Stage::Before(silent.to_string())),
     }
     let (response, results) = answers
         .next_answer(Deadline::PROMPT)
@@ -236,7 +243,7 @@ impl Answers {
                 }
                 match self.owner.as_mut().poll_next(cx) {
                     // The portal has, or has again, an owner: keep waiting for its answer.
-                    Poll::Ready(Some(Some(_))) => continue,
+                    Poll::Ready(Some(Some(_))) => {}
                     Poll::Ready(Some(None) | None) => return Poll::Ready(Heard::PortalGone),
                     Poll::Pending => return Poll::Pending,
                 }

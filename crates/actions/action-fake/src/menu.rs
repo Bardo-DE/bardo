@@ -113,9 +113,7 @@ impl FakeMenu {
 
     /// The items `Classify` was asked about, in order.
     pub fn classified(&self) -> Vec<String> {
-        self.classified
-            .lock()
-            .map_or_default(|c| c.clone())
+        self.classified.lock().map_or_default(|c| c.clone())
     }
 
     fn item_of(inv: &Invocation) -> Option<String> {

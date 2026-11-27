@@ -66,18 +66,16 @@ mod tests {
     use base_testkit::Scratch;
 
     fn mode(path: &std::path::Path) -> u32 {
-        std::fs::metadata(path)
-            .map_or_default(|m| m.permissions().mode() & 0o777)
+        std::fs::metadata(path).map_or_default(|m| m.permissions().mode() & 0o777)
     }
 
     fn names(dir: &std::path::Path) -> Vec<String> {
-        let mut names: Vec<String> = std::fs::read_dir(dir)
-            .map_or_default(|entries| {
-                entries
-                    .filter_map(std::result::Result::ok)
-                    .map(|e| e.file_name().to_string_lossy().into_owned())
-                    .collect()
-            });
+        let mut names: Vec<String> = std::fs::read_dir(dir).map_or_default(|entries| {
+            entries
+                .filter_map(std::result::Result::ok)
+                .map(|e| e.file_name().to_string_lossy().into_owned())
+                .collect()
+        });
         names.sort();
         names
     }

@@ -39,7 +39,10 @@ fn state_of(clouds: &FakeClouds) -> CloudState {
 #[test]
 fn a_download_moves_only_when_told_and_ends_downloaded() {
     let clouds = fake(DriveState::Ready);
-    assert_eq!(clouds.download(&[report()]).unwrap(), [] as [files_core::Refused; 0]);
+    assert_eq!(
+        clouds.download(&[report()]).unwrap(),
+        [] as [files_core::Refused; 0]
+    );
     assert_eq!(state_of(&clouds), CloudState::Downloading);
     clouds.advance(&report(), Share::from_ratio(0.5));
     let details = clouds.items(&[report()]).unwrap()[0].1.clone();

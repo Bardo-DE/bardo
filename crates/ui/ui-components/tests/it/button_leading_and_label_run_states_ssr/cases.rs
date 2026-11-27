@@ -25,8 +25,8 @@ fn quoted_head() -> TextLine {
 
 /// The Archive place during a drag, in `drop` state.
 fn archive(drop: DropState) -> Element {
-    let place = DataName::parse("place")
-        .map_or_default(|name| vec![DataAttr::new(name, "archive")]);
+    let place =
+        DataName::parse("place").map_or_default(|name| vec![DataAttr::new(name, "archive")]);
     rsx! {
         Row {
             title: "Archive",

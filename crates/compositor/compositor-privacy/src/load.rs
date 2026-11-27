@@ -168,7 +168,10 @@ mod tests {
         let book = Book::empty().with(grant("/usr/bin/grim", Power::Screen, Verdict::Allow, 7));
         save_book(&mut store, &book);
         assert_eq!(load_book(&mut store, UnixSeconds(9)), book);
-        assert_eq!(store.aside, [] as [compositor_core::privilege::UnixSeconds; 0]);
+        assert_eq!(
+            store.aside,
+            [] as [compositor_core::privilege::UnixSeconds; 0]
+        );
 
         store.book = Some("version = 99\n".to_owned());
         assert_eq!(load_book(&mut store, UnixSeconds(9)), Book::empty());

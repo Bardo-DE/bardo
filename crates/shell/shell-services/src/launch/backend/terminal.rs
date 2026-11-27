@@ -41,6 +41,5 @@ impl Terminal {
 /// The words that wrap a `Terminal=true` entry's `Exec` on this machine; empty when there is no
 /// terminal at all (the caller then runs the bare `Exec`).
 pub(crate) fn wrapper(search: &TerminalSearch) -> Vec<String> {
-    choose(search)
-        .map_or_default(|terminal| terminal.wrapper())
+    choose(search).map_or_default(|terminal| terminal.wrapper())
 }

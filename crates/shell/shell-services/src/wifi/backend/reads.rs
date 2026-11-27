@@ -52,10 +52,7 @@ pub(super) async fn refresh_access_points(
     let read = within(NETWORK_REFRESH, "NetworkManager", async {
         let paths = wireless.access_points().await.ok()?;
         let active_path = wireless.active_access_point().await.ok();
-        let state = device
-            .state()
-            .await
-            .map_or_default(DeviceState::from_wire);
+        let state = device.state().await.map_or_default(DeviceState::from_wire);
         let mut points = Vec::with_capacity(paths.len().min(MAX_ACCESS_POINTS));
         for path in paths.into_iter().take(MAX_ACCESS_POINTS) {
             if let Some(ap) = access_point_of(connection, &path, active_path.as_ref(), state).await

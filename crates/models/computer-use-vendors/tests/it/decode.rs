@@ -279,7 +279,10 @@ fn openai_decodes_the_actions_of_a_computer_call() {
         r#"{"action":{"type":"click","button":"back","x":1,"y":2}}"#,
     )];
     let (actions, dropped) = image(decode(WireDialect::OpenAiComputer, &single).unwrap());
-    assert_eq!(actions, [] as [computer_use_action::ComputerUseAction<computer_use_action::ImageSpace>; 0]);
+    assert_eq!(
+        actions,
+        [] as [computer_use_action::ComputerUseAction<computer_use_action::ImageSpace>; 0]
+    );
     assert_eq!(dropped, vec![("click".to_owned(), DropReason::BadArgument)]);
     assert_eq!(
         decode(WireDialect::OpenAiComputer, &[call("other", "{}")]),

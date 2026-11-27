@@ -188,7 +188,10 @@ async fn an_append_failure_at_the_taint_write_means_the_reveal_never_happens() {
     );
     {
         let st = router.state.lock().expect("lock");
-        assert_eq!(st.sessions[&opened.session].handles.cards(), [] as [action_core::HandleCard; 0]);
+        assert_eq!(
+            st.sessions[&opened.session].handles.cards(),
+            [] as [action_core::HandleCard; 0]
+        );
     };
     let written = entries(&log, &opened.session).await;
     assert!(!slugs(&written).contains(&"taint") && !slugs(&written).contains(&"handle"));

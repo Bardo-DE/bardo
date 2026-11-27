@@ -20,7 +20,7 @@ fn crc32(bytes: &[u8]) -> u32 {
         })
         .collect();
     !bytes.iter().fold(!0_u32, |c, byte| {
-        table[usize::from((c ^ u32::from(*byte)) as u8)] ^ (c >> 8)
+        table[usize::from((c ^ u32::from(*byte)).to_le_bytes()[0])] ^ (c >> 8)
     })
 }
 

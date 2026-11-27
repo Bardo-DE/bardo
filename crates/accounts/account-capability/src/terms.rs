@@ -68,11 +68,15 @@ macro_rules! word_flag {
 
 word_flag!(
     /// Whether one optional feature is there: `"present"` or `"absent"`.
-    present, "present", "absent"
+    present,
+    "present",
+    "absent"
 );
 word_flag!(
     /// Whether the account reports its storage quota: `"reported"` or `"unreported"`.
-    reported, "reported", "unreported"
+    reported,
+    "reported",
+    "unreported"
 );
 
 /// When the person is asked for a capability's access: at sign-in with everything else, or only

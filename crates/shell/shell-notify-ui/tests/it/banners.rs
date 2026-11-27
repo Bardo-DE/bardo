@@ -203,7 +203,10 @@ fn a_banner_slides_in_holds_and_times_out() {
         0,
         "not a millisecond before the hold's end"
     );
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
     running.harness.advance(Duration::from_millis(1));
     assert_eq!(
         leaving(&running),
@@ -243,7 +246,10 @@ fn hovering_opens_the_card_and_pauses_the_hold() {
         .harness
         .advance(Duration::from_millis(HOLD_MS + 500));
     assert_eq!(leaving(&running), 0, "paused while hovered");
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
     running.harness.send(Input::pointer_move(Point {
         x: Px(2.0),
         y: Px(690.0),
@@ -398,7 +404,10 @@ fn a_dropped_banner_leaves_silently_and_another_output_draws_nothing() {
     show(&mut running, Vec::new());
     running.harness.advance(Duration::from_millis(60));
     assert_eq!(leaving(&running), 1);
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
     assert_eq!(
         until(&mut running, Duration::from_millis(1000), |r| cards(r) == 0),
         Done::Yes

@@ -158,7 +158,10 @@ fn the_token_reaches_the_started_program() {
         spawned[0].env,
         vec![pair("XDG_ACTIVATION_TOKEN"), pair("DESKTOP_STARTUP_ID")]
     );
-    assert_eq!(spawned[1].env, [] as [(std::string::String, std::string::String); 0]);
+    assert_eq!(
+        spawned[1].env,
+        [] as [(std::string::String, std::string::String); 0]
+    );
 }
 
 #[test]

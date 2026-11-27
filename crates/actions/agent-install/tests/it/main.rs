@@ -324,7 +324,10 @@ fn a_python_program_missing_after_uv_installs_nothing() {
         install(&dir, &snap, want("py", "1"), (&net, &FakeUv::default())).expect_err("no program");
     assert!(matches!(fault, InstallError::NoProgram));
     installed(&dir, "py", "1").unwrap_err();
-    assert_eq!(versions(&dir, &Slug::parse("py").expect("slug")), [] as [agent_registry::slug::Slug; 0]);
+    assert_eq!(
+        versions(&dir, &Slug::parse("py").expect("slug")),
+        [] as [agent_registry::slug::Slug; 0]
+    );
 }
 
 #[test]

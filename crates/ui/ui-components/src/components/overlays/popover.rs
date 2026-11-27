@@ -214,10 +214,7 @@ impl Float {
     pub(crate) fn placing(&self, anchor: Option<Rect>, want: Placement, gap: Px) -> Option<Placed> {
         let anchor = anchor?;
         let bounds = self.bounds.rect().unwrap_or(UNMEASURED);
-        let content = self
-            .surface
-            .rect()
-            .map_or_default(|rect| rect.size);
+        let content = self.surface.rect().map_or_default(|rect| rect.size);
         Some(place(anchor, content, bounds, want, gap))
     }
 

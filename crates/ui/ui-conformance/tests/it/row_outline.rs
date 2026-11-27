@@ -29,8 +29,7 @@ fn ms(n: u64) -> Duration {
 /// `data-place="<place>"`.
 fn place(path: &str) -> Common {
     Common {
-        data: DataName::parse("place")
-            .map_or_default(|name| vec![DataAttr::new(name, path)]),
+        data: DataName::parse("place").map_or_default(|name| vec![DataAttr::new(name, path)]),
         ..Common::default()
     }
 }

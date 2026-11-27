@@ -107,23 +107,38 @@ macro_rules! bounded_text {
 bounded_text!(
     /// Text to type into the focused field; newline and tab are allowed, other control
     /// characters are not.
-    TypedText, max = 2048, Controls::NewlineAndTab, Emptiness::Refused
+    TypedText,
+    max = 2048,
+    Controls::NewlineAndTab,
+    Emptiness::Refused
 );
 bounded_text!(
     /// A model's one-line account of what it did or asks.
-    Summary, max = 1024, Controls::NewlineAndTab, Emptiness::Allowed
+    Summary,
+    max = 1024,
+    Controls::NewlineAndTab,
+    Emptiness::Allowed
 );
 bounded_text!(
     /// One answer a model offers the user in an `Ask`. At most [`Choice::MAX_PER_ASK`] per ask.
-    Choice, max = 128, Controls::None, Emptiness::Refused
+    Choice,
+    max = 128,
+    Controls::None,
+    Emptiness::Refused
 );
 bounded_text!(
     /// The name of a value a run extracted from the screen.
-    FieldName, max = 64, Controls::None, Emptiness::Refused
+    FieldName,
+    max = 64,
+    Controls::None,
+    Emptiness::Refused
 );
 bounded_text!(
     /// A value read off the screen. Untrusted: the run machine labels it `Untrusted(Screen)`.
-    ExtractedText, max = 8192, Controls::NewlineAndTab, Emptiness::Allowed
+    ExtractedText,
+    max = 8192,
+    Controls::NewlineAndTab,
+    Emptiness::Allowed
 );
 
 impl Choice {

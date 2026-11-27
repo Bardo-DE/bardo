@@ -98,17 +98,13 @@ impl Rig {
 
     /// The `(code, value)` pairs of the last batch written, sync excluded.
     pub(super) fn last_write(&self) -> Vec<(u16, i32)> {
-        self.reader
-            .emitter
-            .batches
-            .last()
-            .map_or_default(|batch| {
-                batch
-                    .iter()
-                    .filter(|e| e.kind == EV_KEY)
-                    .map(|e| (e.code, e.value))
-                    .collect()
-            })
+        self.reader.emitter.batches.last().map_or_default(|batch| {
+            batch
+                .iter()
+                .filter(|e| e.kind == EV_KEY)
+                .map(|e| (e.code, e.value))
+                .collect()
+        })
     }
 }
 

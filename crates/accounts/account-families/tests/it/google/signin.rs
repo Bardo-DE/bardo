@@ -314,8 +314,14 @@ async fn with_no_client_row_the_sign_in_needs_a_client_id_and_dials_nothing() {
         signin.next(SignInInput::Start).await,
         SignInStep::Failed(SignInFault::NeedsClientId)
     );
-    assert_eq!(rig.google.issuer.events(), [] as [account_fake_servers::IssuerEvent; 0]);
-    assert_eq!(rig.google.issuer.authorize_queries(), [] as [std::vec::Vec<(std::string::String, std::string::String)>; 0]);
+    assert_eq!(
+        rig.google.issuer.events(),
+        [] as [account_fake_servers::IssuerEvent; 0]
+    );
+    assert_eq!(
+        rig.google.issuer.authorize_queries(),
+        [] as [std::vec::Vec<(std::string::String, std::string::String)>; 0]
+    );
     assert_eq!(rig.google.api.hits(), [] as [account_fake_servers::Hit; 0]);
 }
 

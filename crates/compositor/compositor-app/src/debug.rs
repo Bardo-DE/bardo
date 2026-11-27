@@ -70,7 +70,7 @@ pub fn attach(
         jobs: VecDeque::new(),
         injector: Injector::default(),
     }));
-    let owner = shared.clone();
+    let owner = Rc::clone(&shared);
     handle
         .insert_source(calls, move |event, (), state: &mut State| {
             if let Event::Msg(call) = event {
@@ -178,7 +178,7 @@ impl Debug {
                 frames_goal,
                 deadline,
                 answer,
-            } => self.wait(state, predicate, frames_goal, deadline, answer),
+            } => Self::wait(state, predicate, frames_goal, deadline, answer),
             Job::Script {
                 lines,
                 answers,
@@ -196,7 +196,6 @@ impl Debug {
     }
 
     fn wait(
-        &mut self,
         state: &mut State,
         predicate: WaitPredicate,
         frames_goal: u64,

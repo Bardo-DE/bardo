@@ -278,7 +278,10 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
         fx.supervisor.runs().is_empty()
     })
     .await;
-    assert_eq!(manager_p.runs().await.unwrap(), [] as [zbus::zvariant::OwnedObjectPath; 0]);
+    assert_eq!(
+        manager_p.runs().await.unwrap(),
+        [] as [zbus::zvariant::OwnedObjectPath; 0]
+    );
 }
 
 #[tokio::test]
@@ -695,7 +698,10 @@ async fn the_open_apps_are_offered_as_choices_for_app_and_for_nothing_else() {
         "ids only, not the shell's own"
     );
     assert_eq!(suggest_apps(&fx, "DRAW", "app").await, ["org.example.Draw"]);
-    assert_eq!(suggest_apps(&fx, "", "goal").await, [] as [std::string::String; 0]);
+    assert_eq!(
+        suggest_apps(&fx, "", "goal").await,
+        [] as [std::string::String; 0]
+    );
 }
 
 #[tokio::test]

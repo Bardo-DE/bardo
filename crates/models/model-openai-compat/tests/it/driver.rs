@@ -216,7 +216,10 @@ fn an_exchange_recorded_through_the_driver_replays_through_the_driver() {
     let (result, events) = turn(&replaying);
     assert_eq!(result, Ok(want_end()));
     assert_eq!(events, expected_events());
-    assert_eq!(replaying.transport().misses(), [] as [model_replay::WireMissError; 0]);
+    assert_eq!(
+        replaying.transport().misses(),
+        [] as [model_replay::WireMissError; 0]
+    );
 }
 
 #[derive(Default)]

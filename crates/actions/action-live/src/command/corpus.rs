@@ -277,14 +277,12 @@ pub(super) async fn corpus(
             outcome.trace_dir.display()
         );
     }
-    let over: Vec<String> = args
-        .fnr_max_permille
-        .map_or_default(|max| {
-            outcomes
-                .iter()
-                .flat_map(|outcome| over_target(&outcome.report, max))
-                .collect()
-        });
+    let over: Vec<String> = args.fnr_max_permille.map_or_default(|max| {
+        outcomes
+            .iter()
+            .flat_map(|outcome| over_target(&outcome.report, max))
+            .collect()
+    });
     for line in &over {
         eprintln!("agent-live: {line}");
     }

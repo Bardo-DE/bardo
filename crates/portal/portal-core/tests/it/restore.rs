@@ -66,7 +66,8 @@ fn resolve_is_all_or_nothing_and_per_app() {
     }
     let unknown = RestoreToken::mint([2; 16]);
     assert_eq!(
-        book.resolve(&unknown, "org.example.Meet", &live_all, NOW), [] as [portal_core::CastSource; 0]
+        book.resolve(&unknown, "org.example.Meet", &live_all, NOW),
+        [] as [portal_core::CastSource; 0]
     );
     assert!(book.forget(&token).is_some());
     assert!(book.is_empty());
@@ -110,7 +111,10 @@ fn an_app_with_no_identity_is_never_remembered() {
             granted_at: NOW,
         },
     );
-    assert_eq!(book.resolve(&token, "", &[out("A")], NOW), [] as [portal_core::CastSource; 0]);
+    assert_eq!(
+        book.resolve(&token, "", &[out("A")], NOW),
+        [] as [portal_core::CastSource; 0]
+    );
 }
 
 #[test]
@@ -335,10 +339,13 @@ fn a_standing_grant_names_displays_by_rule_and_never_a_window() {
         assert_eq!(rule.pick(&live), want, "{name}");
     }
     assert_eq!(
-        Screens::Every
-            .pick(&[CastSource::Window("w".into())]), [] as [portal_core::CastSource; 0]
+        Screens::Every.pick(&[CastSource::Window("w".into())]),
+        [] as [portal_core::CastSource; 0]
     );
-    assert_eq!(Screens::Named("A".into()).pick(&[]), [] as [portal_core::CastSource; 0]);
+    assert_eq!(
+        Screens::Named("A".into()).pick(&[]),
+        [] as [portal_core::CastSource; 0]
+    );
 }
 
 #[test]
@@ -366,12 +373,21 @@ fn a_standing_grant_does_not_run_out_covers_what_it_was_given_and_goes_with_a_re
         book.standing_devices(app, DeviceKinds::from_wire(7)),
         DeviceKinds::NONE
     );
-    assert_eq!(book.standing_sources("org.example.Other", &live), [] as [portal_core::CastSource; 0]);
-    assert_eq!(book.standing_sources("", &live), [] as [portal_core::CastSource; 0]);
+    assert_eq!(
+        book.standing_sources("org.example.Other", &live),
+        [] as [portal_core::CastSource; 0]
+    );
+    assert_eq!(
+        book.standing_sources("", &live),
+        [] as [portal_core::CastSource; 0]
+    );
 
     // Input only: no screen without asking.
     book.allow(standing("org.example.Keys", None, 3));
-    assert_eq!(book.standing_sources("org.example.Keys", &live), [] as [portal_core::CastSource; 0]);
+    assert_eq!(
+        book.standing_sources("org.example.Keys", &live),
+        [] as [portal_core::CastSource; 0]
+    );
 
     // Listed once as until taken back, with a token grant of the same app merged into one line.
     book.remember(
@@ -385,5 +401,8 @@ fn a_standing_grant_does_not_run_out_covers_what_it_was_given_and_goes_with_a_re
 
     // One revoke takes both kinds back.
     assert_eq!(book.forget_app(app), 2);
-    assert_eq!(book.standing_sources(app, &live), [] as [portal_core::CastSource; 0]);
+    assert_eq!(
+        book.standing_sources(app, &live),
+        [] as [portal_core::CastSource; 0]
+    );
 }

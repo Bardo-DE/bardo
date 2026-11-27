@@ -141,8 +141,8 @@ impl<B: Backend> Open<B> {
     pub(crate) fn recent_entry(&self, entry: &Entry, bodies: BodyMode) -> RecentEntry {
         let h = &entry.header;
         let body = present(entry);
-        let texts: Vec<String> = body
-            .map_or_default(|b| b.index_texts().into_iter().map(|t| t.text).collect());
+        let texts: Vec<String> =
+            body.map_or_default(|b| b.index_texts().into_iter().map(|t| t.text).collect());
         RecentEntry {
             summary: self.summary(entry),
             effect: h.effect,

@@ -151,7 +151,8 @@ async fn keeping_and_removing_are_asked_and_a_refusal_comes_back_in_words() {
     assert_eq!(
         within(rig.storage.keep(std::slice::from_ref(&report), true))
             .await
-            .unwrap(), [] as [files_core::Refused; 0]
+            .unwrap(),
+        [] as [files_core::Refused; 0]
     );
     let kept = within(rig.storage.items(std::slice::from_ref(&report)))
         .await

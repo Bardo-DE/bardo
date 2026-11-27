@@ -54,7 +54,10 @@ fn an_attached_model_is_the_catalogues_entry_with_the_place_the_person_said() {
         assert!(model.attached.is_some() && model.loopback.is_none());
         // The wire is the catalogue's `engine`.
         assert_eq!(model.flavor, Some(Flavor::Vllm));
-        assert_ne!(model.card.capabilities, [] as [account_capability::Capability; 0]);
+        assert_ne!(
+            model.card.capabilities,
+            [] as [account_capability::Capability; 0]
+        );
     }
 }
 

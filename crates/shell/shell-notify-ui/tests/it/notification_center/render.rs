@@ -312,7 +312,10 @@ fn a_press_outside_the_panel_closes_it_after_bardo_exit() {
         0,
         "gone after {exit:?}"
     );
-    assert_eq!(commands(&mut running), [] as [shell_model::notifications::NotificationsCommand; 0]);
+    assert_eq!(
+        commands(&mut running),
+        [] as [shell_model::notifications::NotificationsCommand; 0]
+    );
 }
 
 #[test]

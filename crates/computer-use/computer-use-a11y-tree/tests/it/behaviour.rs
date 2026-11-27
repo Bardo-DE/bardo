@@ -37,7 +37,10 @@ fn secret_rects_cover_password_text() {
         .find(|n| n.role == Role::PasswordText)
         .expect("password");
     assert_eq!(secret_rects(&form), vec![password.bounds]);
-    assert_eq!(secret_rects(&crate::support::gtk4_dialog()), [] as [computer_use_action::Rect<computer_use_action::WindowSpace>; 0]);
+    assert_eq!(
+        secret_rects(&crate::support::gtk4_dialog()),
+        [] as [computer_use_action::Rect<computer_use_action::WindowSpace>; 0]
+    );
 }
 
 #[test]

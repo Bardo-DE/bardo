@@ -142,8 +142,7 @@ pub fn Ds(
     let _ = use_overlays_provider(); // Provided as context for the overlays below; this root needs no handle.
     let frame = FrameVars::of(&look, resolved.scheme);
     let layers = use_frame_layers(&frame.gradient);
-    let corner = radius
-        .map_or_default(crate::root::surface::radius_style);
+    let corner = radius.map_or_default(crate::root::surface::radius_style);
     let pixels = PixelToken::style_attr(scale);
     let style = format!(
         "{}{}{corner}{pixels}",

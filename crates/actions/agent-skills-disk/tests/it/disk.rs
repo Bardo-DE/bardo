@@ -26,7 +26,10 @@ fn subdirs_are_sorted_files_are_left_out_and_a_missing_root_is_empty() {
         .map(|p| p.file_name().expect("name").to_owned())
         .collect();
     assert_eq!(names, ["a", "b"]);
-    assert_eq!(DiskFolder.subdirs(&tmp.path().join("none")), [] as [std::path::PathBuf; 0]);
+    assert_eq!(
+        DiskFolder.subdirs(&tmp.path().join("none")),
+        [] as [std::path::PathBuf; 0]
+    );
 }
 
 #[test]

@@ -43,7 +43,10 @@ fn shortcuts_group_maps_names_alternatives_and_none() {
     );
     assert_eq!(chords(&import, StandardAction::Redo), ["Ctrl+Y"]);
     assert_eq!(chords(&import, StandardAction::Quit), ["Ctrl+Alt+Q"]);
-    assert_eq!(chords(&import, StandardAction::Undo), [] as [std::string::String; 0]);
+    assert_eq!(
+        chords(&import, StandardAction::Undo),
+        [] as [std::string::String; 0]
+    );
     assert!(
         import
             .bindings

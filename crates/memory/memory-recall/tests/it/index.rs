@@ -105,7 +105,8 @@ async fn remove_drops_from_both_indexes() {
     let (fts, vectors) = index.parts();
     assert_eq!(
         fts.search("receipts", TopK(5), &Allow::Everything)
-            .expect("fts"), [] as [memory_recall::Ranked; 0]
+            .expect("fts"),
+        [] as [memory_recall::Ranked; 0]
     );
     assert!(
         vectors

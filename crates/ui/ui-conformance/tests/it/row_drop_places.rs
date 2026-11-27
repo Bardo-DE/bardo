@@ -24,8 +24,7 @@ const PLACES: [(&str, &str, Icon); 3] = [
 
 /// `data-place="<name>"`.
 fn place(name: &str) -> Vec<DataAttr> {
-    DataName::parse("place")
-        .map_or_default(|attribute| vec![DataAttr::new(attribute, name)])
+    DataName::parse("place").map_or_default(|attribute| vec![DataAttr::new(attribute, name)])
 }
 
 /// The places during a drag the page tracks itself: the place under the pointer is the target.

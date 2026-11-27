@@ -413,8 +413,9 @@ impl<H, C> AccountsSettings<H, C> {
                 .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
             let before = match file.read() {
-                Ok(bytes) => bytes
-                    .map_or_default(|bytes| String::from_utf8_lossy(&bytes).into_owned()),
+                Ok(bytes) => {
+                    bytes.map_or_default(|bytes| String::from_utf8_lossy(&bytes).into_owned())
+                }
                 Err(e) => return Err(failed(e)),
             };
             let text =

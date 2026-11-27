@@ -35,7 +35,10 @@ async fn uses_are_kept_once_each_survive_a_restart_and_go_with_the_identity() {
     let scratch = Scratch::new("identities");
     let (mut book, said) = UseBook::open(Some(&store(&scratch))).await;
     assert_eq!(said, None);
-    assert_eq!(book.apps(&identity("ada.example")), [] as [account_core::AppName; 0]);
+    assert_eq!(
+        book.apps(&identity("ada.example")),
+        [] as [account_core::AppName; 0]
+    );
     for _ in 0..2 {
         book.record(identity("ada.example"), app("org.bardo.Mail"))
             .await
@@ -59,7 +62,10 @@ async fn uses_are_kept_once_each_survive_a_restart_and_go_with_the_identity() {
         .await
         .expect("nothing");
     let (last, _) = UseBook::open(Some(&store(&scratch))).await;
-    assert_eq!(last.apps(&identity("ada.example")), [] as [account_core::AppName; 0]);
+    assert_eq!(
+        last.apps(&identity("ada.example")),
+        [] as [account_core::AppName; 0]
+    );
 }
 
 #[tokio::test]

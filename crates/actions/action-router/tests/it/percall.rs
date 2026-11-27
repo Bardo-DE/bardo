@@ -260,7 +260,10 @@ async fn an_action_that_does_not_opt_in_is_never_classified() {
         .expect("runs");
     assert_eq!(classified(&router), [] as [action_vocab::Classification; 0]);
     assert_eq!(performed(&router)[0].1, None, "a provider is told nothing");
-    assert_eq!(router.seams.link.menu.classified(), [] as [std::string::String; 0]);
+    assert_eq!(
+        router.seams.link.menu.classified(),
+        [] as [std::string::String; 0]
+    );
 }
 
 #[tokio::test]
@@ -287,7 +290,10 @@ async fn the_person_is_not_classified() {
         matches!(reply, IntentsReply::Performed(ref r) if r.is_ok()),
         "{reply:?}"
     );
-    assert_eq!(router.seams.link.menu.classified(), [] as [std::string::String; 0]);
+    assert_eq!(
+        router.seams.link.menu.classified(),
+        [] as [std::string::String; 0]
+    );
     assert_eq!(performed(&router)[0].1, None);
 }
 

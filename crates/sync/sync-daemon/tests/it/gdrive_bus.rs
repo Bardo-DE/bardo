@@ -311,7 +311,10 @@ async fn the_dataset_follows_the_grant_and_an_account_removal_wipes_the_mirror()
         Vec::<String>::new(),
         "the grant is gone"
     );
-    assert_eq!(rig.supervisor.datasets(), [] as [sync_driver::hub::DatasetName; 0]);
+    assert_eq!(
+        rig.supervisor.datasets(),
+        [] as [sync_driver::hub::DatasetName; 0]
+    );
     assert!(
         local(&rig, "keep.txt").exists(),
         "the files are the person's"

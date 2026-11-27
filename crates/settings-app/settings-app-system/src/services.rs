@@ -38,9 +38,7 @@ fn person_on(bus: &BusSource) -> Arc<dyn PersonLink> {
         BusSource::Session => Arc::new(OnAccounts::new(
             bus.clone(),
             PathBuf::from("/etc/passwd"),
-            Xdg::process()
-                .home()
-                .map_or_default(Path::to_path_buf),
+            Xdg::process().home().map_or_default(Path::to_path_buf),
         )),
         BusSource::Absent | BusSource::Address(..) => Arc::new(NoPerson),
     }

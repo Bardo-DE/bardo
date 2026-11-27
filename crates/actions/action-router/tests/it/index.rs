@@ -315,7 +315,10 @@ async fn shipped_entries_of_a_kind_that_is_not_indexed_are_dropped() {
         &app("com.evil.Tool"),
         vec![entry("mail.thread", "e1", "Lisbon")],
     );
-    assert_eq!(found(&router, "lisbon").await, [] as [std::string::String; 0]);
+    assert_eq!(
+        found(&router, "lisbon").await,
+        [] as [std::string::String; 0]
+    );
 }
 
 #[tokio::test]

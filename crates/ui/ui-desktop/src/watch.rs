@@ -82,7 +82,7 @@ mod live {
     use crate::capability::Bus;
     use crate::probe::bus::{PEER, Side, capabilities_named, fill};
     use base_time::deadline::{Deadline, within};
-    use std::future::{Future, poll_fn};
+    use std::future::poll_fn;
     use std::pin::pin;
     use std::task::Poll;
     use zbus::export::ordered_stream::OrderedStreamExt;

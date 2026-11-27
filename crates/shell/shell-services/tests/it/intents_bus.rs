@@ -372,7 +372,10 @@ async fn allow_from_the_terminal_is_answered_and_the_grants_are_read_again() {
         s.terminal.reach == ControlReach::Reached
     })
     .await;
-    assert_eq!(state.borrow().terminal.grants, [] as [action_vocab::ActionRef; 0]);
+    assert_eq!(
+        state.borrow().terminal.grants,
+        [] as [action_vocab::ActionRef; 0]
+    );
     let (control, held) = (desk.seat.control.clone(), Arc::clone(&desk.held));
     let mut watching = state.clone();
     let answerer = tokio::spawn(async move {
@@ -520,7 +523,10 @@ async fn only_actiond_may_ask_or_cancel() {
         "{refused:?}"
     );
     assert!(proxy.cancel("c-1").await.is_err());
-    assert_eq!(desk.seat.state.borrow().sheets.queue, [] as [shell_model::intents::sheet::Pending; 0]);
+    assert_eq!(
+        desk.seat.state.borrow().sheets.queue,
+        [] as [shell_model::intents::sheet::Pending; 0]
+    );
     // And a malformed request from actiond itself is refused, not shown.
     let proxy = ConfirmProxy::new(&desk.actiond)
         .await

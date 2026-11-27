@@ -111,7 +111,8 @@ fn the_token_scan_catches_what_it_bans() {
         assert!(!token_violations(css).is_empty(), "missed: {css}");
     }
     assert_eq!(
-        token_violations(".x[*|data-variant=a]{ font-size:var(--fs-note); padding:1.5px 7px; }"), [] as [std::string::String; 0]
+        token_violations(".x[*|data-variant=a]{ font-size:var(--fs-note); padding:1.5px 7px; }"),
+        [] as [std::string::String; 0]
     );
 }
 

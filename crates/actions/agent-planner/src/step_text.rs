@@ -446,20 +446,17 @@ fn step_line_raw(step: &StepLine, seen: &Seen<'_>) -> String {
             let said = said
                 .as_ref()
                 .map_or_default(|s| format!(" \"{}\"", s.as_str()));
-            let value = value
-                .as_ref()
-                .map_or_default(|v| match v {
-                    Reveal::Plain(v) => format!(" value {}", value_text(v, handles)),
-                    Reveal::Handle(h) => format!(" value {}", named(*h, handles)),
-                });
+            let value = value.as_ref().map_or_default(|v| match v {
+                Reveal::Plain(v) => format!(" value {}", value_text(v, handles)),
+                Reveal::Handle(h) => format!(" value {}", named(*h, handles)),
+            });
             // The undo token is not a handle: a number here read as one (`undo #1` beside a
             // thing #1).
             let undo = undo.map_or_default(|_| " (can be undone)");
             format!("{head} done{said}{value}{undo}")
         }
         (_, StepEnd::Refused(refusal)) => {
-            let hint = refusal_hint(refusal, step, seen)
-                .map_or_default(|h| format!(": {h}"));
+            let hint = refusal_hint(refusal, step, seen).map_or_default(|h| format!(": {h}"));
             // A needed argument's choices go in the hint by key; the whole refusal would carry titles.
             let said = match refusal {
                 CallRefusal::App(AppRefusal::NeedsParam { .. }) => "needs_param".to_owned(),

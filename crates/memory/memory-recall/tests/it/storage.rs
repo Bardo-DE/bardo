@@ -116,8 +116,8 @@ fn fts_upsert_replaces_by_id_and_remove_counts() {
     f.upsert(&[doc("f:1", "first version")]).expect("upsert");
     f.upsert(&[doc("f:1", "second version")]).expect("upsert");
     assert_eq!(
-        f.search("first", TopK(5), &Allow::Everything)
-            .expect("s"), [] as [memory_recall::Ranked; 0]
+        f.search("first", TopK(5), &Allow::Everything).expect("s"),
+        [] as [memory_recall::Ranked; 0]
     );
     assert_eq!(
         ids(&f.search("second", TopK(5), &Allow::Everything).expect("s")),
@@ -144,8 +144,8 @@ fn fts_clear_empties_and_facets_are_stored() {
     );
     f.clear().expect("clear");
     assert_eq!(
-        f.search("words", TopK(5), &Allow::Everything)
-            .expect("s"), [] as [memory_recall::Ranked; 0]
+        f.search("words", TopK(5), &Allow::Everything).expect("s"),
+        [] as [memory_recall::Ranked; 0]
     );
 }
 
@@ -193,8 +193,8 @@ fn exact_scan_orders_by_cosine_and_respects_allow_and_k() {
     );
     x.clear().expect("clear");
     assert_eq!(
-        x.nearest(&q, TopK(5), &Allow::Everything)
-            .expect("n"), [] as [memory_recall::Ranked; 0]
+        x.nearest(&q, TopK(5), &Allow::Everything).expect("n"),
+        [] as [memory_recall::Ranked; 0]
     );
 }
 
@@ -403,9 +403,7 @@ async fn search_with_an_empty_query_returns_nothing() {
     let e = FakeEmbedder::new();
     let index = index_over(e.card().clone());
     assert_eq!(
-        index
-            .search(&query("  ", 5), &e)
-            .await
-            .expect("s"), [] as [memory_store::Fused; 0]
+        index.search(&query("  ", 5), &e).await.expect("s"),
+        [] as [memory_store::Fused; 0]
     );
 }

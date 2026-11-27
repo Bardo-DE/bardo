@@ -87,8 +87,7 @@ fn strings<'a>(value: &'a serde_json::Value, field: &str) -> Vec<&'a str> {
     value
         .get(field)
         .and_then(|item| item.as_array())
-        .map(|items| items.iter().filter_map(|item| item.as_str()).collect())
-        .unwrap_or_default()
+        .map_or_default(|items| items.iter().filter_map(|item| item.as_str()).collect())
 }
 
 #[test]
@@ -241,8 +240,7 @@ fn every_pick_is_legible() {
                     }
                     let roles = palette.accent_roles;
                     let wash = Hex::parse(surface)
-                        .map(|ground| roles.fill.over(roles.wash, ground).css())
-                        .unwrap_or_default();
+                        .map_or_default(|ground| roles.fill.over(roles.wash, ground).css());
                     match ratio(card_ink, &wash) {
                         Some(measured) if measured < 4.5 => {
                             failures.push(format!("{case}: card ink {measured:.2} < 4.5"));

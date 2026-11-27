@@ -11,6 +11,7 @@ use compositor_core::{OutputKey, OutputName, WindowId};
 use compositor_ipc::WaitPredicate;
 use compositor_ipc::dbus::DebugReply;
 use desktop_protocols::vocab::Transform;
+use std::fmt::Write as _;
 use ui_core::geometry::scale::Scale;
 
 /// A JSON string literal.
@@ -22,7 +23,9 @@ fn quoted(text: &str) -> String {
             '"' => out.push_str("\\\""),
             '\\' => out.push_str("\\\\"),
             '\n' => out.push_str("\\n"),
-            c if c.is_control() => out.push_str(&format!("\\u{:04x}", u32::from(c))),
+            c if c.is_control() => {
+                let _ = write!(out, "\\u{:04x}", u32::from(c));
+            }
             c => out.push(c),
         }
     }

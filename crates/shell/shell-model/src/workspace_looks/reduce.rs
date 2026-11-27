@@ -13,10 +13,7 @@ pub fn published(
         .groups
         .iter()
         .flat_map(|group| {
-            let output = group
-                .outputs
-                .first()
-                .map_or_default(|name| name.0.clone());
+            let output = group.outputs.first().map_or_default(|name| name.0.clone());
             let look_of = &look_of;
             group
                 .workspaces

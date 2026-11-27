@@ -49,11 +49,24 @@ pub enum PrintError {
 
 /// Show the system print dialog for `pdf`, titled `title`, and print it if the person accepts;
 /// where there is no dialog, open it in the system's viewer instead.
+///
+/// # Errors
+///
+/// [`PrintError::Portal`] when the print portal fails after its dialog was shown;
+/// [`PrintError::Write`] when the PDF cannot be written for the viewer; [`PrintError::NoViewer`]
+/// when no viewer opens it (the text then also says why there was no print dialog).
 pub fn print_dialog(pdf: &[u8], title: &str) -> Result<PrintOutcome, PrintError> {
     #[cfg(all(target_os = "linux", feature = "desktop"))]
-    match portal::print(pdf, title) {
+    let no_dialog = match portal::print(pdf, title) {
         portal::Attempt::Answered(outcome) => return outcome,
-        portal::Attempt::Unavailable => {}
-    }
-    open::open(pdf, title)
+        portal::Attempt::Unavailable(why) => Some(why),
+    };
+    #[cfg(not(all(target_os = "linux", feature = "desktop")))]
+    let no_dialog: Option<String> = None;
+    open::open(pdf, title).map_err(|error| match (error, no_dialog) {
+        (PrintError::NoViewer(text), Some(why)) => {
+            PrintError::NoViewer(format!("{text} (no print dialog: {why})"))
+        }
+        (other, _) => other,
+    })
 }

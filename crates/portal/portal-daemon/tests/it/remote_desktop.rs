@@ -521,7 +521,10 @@ async fn what_the_person_let_an_app_do_for_good_needs_no_token_and_no_ask_to_be_
     // Taken back: asked again, and it is listed until then.
     assert_eq!(keeper.remembered().await.len(), 1);
     assert_eq!(keeper.revoke(REMOTE_ID).await, Some(1));
-    assert_eq!(keeper.remembered().await, [] as [portal_core::Remembered; 0]);
+    assert_eq!(
+        keeper.remembered().await,
+        [] as [portal_core::Remembered; 0]
+    );
 }
 
 #[tokio::test]

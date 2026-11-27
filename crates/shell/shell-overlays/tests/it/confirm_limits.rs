@@ -124,7 +124,10 @@ fn never_is_disabled_while_the_sheet_arms_and_answers_nothing() {
         Some("disabled")
     );
     click(&mut running, NEVER);
-    assert_eq!(sent(&mut running), [] as [shell_model::intents::IntentsCommand; 0]);
+    assert_eq!(
+        sent(&mut running),
+        [] as [shell_model::intents::IntentsCommand; 0]
+    );
 }
 
 #[test]
@@ -184,7 +187,10 @@ fn undo_waits_for_the_arming_like_every_answer() {
         Some("disabled")
     );
     click(&mut running, UNDO);
-    assert_eq!(sent(&mut running), [] as [shell_model::intents::IntentsCommand; 0]);
+    assert_eq!(
+        sent(&mut running),
+        [] as [shell_model::intents::IntentsCommand; 0]
+    );
 }
 
 #[test]

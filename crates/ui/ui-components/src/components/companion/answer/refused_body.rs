@@ -59,8 +59,8 @@ fn severity(why: &RefusedView) -> Severity {
 #[component]
 pub fn RefusedBody(why: RefusedView) -> Element {
     let (head, detail) = words(&why);
-    let data = DataName::parse("why")
-        .map_or_default(|name| vec![DataAttr::new(name, why_slug(&why))]);
+    let data =
+        DataName::parse("why").map_or_default(|name| vec![DataAttr::new(name, why_slug(&why))]);
     rsx! {
         InlineBanner {
             severity: severity(&why),

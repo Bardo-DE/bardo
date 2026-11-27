@@ -308,8 +308,7 @@ mod tests {
         let bar = bar().with_items(BarSection::File, extra);
         let items = bar
             .menu(BarSection::File)
-            .map(|menu| menu.items.clone())
-            .unwrap_or_default();
+            .map_or_default(|menu| menu.items.clone());
         let at = items.len().saturating_sub(2);
         assert_eq!(items.get(at), Some(&MenuItem::Separator));
         assert!(matches!(items.last(), Some(MenuItem::Item { title, .. }) if title == "Export…"));

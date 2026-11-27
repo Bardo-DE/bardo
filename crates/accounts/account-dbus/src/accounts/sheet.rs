@@ -122,8 +122,7 @@ fn other(refusal: Refusal) -> Response {
     let reason = text_value(&refusal_slug(refusal));
     Response {
         code: ResponseCode::Other,
-        results: reason
-            .map_or_default(|value| Details::from([(REFUSAL_KEY.to_owned(), value)])),
+        results: reason.map_or_default(|value| Details::from([(REFUSAL_KEY.to_owned(), value)])),
     }
 }
 
