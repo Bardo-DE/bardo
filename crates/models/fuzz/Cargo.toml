@@ -19,6 +19,7 @@ cargo-fuzz = true
 libfuzzer-sys = { workspace = true }
 model-http = { path = "../model-http" }
 model-fake = { path = "../model-fake" }
+model-openai-compat = { path = "../model-openai-compat" }
 model-types = { path = "../model-types" }
 model-wire = { path = "../model-wire" }
 speech-core = { path = "../speech-core" }

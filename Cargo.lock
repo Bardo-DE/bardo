@@ -128,6 +128,7 @@ dependencies = [
  "caller-identity-dbus",
  "caller-identity-linux",
  "caller-role-types",
+ "peers-callers",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -170,13 +171,13 @@ dependencies = [
  "account-dbus",
  "account-match",
  "account-secrets",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-time",
  "futures-util",
  "rustix 1.1.6",
  "serde_json",
+ "tailscale-types",
  "thiserror 2.0.21",
  "zbus",
  "zeroize",
@@ -257,7 +258,6 @@ dependencies = [
  "account-sheets",
  "account-spaces",
  "account-store",
- "account-tailscale",
  "account-wire",
  "base-clock",
  "base-fs",
@@ -273,7 +273,10 @@ dependencies = [
  "serde",
  "serde_json",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -299,7 +302,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-time",
@@ -307,6 +309,7 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
+ "tailscale-types",
  "tokio",
  "zbus",
 ]
@@ -411,7 +414,6 @@ dependencies = [
  "account-service-accounts",
  "account-service-core",
  "account-sheet",
- "account-tailscale",
  "account-wire",
  "base-clock",
  "base-ids",
@@ -422,6 +424,8 @@ dependencies = [
  "http-core",
  "http-reqwest",
  "serde_json",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
 ]
@@ -707,10 +711,10 @@ dependencies = [
  "account-secrets",
  "account-service-core",
  "account-sheet",
- "account-tailscale",
  "account-wire",
  "base-time",
  "base-url",
+ "tailscale-types",
  "thiserror 2.0.21",
 ]
 
@@ -762,6 +766,7 @@ dependencies = [
  "base-ids",
  "base-time",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "toml",
 ]
@@ -772,13 +777,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-url",
  "proptest",
  "serde",
  "serde_json",
+ "tailscale-types",
  "thiserror 2.0.21",
 ]
 
@@ -829,30 +834,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "account-tailscale"
-version = "0.1.0"
-dependencies = [
- "account-fake-servers",
- "account-tailscale",
- "base-ids",
- "base-testkit",
- "base-time",
- "http-body-util",
- "hyper",
- "hyper-util",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
 name = "account-wire"
 version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
  "account-match",
+ "caller-identity-core",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -1141,6 +1129,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-xdg",
+ "caller-identity-core",
  "caller-role-types",
  "inference-client",
  "inference-core",
@@ -2547,6 +2536,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "appearance-settings"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
+ "toml",
+]
+
+[[package]]
 name = "appendlist"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3600,12 +3601,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "caller-identity-dev"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "caller-identity-linux"
 version = "0.1.0"
 dependencies = [
  "base-fs",
  "caller-identity-core",
- "caller-identity-linux",
  "nix 0.31.3",
  "rustix 1.1.6",
  "thiserror 2.0.21",
@@ -3616,6 +3626,13 @@ name = "caller-role-types"
 version = "0.1.0"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "caller-roles"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
 ]
 
 [[package]]
@@ -4246,6 +4263,7 @@ name = "compositor-agent"
 version = "0.1.0"
 dependencies = [
  "caller-identity-core",
+ "caller-roles",
  "compositor-core",
  "desktop-protocols",
  "reis",
@@ -4259,6 +4277,7 @@ name = "compositor-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-clock",
  "base-fs",
  "base-ids",
@@ -4267,6 +4286,7 @@ dependencies = [
  "base-time",
  "base-words",
  "base-xdg",
+ "caller-identity-dev",
  "calloop",
  "compositor-agent",
  "compositor-backend",
@@ -4299,7 +4319,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "ui-core",
- "ui-settings",
  "x11rb 0.14.0",
 ]
 
@@ -4373,6 +4392,7 @@ dependencies = [
 name = "compositor-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "zbus",
 ]
 
@@ -4407,21 +4427,24 @@ dependencies = [
  "base-ids",
  "base-spawn",
  "base-testkit",
+ "caller-identity-core",
  "caller-identity-dbus",
+ "caller-roles",
  "calloop",
  "compositor-backend",
  "compositor-core",
  "compositor-dbus",
  "dbus-kit",
  "desktop-protocols",
+ "peers-callers",
  "settings-dbus",
+ "settings-portal",
+ "settings-proto",
  "settings-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "tracing",
- "ui-settings",
- "ui-style",
  "xkbcommon 0.9.0",
  "zbus",
 ]
@@ -4431,6 +4454,7 @@ name = "compositor-layout"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-ids",
  "compositor-core",
  "desktop-protocols",
@@ -4513,6 +4537,7 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-roles",
  "compositor-app",
  "compositor-backend",
  "compositor-core",
@@ -8004,7 +8029,6 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-match",
- "account-tailscale",
  "account-wire",
  "base-fs",
  "base-ids",
@@ -8022,6 +8046,7 @@ dependencies = [
  "rustix 1.1.6",
  "serde",
  "serde_json",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
@@ -8067,7 +8092,6 @@ dependencies = [
  "account-provider",
  "account-secrets",
  "account-settings",
- "account-tailscale",
  "account-wire",
  "base-clock",
  "base-fs",
@@ -8114,11 +8138,14 @@ dependencies = [
  "serde",
  "serde_json",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "sha2 0.10.9",
  "speech-core",
  "speech-host-client",
  "subtle",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -8194,7 +8221,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
- "account-tailscale",
  "base-ids",
  "base-secret",
  "base-testkit",
@@ -8210,6 +8236,7 @@ dependencies = [
  "model-vision-prep",
  "serde",
  "speech-core",
+ "tailscale-types",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -8239,7 +8266,6 @@ name = "inference-tailnet"
 version = "0.1.0"
 dependencies = [
  "account-fake-servers",
- "account-tailscale",
  "base-clock",
  "base-fs",
  "base-testkit",
@@ -8250,6 +8276,8 @@ dependencies = [
  "inference-tailnet",
  "serde",
  "serde_json",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -8387,6 +8415,7 @@ name = "input-broker-wire"
 version = "0.1.0"
 dependencies = [
  "base-time",
+ "caller-identity-core",
  "thiserror 2.0.21",
 ]
 
@@ -8942,6 +8971,7 @@ dependencies = [
  "base-testkit",
  "caller-identity-core",
  "caller-identity-linux",
+ "caller-roles",
  "input-broker-client",
  "key-remap-client",
  "key-remap-core",
@@ -8951,7 +8981,7 @@ dependencies = [
  "keymap",
  "notify",
  "rustix 1.1.6",
- "service-locator",
+ "seat-guard",
  "settings-store-fs",
  "thiserror 2.0.21",
 ]
@@ -9812,6 +9842,7 @@ dependencies = [
 name = "memory-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "dbus-kit",
  "memory-core",
  "serde",
@@ -10219,6 +10250,7 @@ dependencies = [
  "libfuzzer-sys",
  "model-fake",
  "model-http",
+ "model-openai-compat",
  "model-types",
  "model-wire",
  "speech-core",
@@ -10368,6 +10400,7 @@ dependencies = [
  "base-xdg",
  "caller-identity-core",
  "caller-identity-linux",
+ "caller-roles",
  "hidraw-ioctl",
  "input-broker-client",
  "input-broker-wire",
@@ -10375,9 +10408,9 @@ dependencies = [
  "mouse-gestures-proto",
  "notify",
  "rustix 1.1.6",
+ "seat-guard",
  "serde",
  "serde_json",
- "service-locator",
  "settings-store-fs",
  "thiserror 2.0.21",
  "toml",
@@ -11846,6 +11879,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "peers-callers"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-dbus",
+ "caller-identity-linux",
+ "zbus",
+]
+
+[[package]]
 name = "pem"
 version = "3.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12258,9 +12301,12 @@ dependencies = [
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
+ "caller-identity-dev",
+ "caller-roles",
  "compositor-dbus",
  "dbus-kit",
  "image",
+ "peers-callers",
  "pipewire",
  "portal-core",
  "portal-dbus",
@@ -13427,6 +13473,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "seat-guard"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "rustix 1.1.6",
+]
+
+[[package]]
 name = "secrecy"
 version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13613,8 +13668,6 @@ version = "0.1.0"
 dependencies = [
  "base-testkit",
  "base-xdg",
- "caller-identity-core",
- "caller-identity-linux",
  "interprocess",
  "rustix 1.1.6",
  "service-locator",
@@ -13660,8 +13713,11 @@ version = "0.1.0"
 dependencies = [
  "account-wire",
  "caller-identity-dbus",
+ "caller-identity-dev",
+ "caller-roles",
  "compositor-dbus",
  "memory-dbus",
+ "peers-callers",
  "portal-dbus",
  "rustix 1.1.6",
  "settings-app-testkit",
@@ -13734,6 +13790,8 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-identity-core",
+ "caller-roles",
  "provenance",
  "serde",
  "serde_json",
@@ -13753,7 +13811,6 @@ dependencies = [
 name = "settings-app-link"
 version = "0.1.0"
 dependencies = [
- "account-tailscale",
  "account-wire",
  "base-time",
  "compositor-dbus",
@@ -13762,8 +13819,10 @@ dependencies = [
  "settings-app-callers",
  "settings-app-model",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "sync-bus",
+ "tailscale-types",
  "tokio",
  "toml",
 ]
@@ -13775,7 +13834,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-sheet",
- "account-tailscale",
  "action-core",
  "action-manifest",
  "action-settings",
@@ -13791,6 +13849,7 @@ dependencies = [
  "regex",
  "serde_json",
  "settings-types",
+ "tailscale-types",
  "toml",
  "ui-helpers",
 ]
@@ -13837,6 +13896,7 @@ dependencies = [
  "settings-app-model",
  "settings-app-system",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "shell-dbus",
  "sync-bus",
@@ -13878,6 +13938,7 @@ dependencies = [
  "settings-app-system",
  "settings-app-testkit",
  "settings-dbus",
+ "settings-proto",
  "settings-store-fs",
  "settings-types",
  "sync-bus",
@@ -13900,13 +13961,35 @@ dependencies = [
  "base-testkit",
  "base-time",
  "dbus-kit",
+ "settings-proto",
+ "settings-types",
+ "tokio",
+ "toml",
+ "zbus",
+]
+
+[[package]]
+name = "settings-portal"
+version = "0.1.0"
+dependencies = [
+ "base-spawn",
+ "base-time",
+ "futures-timer",
+ "objc2-core-foundation",
+ "settings-store",
+ "zbus",
+]
+
+[[package]]
+name = "settings-proto"
+version = "0.1.0"
+dependencies = [
+ "base-time",
  "serde",
  "serde_json",
  "settings-types",
  "thiserror 2.0.21",
- "tokio",
  "toml",
- "zbus",
 ]
 
 [[package]]
@@ -14030,6 +14113,7 @@ name = "shell-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "appearance-settings",
  "base-testkit",
  "base-words",
  "base-xdg",
@@ -14132,6 +14216,7 @@ dependencies = [
 name = "shell-dock"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-machine",
  "desktop-client",
  "dioxus",
@@ -14408,7 +14493,6 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-sheet",
- "account-tailscale",
  "account-wire",
  "action-checkpoint",
  "action-client",
@@ -14433,6 +14517,8 @@ dependencies = [
  "base-words",
  "bluez-proxy",
  "caller-identity-dbus",
+ "caller-identity-dev",
+ "caller-roles",
  "companion-model",
  "companion-wire",
  "compositor-dbus",
@@ -14461,6 +14547,7 @@ dependencies = [
  "nonstick",
  "notify",
  "outputs-dbus",
+ "peers-callers",
  "percent-encoding",
  "permission-core",
  "permission-policy",
@@ -14483,6 +14570,7 @@ dependencies = [
  "speech-wire",
  "sync-bus",
  "system-tray",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -14539,6 +14627,7 @@ dependencies = [
  "action-core",
  "action-manifest",
  "action-vocab",
+ "appearance-settings",
  "base-clock",
  "base-fs",
  "base-machine",
@@ -15524,6 +15613,7 @@ version = "0.1.0"
 dependencies = [
  "account-dbus",
  "base-ids",
+ "caller-identity-core",
  "dbus-kit",
  "serde",
  "zbus",
@@ -15585,6 +15675,7 @@ dependencies = [
  "replica-graph",
  "serde_json",
  "settings-dbus",
+ "settings-proto",
  "settings-types",
  "sync-bus",
  "sync-core",
@@ -15994,6 +16085,30 @@ name = "tagptr"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b2093cf4c8eb1e67749a6762251bc9cd836b6fc171623bd0a9d324d37af2417"
+
+[[package]]
+name = "tailscale-io"
+version = "0.1.0"
+dependencies = [
+ "account-fake-servers",
+ "base-testkit",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "tailscale-types",
+ "tokio",
+]
+
+[[package]]
+name = "tailscale-types"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
 
 [[package]]
 name = "tar"
@@ -16537,7 +16652,9 @@ dependencies = [
  "blitz-shell",
  "blitz-traits",
  "caller-identity-dbus",
+ "caller-roles",
  "dbus-kit",
+ "desktop-protocols",
  "dioxus",
  "dioxus-asset-resolver",
  "dioxus-native",
@@ -16568,11 +16685,9 @@ dependencies = [
  "ui-harness",
  "ui-host-hooks",
  "url",
- "wayland-backend",
  "wayland-client",
  "wayland-protocols",
  "wayland-raw-handle",
- "wayland-scanner",
  "wayland-server",
  "webbrowser",
  "wgpu 30.0.2",
@@ -16584,6 +16699,7 @@ dependencies = [
 name = "ui-components"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-ids",
  "base-machine",
  "base-spawn",
@@ -16655,6 +16771,7 @@ dependencies = [
 name = "ui-extensions"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-fs",
  "base-testkit",
  "base-words",
@@ -16666,7 +16783,6 @@ dependencies = [
  "settings-types",
  "thiserror 2.0.21",
  "ui-helpers",
- "ui-settings",
  "ui-style",
 ]
 
@@ -16674,6 +16790,7 @@ dependencies = [
 name = "ui-gallery"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-machine",
  "dioxus",
  "dioxus-ssr",
@@ -16685,7 +16802,6 @@ dependencies = [
  "ui-core",
  "ui-harness",
  "ui-lint",
- "ui-settings",
  "ui-shell",
 ]
 
@@ -16803,17 +16919,17 @@ dependencies = [
 name = "ui-settings"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-fs",
  "base-spawn",
  "base-testkit",
- "base-time",
  "base-words",
  "base-xdg",
  "dioxus",
- "objc2-core-foundation",
  "serde",
  "serde_json",
- "settings-dbus",
+ "settings-portal",
+ "settings-proto",
  "settings-store",
  "settings-store-fs",
  "settings-types",
@@ -16821,7 +16937,6 @@ dependencies = [
  "toml",
  "ui-components",
  "ui-style",
- "zbus",
 ]
 
 [[package]]
@@ -16855,6 +16970,7 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "appearance-settings",
  "base-clock",
  "base-ids",
  "base-machine",
@@ -17039,9 +17155,11 @@ dependencies = [
  "base-url",
  "base-xdg",
  "caller-identity-dbus",
+ "caller-roles",
  "dbus-kit",
  "http-core",
  "http-reqwest",
+ "peers-callers",
  "semver",
  "serde",
  "tar",
@@ -17062,6 +17180,7 @@ dependencies = [
 name = "updater-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "zbus",
 ]
 
