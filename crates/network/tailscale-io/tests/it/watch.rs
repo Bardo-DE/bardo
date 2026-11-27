@@ -1,7 +1,8 @@
 use crate::common::{LOGIN_PAGE, network, start};
 use account_fake_servers::Daemon;
-use account_tailscale::{Backend, Notice, TailscaleError, Watch};
 use base_testkit::GENEROUS;
+use tailscale_io::Watch;
+use tailscale_types::{Backend, Notice, TailscaleError};
 
 async fn next(watch: &mut Watch) -> Notice {
     // A notice that should come is waited for as long as a starved machine needs.

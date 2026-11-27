@@ -1,7 +1,7 @@
 use account_fake_servers::{Daemon, FakeLocalApi, FakePeer, Network};
-use account_tailscale::LocalApi;
 use base_testkit::Scratch;
 use std::ops::Deref;
+use tailscale_io::LocalApi;
 
 /// A new empty directory for one test, under the test's temporary directory.
 pub fn scratch(name: &str) -> Scratch {

@@ -10,11 +10,11 @@
 //! first asks Tailscale who is at the address (`inference_tailnet::Dialer`).
 
 use super::machines::Machines;
-use account_tailscale::{MachineOwner, NodeId};
 use inference_tailnet::{Dialer, LentModel, greet};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;
+use tailscale_types::{MachineOwner, NodeId};
 use tokio::sync::Mutex;
 use tokio::task::JoinSet;
 use tokio::time::Instant;

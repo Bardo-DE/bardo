@@ -7,10 +7,10 @@
 use account_dbus::Details;
 use account_dbus::accounts::machine_to_dbus;
 use account_fake_servers::{Daemon, FakeLocalApi, FakePeer, Network};
-use account_tailscale::LocalApi;
 use std::net::{IpAddr, Ipv4Addr};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
+use tailscale_io::LocalApi;
 use zbus::fdo;
 
 /// What a test says of one computer's side of the network.

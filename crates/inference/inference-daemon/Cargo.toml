@@ -45,7 +45,8 @@ http-core = {path = "../../network/http-core"}
 http-reqwest = {path = "../../network/http-reqwest"}
 account-provider = {path = "../../accounts/account-provider"}
 inference-tailnet = {path = "../inference-tailnet", features = ["io", "persist"]}
-account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
+tailscale-io = {path = "../../network/tailscale-io"}
 inference-core = {path = "../inference-core"}
 # An external agent's Anthropic and OpenAI protocols as bytes in and out.
 inference-agent-proto = {path = "../inference-agent-proto"}

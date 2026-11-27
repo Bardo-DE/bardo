@@ -10,7 +10,7 @@
 //! the person's own word given ahead of time in Settings ([`Guests::set`]); it is never asked
 //! about. A computer of the person's own that they have not answered about yet is asked about
 //! once, the first time it wants to use a model ([`Guests::ask`]). Everything is kept by
-//! Tailscale's stable computer id ([`account_tailscale::NodeId`]), never by name or address.
+//! Tailscale's stable computer id ([`tailscale_types::NodeId`]), never by name or address.
 //!
 //! The pure parts, [`judge`], [`Guests`], [`Hello`] and [`Refusal`], reach no socket. With the
 //! `io` feature the crate also holds the rest of the work:

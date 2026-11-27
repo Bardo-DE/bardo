@@ -7,13 +7,13 @@
 use crate::startup::SUN_PATH;
 use account_capability::Locality;
 use account_capability::ModelId;
-use account_tailscale::NodeId;
 use inference_core::ComputerName;
 use model_http::Port;
 use serde::{Deserialize, Serialize};
 use std::net::Ipv4Addr;
 use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
+use tailscale_types::NodeId;
 
 /// Where an attached engine's data goes: written for every entry, with no default.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

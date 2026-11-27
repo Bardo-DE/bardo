@@ -17,7 +17,7 @@ account-match = {path = "../account-match"}
 account-dbus = {path = "../account-dbus"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-account-tailscale = {path = "../account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
 futures-util = { workspace = true }
 serde_json = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}

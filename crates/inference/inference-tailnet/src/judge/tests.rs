@@ -1,9 +1,9 @@
 use super::*;
 use crate::guests::{AskOutcome, GuestEvent};
 use crate::lending::GuestAnswer;
-use account_tailscale::{User, UserId, WhoIsNode};
 use base_time::UnixSeconds;
 use std::sync::{Arc, Mutex};
+use tailscale_types::{User, UserId, WhoIsNode};
 
 const NOW: UnixSeconds = UnixSeconds(1_790_000_000);
 

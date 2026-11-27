@@ -1,9 +1,9 @@
 //! inference-client's guest rows and asks, as questions; the verdict as its answer.
 
-use account_tailscale::NodeId;
 use inference_tailnet::{GuestAnswer, GuestRow};
 use inference_tailnet::{GuestAsk, RowState};
 use shell_model::guest_asks::{Ask, Computer, Verdict};
+use tailscale_types::NodeId;
 
 /// inferd's well-known name.
 pub(crate) const INFERD: &str = account_wire::names::INFERENCE_BUS;

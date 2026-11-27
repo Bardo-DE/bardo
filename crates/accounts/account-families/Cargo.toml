@@ -23,7 +23,8 @@ account-provider = {path = "../account-provider"}
 http-core = {path = "../../network/http-core"}
 http-reqwest = {path = "../../network/http-reqwest", optional = true}
 account-discover = {path = "../account-discover", optional = true}
-account-tailscale = {path = "../account-tailscale", optional = true}
+tailscale-types = {path = "../../network/tailscale-types", optional = true}
+tailscale-io = {path = "../../network/tailscale-io", optional = true}
 thiserror = { workspace = true, optional = true }
 
 [dev-dependencies]
@@ -67,7 +68,7 @@ api_key = ["dep:http-reqwest"]
 # Coding agents that sign themselves in (Claude Code, Gemini CLI, Codex): no credential held.
 agent_login = []
 # Tailscale on this computer: asked over its unix socket, no credential held.
-tailnet = ["dep:account-tailscale", "account-tailscale/io"]
+tailnet = ["dep:tailscale-types", "dep:tailscale-io"]
 
 [lints]
 workspace = true

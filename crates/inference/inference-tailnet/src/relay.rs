@@ -8,9 +8,9 @@
 //! program shows says why.
 
 use crate::dial::{DialError, Dialer};
-use account_tailscale::NodeId;
 use std::path::Path;
 use std::sync::Arc;
+use tailscale_types::NodeId;
 use tokio::io::{AsyncWriteExt, copy_bidirectional};
 use tokio::net::{UnixListener, UnixStream};
 use tokio::task::{JoinHandle, JoinSet};

@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 account-core = {path = "../account-core"}
-account-tailscale = {path = "../account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
 account-capability = {path = "../account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-url = { path = "../../base/base-url" }

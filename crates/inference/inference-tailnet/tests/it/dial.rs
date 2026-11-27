@@ -2,11 +2,11 @@
 
 use super::common::{addresses, fake, free_port, network};
 use account_fake_servers::Daemon;
-use account_tailscale::TailscaleError;
-use account_tailscale::{MachineOwner, NodeId};
 use base_testkit::GENEROUS;
 use inference_tailnet::{DialError, Dialer};
 use std::net::SocketAddr;
+use tailscale_types::TailscaleError;
+use tailscale_types::{MachineOwner, NodeId};
 use tokio::net::TcpListener;
 
 fn node(text: &str) -> NodeId {

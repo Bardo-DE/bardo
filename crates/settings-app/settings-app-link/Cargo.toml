@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-tailscale = {path = "../../accounts/account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
 account-wire = {path = "../../accounts/account-wire"}
 compositor-dbus = { path = "../../compositor/compositor-dbus" }
 inference-dbus = {path = "../../inference/inference-dbus"}

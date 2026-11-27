@@ -5,8 +5,8 @@ use crate::callers::Callers;
 use crate::host::Host;
 use crate::state::Core;
 use crate::tailnet::{TailnetWatch, account_of, listed, machines, state_of};
-use account_tailscale::Machine;
 use std::sync::Arc;
+use tailscale_types::Machine;
 use tokio::time::Instant;
 
 /// Follows Tailscale until accountd stops: sets the account's state, and says `Changed`.

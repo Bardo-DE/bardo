@@ -1,8 +1,8 @@
 //! This computer, as its own Tailscale says it is.
 
-use account_tailscale::NodeId;
-use account_tailscale::{Standing, Status, UserId};
 use std::net::IpAddr;
+use tailscale_types::NodeId;
+use tailscale_types::{Standing, Status, UserId};
 
 /// Who this computer is on the network: the id Tailscale keeps for it, the user it belongs to,
 /// the name people call it by and the addresses the network gave it.

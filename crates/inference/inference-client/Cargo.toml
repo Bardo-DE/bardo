@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-core = {path = "../../accounts/account-core"}
 inference-tailnet = {path = "../inference-tailnet"}
-account-tailscale = {path = "../../accounts/account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 account-wire = {path = "../../accounts/account-wire"}
@@ -46,8 +46,6 @@ dbus-kit = { path = "../../bus/dbus-kit" }
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 inference-daemon = { path = "../inference-daemon" }
 inference-router = {path = "../inference-router"}
-# tailscaled's LocalAPI client, over its Unix socket, for the tailnet bus test.
-account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
 
 [features]
 # No feature is on by default: a consumer names the ones it uses.

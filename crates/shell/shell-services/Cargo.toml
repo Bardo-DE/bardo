@@ -29,7 +29,7 @@ companion-model = {path = "../../actions/companion-model"}
 permission-core = {path = "../../actions/permission-core"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
-account-tailscale = {path = "../../accounts/account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-wire = {path = "../../accounts/account-wire"}

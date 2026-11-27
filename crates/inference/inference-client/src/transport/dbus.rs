@@ -11,10 +11,10 @@ use account_core::DataClass;
 use account_dbus::Destination;
 use account_dbus::{BusConnection, BusError, BusFailure, classify};
 use account_match::Need;
-use account_tailscale::NodeId;
 use inference_core::{ComputerName, OpenOptions, PlaceId, PlaceRow, Readiness};
 use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
 use serde::Serialize;
+use tailscale_types::NodeId;
 use zbus::names::UniqueName;
 
 /// inferd on the session bus. Calls go to its well-known name unless the caller names the owner

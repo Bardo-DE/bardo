@@ -11,9 +11,10 @@
 //! busy computer does not lose its place on the network.
 
 use crate::identity::Identity;
-use account_tailscale::{LocalApi, Standing, TailscaleError};
 use std::sync::Arc;
 use std::time::Duration;
+use tailscale_io::LocalApi;
+use tailscale_types::{Standing, TailscaleError};
 use tokio::sync::watch;
 use tokio::task::JoinHandle;
 use tokio::time::Instant;

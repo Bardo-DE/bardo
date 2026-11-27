@@ -29,7 +29,6 @@ use account_capability::Tier;
 use account_core::HelperId;
 use account_core::{DataClass, SecretText};
 use account_dbus::Details;
-use account_tailscale::NodeId;
 use base_time::Clock;
 use caller_role_types::CallerRole;
 use dbus_kit::Call;
@@ -53,6 +52,7 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::os::unix::net::UnixStream as StdStream;
 use std::sync::Arc;
+use tailscale_types::NodeId;
 use tokio::net::UnixStream;
 use zbus::fdo;
 use zbus::message::Header;
@@ -772,7 +772,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
                 .await
                 .into_iter()
                 .any(|machine| {
-                    machine.node == node && machine.owner == account_tailscale::MachineOwner::Mine
+                    machine.node == node && machine.owner == tailscale_types::MachineOwner::Mine
                 });
             return Err(if mine {
                 ComputerError::NotAnswering

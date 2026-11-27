@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-service-core = {path = "../account-service-core"}
 account-core = {path = "../account-core"}
-account-tailscale = {path = "../account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
 account-match = {path = "../account-match"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}

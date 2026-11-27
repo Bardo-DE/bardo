@@ -136,8 +136,6 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.account-store]
 kind = "unclassified"
-[crate.account-tailscale]
-kind = "unclassified"
 [crate.account-wire]
 kind = "unclassified"
 [crate.http-relay]
@@ -650,6 +648,10 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.networkmanager-proxy]
 kind = "unclassified"
+[crate.tailscale-io]
+kind = "unclassified"
+[crate.tailscale-types]
+kind = "unclassified"
 
 # platform
 [crate.service-locator]
@@ -1092,7 +1094,7 @@ forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyri
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
 
 [[reach]]
-crate = "account-tailscale"
+crate = "tailscale-types"
 forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings"]
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
 
@@ -1230,7 +1232,7 @@ why = "the tailnet family feature reaches only what it really uses"
 [[edges]]
 crate = "account-families"
 features = ["tailnet"]
-exactly = ["account-capability", "account-core", "account-family-kit", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core"]
+exactly = ["account-capability", "account-core", "account-family-kit", "account-provider", "account-sheet", "tailscale-types", "base-time", "base-url", "http-core", "tailscale-io"]
 why = "the tailnet family feature's direct workspace dependencies are exactly these"
 
 [[reach]]
@@ -1242,7 +1244,7 @@ why = "the set family feature reaches only what it really uses"
 [[edges]]
 crate = "account-families"
 features = ["set"]
-exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core", "http-reqwest", "base-clock"]
+exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "tailscale-types", "base-time", "base-url", "http-core", "http-reqwest", "base-clock", "tailscale-io"]
 why = "the set family feature's direct workspace dependencies are exactly these"
 
 [[source]]
@@ -1365,7 +1367,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-sheet"
 features = "all"
-exactly = ["account-capability", "account-core", "account-tailscale", "account-wire", "base-ids", "base-url"]
+exactly = ["account-capability", "account-core", "tailscale-types", "account-wire", "base-ids", "base-url"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1407,7 +1409,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-service-accounts"
 features = "all"
-exactly = ["account-capability", "account-core", "account-match", "account-provider", "account-secrets", "account-service-core", "account-sheet", "account-tailscale", "account-wire", "base-time", "base-url"]
+exactly = ["account-capability", "account-core", "account-match", "account-provider", "account-secrets", "account-service-core", "account-sheet", "tailscale-types", "account-wire", "base-time", "base-url"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1455,7 +1457,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-dbus"
 features = "all"
-exactly = ["account-core", "account-tailscale", "account-wire", "base-ids", "base-time", "dbus-kit"]
+exactly = ["account-core", "tailscale-types", "account-wire", "base-ids", "base-time", "dbus-kit"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1473,7 +1475,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-client-dbus"
 features = "all"
-exactly = ["account-capability", "account-client", "account-core", "account-dbus", "account-match", "account-tailscale", "account-wire", "base-ids", "base-time"]
+exactly = ["account-capability", "account-client", "account-core", "account-dbus", "account-match", "tailscale-types", "account-wire", "base-ids", "base-time"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1549,9 +1551,15 @@ exactly = ["account-capability", "account-core", "account-provider", "base-url",
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
-crate = "account-tailscale"
+crate = "tailscale-types"
 features = "all"
 exactly = ["base-ids", "base-time"]
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "tailscale-io"
+features = "all"
+exactly = ["tailscale-types"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1581,7 +1589,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-families"
 features = "all"
-exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core", "http-reqwest", "base-clock"]
+exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "tailscale-types", "base-time", "base-url", "http-core", "http-reqwest", "base-clock", "tailscale-io"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1611,7 +1619,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-daemon"
 features = "all"
-exactly = ["account-callers", "account-capability", "account-core", "account-daemon-support", "account-dbus", "account-families", "account-family-oauth", "account-identities", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-settings", "account-sheet", "account-sheets", "account-spaces", "account-store", "account-tailscale", "account-wire", "base-fs", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "settings-dbus", "settings-proto", "settings-types", "base-clock"]
+exactly = ["account-callers", "account-capability", "account-core", "account-daemon-support", "account-dbus", "account-families", "account-family-oauth", "account-identities", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-settings", "account-sheet", "account-sheets", "account-spaces", "account-store", "tailscale-types", "account-wire", "base-fs", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "settings-dbus", "settings-proto", "settings-types", "base-clock", "tailscale-io"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -4887,7 +4895,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "settings-app-model"
 features = "all"
-exactly = ["account-capability", "account-core", "account-sheet", "account-tailscale", "action-core",
+exactly = ["account-capability", "account-core", "account-sheet", "tailscale-types", "action-core",
   "action-manifest", "action-settings", "action-vocab", "base-ids", "base-secret", "base-time",
   "inference-core", "inference-tailnet", "key-remap-core", "keymap", "memory-core",
   "settings-types", "ui-helpers"]
@@ -4904,7 +4912,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "settings-app-link"
 features = "all"
-exactly = ["settings-app-model", "account-tailscale", "account-wire", "compositor-dbus",
+exactly = ["settings-app-model", "tailscale-types", "account-wire", "compositor-dbus",
   "inference-dbus", "memory-core", "settings-dbus", "settings-proto", "settings-types", "sync-bus", "base-time"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -4997,7 +5005,7 @@ forbid = ["settings-app-files", "settings-app-link", "settings-app-system", "syn
   "account-core", "account-dbus", "inference-core", "account-provider", "memory-core", "action-core",
   "action-settings", "action-dbus", "action-provider", "agent-install", "agent-registry", "base-ids",
   "base-time", "base-url", "account-capability", "account-match", "account-wire", "account-sheet",
-  "inference-tailnet", "account-tailscale", "action-vocab", "action-manifest", "action-wire",
+  "inference-tailnet", "tailscale-types", "action-vocab", "action-manifest", "action-wire",
   "action-gate-wire", "permission-core", "companion-model", "zbus"]
 why = "the window reaches the computer only through settings-app-client: no files, services, accounts, memory, actions or bus crate named directly"
 
@@ -5168,7 +5176,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "shell-services"
 features = "all"
 exactly = ["account-client", "account-client-dbus", "account-core", "account-dbus",
-  "account-sheet", "account-tailscale", "account-wire", "action-client", "action-core",
+  "account-sheet", "tailscale-types", "account-wire", "action-client", "action-core",
   "action-dbus", "action-manifest", "action-provider", "action-vocab", "action-wire",
   "anyview-core", "anyview-platform", "base-clock", "base-fs", "base-ids", "base-machine",
   "base-secret", "base-time", "base-words", "bluez-proxy", "caller-identity-dbus",

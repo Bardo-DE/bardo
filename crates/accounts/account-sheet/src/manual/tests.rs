@@ -488,7 +488,7 @@ fn an_old_sign_in_view_still_reads() {
 
 #[test]
 fn an_ai_servers_address_is_marked_when_it_cannot_be_right() {
-    use account_tailscale::{MachineOwner, NodeId};
+    use tailscale_types::{MachineOwner, NodeId};
     let form = vec![
         FieldSpec {
             kind: FieldKind::ServerUrl,
@@ -540,7 +540,7 @@ fn an_ai_servers_address_is_marked_when_it_cannot_be_right() {
 
 #[test]
 fn only_a_computer_of_mine_is_one_of_mine_by_name_network_name_or_address() {
-    use account_tailscale::NodeId;
+    use tailscale_types::NodeId;
     let machine = |name: &str, address: &str, owner| {
         Machine::new(
             NodeId::parse("nTEST1").expect("node id"),

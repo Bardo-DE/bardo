@@ -28,7 +28,6 @@ use crate::agent::token::Token;
 use crate::engines::Engines;
 use account_capability::AgentProgram;
 use account_core::{AppId, AppName, DataClass, Isolation};
-use account_tailscale::NodeId;
 use base_time::Clock;
 use inference_agent_proto::fail::{Cause, Failure, Shape};
 use inference_agent_proto::openai;
@@ -38,6 +37,7 @@ use serde_json::json;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
+use tailscale_types::NodeId;
 use tokio::io::{AsyncWrite, AsyncWriteExt};
 
 /// How long a computer that has passed the judgement may take to send its request's head. The

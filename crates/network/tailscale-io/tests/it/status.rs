@@ -1,7 +1,7 @@
 use crate::common::{LOGIN_PAGE, network, start};
 use account_fake_servers::Daemon;
-use account_tailscale::MachineOwner;
-use account_tailscale::{Backend, Standing};
+use tailscale_types::MachineOwner;
+use tailscale_types::{Backend, Standing};
 
 #[tokio::test]
 async fn a_running_tailscale_lists_the_other_computers() {
@@ -11,7 +11,7 @@ async fn a_running_tailscale_lists_the_other_computers() {
     assert_eq!(status.standing(), Standing::Ready);
     assert_eq!(status.label().as_deref(), Some("ada@example.org"));
     assert_eq!(
-        status.me.as_ref().map(account_tailscale::Node::name),
+        status.me.as_ref().map(tailscale_types::Node::name),
         Some("desk")
     );
     let machines = status.machines();
@@ -42,7 +42,7 @@ async fn a_running_tailscale_lists_the_other_computers() {
 #[tokio::test]
 async fn a_renamed_computer_keeps_its_stable_node_id() {
     let (fake, api) = start("status-renamed", Daemon::Running(network())).await;
-    let id_of = |status: &account_tailscale::Status, name: &str| {
+    let id_of = |status: &tailscale_types::Status, name: &str| {
         status
             .peers
             .iter()

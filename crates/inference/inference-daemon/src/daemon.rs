@@ -29,7 +29,6 @@ use crate::toolproof::ToolProofs;
 use crate::watch::Watch;
 use account_callers::{ProcRoot, choose_proc_root, proc_notice};
 use account_client_dbus::Bus;
-use account_tailscale::LocalApi;
 use base_clock::SystemClock;
 use base_time::Clock;
 use dbus_kit::connect::BusTarget;
@@ -45,6 +44,7 @@ use std::os::unix::fs::DirBuilderExt;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
+use tailscale_io::LocalApi;
 use zbus::Connection;
 
 /// How often the daemon looks at its file for a change by someone else.

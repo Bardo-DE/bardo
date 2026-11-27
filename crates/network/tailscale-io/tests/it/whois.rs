@@ -1,7 +1,7 @@
 use crate::common::{network, start};
 use account_fake_servers::Daemon;
-use account_tailscale::MachineOwner;
-use account_tailscale::{TailscaleError, UserId};
+use tailscale_types::MachineOwner;
+use tailscale_types::{TailscaleError, UserId};
 
 #[tokio::test]
 async fn an_address_on_the_network_is_told_by_its_owner() {

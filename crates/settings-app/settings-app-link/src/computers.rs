@@ -2,12 +2,12 @@
 //! guests and the changes. The engines signal (a computer answering or not) comes from its proxy.
 
 use crate::ticks::Ticks;
-use account_tailscale::NodeId;
 use settings_app_model::external::{ComputerCandidate, ComputerName, GuestAnswer};
 use settings_app_model::{
     Absence, ComputersFound, ComputersReason, ServerDraft, ServerFault, ServerModel, Work,
 };
 use std::fmt::Debug;
+use tailscale_types::NodeId;
 
 /// One change to the computers.
 #[derive(Debug, Clone, PartialEq, Eq)]

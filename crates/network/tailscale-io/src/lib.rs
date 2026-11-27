@@ -1,4 +1,6 @@
-//! The `LocalAPI` over tailscaled's unix socket (feature `io`).
+//! A client of Tailscale's `LocalAPI` over tailscaled's unix socket.
+//!
+//! The answers are read into the typed values of `tailscale-types`.
 //!
 //! The requests are HTTP/1.1 on the socket, made with hyper's own client; the `Host` is the
 //! `local-tailscaled.sock` Tailscale's server expects (`apitype.LocalAPIHost`), and the user is
@@ -10,10 +12,6 @@
 //! and as `AuthURL` in `status`) and `GET watch-ipn-bus?mask=` (newline-delimited `Notify`,
 //! flushed per notice, until the request ends).
 
-use crate::error::TailscaleError;
-use crate::notice::Notice;
-use crate::status::Status;
-use crate::whois::WhoIs;
 use http_body_util::{BodyExt, Full};
 use hyper::body::{Bytes, Incoming};
 use hyper::client::conn::http1;
@@ -23,6 +21,7 @@ use std::io::ErrorKind;
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+use tailscale_types::{Notice, Status, TailscaleError, WhoIs};
 use tokio::net::UnixStream;
 
 /// Where tailscaled serves its `LocalAPI` on Linux.

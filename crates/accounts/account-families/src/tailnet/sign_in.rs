@@ -12,10 +12,11 @@ use account_core::{AccountLabel, Restriction};
 use account_family_kit::{Flow, Move};
 use account_provider::{SignInStep, Signed};
 use account_sheet::{SignInFault, SignInInput};
-use account_tailscale::{LocalApi, Standing, Status, TailscaleError};
 use base_time::{SharedSleeper, Sleeper};
 use base_url::WebUrl;
 use std::time::Duration;
+use tailscale_io::LocalApi;
+use tailscale_types::{Standing, Status, TailscaleError};
 
 /// How long between two looks at Tailscale while the person signs in, or while it settles.
 const LOOK_EVERY: Duration = Duration::from_secs(2);

@@ -171,13 +171,13 @@ dependencies = [
  "account-dbus",
  "account-match",
  "account-secrets",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-time",
  "futures-util",
  "rustix 1.1.6",
  "serde_json",
+ "tailscale-types",
  "thiserror 2.0.21",
  "zbus",
  "zeroize",
@@ -258,7 +258,6 @@ dependencies = [
  "account-sheets",
  "account-spaces",
  "account-store",
- "account-tailscale",
  "account-wire",
  "base-clock",
  "base-fs",
@@ -276,6 +275,8 @@ dependencies = [
  "settings-dbus",
  "settings-proto",
  "settings-types",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -301,7 +302,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-time",
@@ -309,6 +309,7 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
+ "tailscale-types",
  "tokio",
  "zbus",
 ]
@@ -413,7 +414,6 @@ dependencies = [
  "account-service-accounts",
  "account-service-core",
  "account-sheet",
- "account-tailscale",
  "account-wire",
  "base-clock",
  "base-ids",
@@ -424,6 +424,8 @@ dependencies = [
  "http-core",
  "http-reqwest",
  "serde_json",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
 ]
@@ -709,10 +711,10 @@ dependencies = [
  "account-secrets",
  "account-service-core",
  "account-sheet",
- "account-tailscale",
  "account-wire",
  "base-time",
  "base-url",
+ "tailscale-types",
  "thiserror 2.0.21",
 ]
 
@@ -775,13 +777,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-url",
  "proptest",
  "serde",
  "serde_json",
+ "tailscale-types",
  "thiserror 2.0.21",
 ]
 
@@ -827,24 +829,6 @@ dependencies = [
  "account-fake",
  "base-fs",
  "base-testkit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "account-tailscale"
-version = "0.1.0"
-dependencies = [
- "account-fake-servers",
- "account-tailscale",
- "base-ids",
- "base-testkit",
- "base-time",
- "http-body-util",
- "hyper",
- "hyper-util",
- "serde",
- "serde_json",
  "thiserror 2.0.21",
  "tokio",
 ]
@@ -8021,7 +8005,6 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-match",
- "account-tailscale",
  "account-wire",
  "base-fs",
  "base-ids",
@@ -8038,6 +8021,7 @@ dependencies = [
  "rustix 1.1.6",
  "serde",
  "serde_json",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
@@ -8084,7 +8068,6 @@ dependencies = [
  "account-provider",
  "account-secrets",
  "account-settings",
- "account-tailscale",
  "account-wire",
  "base-clock",
  "base-fs",
@@ -8136,6 +8119,8 @@ dependencies = [
  "speech-host-client",
  "speech-provider",
  "subtle",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -8211,7 +8196,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
- "account-tailscale",
  "base-ids",
  "base-secret",
  "base-testkit",
@@ -8227,6 +8211,7 @@ dependencies = [
  "model-vision-prep",
  "serde",
  "speech-provider",
+ "tailscale-types",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -8257,7 +8242,6 @@ name = "inference-tailnet"
 version = "0.1.0"
 dependencies = [
  "account-fake-servers",
- "account-tailscale",
  "base-clock",
  "base-fs",
  "base-testkit",
@@ -8268,6 +8252,8 @@ dependencies = [
  "inference-tailnet",
  "serde",
  "serde_json",
+ "tailscale-io",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -13820,7 +13806,6 @@ dependencies = [
 name = "settings-app-link"
 version = "0.1.0"
 dependencies = [
- "account-tailscale",
  "account-wire",
  "base-time",
  "compositor-dbus",
@@ -13832,6 +13817,7 @@ dependencies = [
  "settings-proto",
  "settings-types",
  "sync-bus",
+ "tailscale-types",
  "tokio",
  "toml",
 ]
@@ -13843,7 +13829,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-sheet",
- "account-tailscale",
  "action-core",
  "action-manifest",
  "action-settings",
@@ -13859,6 +13844,7 @@ dependencies = [
  "regex",
  "serde_json",
  "settings-types",
+ "tailscale-types",
  "toml",
  "ui-helpers",
 ]
@@ -14502,7 +14488,6 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-sheet",
- "account-tailscale",
  "account-wire",
  "action-checkpoint",
  "action-client",
@@ -14580,6 +14565,7 @@ dependencies = [
  "speech-wire",
  "sync-bus",
  "system-tray",
+ "tailscale-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -16094,6 +16080,30 @@ name = "tagptr"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b2093cf4c8eb1e67749a6762251bc9cd836b6fc171623bd0a9d324d37af2417"
+
+[[package]]
+name = "tailscale-io"
+version = "0.1.0"
+dependencies = [
+ "account-fake-servers",
+ "base-testkit",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "tailscale-types",
+ "tokio",
+]
+
+[[package]]
+name = "tailscale-types"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
 
 [[package]]
 name = "tar"

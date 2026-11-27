@@ -4,8 +4,8 @@
 //! candidate, while Tailscale is not an account in the accounts.
 
 use account_dbus::accounts::{TailnetProxy, machine_from_dbus};
-use account_tailscale::Machine;
 use std::pin::Pin;
+use tailscale_types::Machine;
 
 /// A boxed future, so the seam can be a trait object.
 pub type Boxed<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;

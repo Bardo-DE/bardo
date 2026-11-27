@@ -5,7 +5,6 @@ use super::common::{
     observed, wait,
 };
 use account_fake_servers::Daemon;
-use account_tailscale::NodeId;
 use base_testkit::GENEROUS;
 use inference_tailnet::{
     Config, Footing, Guests, Lending, Limits, TailnetError, Visit, Visits, lend,
@@ -13,6 +12,7 @@ use inference_tailnet::{
 use std::net::{IpAddr, SocketAddr};
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
+use tailscale_types::NodeId;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::sync::{Notify, watch};
 

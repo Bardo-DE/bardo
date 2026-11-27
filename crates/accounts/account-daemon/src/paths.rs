@@ -55,7 +55,7 @@ impl Paths {
     ) -> Result<Self, PathError> {
         // Like the XDG rule: a relative path is invalid and ignored.
         let tailscale_socket = absolute(var(TAILSCALE_SOCKET_VAR))
-            .unwrap_or_else(|| PathBuf::from(account_tailscale::DEFAULT_SOCKET));
+            .unwrap_or_else(|| PathBuf::from(tailscale_io::DEFAULT_SOCKET));
         let program_path = var("PATH").unwrap_or_default().into();
         let xdg = Xdg::new(var);
         let state = xdg.dir("XDG_STATE_HOME", ".local/state")?;

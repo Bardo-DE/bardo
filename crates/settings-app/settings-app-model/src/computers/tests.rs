@@ -5,9 +5,9 @@ use super::{
     ComputersReason, ComputersState as State, computers_step,
 };
 use crate::Absence;
-use account_tailscale::NodeId;
 use inference_core::{ComputerName, PlaceId, PlaceKind, PlaceModel, PlaceRow, PlaceState, Takes};
 use inference_tailnet::{Approval, CandidateModel, ComputerCandidate, GuestAnswer};
+use tailscale_types::NodeId;
 
 fn node(text: &str) -> NodeId {
     NodeId::parse(text).expect("a node id")

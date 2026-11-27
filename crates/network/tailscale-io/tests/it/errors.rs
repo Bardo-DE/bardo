@@ -1,6 +1,7 @@
 use crate::common::{LOGIN_PAGE, network, scratch, start};
 use account_fake_servers::Daemon;
-use account_tailscale::{LocalApi, TailscaleError};
+use tailscale_io::LocalApi;
+use tailscale_types::TailscaleError;
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixListener;
 

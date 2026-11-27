@@ -18,8 +18,6 @@ use account_families::{DynProvider, TailnetProvider};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_sheet::{SheetInput, SheetView, SignInFault};
-use account_tailscale::LocalApi;
-use account_tailscale::{Machine, MachineOwner};
 use base_testkit::PrivateBus;
 use base_testkit::{Deadline, Scratch};
 use base_time::FixedClock;
@@ -29,6 +27,8 @@ use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, caller, error_name, eventually};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use tailscale_io::LocalApi;
+use tailscale_types::{Machine, MachineOwner};
 
 const LOGIN_PAGE: &str = "https://login.tailscale.com/a/0123456789abcdef";
 
@@ -338,8 +338,7 @@ async fn quiet_for(
 /// Waits until nothing listens on the fake's socket any more (its server was stopped).
 async fn until_stopped(api: &LocalApi) {
     base_testkit::eventually_some_async("the stopped fake to refuse connections", || async {
-        (api.status().await == Err(account_tailscale::TailscaleError::NotRunning(None)))
-            .then_some(())
+        (api.status().await == Err(tailscale_types::TailscaleError::NotRunning(None))).then_some(())
     })
     .await;
 }

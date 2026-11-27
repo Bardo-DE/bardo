@@ -2,11 +2,11 @@
 
 use super::common::{addresses, fake, free_port, network, scratch};
 use account_fake_servers::Daemon;
-use account_tailscale::NodeId;
 use base_testkit::GENEROUS;
 use inference_tailnet::{DialError, Dialer, OnFault, Relay};
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
+use tailscale_types::NodeId;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, UnixStream};
 

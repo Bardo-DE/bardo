@@ -23,7 +23,6 @@
 use super::book::AttachedBook;
 use account_capability::ModelId;
 use account_core::SecretText;
-use account_tailscale::NodeId;
 use base_clock::SystemClock;
 use base_fs::atomic::AtomicWrite;
 use base_fs::move_aside;
@@ -39,6 +38,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
+use tailscale_types::NodeId;
 
 /// The most models one computer may have here.
 pub const MOST_MODELS: usize = 32;

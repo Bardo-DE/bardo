@@ -1,0 +1,19 @@
+[package]
+name = "tailscale-types"
+description = "What Tailscale's LocalAPI says, as typed values and the readers of its answers: the status of this computer's tailnet, who a tailnet address belongs to, the computers on the network, the notices of the watch stream, and the error for a question that got no answer. Pure: the client is tailscale-io."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

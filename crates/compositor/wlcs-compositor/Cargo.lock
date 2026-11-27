@@ -31,13 +31,13 @@ name = "account-dbus"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-tailscale",
  "account-wire",
  "base-ids",
  "base-time",
  "dbus-kit",
  "serde",
  "serde_json",
+ "tailscale-types",
  "tokio",
  "zbus",
 ]
@@ -49,17 +49,6 @@ dependencies = [
  "account-capability",
  "base-ids",
  "serde",
-]
-
-[[package]]
-name = "account-tailscale"
-version = "0.1.0"
-dependencies = [
- "base-ids",
- "base-time",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -3370,6 +3359,17 @@ dependencies = [
  "serde",
  "slotmap",
  "smallvec",
+]
+
+[[package]]
+name = "tailscale-types"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]

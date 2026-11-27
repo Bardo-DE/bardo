@@ -86,7 +86,7 @@ async fn with_no_broker_a_session_is_unreachable() {
 #[tokio::test]
 async fn the_guest_and_computer_calls_are_unsupported_when_hosted() {
     let accounts = Inference::over(Brokered::new(app(), NoBroker));
-    let node = account_tailscale::NodeId::parse("nPI").expect("node");
+    let node = tailscale_types::NodeId::parse("nPI").expect("node");
     let unsupported = Some(ClientError::Transport(TransportError::Unsupported));
     assert_eq!(accounts.guests().await.err(), unsupported);
     assert_eq!(accounts.candidates().await.err(), unsupported);

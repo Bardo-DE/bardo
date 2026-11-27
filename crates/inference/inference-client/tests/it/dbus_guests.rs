@@ -6,7 +6,6 @@
 #![cfg(feature = "dbus")]
 
 use account_dbus::{BusStream, Details};
-use account_tailscale::NodeId;
 use base_testkit::PrivateBus;
 use base_time::UnixSeconds;
 use inference_client::{
@@ -15,6 +14,7 @@ use inference_client::{
 use inference_tailnet::{Approval, CandidateModel, GuestAsk, RowState};
 use inference_tailnet::{GuestAnswer, GuestRow};
 use std::sync::{Arc, Mutex};
+use tailscale_types::NodeId;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};

@@ -12,7 +12,8 @@ publish.workspace = true
 base-time = { path = "../../base/base-time" }
 base-clock = {optional = true, path = "../../base/base-clock"}
 base-fs = {optional = true, path = "../../base/base-fs"}
-account-tailscale = {path = "../../accounts/account-tailscale"}
+tailscale-types = {path = "../../network/tailscale-types"}
+tailscale-io = {optional = true, path = "../../network/tailscale-io"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -26,7 +27,6 @@ tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "r
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 # The integration tests use the listeners, the dial and the relay, which the `io` feature builds.
 inference-tailnet = {path = ".", features = ["io", "persist"]}
-account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 
@@ -41,7 +41,7 @@ io = [
   "dep:hyper-util",
   "dep:http-body-util",
   "dep:tokio",
-  "account-tailscale/io",
+  "dep:tailscale-io",
 ]
 
 [lints]

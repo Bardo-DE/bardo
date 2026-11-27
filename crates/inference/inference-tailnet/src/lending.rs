@@ -5,8 +5,8 @@
 //! `inference-client`. They live here so a client that only talks to the bus builds none of the
 //! lending computer's own dependencies.
 
-use account_tailscale::NodeId;
 use base_time::UnixSeconds;
+use tailscale_types::NodeId;
 
 /// The person's answer to a computer: what `AnswerGuest` takes, as a word.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

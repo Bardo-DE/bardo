@@ -4,9 +4,9 @@
 
 use crate::Absence;
 use crate::Live;
-use account_tailscale::NodeId;
 use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, PlaceTarget};
 use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
+use tailscale_types::NodeId;
 
 use super::server::{
     ComputersReason, NewServer, ServerDraft, ServerEdit, ServerModel, ServerPhase, ServerRefusal,

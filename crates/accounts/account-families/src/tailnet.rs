@@ -1,7 +1,7 @@
 //! The Tailnet family: Tailscale on this computer (any file with `kind = "own_program"`). The
 //! account holds NO credential of any kind: Tailscale's own program keeps the login and the accounts service
 //! only asks it, over the socket it serves, whether it is running and who is signed in
-//! (`account-tailscale`). Adding the account is asking: it is added when Tailscale answers and
+//! (`tailscale-io`). Adding the account is asking: it is added when Tailscale answers and
 //! somebody is signed in, and when nobody is, the sign-in hands the person Tailscale's own page
 //! to open. The accounts service never takes a Tailscale password or key.
 //!
@@ -18,8 +18,8 @@ use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInMode,
     SignInStart,
 };
-use account_tailscale::LocalApi;
 use base_time::SharedSleeper;
+use tailscale_io::LocalApi;
 
 pub use sign_in::TailnetFlow;
 

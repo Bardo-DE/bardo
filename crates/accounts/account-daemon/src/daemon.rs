@@ -126,8 +126,8 @@ impl Config {
 }
 
 /// Tailscale as `paths` names it: its socket, and its program looked for on `PATH` too.
-fn tailscale(paths: &Paths) -> account_tailscale::LocalApi {
-    account_tailscale::LocalApi::new(&paths.tailscale_socket).with_path(&paths.program_path)
+fn tailscale(paths: &Paths) -> tailscale_io::LocalApi {
+    tailscale_io::LocalApi::new(&paths.tailscale_socket).with_path(&paths.program_path)
 }
 
 /// The provider files accountd serves and the families that serve them.

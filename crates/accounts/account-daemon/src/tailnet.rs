@@ -1,6 +1,6 @@
 //! Following Tailscale: the state of the Tailscale account, and the computers `Tailnet1` lists.
 //!
-//! accountd asks Tailscale (`account-tailscale`, over its unix socket) and never keeps a copy of
+//! accountd asks Tailscale (`tailscale-io`, over its unix socket) and never keeps a copy of
 //! the answer longer than a look: `Machines` reads Tailscale when it is called. What this module
 //! keeps up to date is the account's state and the `Changed` signal.
 //!
@@ -22,9 +22,10 @@
 use crate::host::Host;
 use account_core::AccountId;
 use account_core::{AccountState, AuthKind};
-use account_tailscale::Machine;
-use account_tailscale::{LocalApi, Standing, Status, TailscaleError};
 use std::time::Duration;
+use tailscale_io::LocalApi;
+use tailscale_types::Machine;
+use tailscale_types::{Standing, Status, TailscaleError};
 
 /// How accountd follows Tailscale: where it is, and how often it looks.
 #[derive(Debug, Clone)]

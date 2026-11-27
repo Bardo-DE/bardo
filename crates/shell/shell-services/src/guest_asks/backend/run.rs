@@ -2,7 +2,6 @@
 //! server's answers and the commands, stepping [`GuestAsksState`], posting its notices and
 //! giving inferd the person's answers.
 
-use account_tailscale::NodeId;
 use inference_client::{
     ClientError, ComputerError, DbusTransport, GuestChange, Inference, TransportError,
 };
@@ -11,6 +10,7 @@ use shell_model::guest_asks::{
     choice_of, shown_for, step,
 };
 use shell_model::notifications::Said;
+use tailscale_types::NodeId;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::UnboundedReceiver;
 use zbus::Connection;

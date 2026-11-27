@@ -29,9 +29,9 @@ use crate::error::TransportError;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
-use account_tailscale::NodeId;
 use inference_core::{ComputerName, InferSession, OpenOptions, PlaceId, PlaceRow, Readiness};
 use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
+use tailscale_types::NodeId;
 
 /// Carries requests to inferd.
 pub trait Transport: Send + Sync {

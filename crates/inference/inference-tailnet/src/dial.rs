@@ -7,10 +7,11 @@
 //! network address: it goes out on the network or not at all. This is done for every
 //! connection, not once.
 
-use account_tailscale::{LocalApi, Standing, TailscaleError, UserId, WhoIs};
-use account_tailscale::{MachineOwner, NodeId};
 use std::net::{IpAddr, SocketAddr};
 use std::time::Duration;
+use tailscale_io::LocalApi;
+use tailscale_types::{MachineOwner, NodeId};
+use tailscale_types::{Standing, TailscaleError, UserId, WhoIs};
 use tokio::net::{TcpSocket, TcpStream};
 
 /// How long one connection may take to be made before it is given up as not answering. Far
@@ -146,7 +147,7 @@ async fn connect(from: IpAddr, to: SocketAddr) -> std::io::Result<TcpStream> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_tailscale::{User, WhoIsNode};
+    use tailscale_types::{User, WhoIsNode};
 
     const ME: UserId = UserId(1);
 

@@ -15,8 +15,8 @@ use crate::Bus;
 use crate::failure::link_error;
 use account_client::{Changes, LinkError, Malformed};
 use account_dbus::accounts::{TailnetProxy, machine_from_dbus};
-use account_tailscale::Machine;
 use futures_util::StreamExt;
+use tailscale_types::Machine;
 
 /// accountd's list of the person's computers, as an app uses it over the bus.
 #[derive(Debug, Clone)]

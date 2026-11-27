@@ -20,9 +20,9 @@
 use crate::guests::{Guests, State};
 use crate::identity::Identity;
 use crate::refusal::TailnetError;
-use account_tailscale::{MachineOwner, NodeId};
-use account_tailscale::{TailscaleError, WhoIs};
 use std::net::IpAddr;
+use tailscale_types::{MachineOwner, NodeId};
+use tailscale_types::{TailscaleError, WhoIs};
 
 /// A computer that asked, as Tailscale names it.
 #[derive(Debug, Clone, PartialEq, Eq)]

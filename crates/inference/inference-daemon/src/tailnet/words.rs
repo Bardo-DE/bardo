@@ -1,14 +1,14 @@
 //! The words a person reads about the Tailscale network.
 //!
 //! The words a person reads about the Tailscale network, written from the typed reasons the
-//! libraries return (`inference_tailnet::TailnetError`, `DialError`, `account_tailscale::TailscaleError`).
+//! libraries return (`inference_tailnet::TailnetError`, `DialError`, `tailscale_types::TailscaleError`).
 //! inferd owns the settings page and the answers to the asking computer, so the sentences live
 //! here and nowhere in those libraries. A refusal travels back to the asking computer, so each
 //! sentence is written from its side: "that computer" is the one that lends, "this computer"
 //! the one that asked.
 
-use account_tailscale::TailscaleError;
 use inference_tailnet::{DialError, TailnetError};
+use tailscale_types::TailscaleError;
 
 /// Why a request was refused, as a plain sentence ending in a full stop.
 #[must_use]
@@ -75,7 +75,7 @@ pub fn fault(fault: &DialError) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_tailscale::MachineOwner;
+    use tailscale_types::MachineOwner;
 
     /// Words a person reads never include a program name or a term of the network's plumbing.
     const JARGON: [&str; 15] = [

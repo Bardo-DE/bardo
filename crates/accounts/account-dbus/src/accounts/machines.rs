@@ -5,9 +5,9 @@
 use crate::Details;
 use crate::json_value::bad;
 use account_core::CoreError;
-use account_tailscale::{Machine, MachineOwner, NodeId};
 use base_time::UnixSeconds;
 use std::net::IpAddr;
+use tailscale_types::{Machine, MachineOwner, NodeId};
 use zbus::zvariant::{OwnedValue, Value};
 
 /// The vardict key of the node id (`s`, the same as the row's first part).

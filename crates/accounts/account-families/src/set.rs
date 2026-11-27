@@ -25,13 +25,13 @@ use account_discover::{Dns, DnsError, HickoryDns, MxRecord, SrvRecord};
 use account_family_generic::SharedDns;
 use account_family_oauth::ClientFiles;
 use account_provider::{DomainName, ProviderFileError, ProviderSet, ProviderSpec, parse_provider};
-use account_tailscale::LocalApi;
 use base_time::Clock;
 use http_core::SharedHttp;
 use http_reqwest::ReqwestHttp;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use tailscale_io::LocalApi;
 
 /// What reading the directories found.
 #[derive(Debug, Default)]

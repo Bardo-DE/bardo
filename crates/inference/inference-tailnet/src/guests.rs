@@ -9,7 +9,6 @@
 //! person may want back. The questions still waiting are kept in memory only: after a restart
 //! the computer asks again when it next wants a model.
 
-use account_tailscale::NodeId;
 #[cfg(feature = "persist")]
 use base_clock::SystemClock;
 #[cfg(feature = "persist")]
@@ -24,6 +23,7 @@ use std::collections::BTreeMap;
 #[cfg(feature = "persist")]
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError, RwLock};
+use tailscale_types::NodeId;
 
 /// The most records kept. The person's own computers are a handful.
 const MOST_GUESTS: usize = 256;

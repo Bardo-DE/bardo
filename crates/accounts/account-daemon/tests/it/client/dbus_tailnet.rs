@@ -17,14 +17,14 @@ use account_fake_servers::{Daemon, FakeLocalApi, FakePeer, Network};
 use account_secrets::MemorySecrets;
 use account_service::AccountService;
 use account_service_core::registry::Registry;
-use account_tailscale::LocalApi;
-use account_tailscale::{Machine, MachineOwner};
 use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use base_time::FixedClock;
 use caller_role_types::CallerRole;
 use std::sync::Arc;
 use std::time::Duration;
+use tailscale_io::LocalApi;
+use tailscale_types::{Machine, MachineOwner};
 
 struct World {
     bus: PrivateBus,

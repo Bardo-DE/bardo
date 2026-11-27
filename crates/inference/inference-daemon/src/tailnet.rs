@@ -27,8 +27,6 @@ pub use machines::{BusMachines, Machines};
 
 use crate::attached::relay_socket;
 use crate::engines::Engines;
-use account_tailscale::LocalApi;
-use account_tailscale::NodeId;
 use base_time::Clock;
 use inference_tailnet::{
     Config, Dialer, GuestEvent, Guests, Lending, Listening, Observer, OnFault, Relay, Timing, lend,
@@ -37,6 +35,8 @@ use inference_turns::audit::AuditOut;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, PoisonError};
+use tailscale_io::LocalApi;
+use tailscale_types::NodeId;
 use tokio::sync::{broadcast, watch};
 use tokio::task::JoinHandle;
 
