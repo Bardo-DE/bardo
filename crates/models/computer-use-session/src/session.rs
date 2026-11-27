@@ -2,10 +2,10 @@
 
 use std::collections::VecDeque;
 
-use computer_use_action::{Point, WindowSpace};
+use computer_use_geometry::{Point, WindowSpace};
 use computer_use_parse::{DropReason, ParseLimits, Parsed, ToolContext};
 use computer_use_vendors::WireCodec;
-use model_provider::{
+use model_types::{
     ImageInput, Message, ModelName, OutputShape, Part, Role, ToolChoice, TurnRequest,
 };
 use model_vision_prep::FrameMap;
@@ -155,7 +155,7 @@ impl ComputerUseSession {
             sampling: self.settings.sampling,
             reasoning: self.settings.reasoning,
             engine: self.settings.engine,
-            choice_scores: model_provider::ChoiceScores::Off,
+            choice_scores: model_types::ChoiceScores::Off,
         }
     }
 
@@ -164,7 +164,7 @@ impl ComputerUseSession {
     /// message starts with the vendor's tool results for those calls (`obs.prev`).
     fn build_wire(
         &self,
-        wire: computer_use_action::WireDialect,
+        wire: model_types::WireDialect,
         obs: &ObservationIn,
         map: &FrameMap,
         image: Option<ImageInput>,
@@ -219,7 +219,7 @@ impl ComputerUseSession {
             sampling: self.settings.sampling,
             reasoning: self.settings.reasoning,
             engine: self.settings.engine,
-            choice_scores: model_provider::ChoiceScores::Off,
+            choice_scores: model_types::ChoiceScores::Off,
         }
     }
 

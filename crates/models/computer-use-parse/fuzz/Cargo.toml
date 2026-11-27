@@ -15,9 +15,9 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = { workspace = true }
-computer-use-action = { path = "../../computer-use-action" }
+computer-use-geometry = { path = "../../computer-use-geometry" }
+model-types = { path = "../../model-types" }
 computer-use-parse = { path = ".." }
-model-provider = { path = "../../model-provider" }
 
 
 [[bin]]

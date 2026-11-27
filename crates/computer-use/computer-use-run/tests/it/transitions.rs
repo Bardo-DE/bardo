@@ -6,8 +6,7 @@ use action_core::{CallRefusal, ConfirmEnd};
 use action_gate_wire::GateAnswer;
 use action_wire::GrantAnswer;
 use computer_use_action::{
-    Choice, ComputerUseAction, Coord, Extracted, ExtractedText, FieldName, FinishOutcome, Rect,
-    Size, Summary,
+    Choice, ComputerUseAction, Extracted, ExtractedText, FieldName, FinishOutcome, Summary,
 };
 use computer_use_bus::{
     ActionOutcome, ActionResult, BlockedOn, ComputerUseOutcome, ComputerUseRecord, FailReason,
@@ -15,16 +14,16 @@ use computer_use_bus::{
 };
 use computer_use_capture::{CaptureError, DamageAt, DamageSource, FrameWant, Settle};
 use computer_use_desktop::{BackendKind, GlowState, LeaseId, Stamp, Suspend, ToplevelIdent};
+use computer_use_geometry::{Coord, Rect, Size};
 use computer_use_run::{
     CheckResult, ComputerUseModelError, ComputerUseSignal, RunEffect, RunInput, RunPhase,
     SettleWatch, StepEvent,
 };
 use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 use inference_core::StepIndex;
-use model_provider::Money;
+use model_types::Money;
 use permission_core::{BreakerTrip, DenyCode};
 use provenance::{ConfirmId, Labelled, MessageKind, ReportStatus, SpaceScope};
-use rust_decimal::Decimal;
 
 const STOCK: BackendKind = BackendKind::KwinStock;
 
@@ -46,7 +45,7 @@ fn damage(at: u64) -> DamageAt {
     DamageAt {
         at: Stamp(at),
         region: Rect {
-            origin: computer_use_action::Point::new(Coord(0), Coord(0)),
+            origin: computer_use_geometry::Point::new(Coord(0), Coord(0)),
             size: Size::new(Coord(1), Coord(1)),
         },
         source: DamageSource::PixelDiff,
@@ -361,7 +360,7 @@ fn a_verdict_to_run_injects_and_the_input_settles_before_the_next_look() {
     let planned = planned.expect("an injection");
     assert_eq!(
         planned.at,
-        computer_use_seat_input::ResolvedPoints::One(computer_use_action::Point::new(
+        computer_use_seat_input::ResolvedPoints::One(computer_use_geometry::Point::new(
             Coord(30),
             Coord(20)
         )),
@@ -558,7 +557,7 @@ fn zoom_and_observe_just_look_again_and_drop_the_rest() {
         ComputerUseAction::Observe,
         ComputerUseAction::Zoom {
             region: Rect {
-                origin: computer_use_action::Point::new(Coord(0), Coord(0)),
+                origin: computer_use_geometry::Point::new(Coord(0), Coord(0)),
                 size: Size::new(Coord(10), Coord(10)),
             },
         },
@@ -766,10 +765,10 @@ fn an_empty_reply_and_a_vendor_hint_count_as_failures_and_look_again_at_the_next
 #[test]
 fn spend_over_the_budget_ends_the_run_after_the_reply() {
     let mut t = task(model_says());
-    t.budget.spend = Money::usd(Decimal::new(100, 6));
+    t.budget.spend = Money::usd(100, 6);
     let mut d = Drive::thinking(STOCK, t, tree(vec![]));
     let mut r = reply(vec![click_at(1, 1)]);
-    r.charge = Some(Money::usd(Decimal::new(101, 6)));
+    r.charge = Some(Money::usd(101, 6));
     d.feed(RunInput::ModelReplied(r));
     assert_eq!(
         finished_with(&d),
@@ -794,7 +793,7 @@ fn a_zero_spend_cap_stops_on_a_cloud_reply_only() {
         Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend))
     );
     let mut paid = task(model_says());
-    paid.budget.spend = Money::usd(Decimal::ONE);
+    paid.budget.spend = Money::usd(1, 0);
     let mut allowed = Drive::thinking(STOCK, paid, tree(vec![]));
     let mut r = reply(vec![click_at(1, 1)]);
     r.cloud = true;
@@ -1062,7 +1061,7 @@ fn a_sensitive_window_asks_the_person_even_when_the_router_says_run() {
 /// `second` after a look at frame byte `look`.
 fn repeat_after_click(
     look: u8,
-    second: ComputerUseAction<computer_use_action::WindowSpace>,
+    second: ComputerUseAction<computer_use_geometry::WindowSpace>,
 ) -> Drive {
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
     d.feed(RunInput::ModelReplied(reply(vec![click_at(1, 1)])));
@@ -1099,7 +1098,7 @@ fn the_same_input_on_a_screen_that_did_not_change_is_refused_before_it_is_asked(
 fn press(
     mods: &[computer_use_action::Modifier],
     key: keyboard_types::Key,
-) -> ComputerUseAction<computer_use_action::WindowSpace> {
+) -> ComputerUseAction<computer_use_geometry::WindowSpace> {
     ComputerUseAction::Key {
         chord: computer_use_action::Chord::new(mods.iter().copied().collect(), key).unwrap(),
         repeat: computer_use_action::Repeat::ONCE,

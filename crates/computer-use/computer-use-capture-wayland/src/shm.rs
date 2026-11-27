@@ -2,8 +2,8 @@
 //! mapping on our side, so no `unsafe`).
 
 use super::state::CapState;
-use computer_use_action::{DeviceSize, PixelFormat};
 use computer_use_capture::CaptureError;
+use computer_use_geometry::{DeviceSize, PixelFormat};
 use rustix::fs::{MemfdFlags, ftruncate, memfd_create};
 use rustix::io::pread;
 use std::os::fd::OwnedFd;

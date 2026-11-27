@@ -4,7 +4,7 @@
 use libfuzzer_sys::fuzz_target;
 use model_http::{BodyKind, HttpStatus, ResponseHead};
 use model_openai_compat::{Flavor, OpenAiCodec, decode_transcription};
-use model_provider::ModelName;
+use model_types::ModelName;
 use model_wire::{ChatCodec, EmbedCodec, ErrorWire};
 
 fuzz_target!(|data: &[u8]| {

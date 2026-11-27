@@ -17,25 +17,29 @@ trait), section 6 (copy the recipe).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `computer-use-action` | the provider-neutral action vocabulary: coordinate spaces (`CoordSpace`, `WindowSpace`, `ImageSpace`, `GridSpace`), `Point`/`Size`/`Rect`/`Length`, `Target`, `ComputerUseAction<S>`, `ActionClass`, keys and chords, bounded text, dialect names (`ComputerUseDialect`, `ModelSpace`), `ActionProfile` and the answer-shape options it carries (`CallFormat`, `AnswerShape`, `HistoryShape`, `ResolutionWording`) | none |
+| `computer-use-geometry` | coordinates that carry the space they live in: `CoordSpace`, `WindowSpace`, `ImageSpace`, `GridSpace`, `ModelSpace` (where a dialect's points live), `Coord`, `Point`/`Size`/`Rect`/`Length`, `GridMax`, `Scale120`, `DeviceSize`, `PixelFormat` | none |
+| `computer-use-action` | the provider-neutral action vocabulary: `Target`, `ComputerUseAction<S>`, `ActionClass`, keys and chords, bounded text, the run gate's `RunMode` and `WindowTrust` | none |
 | `model-vision-prep` | `ResizeRule`, `fit`, `image_tokens`, `FrameMap`, `RawFrame`, `prepare` (feature `pixels`) | none; `pixels` is CPU only |
-| `model-provider` | `TurnRequest`, `Message`, `Part`, `ToolSpec`, `TurnEvent`, `TurnSink`, `Caps`, the `Provider` trait (with `charges() -> Charges`), `ProviderError`; `money` (`Money`, `Charges`, `MoneyError`: only what a provider reports, no price table); the controls (`Sampling`, `ToolParallelism`, `EngineExtras`, `ThoughtSeal`, `Knob`); `embed` (`Embedder`, `EmbedTurn`, `EmbedRole`, `plan_batches`); `shape` (`Shape`, `Extract`, the schema, GBNF and regex conversions); `retry` (`RetryClass`, `next_wait`, `Retrying`); `logprobs` (`ChoiceScores`, `FirstTokenLogprobs`, `Logprob`, the `option_permille` helper); `sequence` (`check`); feature `testing`: `ScriptedProvider` | none |
+| `model-types` | the data of a turn: `TurnRequest`, `Message`, `Part`, `ToolSpec`, `TurnEvent`, `TurnSink`, `Caps`, `ProviderError` and `ModelInfo`; `money` (`Money` as digits in a whole number of 10^-18 units with a `Currency` code, `Charges`, `MoneyError`: only what a provider reports, no price table, no third-party number type in the API); the controls (`Sampling`, `ToolParallelism`, `EngineExtras`, `ThoughtSeal`, `Knob`); `embed` (`EmbedTurn`, `EmbedRole`, `EmbedEnd`); `shape` (`Shape`, `Extract`, the schema, GBNF and regex conversions, `sanitize_schema`); `retry` (`RetryClass`, `ProviderError::retry_class`); `logprobs` (`ChoiceScores`, `FirstTokenLogprobs`, `Logprob`, the `option_permille` helper); `dialect` and `profile` (`WireDialect`, `ComputerUseDialect`, `ActionProfile` and the answer-shape options it carries: `CallFormat`, `AnswerShape`, `HistoryShape`, `ResolutionWording`) | none |
+| `model-core` | the `Provider` trait (with `charges() -> Charges`), the `Embedder` trait and `plan_batches`; `retry` (`RetryPolicy`, `next_wait`, `Retrying` over an injected `Sleeper`); `sequence` (`check_sequence`) | none |
+| `model-fake` | test fakes, listed under `[dev-dependencies]` only: `ScriptedProvider` and `Script` (scripted turns that record every request), and `stream`, the reply bytes of the OpenAI-compatible driver run through its framer and decoder with the invariants every reply keeps | none |
 | `computer-use-parse` | `parse_text`, `parse_tool_calls`, `parse_tool_calls_with` (`ToolContext`, `CursorAt`), `read_calls` (calls read from the reply text, `ParamKinds`), `answer_parts` (the `<think>` and `<action>` of a reply), `Parsed`, `Dropped`, `ParseLimits` | none |
 | `computer-use-vendors` | the `WireCodec` trait and one codec per `WireDialect` (formerly `computer-use-wire`): tool declarations, decoders and result encoders for the Anthropic, OpenAI and Gemini computer-use tools | none |
 | `computer-use-session` | `ComputerUseSession`: history window, prompt assembly (`prompts/`), parse with one repair, mapping to window space; `TurnSettings`, `TranscriptSink`; `trait ActionDialect` with default methods (`wire`, `is_text`, `is_tool`, `system`, `schema`, `tools`, `retry`, `parse`), one impl per family and `spec(dialect) -> &'static dyn ActionDialect` (the only `match` on `ComputerUseDialect` that picks behaviour; the dialect stays the serde key) | none |
 | `model-replay` | cassette format, `ReplayProvider`, `RecordingProvider` over a `CassetteSink`; `wire`: wire cassettes recorded and replayed at the `Transport` seam (`RecordingTransport`, `ReplayTransport`, `ChunkPlan`); `check_sequence`; `speech`: speech cassettes (audio as digests), `SpeechReplay`, `RecordingSpeech` | an injected sink |
 | `model-catalog` | `ModelEntry` (`family`, `cold_start_estimate_s`, `Capabilities`: `Modality` inputs and outputs with the detail tables `text_out`, `image_in`, `audio_in`, `audio_out`, `vector_out`, `actions_out`), `EngineProfile` (may narrow inputs and outputs; `context_arg: ContextArg` says how the engine takes its window), `TextOut` (`context`/`max_output` are what one engine line serves; `context_max`, `max_output_max`, `context_min` are the model's own limits, all optional), `Locality` (`OnDevice`, or `Remote { reach }` with `Reach { provider, model, wire }` (no prices)), `Slot`, `fits`, `slot_members`, `reachable`, `parse_entry`, `merge_catalogs`; the shipped `catalog/*.toml`. The older view (`roles`, `caps`, `sampling`, `speech`, `embed`) is derived and deprecated: use `Slot` | none |
 | `engine-spec` | what differs between the engines, as `trait Engine` with default methods (`slug`, `disk_word`, `bus_word`, `running_word`, `packages`, `package_paths`, `pointed`, `command`, `seat_flags`, `env`, `caches_prompts`, `hears`, `speaks`, `accepts`, `requires_gpu_estimate`), one unit struct per engine and `engine(kind) -> &'static dyn Engine` (the only `match` on `EngineKind` that picks behaviour; the kind stays the serde key); `ENGINES`, `engine_from_disk_word`; the launch values (`Launch`, `LaunchArgs`, `HostEnv`, `ProgramPath`, `EnginePaths` as a map by kind, `repo_dir`, `snapshot_dir`); `PackageSource` and its types; `check_entry` (what an entry needs of its engines) | none |
-| `engine-supervisor` | the pure `step` and `budget`; `command` and `command_with_window` (catalog entry and a `Window`, the served one or a chosen one, to `UnitSpec`, or `MissingProgram`); the seams `EngineHost`, `ReadyProbe`, `GpuProbe`; feature `testing`: fakes | none; the daemon fills the seams |
+| `engine-supervisor` | the pure `step` and `budget`; `command` and `command_with_window` (catalog entry and a `Window`, the served one or a chosen one, to `UnitSpec`, or `MissingProgram`); the seams `EngineHost`, `ReadyProbe`, `GpuProbe` | none; the daemon fills the seams |
+| `engine-fake` | scripted fakes of the three seams (`FakeEngineHost`, `FakeReadyProbe`, `FakeGpu`), listed under `[dev-dependencies]` only | none |
 | `model-http` | `HttpEndpoint` (with `Timeouts` and `ExtraHeader`s), `HttpTarget` (Tcp, Unix, Tls), `AuthHeader`, the pure `SseDecoder` and `NdjsonDecoder`, `ResponseHead`, `BodySink` (head, then chunks), `Exchange`, the `Transport` seam, `Upload` and `UploadTransport` (a POST of bytes), and `HttpClient: Transport + UploadTransport` (reqwest over TCP and Unix sockets, behind the `client` feature; TLS to a `Tls` target behind `tls`, with `TlsRoots` choosing the roots) | yes (the transport) |
-| `engine-manifest` | the engines as data: `Manifest` (pinned `Row`s by `EngineKind`, `Arch` and `Backend`: `Artifact`s with hashes and sizes, `Delivery`, `PythonEnv` and its lock, the tree seal), `Host` (`Arch`, `Gpus`, `OsRelease` with `ships(&PackageSource)`, `BackendChoice`), `preference`, `Failure` (the codes of an install), `TreeSeal` and `SealLine` (the seal's line format; `tools/seal.py` pins the rows with it), `engine_from_slug` (the disk word of an engine, `Engine::disk_word`, read back to an `EngineKind`) | none |
-| `engine-probe` | reading this computer for the manifest: `read_host`, `read_gpus` (the kernel's files and `os-release` under a given root), `Roots`, `InstallDir`, `Record` (where installs live and what one leaves), `Finder` (which engine is here, never running it), `Verifier` (the seal check before a person's own install starts), `seal_of`, `file_digest`, `entry_digests`. Every path and root is an argument | reads files |
+| `engine-manifest` | the engines as data: `Manifest` (pinned `Row`s by `EngineKind`, `Arch` and `Backend`: `Artifact`s with hashes and sizes, `Delivery`, `PythonEnv` and its lock, the tree seal), `Host` (`Arch`, `Gpus`, `OsRelease` with `ships(&PackageSource)`, `BackendChoice`), `preference`, `Failure` (the codes of an install), `TreeSeal` and `SealLine` (the seal's line format; `tools/seal.py` pins the rows with it), `engine_from_slug` (the disk word of an engine, `Engine::disk_word`, read back to an `EngineKind`); `Roots`, `InstallDir`, `Scope`, `Record` (where installs live and what one leaves), and the words of what reading finds: `Found`, `Origin`, `Verdict` | none |
+| `engine-fs` | reading this computer for the manifest: `read_host`, `read_gpus` (the kernel's files and `os-release` under a given root), `read_record`, `write_record`, `Finder` (which engine is here, never running it), `Verifier` (the seal check before a person's own install starts), `seal_of`, `file_digest`, `entry_digests`. Every path and root is an argument | reads files |
 | `engine-install` | getting an engine from the manifest: `Fetcher` (an `https` download over `model-http`'s `HttpClient` that resumes, follows redirects as `PinnedUrl`s, can be stopped, is counted and kept only if its size and hash are the pinned ones), `Installer` (space checked, unpacked in process by `tar` and `flate2`, sealed, renamed into place whole; or a Python environment filled by the pinned `uv` from a hashed lock), `install_package`, `EngineInstalls` (the jobs a program offers and follows), `install_for_everyone` and `HelperProgram` (the caller names `pkexec` and the helper by path), and the `helper` module with the `bardo-engine-helper` program (`install <engine> <backend>`, nothing else) | HTTPS, files, child processes |
 | `model-wire` | the wire half of an endpoint: `ChatCodec`, `ChatDecoder`, `EmbedCodec`, `ErrorWire`, `CodecError`, and `Driver<C, T>`, the `Provider` (and `Embedder`) made of a codec and a transport | none (pure over the `Transport` trait) |
 | `model-extract` | structured extraction as a pure machine: `choose` (native constraint, synthetic tool call or prompted), `ExtractSession`, `Extracted`, `ExtractFailure` | none |
 | `model-genai-names` | the OpenTelemetry GenAI attribute, metric, operation and finish-reason names as constants; zero dependencies; no content attribute exists | none |
 | `model-openai-compat` | the chat-completions codec `OpenAiCodec` (pure `encode_request`, `StreamDecoder`), the `Server` trait (what differs between servers, one default method each and one impl per server; `Flavor` names the server at run time), first-token log-probabilities (`logprobs`), `OpenAiCompat = Driver<OpenAiCodec, HttpClient>`; `audio`: `encode_speech_request`, `encode_transcription`, `PcmDecoder`, `OpenAiTranscription` (`SpeechToText`, vLLM) and `KokoroSpeech` (`TextToSpeech`) | none of its own: the HTTP is `model-http`'s `Transport` (the speech providers are generic over `T: UploadTransport`, an `HttpClient` by default) |
-| `speech-provider` | audio and text types, `SpeechToText`, `TextToSpeech`, `AudioSource`/`AudioSink`, `VoiceActivity`, `SpeechCaps`, the host wire and its framing; feature `testing`: `ScriptedStt`, `ScriptedTts`, `ScriptedVad` | none |
+| `speech-core` | audio and text types, `SpeechToText`, `TextToSpeech`, `AudioSource`/`AudioSink`, `VoiceActivity`, `SpeechCaps`, the host wire and its framing | none |
 | `speech-vad` | `EnergyGate`, `Framer`, `level_of`, the `endpoint` machine | none |
 | `speech-host-client` | `SpeechHostClient: SpeechToText` over the host's Unix socket | yes (the socket, when filled) |
 | `bardo-speech-host` | the STT engine binary: sherpa-onnx (built without TTS) behind a Unix socket; **excluded from the workspace**, runs only as a confined engine unit | the runtime and the socket |
@@ -43,7 +47,7 @@ trait), section 6 (copy the recipe).
 `cargo xtask check layers` holds a layer table (the rules are in `layers.toml` at the bardo root): every crate is **P** (pure: no `std::fs`/`env`/`process`/`net`,
 no clock reads, no sleeps, no `tokio`, `hyper`, `reqwest`, `zbus` or `rustix`, no UI words), **C** (client/IO: may
 do IO, no `Label`, `Help`, `Sheet` or `SettingRow`) or **A** (wiring). A crate depends on its own tier or below.
-Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `speech-host`
+Today every crate is P except `engine-fs`, `engine-install`, `speech-host-client`, `speech-host`
 (C) and the fuzz target `computer-use-parse-fuzz` (A). `model-http` is P with no exception: the reqwest
 client moved to `model-http-reqwest`, so its source names neither `reqwest` nor `tokio`. The tiers and the
 source bans are in `layers.toml`.
@@ -52,26 +56,30 @@ The direct edges in use (documentation; dev-dependencies are outside it):
 
 | Crate | May depend on |
 | --- | --- |
-| `computer-use-action`, `model-http`, `model-genai-names` | nothing of ours |
-| `model-vision-prep` | `computer-use-action` |
-| `model-provider` | `computer-use-action`, `model-genai-names`, `model-vision-prep` |
-| `model-wire` | `model-http`, `model-provider` |
-| `model-extract` | `model-provider` |
-| `computer-use-parse` | `computer-use-action`, `model-provider` |
-| `computer-use-vendors` | `computer-use-action`, `computer-use-parse`, `model-provider` |
-| `computer-use-session` | `computer-use-action`, `computer-use-parse`, `computer-use-vendors`, `model-provider`, `model-vision-prep` |
-| `model-replay` | `model-http`, `model-provider`, `speech-provider`, `model-vision-prep` |
-| `model-catalog` | `model-provider`, `speech-provider` |
+| `computer-use-geometry`, `model-http`, `model-genai-names` | nothing of ours |
+| `computer-use-action` | `computer-use-geometry` |
+| `model-vision-prep` | `computer-use-geometry` |
+| `model-types` | `computer-use-geometry`, `model-genai-names`, `model-http`, `model-vision-prep` |
+| `model-core` | `model-types` |
+| `model-fake` | `model-core`, `model-http`, `model-openai-compat`, `model-types`, `model-wire` |
+| `model-wire` | `model-http`, `model-core`, `model-types` |
+| `model-extract` | `model-types` |
+| `computer-use-parse` | `computer-use-action`, `computer-use-geometry`, `model-types` |
+| `computer-use-vendors` | `computer-use-action`, `computer-use-geometry`, `computer-use-parse`, `model-types` |
+| `computer-use-session` | `computer-use-action`, `computer-use-geometry`, `computer-use-parse`, `computer-use-vendors`, `model-types`, `model-vision-prep` |
+| `model-replay` | `model-http`, `model-core`, `model-types`, `speech-core`, `model-vision-prep` |
+| `model-catalog` | `computer-use-geometry`, `model-types`, `model-vision-prep`, `speech-core` |
 | `engine-spec` | `model-catalog` |
 | `engine-supervisor` | `engine-spec`, `model-catalog` |
 | `engine-manifest` | `engine-spec`, `model-catalog` |
-| `engine-probe` | `engine-manifest`, `engine-spec`, `model-catalog` |
-| `engine-install` | `engine-manifest`, `engine-probe`, `engine-spec`, `model-catalog`, `model-http` (features `client`, `tls`) |
-| `model-openai-compat` | `model-http`, `model-provider`, `model-wire`, `speech-provider` |
-| `speech-provider` | `model-provider` |
-| `speech-vad` | `speech-provider` |
-| `speech-host-client` | `model-provider`, `speech-provider` |
-| `bardo-speech-host` (excluded) | `speech-provider` |
+| `engine-fs` | `engine-manifest`, `engine-spec`, `model-catalog` |
+| `engine-fake` | `engine-supervisor` |
+| `engine-install` | `engine-fs`, `engine-manifest`, `engine-spec`, `model-catalog`, `model-http` (features `client`, `tls`) |
+| `model-openai-compat` | `model-http`, `model-types`, `model-wire`, `speech-core` |
+| `speech-core` | `model-types` |
+| `speech-vad` | `speech-core` |
+| `speech-host-client` | `model-types`, `speech-core` |
+| `bardo-speech-host` (excluded) | `speech-core` |
 
 External boundaries: the pure crates (everything but `model-http`, the one io crate) never reach `tokio`,
 `hyper`, `hyper-util`, `rustls`, `zbus`, `zvariant`, `reqwest`, `ureq`, `wayland-client`,
@@ -83,16 +91,16 @@ reach no HTTP stack and no runtime: `HttpClient`'s reqwest transport sits behind
 default features. `model-http`
 never reaches the second half of that list (a bus, a compositor, a database, an inference runtime);
 `engine-install` reaches a runtime and an HTTP client through it and nothing of that second half, and `engine-manifest` and
-`engine-probe` reach neither. No crate reaches a `accounts-*` crate. No speech
+`engine-fs` reach neither. No crate reaches a `accounts-*` crate. No speech
 crate reaches an audio device crate (`pipewire`, `libpulse-binding`, `libpulse-simple-binding`,
 `cpal`: capture and playback belong to the actions service's `voiced`) or a TTS stack with a GPL grapheme
 step (`espeak-rs`, `espeak-ng`, `espeak-ng-sys`, `piper-rs`): text to speech is a separate engine
 process (Kokoro-FastAPI), and `bardo-speech-host` links sherpa-onnx built without TTS. The excluded
 crate `speech-host-sherpa` is not a workspace member, so `cargo xtask check layers` does not read it; it alone may reach `ort` and `sherpa-onnx`.
 
-Downstream, the accounts service's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
+Downstream, the accounts service's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-types`, `model-core`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
-`model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); the actions service's `voiced` takes
+`model-openai-compat`, `model-extract`, `speech-core` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); the actions service's `voiced` takes
 `speech-vad`; inference-core takes `computer-use-action` only. The computer-use daemon, the memory service, the actions service and the shell do not name
 The model layer.
 
@@ -100,25 +108,29 @@ The model layer.
 
 | Crate | Modules |
 | --- | --- |
-| `computer-use-action` | `space` < `geometry`, `target`, `text`, `keys` < `dialect`, `profile`, `action` |
+| `computer-use-geometry` | `geometry` < `space` |
+| `computer-use-action` | `target`, `text`, `keys`, `gate` < `action` |
 | `model-vision-prep` | `rule` < `frame_map` < `pixels` |
-| `model-provider` | `units`, `ids` < `control`, `request` < `caps`, `event` < `provider` < `embed`, `shape` (`check`, `gbnf`, `pattern`, `schema`, `from_schema`), `sequence` < `retry` < `scripted` (feature `testing`) |
+| `model-types` | `units`, `ids` < `control`, `request` < `caps`, `event` < `provider` (`ModelInfo`, `ProviderError`) < `retry` (`RetryClass`) < `embed`, `shape` (`check`, `gbnf`, `pattern`, `schema`, `from_schema`), `dialect`, `trained` < `profile` |
+| `model-core` | `provider`, `embed` < `retry`, `sequence` |
+| `model-fake` | `scripted`, `stream` |
 | `computer-use-parse` | `limits` < `outcome` < `common`, `scan`, `chord`, `verbs` < `ui_tars`, `profile` < `tools` < `parse` |
 | `computer-use-vendors` | `step_result`, `args`, `safety`, `results` < `anthropic`, `openai`, `gemini` < `codec` |
 | `computer-use-session` | `model`, `history`, `shown`, `prompt`, `dialect` (`ui_tars`, `tool`, `wire`), `window`, `transcript` < `session` |
 | `model-replay` | `print` < `cassette` < `sequence` < `provider`, `speech`, `wire` |
 | `model-catalog` | `modality`, `engine` < `capabilities` < `slot`, `view` < `entry` < `reach`, `file`, `check` < `parse` |
 | `engine-spec` | `package`, `cache`, `paths` < `engine` < `vllm`, `llama`, `strata`, `speech_host`, `kokoro` < `check` |
-| `engine-supervisor` | `state` < `unit`, `budget` < `step` < `host` < `fakes` (feature `testing`) |
-| `engine-manifest` | `engine`, `host`, `release`, `failure`, `seal` < `manifest` < `rows` |
-| `engine-probe` | `seal`, `host` < `layout` < `found`, `verify` |
+| `engine-supervisor` | `state` < `unit`, `budget` < `step` < `host` |
+| `engine-fake` | `lib` |
+| `engine-manifest` | `engine`, `host`, `release`, `failure`, `seal`, `layout`, `found` < `manifest` < `rows` |
+| `engine-fs` | `seal`, `host`, `record` < `found`, `verify` |
 | `engine-install` | `progress`, `space`, `pinned_url`, `extract` < `fetch` < `installer` < `pyenv`, `package` < `elevated`, `helper` < `jobs` |
 | `model-http` | `target`, `auth`, `head` < `sse`, `ndjson` < `client` < `exchange` < `request`, `connect` < `transport` (feature `client`) |
 | `model-wire` | `codec` < `driver` |
 | `model-extract` | `mode` < `session` < `shaped` |
 | `model-genai-names` | `lib` |
 | `model-openai-compat` | `server`, `logprobs`, `codec` < `provider`; `audio` (`codec` < `provider`) |
-| `speech-provider` | `audio`, `text` < `vad`, `stt`, `tts`, `caps` < `host_wire` < `testing` (feature `testing`) |
+| `speech-core` | `audio`, `text` < `vad`, `stt`, `tts`, `caps` < `host_wire` |
 | `speech-vad` | `level` < `energy`, `framer` < `endpoint` |
 | `speech-host-client` | `lib` |
 | `bardo-speech-host` | `lib` (and `main` for the host) |
@@ -127,17 +139,17 @@ The model layer.
 
 | Concept | Home |
 | --- | --- |
-| coordinate spaces and typed points | `computer-use-action::space`, `geometry` |
+| coordinate spaces and typed points | `computer-use-geometry` |
 | the action enum, its class, its space mapping | `computer-use-action::action` (`ComputerUseAction::class`, `map_points`) |
 | limits on model-supplied text, numbers | `computer-use-action::text`, `keys` (checked at construction and on deserialisation) |
-| dialect names | `computer-use-action::dialect` |
-| how one model's calls differ from its dialect's convention | `computer-use-action::profile` (`ActionProfile`, in the catalogue entry's `actions_out`); read by `computer-use-parse::profile`, shown by `computer-use-session::shown` |
-| device size, scale, pixel format | `computer-use-action::geometry` |
+| dialect names | `model-types::dialect` |
+| how one model's calls differ from its dialect's convention | `model-types::profile` (`ActionProfile`, in the catalogue entry's `actions_out`); read by `computer-use-parse::profile`, shown by `computer-use-session::shown` |
+| device size, scale, pixel format | `computer-use-geometry` |
 | resize rules, token estimate | `model-vision-prep::rule` (`fit` mirrors Qwen's `smart_resize`) |
 | window, image and grid coordinate mapping | `model-vision-prep::FrameMap` (the only place; refuses outside the frame, never clamps) |
 | encoded images | `model-vision-prep::pixels` (`prepare`: resize once, encode once) |
-| the request, event and error vocabulary of one turn | `model-provider` |
-| what a model can do | `model-provider::Caps` |
+| the request, event and error vocabulary of one turn | `model-types` |
+| what a model can do | `model-types::Caps` |
 | action parsing | `computer-use-parse` (the only parser of model text) |
 | vendor computer-use encodings | `computer-use-vendors` |
 | prompt assembly, repair, history for a step | `computer-use-session` |
@@ -153,33 +165,33 @@ The model layer.
 | the distro packages of an engine, the paths a package puts it at | `engine-spec::Engine::packages`, `package_paths` |
 | an engine's word on disk, in a record and in the helper's arguments | `engine-spec::Engine::disk_word` (`engine-manifest::engine_from_slug` reads it back) |
 | what an engine's command line, weights and GPU estimate are | `engine-spec::Engine` (`command`, `accepts`, `requires_gpu_estimate`); `check_entry` for a parsed entry |
-| the tree seal's text | `engine-manifest::SealLine`, `TreeSeal` (made on disk by `engine-probe::seal_of`; pinned by `tools/seal.py`) |
-| where engine installs live, the record, which engine is here | `engine-probe::Roots`, `Record`, `Finder` |
+| the tree seal's text | `engine-manifest::SealLine`, `TreeSeal` (made on disk by `engine-fs::seal_of`; pinned by `tools/seal.py`) |
+| where engine installs live, the record, which engine is here | `engine-manifest::Roots`, `Record` (read and written by `engine-fs::read_record`, `write_record`); `engine-fs::Finder` |
 | downloading, unpacking and sealing an engine install | `engine-install::Installer`, `Fetcher` (the only place) |
 | the address a download may follow | `engine-install::PinnedUrl` (`https` with a host) |
 | delivery of one exchange (TCP, Unix, TLS, in process, record, replay) | `model-http::Transport` |
 | a wire's request, reply and error format | `model-wire::{ChatCodec, EmbedCodec}`; the OpenAI-compatible one is `model-openai-compat::OpenAiCodec` |
 | what differs between OpenAI-compatible servers | `model-openai-compat::Server` (picked by `Flavor`) |
-| sampling, tool parallelism, per-flavor engine knobs | `model-provider::control` (no untyped parameter bag) |
-| embeddings through a provider, roles, batch plan | `model-provider::embed` |
-| the vocabulary of structured outputs and its conversions | `model-provider::shape` |
+| sampling, tool parallelism, per-flavor engine knobs | `model-types::control` (no untyped parameter bag) |
+| embeddings through a provider, roles, batch plan | `model-types::embed` (`Embedder` and `plan_batches` are `model-core::embed`) |
+| the vocabulary of structured outputs and its conversions | `model-types::shape` |
 | how to ask for a typed output and repair it | `model-extract` (inferd runs it) |
-| retry classes and backoff | `model-provider::retry` (inferd runs it) |
-| the order a conversation must be in | `model-provider::sequence` |
+| retry classes and backoff | `model-core::retry` (`RetryClass` is `model-types::retry`) (inferd runs it) |
+| the order a conversation must be in | `model-core::sequence` |
 | OpenTelemetry GenAI names | `model-genai-names` (our own `bardo.*` names are the accounts service's `prov::trace`) |
 | wire cassettes (HTTP exchanges at the `Transport`) | `model-replay::wire` |
 | default sampling of a model | `model-catalog::SamplingDefaults` |
-| audio formats, positions and durations; the bytes of PCM | `speech-provider::audio` (`AudioFormat`, `SampleIndex`, `AudioMs`, `PcmBytes`) |
-| recognised and spoken text, languages and voices | `speech-provider::text` (`HeardText`, `SpokenText`, `Lang`, `VoiceId`) |
-| what a speech model can do | `speech-provider::SpeechCaps` |
-| the inferd to `bardo-speech-host` wire and its framing | `speech-provider::host_wire` |
+| audio formats, positions and durations; the bytes of PCM | `speech-core::audio` (`AudioFormat`, `SampleIndex`, `AudioMs`, `PcmBytes`) |
+| recognised and spoken text, languages and voices | `speech-core::text` (`HeardText`, `SpokenText`, `Lang`, `VoiceId`) |
+| what a speech model can do | `speech-core::SpeechCaps` |
+| the inferd to `bardo-speech-host` wire and its framing | `speech-core::host_wire` |
 | voice-activity detection, loudness, endpointing | `speech-vad` (`EnergyGate`, `level_of`, `endpoint`) |
 | the speech request wire of OpenAI-compatible servers | `model-openai-compat::audio` |
 | speech cassettes | `model-replay::speech` |
 | the chat-completions wire | `model-openai-compat::codec` |
 
 Names SPEC.md 2 settled for this repo: `CoordSpace` (was `Space`), `ToolCallId` (was `CallId`),
-`TurnUsage` (was `Usage`), `Role` stays `model-provider`'s, `Repeat` stays `computer-use-action`'s, and the
+`TurnUsage` (was `Usage`), `Role` stays `model-types`'s, `Repeat` stays `computer-use-action`'s, and the
 catalog's `roles` are `CatalogKind`s (the model layer's copy of the accounts service's `AiKind`, same slugs); since C1
 (agent-spec/capabilities.md) they are derived from the declared capabilities, and `Slot` is the
 name a person picks by.
@@ -187,7 +199,7 @@ name a person picks by.
 ## 4. Traits (the seams) and closed enums
 
 ```rust
-// model-provider: one per backend (OpenAiCompat, and the cloud backends when they exist), plus
+// model-core: one per backend (OpenAiCompat, and the cloud backends when they exist), plus
 // ScriptedProvider, ReplayProvider and RecordingProvider.
 pub trait Provider: Send + Sync {
     fn describe(&self) -> impl Future<Output = Result<Vec<ModelInfo>, ProviderError>> + Send;
@@ -212,7 +224,7 @@ pub trait EngineHost: Send + Sync {
 pub trait ReadyProbe: Send + Sync { fn probe(&self, id: &EngineId) -> impl Future<Output = Probe> + Send; }
 pub trait GpuProbe: Send + Sync { fn memory(&self) -> impl Future<Output = Result<GpuMemory, GpuError>> + Send; }
 
-// speech-provider: one per backend (SpeechHostClient, OpenAiTranscription, KokoroSpeech, SpeechReplay, RecordingSpeech);
+// speech-core: one per backend (SpeechHostClient, OpenAiTranscription, KokoroSpeech, SpeechReplay, RecordingSpeech);
 // `SttBackend` and `TtsBackend` are closed enums in accounts's inferd. Cancellation is drop.
 pub trait SpeechToText: Send + Sync {
     fn describe(&self) -> impl Future<Output = Result<Vec<SpeechModelInfo>, ProviderError>> + Send;
@@ -268,7 +280,7 @@ pub trait EmbedCodec: ErrorWire + Send + Sync {
     fn decode_embed(&self, served: ModelName, body: &[u8]) -> Result<EmbedEnd, CodecError>;
 }
 
-// model-provider: an embedding backend; where a retry waits; a typed output.
+// model-core: an embedding backend; where a retry waits; a typed output.
 pub trait Embedder: Send + Sync {
     fn embed(&self, turn: &EmbedTurn) -> impl Future<Output = Result<EmbedEnd, ProviderError>> + Send;
 }
@@ -296,7 +308,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 | --- | --- |
 | `computer-use-action`: every type, `class`, `map_points`, the text and number limits | built, tested (round trips, pinned JSON, tables, compile-fail) |
 | `model-vision-prep`: types and serde | built, tested (`fit` against the reference `smart_resize`, the map tables and proptest, `prepare` with the `pixels` feature) |
-| `model-provider`: every type, `JsonText`, `ToolName`, `ImageBytes`, `ScriptedProvider` | built, tested |
+| `model-types`: every type, `JsonText`, `ToolName`, `ImageBytes`; `model-core`: `Provider`; `model-fake`: `ScriptedProvider` | built, tested |
 | `computer-use-parse`: types and limits | built, tested (UiTars15, QwenComputerUse and a provisional Holo31; `never_panics` proptest; nightly fuzz targets in `crates/computer-use-parse/fuzz`) |
 | `computer-use-vendors`: trait, enum, `StepResult`, the four codecs | built, tested (doc examples, stop-at-first-failure, safety only adds, a total-decoding proptest); no cloud backend calls them yet |
 | `computer-use-session`: types, `begin`, `request`, `absorb`, `absorb_for` (both `&mut self`, in place) | built, tested (history window, one repair, mapping, vendor wire history, wire-cassette runs of Holo, Qwen and UI-TARS); the Holo and Qwen schemas are ours until a recorded step |
@@ -305,13 +317,13 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 | `engine-supervisor`: types, `Supervisor::new`, config defaults, fakes, `step`, `budget`, `command` | built, tested (the lifecycle table, the budget table with the in-turn window, `command` for vLLM, llama-server, the speech host and Kokoro) |
 | `model-http`: types, `ResponseHead`, `BodySink::head`, `Exchange`, `Transport`, `Timeouts`, `ExtraHeader`, `HttpError`, the SSE and NDJSON decoders, `Transport for HttpClient` (feature `client`) | built; round-trip, pinned-JSON, proptest and loopback-socket tested (TLS is feature `tls`, tested against a scratch CA on loopback; the egress proxy answers `Connect`) |
 | `engine-spec`: `Engine`, the five impls, `engine`, `check_entry`, `EnginePaths` | built, tested (the words, the defaults on a test engine, the entry checks moved from `parse_entry`) |
-| `engine-manifest`, `engine-probe`, `engine-install`: moved from the accounts service's `account-engines` and `account-engines-install` (the accounts service `f0539103`) | built, tested (the rows, the seal against `tools/seal.py`'s vector, the Finder and Verifier on scratch directories, the fetcher, installer, jobs and helper against a loopback `https` host with a scratch CA); the accounts service, the Settings app and the installer scripts still use their own copies until they move over |
+| `engine-manifest`, `engine-fs`, `engine-install`: moved from the accounts service's `account-engines` and `account-engines-install` (the accounts service `f0539103`) | built, tested (the rows, the seal against `tools/seal.py`'s vector, the Finder and Verifier on scratch directories, the fetcher, installer, jobs and helper against a loopback `https` host with a scratch CA); the accounts service, the Settings app and the installer scripts still use their own copies until they move over |
 | `model-wire`: `ChatCodec`, `ChatDecoder`, `EmbedCodec`, `ErrorWire`, `CodecError`, `Driver` | built, tested with a scripted transport and a line codec (head decides, framer, decoder fault, Retry-After, stop, every transport failure, embed checks) |
 | `model-extract`: `ExtractMode`, `ToolsPresent`, `ExtractSession`, `Extracted`, `ExtractFailure`, `choose`, `request`, `absorb` | built, tested |
 | `model-genai-names`: every name, `Operation`, `Finish` | built, tested (names are values, so there is no stub) |
-| `model-provider` amendment: `Sampling`, `EngineExtras`, `Knob`, `ThoughtSeal`, the `embed`, `shape`, `retry` and `sequence` types, `OutputShape::{Gbnf, Choice}`, `Constraint::{Gbnf, Choice}`, `ProviderError::Server`, `TurnUsage.cached`, `ModelInfo.{loaded_context, trained_context}` | built, round-trip and pinned-JSON tested; `plan_batches`, `EmbedEnd::check`, the `Shape` conversions and checker, `retry_class`, `next_wait`, `Retrying`, `sequence::check` stubbed |
+| `model-types` amendment: `Sampling`, `EngineExtras`, `Knob`, `ThoughtSeal`, the `embed`, `shape`, `retry` and `sequence` types, `OutputShape::{Gbnf, Choice}`, `Constraint::{Gbnf, Choice}`, `ProviderError::Server`, `TurnUsage.cached`, `ModelInfo.{loaded_context, trained_context}` | built, round-trip and pinned-JSON tested; `plan_batches`, `EmbedEnd::check`, the `Shape` conversions and checker, `retry_class`, `next_wait`, `Retrying`, `sequence::check` stubbed |
 | `model-openai-compat`: types, the `Server` trait, `OpenAiCodec` (`encode_request`, `encode`, `classify`, `describe`, `parse_models`, `encode_embed`, `decode_embed`), `StreamDecoder` | built, tested (request bodies, the flavor table, error classes, wire cassettes under every chunking, one loopback-socket run of the whole stack); the `audio` codec (`encode_speech_request`, `encode_transcription`, `decode_transcription`, `PcmDecoder`) is built and tested; `OpenAiTranscription` and `KokoroSpeech` are built |
-| `speech-provider`: every type, the checked names, `AudioChunk::{samples, duration}`, the host framing, the `testing` fakes | built, tested (round trips, pinned JSON, redaction, duration table, the fakes' scripts) |
+| `speech-core`: every type, the checked names, `AudioChunk::{samples, duration}`, the host framing | built, tested (round trips, pinned JSON, redaction, duration table, the fakes' scripts) |
 | `speech-vad`: types, defaults, `level_of`, `EnergyGate`, `Framer::push`, `endpoint` | built, tested (level rows, gate table, framer proptest, endpoint table, the chain over synthetic audio) |
 | `speech-host-client`: types | built; both trait bodies stubbed |
 | `bardo-speech-host` | skeletons (excluded from the workspace); every body stubbed |
@@ -320,13 +332,13 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 ## 6. Recipes
 
 **Add a backend** (a `Provider`): a crate `model-<name>` depending on `model-wire`, `model-http` and
-`model-provider`; a pure codec (`ChatCodec` and its `ChatDecoder`, `ErrorWire::classify`, and
+`model-core` and `model-types`; a pure codec (`ChatCodec` and its `ChatDecoder`, `ErrorWire::classify`, and
 `EmbedCodec` if it embeds) tested against wire fixtures in `fixtures/<name>/` recorded at the
 `Transport` by a dev script; the provider is `Driver<YourCodec, HttpClient>`; its row in
 `layers.toml` (the reach rules and the layers) and in section 1; its variant in the accounts service's
 `inferd::AdapterModel`.
 
-**Add a dialect**: the variant in `computer-use-action::dialect` (`TextDialect`, `ToolDialect` or
+**Add a dialect**: the variant in `model-types::dialect` (`TextDialect`, `ToolDialect` or
 `WireDialect`); a unit struct and `impl ActionDialect` in `computer-use-session/src/dialect/` that overrides
 only what differs (`parse` is required; `system`, `schema`, `tools`, `retry`, `is_text`, `is_tool`
 and `wire` default), and its arm in `computer-use-session::spec`; for a tool dialect, its verb table in
@@ -361,7 +373,7 @@ in the system message, restated in a repair, the action sentence is the step's w
 frames `image_in.per_prompt` allows (older frames become a collapsed placeholder). Pin each choice
 in the entry's header comment with the reference line it copies, and add the entry's row to the
 `shipped.rs` test for it. A wording the reference uses that none of these says is a new variant of
-the enum in `computer-use-action::trained`, never a prompt file for one model. When a model fails under the
+the enum in `model-types::trained`, never a prompt file for one model. When a model fails under the
 harness, turn the options on one at a time to learn which one matters.
 
 **Add a catalog entry**: a file `catalog/<id>.toml` with every field written (copy
@@ -420,10 +432,10 @@ first; the daemon (the accounts service's inferd) chooses it.
 
 ## 7. Test harness
 
-`ScriptedProvider` (feature `testing` of `model-provider`) plays a list of scripted turns and
+`ScriptedProvider` (`model-fake`, a dev-dependency) plays a list of scripted turns and
 records every `TurnRequest`; tests of prompt assembly assert on the recorded requests.
-`ReplayProvider` plays a cassette. `FakeEngineHost`, `FakeReadyProbe` and `FakeGpu` (feature
-`testing` of `engine-supervisor`) script the supervisor's seams. Tests never start a real
+`ReplayProvider` plays a cassette. `FakeEngineHost`, `FakeReadyProbe` and `FakeGpu` (the crate
+`engine-fake`) script the supervisor's seams. Tests never start a real
 engine, never touch the GPU, never use a real systemd or bus, never read
 `~/.cache/huggingface`, and never download a weight. Recorded fixtures come only from dev scripts
 run by hand against the user's own engine.

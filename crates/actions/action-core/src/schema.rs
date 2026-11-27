@@ -4,7 +4,7 @@
 
 use action_manifest::{ActionDecl, ParamDecl, ParamNeed};
 use action_vocab::{ParamName, ParamType};
-use model_provider::{CharCount, ChoiceText, SchemaDialect, Shape};
+use model_types::{CharCount, ChoiceText, SchemaDialect, Shape};
 use provenance::EntityKind;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};

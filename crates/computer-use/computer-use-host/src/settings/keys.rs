@@ -4,8 +4,7 @@
 //! this table to each other.
 
 use super::ComputerUseSettings;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde::de::DeserializeOwned;
 use settings_store::rules::{RuleKey, number, toggle, word};
 
@@ -35,7 +34,7 @@ pub(crate) fn table() -> Vec<RuleKey<ComputerUseSettings>> {
             0..=1_000_000_000,
             |s, v| {
                 // Millionths of a US dollar in the file; 0 is a cap of nothing (local models only).
-                s.config.budget.spend = Money::usd(Decimal::new(v, 6));
+                s.config.budget.spend = Money::usd(v, 6);
             },
         ),
     ]

@@ -2,7 +2,8 @@
 
 use crate::screen::{ScreenRead, ScreenText};
 use crate::turn::FrameAttachment;
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::WindowSpace;
 use inference_core::{
     ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply, ComputerUseStepRequest,
     ModelError, ServedBy, TurnUsage,

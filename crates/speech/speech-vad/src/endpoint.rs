@@ -1,7 +1,7 @@
 //! Where an utterance starts and stops: a pure machine over the detector's verdicts.
 
 use serde::{Deserialize, Serialize};
-use speech_provider::{AudioMs, SampleIndex, Voiced};
+use speech_core::{AudioMs, SampleIndex, Voiced};
 
 /// The endpointing numbers. `Default` holds the proposal; the daemon reads the settings.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

@@ -4,17 +4,19 @@ use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use base_ids::Tokens;
-use model_provider::{
-    CallIndex, EngineExtras, ImageBytes, ImageDetail, ImageInput, JsonText, Knob, Limits, Message,
-    Milli, ModelName, OutputShape, Part, Provider, ProviderError, Reasoning, Role, Sampling,
-    Script, ScriptedProvider, StopReason, ToolCall, ToolCallId, ToolChoice, ToolName,
-    ToolParallelism, ToolResult, ToolStatus, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage,
-};
+use model_core::Provider;
+use model_fake::{Script, ScriptedProvider};
 use model_replay::{
     BuildLabel, Cassette, CassetteError, CassetteHeader, CassetteSink, CassetteVersion,
     ContextStamp, EngineLabel, EngineStamp, Interaction, InteractionId, PartPrint, RecordedAt,
     RecordingProvider, ReplayError, ReplayMode, ReplayProvider, RequestPrint, SinkError,
     StreamError, check_sequence,
+};
+use model_types::{
+    CallIndex, EngineExtras, ImageBytes, ImageDetail, ImageInput, JsonText, Knob, Limits, Message,
+    Milli, ModelName, OutputShape, Part, ProviderError, Reasoning, Role, Sampling, StopReason,
+    ToolCall, ToolCallId, ToolChoice, ToolName, ToolParallelism, ToolResult, ToolStatus, TurnEnd,
+    TurnEvent, TurnRequest, TurnSink, TurnUsage,
 };
 use model_vision_prep::MediaType;
 
@@ -77,7 +79,7 @@ fn request(text: &str, image: &[u8]) -> TurnRequest {
         },
         reasoning: Reasoning::Off,
         engine: EngineExtras::None,
-        choice_scores: model_provider::ChoiceScores::Off,
+        choice_scores: model_types::ChoiceScores::Off,
     }
 }
 

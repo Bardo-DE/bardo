@@ -262,12 +262,12 @@ fn the_warn_line_is_the_rows_permille() {
         settings(text).spend.cap(
             SpendScope::Account(AccountId::parse("anthropic").expect("id")),
             Period::Daily,
-            Money::usd(Decimal::ONE),
+            Money::usd(1, 0),
         )
     };
     // `spent` in millionths of a dollar.
     let verdict = |cap: &SpendCap, spent: i64| {
-        let reported = Money::usd(Decimal::new(spent, 6));
+        let reported = Money::usd(spent, 6);
         let total = ChargeTotal {
             reported,
             unpriced: TurnCount(0),
@@ -334,27 +334,17 @@ fn the_cap_rows_are_cents_per_scope_and_period_and_zero_is_no_cap() {
             (
                 account.clone(),
                 Period::Daily,
-                Money::usd(Decimal::new(250, 2)),
+                Money::usd(250, 2),
                 Permille(500)
             ),
-            (
-                account,
-                Period::Monthly,
-                Money::usd(Decimal::new(1, 2)),
-                Permille(500)
-            ),
+            (account, Period::Monthly, Money::usd(1, 2), Permille(500)),
             (
                 app.clone(),
                 Period::Daily,
-                Money::usd(Decimal::new(10_000_000, 2)),
+                Money::usd(10_000_000, 2),
                 Permille(500)
             ),
-            (
-                app,
-                Period::Monthly,
-                Money::usd(Decimal::new(7, 2)),
-                Permille(500)
-            ),
+            (app, Period::Monthly, Money::usd(7, 2), Permille(500)),
         ]
     );
 }

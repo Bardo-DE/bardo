@@ -9,8 +9,8 @@
 use crate::pinned_url::{NotPinnedError, PinnedUrl};
 use crate::progress::{CancelToken, Meter};
 use base_secret::SecretText;
+use engine_fs::file_digest;
 use engine_manifest::{Artifact, hex};
-use engine_probe::file_digest;
 use model_http::{
     AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName, HttpEndpoint,
     HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots, Transport,

@@ -1,5 +1,4 @@
 use super::*;
-use rust_decimal::Decimal;
 use serde_json::json;
 
 fn stream(shape: Shape, pieces: &[&str]) -> Seen {
@@ -104,7 +103,7 @@ const COST_CHUNK: &str = "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":9,\
 fn a_charge_is_read_from_a_provider_that_reports_one_and_from_no_other() {
     let from = |charges| stream_from(Shape::OpenAi, charges, &[COST_CHUNK]).usage();
     let charged = from(Charges::PerReply).expect("usage");
-    assert_eq!(charged.charge, Some(Money::usd(Decimal::new(95, 5))));
+    assert_eq!(charged.charge, Some(Money::usd(95, 5)));
     assert_eq!((charged.input, charged.output), (Tokens(9), Tokens(4)));
     assert_eq!(from(Charges::NotReported).expect("usage").charge, None);
 }

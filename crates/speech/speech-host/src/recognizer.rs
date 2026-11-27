@@ -1,7 +1,7 @@
 //! The seam between the protocol loop and a speech engine.
 
-use model_provider::ProviderError;
-use speech_provider::{AudioChunk, SpeechModelInfo, SttEnd, SttRequest, TranscriptEvent};
+use model_types::ProviderError;
+use speech_core::{AudioChunk, SpeechModelInfo, SttEnd, SttRequest, TranscriptEvent};
 
 /// What `finish` yields: the events the last audio and the flush produced, then the summary.
 #[derive(Debug, Clone, PartialEq, Eq)]

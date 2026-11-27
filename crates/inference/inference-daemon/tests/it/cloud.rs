@@ -24,8 +24,7 @@ use inference_core::{
     InferRequest, MessagePart, ModelError, OpenOptions, Policy, Role as ChatRole, StopReason,
 };
 use inference_dbus::inference::InferenceProxy;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use std::path::Path;
 
 /// `OpenRouter`'s key, and `OpenAI`'s: distinctive, so a scan for either cannot match by accident.
@@ -579,7 +578,7 @@ async fn failing_with(status: u16) -> World {
 
 /// What `OpenRouter` reports for the scripted reply: 0.00095 US dollars.
 fn reported() -> Money {
-    Money::usd(Decimal::new(95, 5))
+    Money::usd(95, 5)
 }
 
 /// What the companion has spent today.

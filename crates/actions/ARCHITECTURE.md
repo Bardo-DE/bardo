@@ -105,7 +105,7 @@ reach rules in `layers.toml` hold what each crate reaches through any path (carg
 switch (the proc root, the model tap, `action-trace`, the fixture tree) is named only by the harness.
 
 The repo order is the model layer, the accounts service, the inference service, the memory service, the actions service, computer use, the shell. The actions service reaches the model layer's pure
-crates (`computer-use-action`, `model-provider`, `speech-vad`), the accounts service (`account-core`, `account-client`,
+crates (`computer-use-action`, `model-types`, `speech-vad`), the accounts service (`account-core`, `account-client`,
 `account-client-dbus`, `account-dbus`), the inference service (`inference-core`, `inference-client`, `inference-dbus`), the `prov` repo, the memory service (`memory-core`, `memory-client`) and
 Bardo's view-only `ui-intents`, all as pinned git revs in the root `Cargo.toml` (no
 `path = "../repo"` and no `[patch]`). Nothing of `computer_use` or `shell` may enter any tree of these crates (a `[[reach]]` rule in `layers.toml` with dev-dependencies and every feature on).
@@ -243,7 +243,7 @@ missing" list in `FINDINGS.md` (portable-core).
 | the companion's wire (answers, cards, session records) | `companion-wire` |
 | settings values | `action-core::config` (`AgentConfig`, `SETTING_ROWS`); the keys are the shell's |
 | turns and who may record one | `action-core::planner` (`TurnIn`, `UserTurn`, `TurnVia`; a turn's `from` is a `action_vocab::Caller`); the role table in `auth` |
-| structured-output shapes | the model layer `model-provider::Shape`; `ValueSchema::shape` maps into it, inferd owns repair and retry |
+| structured-output shapes | the model layer `model-types::Shape`; `ValueSchema::shape` maps into it, inferd owns repair and retry |
 | computer-use actions | the model layer `computer-use-action`; `ComputerUseAsk` is the gate's input |
 
 ## 4. Traits

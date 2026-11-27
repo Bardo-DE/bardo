@@ -2,7 +2,7 @@
 
 use base_ids::Tokens;
 use model_http::{Exchange, Framing, RouteRoot, UrlPath, Verb};
-use model_provider::{ModelInfo, ModelName};
+use model_types::{ModelInfo, ModelName};
 use model_wire::CodecError;
 use serde_json::Value;
 

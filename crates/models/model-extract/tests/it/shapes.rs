@@ -1,4 +1,4 @@
-use model_provider::{ChoiceText, Extract, JsonText, Shape, ShapeError};
+use model_types::{ChoiceText, Extract, JsonText, Shape, ShapeError};
 
 /// A hand-written output type, as the five or six real ones will be.
 #[derive(Debug, Clone, PartialEq, Eq)]

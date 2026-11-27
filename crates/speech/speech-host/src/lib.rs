@@ -1,7 +1,7 @@
 //! The speech-to-text engine process, protocol half.
 //!
 //! inferd starts it as an engine unit (catalog kind `speech_host`) with the arguments of the
-//! entry's profile; it listens on a Unix socket and speaks `speech_provider::host_wire`: a
+//! entry's profile; it listens on a Unix socket and speaks `speech_core::host_wire`: a
 //! `Hello` exchange, then `Begin`, `Audio`, `End` or `Cancel` in, `Event`, `Done` or `Failed`
 //! out. One utterance at a time; a second `Begin` while one runs is refused and the running one
 //! goes on. It never opens a device, a network socket or a file it was not given, and it writes

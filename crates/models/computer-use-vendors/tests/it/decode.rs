@@ -2,12 +2,13 @@
 //! Anthropic toolset and `computer_20251124`, `OpenAI`'s `computer_call`, Gemini's computer use.
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, GridMax, GridSpace, ImageSpace, Modifier,
-    Notches, ScrollBy, ScrollDir, Target, WireDialect,
+    Button, ClickCount, ComputerUseAction, Modifier, Notches, ScrollBy, ScrollDir, Target,
 };
+use computer_use_geometry::{Coord, GridMax, GridSpace, ImageSpace};
 use computer_use_parse::{DropReason, InSpace, Parsed};
 use computer_use_vendors::{WireCodec, WireError};
-use model_provider::{JsonText, SafetySignal, ToolCall, ToolCallId, ToolName};
+use model_types::WireDialect;
+use model_types::{JsonText, SafetySignal, ToolCall, ToolCallId, ToolName};
 use proptest::prelude::*;
 use std::collections::BTreeSet;
 
@@ -41,7 +42,7 @@ fn image(
 }
 
 fn point(x: u32, y: u32) -> Target<ImageSpace> {
-    Target::Point(computer_use_action::Point::new(Coord(x), Coord(y)))
+    Target::Point(computer_use_geometry::Point::new(Coord(x), Coord(y)))
 }
 
 const TOOLSET: WireDialect = WireDialect::AnthropicToolset20260801;
@@ -309,7 +310,7 @@ fn gemini_points_are_a_grid_of_one_thousand() {
     };
     assert_eq!(max, GridMax(1000));
     let at: Target<GridSpace> =
-        Target::Point(computer_use_action::Point::new(Coord(500), Coord(250)));
+        Target::Point(computer_use_geometry::Point::new(Coord(500), Coord(250)));
     assert!(matches!(&actions[0], ComputerUseAction::Click { at: a, .. } if *a == at));
     let ComputerUseAction::Type { text } = &actions[1] else {
         unreachable!()

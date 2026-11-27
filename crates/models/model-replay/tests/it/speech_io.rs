@@ -5,13 +5,13 @@ use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use base_ids::Tokens;
-use model_provider::{ModelName, ProviderError, Support};
 use model_replay::{
     AudioPrint, BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel,
     EngineStamp, RecordedAt, RecordingSpeech, ReplayMode, SinkError, SpeechCassette,
     SpeechCassetteSink, SpeechInteraction, SpeechReplay, SttPrint, TtsPrint,
 };
-use speech_provider::{
+use model_types::{ModelName, ProviderError, Support};
+use speech_core::{
     AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang, LangChoice, LangSet,
     PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechIo, SpeechToText, SpokenText,
     SttEnd, SttMode, SttRequest, TextToSpeech, TranscriptEvent, TranscriptSink, TtsEnd, TtsRequest,
@@ -160,7 +160,7 @@ fn tts_line(text: &str, ms: u32, end: Result<TtsEnd, ProviderError>) -> SpeechIn
         request: TtsPrint::of(&tts_request(text)),
         audio: AudioPrint {
             format: S16_24K,
-            digest: speech_provider_digest(),
+            digest: speech_core_digest(),
             len: model_replay::ByteCount(u64::from(ms) * 48),
             duration: AudioMs(ms),
         },
@@ -168,7 +168,7 @@ fn tts_line(text: &str, ms: u32, end: Result<TtsEnd, ProviderError>) -> SpeechIn
     }
 }
 
-fn speech_provider_digest() -> model_replay::AudioDigest {
+fn speech_core_digest() -> model_replay::AudioDigest {
     model_replay::AudioDigest("00".repeat(32))
 }
 

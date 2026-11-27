@@ -5,8 +5,7 @@
 use crate::budget::{Budget, BudgetKind, Ledger};
 use base_ids::Tokens;
 use inference_core::ChargeTotal;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde::{Deserialize, Serialize};
 
 /// Tokens by kind. `cached` is a share of `input`, as the model reports it.
@@ -97,9 +96,7 @@ pub fn charge_turn(ledger: &Ledger, report: &TurnReport) -> Ledger {
 pub fn check_turn(ledger: &Ledger, budget: &Budget) -> Result<(), BudgetKind> {
     let reported = ledger.spent.charges.reported;
     match budget.spend {
-        Some(cap) if cap.currency == reported.currency && reported.amount > cap.amount => {
-            Err(BudgetKind::Spend)
-        }
+        Some(cap) if cap < reported => Err(BudgetKind::Spend),
         _ => Ok(()),
     }
 }
@@ -122,13 +119,10 @@ pub fn totals_of(ledger: &Ledger, budget: &Budget) -> TaskTotals {
     let charges = ledger.spent.charges;
     let remaining = budget
         .spend
-        .filter(|cap| cap.currency == charges.reported.currency)
-        .map(|cap| {
-            let left = cap.amount.checked_sub(charges.reported.amount);
-            Money::new(
-                left.unwrap_or(Decimal::ZERO).max(Decimal::ZERO),
-                cap.currency,
-            )
+        .filter(|cap| cap.currency() == charges.reported.currency())
+        .map(|cap| match cap.checked_sub(charges.reported) {
+            Ok(left) if !left.is_negative() => left,
+            _ => Money::zero(cap.currency()),
         });
     TaskTotals {
         tokens: ledger.spent.tokens,

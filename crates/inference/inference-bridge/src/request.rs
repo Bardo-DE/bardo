@@ -12,8 +12,8 @@ use account_match::DimsNeed;
 use inference_core as pi;
 use model_catalog::SamplingDefaults;
 use model_openai_compat::Flavor;
-use model_provider as sp;
-use model_provider::EmbedCaps;
+use model_types as sp;
+use model_types::EmbedCaps;
 
 /// The most bytes one attached image may have: a 16k by 16k frame at four bytes a pixel.
 pub const MAX_ATTACHMENT: u64 = 1 << 30;
@@ -372,7 +372,7 @@ pub fn embed_turns_for(
         DimsNeed::Any => sp::Knob::Off,
         DimsNeed::Exactly(dims) => sp::Knob::Set(dims),
     };
-    let batches = sp::plan_batches(request.inputs.len(), embed.max_batch);
+    let batches = model_core::plan_batches(request.inputs.len(), embed.max_batch);
     batches
         .into_iter()
         .map(|range| sp::EmbedTurn {

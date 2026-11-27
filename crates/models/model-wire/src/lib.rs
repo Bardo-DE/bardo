@@ -11,7 +11,7 @@
 //!
 //! ```
 //! use model_http::{HttpError, HttpStatus};
-//! use model_provider::{ProviderError, ServerStatus};
+//! use model_types::{ProviderError, ServerStatus};
 //! use model_wire::http_error;
 //!
 //! // A transport failure becomes the error a caller acts on, carrying no body.

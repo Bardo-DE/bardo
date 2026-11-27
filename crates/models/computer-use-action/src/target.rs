@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{CoordSpace, Point};
+use computer_use_geometry::{CoordSpace, Point};
 
 /// An accessibility node, stable within one run.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

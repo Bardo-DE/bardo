@@ -11,8 +11,9 @@ use action_wire::{
     CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen,
     SessionOpened, WireRefusal,
 };
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_action::{RunMode, WindowTrust};
+use computer_use_geometry::WindowSpace;
 use permission_core::{AskOrRun, Floor, FloorFile, Level, LockedRow, Mode, Strictness};
 use provenance::{
     AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, UnixSeconds,

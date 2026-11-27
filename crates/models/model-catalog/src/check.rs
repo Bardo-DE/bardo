@@ -1,9 +1,9 @@
 //! The rules a new-shape file must keep beyond its format.
 
-use speech_provider::SpeechDir;
+use speech_core::SpeechDir;
 
 use base_ids::Tokens;
-use model_provider::{ComputerUseSupport, ToolSupport};
+use model_types::{ComputerUseSupport, ToolSupport};
 
 use crate::{
     Capabilities, CatalogError, DetailTable, EngineProfile, Locality, Modality, Serving, TextOut,

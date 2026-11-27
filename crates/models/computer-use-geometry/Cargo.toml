@@ -1,0 +1,18 @@
+[package]
+name = "computer-use-geometry"
+description = "Points, sizes and pixel formats, each tagged with the coordinate space it lives in: window, image or model grid."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

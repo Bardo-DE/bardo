@@ -3,7 +3,7 @@
 
 use base_ids::Count;
 use model_openai_compat::{Flavor, StreamDecoder, encode_request};
-use model_provider::{
+use model_types::{
     ChoiceScores, FirstTokenLogprobs, Logprob, ModelName, OutputShape, TokenLogprob,
 };
 use model_wire::ChatDecoder;

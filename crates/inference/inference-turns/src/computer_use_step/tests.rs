@@ -1,17 +1,17 @@
 use super::*;
 use account_capability::ComputerUseEnv;
 use base_testkit::Scratch;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, Point, Scale120, Size, Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
+use computer_use_geometry::{Coord, Point, Scale120, Size, WindowSpace};
 use computer_use_session::TreeText;
 use inference_core::{AttachIndex, ImageSource, MediaType, StepIndex};
 use inference_router::testkit::models;
-use model_provider::{
-    EngineExtras, ModelName, ProviderError, Script, ScriptedProvider, StopReason, ToolCall,
-    ToolCallId as CallId, TurnEnd, TurnEvent, TurnUsage,
+use model_fake::{Script, ScriptedProvider};
+use model_types::{
+    EngineExtras, ModelName, ProviderError, StopReason, ToolCall, ToolCallId as CallId, TurnEnd,
+    TurnEvent, TurnUsage,
 };
-use model_provider::{Part, Role, TurnRequest};
+use model_types::{Part, Role, TurnRequest};
 use std::collections::BTreeSet;
 use std::io::Write;
 use std::os::fd::OwnedFd;
@@ -60,8 +60,8 @@ fn png_request() -> ComputerUseStepRequest {
 fn tool_call(arguments: &str) -> ToolCall {
     ToolCall {
         id: CallId("c1".into()),
-        name: model_provider::ToolName::new("computer_use").expect("name"),
-        input: model_provider::JsonText::new(arguments).expect("json"),
+        name: model_types::ToolName::new("computer_use").expect("name"),
+        input: model_types::JsonText::new(arguments).expect("json"),
     }
 }
 
@@ -202,7 +202,7 @@ async fn the_request_is_set_from_the_catalog_entry() {
         sent.sampling, entry.reasoning_off,
         "greedy: the same screen, the same click"
     );
-    assert_eq!(sent.reasoning, model_provider::Reasoning::Off);
+    assert_eq!(sent.reasoning, model_types::Reasoning::Off);
     assert_eq!(
         sent.limits.max_output,
         model.caps().expect("caps").max_output
@@ -220,7 +220,7 @@ async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
     else {
         panic!("the fixture has a dialect");
     };
-    profile.answer = computer_use_action::AnswerShape::ThinkActionCall;
+    profile.answer = model_types::AnswerShape::ThinkActionCall;
     let provider = says(vec![click(r#"{"action":"terminate","status":"success"}"#)]);
     let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let mut kept = session(&model);
@@ -235,10 +235,10 @@ async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
     .await;
     let sent = &provider.requests()[0];
     let entry = model.sampling().expect("sampling");
-    assert_eq!(sent.reasoning, model_provider::Reasoning::EngineDefault);
+    assert_eq!(sent.reasoning, model_types::Reasoning::EngineDefault);
     assert_eq!(
         sent.sampling,
-        *entry.for_reasoning(model_provider::Reasoning::EngineDefault)
+        *entry.for_reasoning(model_types::Reasoning::EngineDefault)
     );
 }
 
@@ -350,10 +350,10 @@ fn a_session_opens_for_a_tool_or_text_dialect_and_for_nothing_else() {
         "a chat model has no dialect"
     );
     models[2].entry.capabilities.actions_out = Some(ComputerUseSupport::Dialect {
-        dialect: ComputerUseDialect::Wire(computer_use_action::WireDialect::OpenAiComputer),
+        dialect: ComputerUseDialect::Wire(model_types::WireDialect::OpenAiComputer),
         batching: Batching::One,
-        zoom: model_provider::Zoom::Absent,
-        profile: computer_use_action::ActionProfile::default(),
+        zoom: model_types::Zoom::Absent,
+        profile: model_types::ActionProfile::default(),
     });
     assert!(open(&models[2], &begin(), Tokens(u32::MAX)).is_none());
 }

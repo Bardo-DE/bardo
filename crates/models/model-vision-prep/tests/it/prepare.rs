@@ -1,7 +1,7 @@
 //! `prepare` resizes once and encodes once; compiled only with the `pixels` feature.
 #![cfg(feature = "pixels")]
 
-use computer_use_action::{
+use computer_use_geometry::{
     Coord, DeviceSize, ImageSpace, ModelSpace, PixelFormat, Size, WindowSpace,
 };
 use model_vision_prep::{Encoding, FrameMap, JpegQuality, MediaType, PrepError, RawFrame, prepare};

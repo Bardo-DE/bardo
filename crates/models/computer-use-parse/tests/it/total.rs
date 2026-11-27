@@ -1,8 +1,9 @@
 //! Total parsing: no input panics, and what comes out is always within bounds.
 
-use computer_use_action::{GridMax, ModelSpace, ToolDialect};
+use computer_use_geometry::{GridMax, ModelSpace};
 use computer_use_parse::{InSpace, ParseLimits, Parsed, parse_tool_calls};
-use model_provider::{JsonText, ToolCall, ToolCallId, ToolName};
+use model_types::ToolDialect;
+use model_types::{JsonText, ToolCall, ToolCallId, ToolName};
 use proptest::prelude::*;
 
 const SPACES: [ModelSpace; 2] = [ModelSpace::Image, ModelSpace::Grid(GridMax(1000))];

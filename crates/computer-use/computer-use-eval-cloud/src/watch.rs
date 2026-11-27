@@ -4,7 +4,7 @@
 //! These are for the report and for stopping.
 
 use inference_core::ChargeTotal;
-use model_provider::Money;
+use model_types::Money;
 use std::sync::Mutex;
 use std::sync::PoisonError;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -66,7 +66,6 @@ impl Watch {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rust_decimal::Decimal;
 
     #[test]
     fn a_spend_refusal_stays() {
@@ -79,12 +78,12 @@ mod tests {
     #[test]
     fn only_reported_charges_are_summed_and_the_rest_are_counted() {
         let watch = Watch::default();
-        watch.answered(10, 5, Some(Money::usd(Decimal::new(2, 3))));
+        watch.answered(10, 5, Some(Money::usd(2, 3)));
         watch.answered(10, 5, None);
-        watch.answered(10, 5, Some(Money::usd(Decimal::new(3, 3))));
+        watch.answered(10, 5, Some(Money::usd(3, 3)));
         let totals = watch.totals();
         assert_eq!((totals.turns, totals.input, totals.output), (3, 30, 15));
-        assert_eq!(totals.charges.reported, Money::usd(Decimal::new(5, 3)));
+        assert_eq!(totals.charges.reported, Money::usd(5, 3));
         assert_eq!(totals.charges.unpriced.0, 1);
     }
 }

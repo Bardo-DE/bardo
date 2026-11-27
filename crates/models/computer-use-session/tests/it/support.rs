@@ -4,14 +4,13 @@
     reason = "builders shared by the tests; a test file uses only some of them"
 )]
 
-use computer_use_action::{
-    ActionProfile, ComputerUseDialect, Coord, GridMax, ModelSpace, Scale120, Size, WindowSpace,
-};
+use computer_use_geometry::{Coord, GridMax, ModelSpace, Scale120, Size, WindowSpace};
 use computer_use_session::{
     ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, MaskedRegions,
     ObservationIn, RepairBudget, StepIndex, TurnTranscript,
 };
-use model_provider::{
+use model_types::{ActionProfile, ComputerUseDialect};
+use model_types::{
     ImageInput, JsonText, ModelName, StopReason, ToolCall, ToolCallId, ToolName, TurnEnd, TurnUsage,
 };
 use model_vision_prep::{Encoding, FrameMap, PatchFactor, PixelCount, ResizeRule};

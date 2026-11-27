@@ -16,7 +16,7 @@ use engine_supervisor::{EngineId, EngineSpec, SocketPath, command};
 use inference_core::ModelCard;
 use model_catalog::{EngineKind, EngineProfile, MiB, ModelEntry, Serving, WeightFiles};
 use model_openai_compat::Flavor;
-use model_provider::ModelName;
+use model_types::ModelName;
 use std::path::{Path, PathBuf};
 
 /// The engine id of an attached model: it names no process.

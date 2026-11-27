@@ -11,7 +11,7 @@ use crate::verdict::Verdict;
 use account_capability::ModelId;
 use account_core::AccountId;
 use inference_core::ServedBy;
-use model_provider::Provider;
+use model_core::Provider;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -250,15 +250,15 @@ pub fn start_screens(
     for task in picked(corpus, only) {
         let arena = corpus.arena(task)?;
         let pixels = arena.stage.draw();
-        let window = computer_use_action::Size::new(
-            computer_use_action::Coord(pixels.size.w),
-            computer_use_action::Coord(pixels.size.h),
+        let window = computer_use_geometry::Size::new(
+            computer_use_geometry::Coord(pixels.size.w),
+            computer_use_geometry::Coord(pixels.size.h),
         );
         let map = model_vision_prep::FrameMap::new(
             window,
-            computer_use_action::Scale120(120),
+            computer_use_geometry::Scale120(120),
             &rule,
-            computer_use_action::ModelSpace::Image,
+            computer_use_geometry::ModelSpace::Image,
         )
         .map_err(|e| id(&e))?;
         let raw = model_vision_prep::RawFrame {

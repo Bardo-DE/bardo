@@ -1,5 +1,5 @@
 //! What this computer is, as far as choosing a download goes: the processor, and which graphics
-//! cards it has. The values only; `engine-probe` reads them from the kernel's own files
+//! cards it has. The values only; `engine-fs` reads them from the kernel's own files
 //! (`/sys/class/drm`, the NVIDIA module's version), never from a name this machine happens to
 //! carry. The person may force a backend.
 

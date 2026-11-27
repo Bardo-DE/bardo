@@ -7,7 +7,7 @@
 //! answer, or whose first logged token is not the start of the answer text (a `</think>` marker,
 //! a byte-fallback piece), cannot be attributed and gives nothing. Never an error.
 
-use model_provider::{ChoiceScores, FirstTokenLogprobs, Logprob, TokenLogprob};
+use model_types::{ChoiceScores, FirstTokenLogprobs, Logprob, TokenLogprob};
 use serde_json::{Map, Value, json};
 
 use crate::Flavor;

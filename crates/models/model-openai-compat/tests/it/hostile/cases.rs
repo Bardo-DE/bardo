@@ -2,12 +2,12 @@
 
 use model_http::SseError;
 use model_openai_compat::{CodecError, LeakMarker};
-use model_provider::{StopReason, TurnEvent};
+use model_types::{StopReason, TurnEvent};
 use serde_json::json;
 
 use model_wire::ChatDecoder;
 
-use model_openai_compat::testing::{
+use model_fake::stream::{
     Refused, Reply, assert_sound, call, calls, chunk, done, run, scenario, sse,
 };
 
@@ -177,7 +177,7 @@ fn prose_is_not_flagged_and_a_real_call_beside_a_mention_is_not_a_leak() {
 fn a_reply_over_the_stream_limit_is_unreadable() {
     // Frames are read straight from the decoder: one SSE line is capped far below this.
     let big = chunk(json!({"content": "a".repeat(4 << 20)}), None);
-    let mut d = model_openai_compat::testing::decoder();
+    let mut d = model_fake::stream::decoder();
     let results: Vec<_> = (0..17).map(|_| d.feed(&big)).collect();
     assert!(results[..15].iter().all(Result::is_ok));
     assert_eq!(results[16], Err(CodecError::Unreadable));
@@ -221,7 +221,7 @@ fn many_short_lines_and_one_byte_chunks_cost_linear_time() {
 #[test]
 fn an_embedding_outside_f32_range_is_unreadable_not_infinite() {
     use model_openai_compat::{Flavor, OpenAiCodec};
-    use model_provider::ModelName;
+    use model_types::ModelName;
     use model_wire::EmbedCodec;
     let codec = OpenAiCodec::new(Flavor::Vllm);
     let decode = |body: &str| codec.decode_embed(ModelName("m".into()), body.as_bytes());

@@ -1,5 +1,5 @@
 //! The seam between the app's wire types (`inference-core`) and the engine's turn types
-//! (`model-provider`): `ChatRequest` to `TurnRequest`, `TurnEvent` to `InferEvent`,
+//! (`model-types`): `ChatRequest` to `TurnRequest`, `TurnEvent` to `InferEvent`,
 //! `ProviderError` to `ModelError`. Tool calls, usage, sampling and the controls' words are one type
 //! on both sides and are not mapped. `request` is the way in and `reply` the way out; the mapping of the served name to a `ModelId` is here.
 //!
@@ -18,7 +18,8 @@ pub use scores::{NoScoresError, choice_scores, option_scores, turn_scores};
 
 use account_capability::ModelId;
 use base_ids::IdError;
-use model_provider::{Attempt, RetryPolicy, WaitMs};
+use model_core::RetryPolicy;
+use model_types::{Attempt, WaitMs};
 
 /// How a request to an engine is retried, by the daemon and by an app that hosts the engines
 /// itself alike: three attempts, a quarter of a second doubling to four seconds.

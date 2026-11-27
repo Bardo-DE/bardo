@@ -1,0 +1,48 @@
+//! Dialect names, so that capability records and the catalog can refer to a model's action
+//! language without depending on the code that speaks it.
+//!
+//! A dialect is the convention a model's calls follow. A model that follows it with small
+//! differences (a renamed verb, a drag from the cursor) does not get a dialect of its own: its
+//! catalogue entry carries an [`ActionProfile`](crate::ActionProfile) next to the dialect, so
+//! `ToolDialect` and `ComputerUseDialect` stay plain, `Copy` names.
+
+use serde::{Deserialize, Serialize};
+
+/// A vendor's own computer-use tool protocol (encoded by `computer-use-vendors`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum WireDialect {
+    AnthropicToolset20260801,
+    AnthropicComputer20251124,
+    OpenAiComputer,
+    GeminiComputerUse,
+}
+
+/// A local model that answers in text: `Thought: .. Action: click(start_box='(x,y)')`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TextDialect {
+    UiTars15,
+}
+
+/// A local model whose engine parses tool calls server-side; `computer-use-parse` reads the calls.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ToolDialect {
+    /// Qwen's `computer_use` function with an `action` argument: the de-facto convention, after
+    /// Anthropic's computer-use tool, that most open screen models follow or vary.
+    QwenComputerUse,
+    /// Holo 3.1: the engine parses the Qwen3-coder XML call format into tool calls, and the
+    /// action schema is the one the session's prompt declares (its chat template names no
+    /// computer-use function).
+    Holo31,
+}
+
+/// How a model's actions are written and parsed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
+pub enum ComputerUseDialect {
+    Wire(WireDialect),
+    Text(TextDialect),
+    Tool(ToolDialect),
+}

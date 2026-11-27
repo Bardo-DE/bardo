@@ -16,7 +16,7 @@
 //! recorded from a real user session.
 
 use model_http::{BodyKind, EventName, HttpStatus, RouteRoot, UrlPath, Verb, WaitSeconds};
-use model_provider::{JsonText, Seed};
+use model_types::{JsonText, Seed};
 use serde::{Deserialize, Serialize};
 
 use crate::cassette::{read_jsonl, write_jsonl};

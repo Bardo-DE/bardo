@@ -15,8 +15,9 @@ use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role, TreeSource, Truncation,
     TypedHint,
 };
-use computer_use_action::{Coord, NodeId, Point, Rect, Size};
+use computer_use_action::NodeId;
 use computer_use_desktop::Stamp;
+use computer_use_geometry::{Coord, Point, Rect, Size};
 use provenance::{Label, Labelled};
 use std::collections::BTreeSet;
 
@@ -52,7 +53,7 @@ fn role_of(placed: &Placed<'_>) -> Role {
     }
 }
 
-fn empty_at(x: u32, y: u32) -> Rect<computer_use_action::WindowSpace> {
+fn empty_at(x: u32, y: u32) -> Rect<computer_use_geometry::WindowSpace> {
     Rect {
         origin: Point::new(Coord(x), Coord(y)),
         size: Size::new(Coord(0), Coord(0)),

@@ -26,9 +26,8 @@ use agent_models::{TransportModel, TransportWriter};
 use base_clock::SystemClock;
 use inference_client::DbusTransport;
 use inference_core::ModelCard;
-use model_provider::Money;
+use model_types::Money;
 use permission_core::{ReviewError, Stage};
-use rust_decimal::Decimal;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -271,9 +270,6 @@ pub async fn run_corpus_live(
 /// What was reported between two readings of inferd's ledger; `None` when nothing was added, or
 /// the readings are in different currencies (nothing is converted).
 fn charged_since(before: Money, now: Money) -> Option<Money> {
-    if before.currency != now.currency {
-        return None;
-    }
-    let added = now.amount.checked_sub(before.amount)?;
-    (added > Decimal::ZERO).then(|| Money::new(added, now.currency))
+    let added = now.checked_sub(before).ok()?;
+    (!added.is_zero() && !added.is_negative()).then_some(added)
 }

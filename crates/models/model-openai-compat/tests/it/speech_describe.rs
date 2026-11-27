@@ -4,11 +4,11 @@
 use crate::speech_fake;
 
 use model_openai_compat::KOKORO_FORMAT;
-use model_provider::{ModelName, ProviderError, ServerStatus, Support};
-use speech_fake::*;
-use speech_provider::{
+use model_types::{ModelName, ProviderError, ServerStatus, Support};
+use speech_core::{
     AudioMs, LangSet, SpeechCaps, SpeechIo, SpeechModelInfo, SpeechToText, TextToSpeech, VoiceId,
 };
+use speech_fake::*;
 
 // ---- describe ------------------------------------------------------------------------------
 

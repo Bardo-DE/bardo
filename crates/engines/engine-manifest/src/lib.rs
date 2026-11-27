@@ -3,11 +3,13 @@
 //! llama.cpp, vLLM and Strata each come in builds for a processor and a backend (the processor
 //! alone, Vulkan, CUDA, `ROCm`). This crate holds what is known about them and does nothing to the
 //! system: no disk, no network, no runtime. Reading the machine and its install directories is
-//! `engine-probe`; fetching is `engine-install`.
+//! `engine-fs`; fetching is `engine-install`.
 //!
 //! - [`Manifest`] is the pinned table: for an engine, a processor and a backend, the files to
 //!   download with their hashes and sizes, the distro package where one exists, and the
 //!   [`seal`] the unpacked tree must have.
+//! - [`Roots`], [`InstallDir`] and [`Record`] say where installs live and what an install leaves;
+//!   [`Found`] and [`Verdict`] are what `engine-fs` reports of them.
 //! - [`Host`] is what to choose by: the processor, the cards ([`Gpus`]) and the distro; the
 //!   person may force a backend.
 //! - The engine itself is the catalog's [`EngineKind`](model_catalog::EngineKind), named by
@@ -27,7 +29,9 @@
 
 mod engine;
 mod failure;
+mod found;
 mod host;
+mod layout;
 mod manifest;
 mod release;
 mod rows;
@@ -35,7 +39,9 @@ mod seal;
 
 pub use engine::engine_from_slug;
 pub use failure::Failure;
+pub use found::{Found, Origin, Verdict};
 pub use host::{Arch, Backend, BackendChoice, GpuVendor, Gpus, preference};
+pub use layout::{InstallDir, Record, RecordError, Roots, Scope};
 pub use manifest::{Artifact, Delivery, Host, Manifest, Offer, PythonEnv, Row};
 pub use release::OsRelease;
 pub use seal::{SealLine, TreeSeal, hex};

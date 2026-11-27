@@ -1,10 +1,10 @@
 //! What a host sends is hostile input: any bytes, in any chunking, end in frames or a typed
 //! error, and a header over the cap is refused before its body is waited for.
 
-use model_provider::ProviderError;
+use model_types::ProviderError;
 use proptest::prelude::*;
+use speech_core::{HostOut, MAX_FRAME_BYTES};
 use speech_host_client::FrameBuffer;
-use speech_provider::{HostOut, MAX_FRAME_BYTES};
 
 /// Every frame the bytes hold, or the error that stopped the reading.
 fn read(bytes: &[u8], cuts: &[usize]) -> (Vec<HostOut>, Option<ProviderError>) {

@@ -1,7 +1,7 @@
 //! The audio the daemon holds while the engine warms: at most ten seconds of 16 kHz mono S16,
 //! oldest dropped first, zeroed when the utterance ends. Audio is never stored anywhere else.
 
-use speech_provider::SampleRate;
+use speech_core::SampleRate;
 use std::fmt;
 
 /// The capture and engine rate: 16 kHz mono S16. It is the one rate `speech_vad::Framer` takes;

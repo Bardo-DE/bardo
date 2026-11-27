@@ -12,6 +12,7 @@ publish.workspace = true
 base-ids = { path = "../../base/base-ids" }
 computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
 computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}

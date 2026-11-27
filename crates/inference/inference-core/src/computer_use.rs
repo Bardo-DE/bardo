@@ -5,9 +5,8 @@
 use crate::error::ModelError;
 use crate::request::ImageSource;
 use account_capability::ComputerUseEnv;
-use computer_use_action::{
-    ComputerUseAction, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace,
-};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

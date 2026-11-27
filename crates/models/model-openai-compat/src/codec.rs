@@ -1,9 +1,7 @@
 //! Request encoding and stream decoding, with no I/O: the chat-completions codec.
 
 use model_http::{Exchange, Framing, JsonBody, ResponseHead, RouteRoot, UrlPath, Verb};
-use model_provider::{
-    Charges, EmbedEnd, EmbedTurn, ModelInfo, ModelName, ProviderError, TurnRequest,
-};
+use model_types::{Charges, EmbedEnd, EmbedTurn, ModelInfo, ModelName, ProviderError, TurnRequest};
 use model_wire::{ChatCodec, CodecError, EmbedCodec, ErrorWire};
 use serde::{Deserialize, Serialize};
 

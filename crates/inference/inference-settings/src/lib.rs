@@ -39,8 +39,7 @@ use inference_core::{
     AutoPolicy, ClassFloor, Floor, Period, Policy, SpendCap, SpendScope, TierMap,
 };
 use inference_router::local::Lengths;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde::{Deserialize, Serialize};
 
 /// `ai.local_only`.
@@ -241,7 +240,7 @@ impl Default for SpendLine {
 /// A cap row's value as an amount of US dollars; `None` for no cap (`0`).
 #[must_use]
 pub fn cents_to_limit(cents: u32) -> Option<Money> {
-    (cents > 0).then(|| Money::usd(Decimal::new(i64::from(cents), 2)))
+    (cents > 0).then(|| Money::usd(i64::from(cents), 2))
 }
 
 impl SpendLine {

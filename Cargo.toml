@@ -335,26 +335,30 @@ members = [
     "crates/inference/inference-dbus",
     "crates/inference/inference-rig",
     "crates/models/computer-use-action",
+    "crates/models/computer-use-geometry",
     "crates/models/computer-use-parse",
     "crates/models/computer-use-session",
     "crates/models/computer-use-vendors",
+    "crates/engines/engine-fake",
+    "crates/engines/engine-fs",
     "crates/engines/engine-install",
     "crates/engines/engine-manifest",
-    "crates/engines/engine-probe",
     "crates/engines/engine-spec",
     "crates/engines/engine-supervisor",
+    "crates/models/model-core",
+    "crates/models/model-fake",
     "crates/models/model-genai-names",
     "crates/models/model-catalog",
     "crates/models/model-extract",
     "crates/models/model-http",
     "crates/models/model-http-reqwest",
     "crates/models/model-openai-compat",
-    "crates/models/model-provider",
+    "crates/models/model-types",
     "crates/models/model-replay",
     "crates/models/model-wire",
+    "crates/models/speech-core",
     "crates/speech/speech-host",
     "crates/speech/speech-host-client",
-    "crates/models/speech-provider",
     "crates/speech/speech-vad",
     "crates/models/model-vision-prep",
     "crates/models/fuzz",
@@ -701,7 +705,6 @@ img-parts = "0.4"
 infer = "0.19"
 input-linux = { version = "0.7", default-features = false }
 interprocess = "2.4"
-iso_currency = "0.7"
 jiff = "0.2"
 jsonschema = { version = "0.58", default-features = false }
 jxl-oxide = "0.12"
@@ -759,7 +762,6 @@ resvg = { version = "0.50", default-features = false }
 rmcp = { version = "3.5", default-features = false }
 roxmltree = "0.21"
 rusqlite = "0.43"
-rust_decimal = { version = "1", default-features = false }
 rustc-hash = "2"
 rustix = { version = "1.1", default-features = false }
 rustls = { version = "0.23", default-features = false }

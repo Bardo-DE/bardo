@@ -11,15 +11,17 @@ publish.workspace = true
 [dependencies]
 base-ids = {path = "../../base/base-ids"}
 computer-use-action = {path = "../computer-use-action"}
+computer-use-geometry = {path = "../computer-use-geometry"}
+model-types = {path = "../model-types"}
 model-vision-prep = {path = "../model-vision-prep"}
-model-provider = {path = "../model-provider"}
 computer-use-parse = {path = "../computer-use-parse"}
 computer-use-vendors = {path = "../computer-use-vendors"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-model-provider = {path = "../model-provider", features = ["testing"]}
+model-core = {path = "../model-core"}
+model-fake = {path = "../model-fake"}
 model-http = {path = "../model-http"}
 model-wire = {path = "../model-wire"}
 model-replay = {path = "../model-replay"}

@@ -1,7 +1,8 @@
 use super::*;
 use base_testkit::Scratch;
+use engine_fs::seal_of;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Row};
-use engine_probe::{Record, Scope, seal_of};
+use engine_manifest::{Record, Scope};
 use std::os::unix::fs::PermissionsExt;
 
 static NO_FILES: [Artifact; 0] = [];
@@ -31,15 +32,17 @@ fn installed_row(roots: &Roots) -> (Row, PathBuf) {
         program: "llama-server",
         tree_seal: Some(Box::leak(seal.clone().into_boxed_str())),
     };
-    Record {
-        engine: "llama_cpp".into(),
-        version: "b-test".into(),
-        backend: "cpu".into(),
-        seal,
-        entries: std::collections::BTreeMap::default(),
-        venv_seal: None,
-    }
-    .write(&dir.join("installed.json"))
+    engine_fs::write_record(
+        &Record {
+            engine: "llama_cpp".into(),
+            version: "b-test".into(),
+            backend: "cpu".into(),
+            seal,
+            entries: std::collections::BTreeMap::default(),
+            venv_seal: None,
+        },
+        &dir.join("installed.json"),
+    )
     .expect("record");
     (row, program)
 }

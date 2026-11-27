@@ -18,7 +18,7 @@ use provenance::{Labelled, MessageKind, ReportStatus};
 
 const STOCK: BackendKind = BackendKind::KwinStock;
 
-fn ask() -> ComputerUseAction<computer_use_action::WindowSpace> {
+fn ask() -> ComputerUseAction<computer_use_geometry::WindowSpace> {
     ComputerUseAction::Ask {
         question: Summary::new("Which account?").unwrap(),
         choices: vec![],

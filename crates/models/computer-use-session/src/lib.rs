@@ -11,9 +11,10 @@
 //! prompts and reads exactly as it did before.
 //!
 //! ```
-//! use computer_use_action::{ActionProfile, ComputerUseDialect, GridMax, ModelSpace, ToolDialect};
+//! use model_types::{ActionProfile, ComputerUseDialect, ToolDialect};
+//! use computer_use_geometry::{GridMax, ModelSpace};
 //! use computer_use_session::{ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, RepairBudget};
-//! use model_provider::ModelName;
+//! use model_types::ModelName;
 //! use model_vision_prep::{Encoding, PatchFactor, PixelCount, ResizeRule};
 //!
 //! let profile = ComputerUseProfile {

@@ -7,13 +7,13 @@
 
 mod pcm;
 
-use model_provider::{ModelName, ProviderError, Support};
+use model_types::{ModelName, ProviderError, Support};
 use sherpa_onnx::{
     OnlineModelConfig, OnlineRecognizer, OnlineRecognizerConfig, OnlineStream,
     OnlineTransducerModelConfig,
 };
 use speech_host::{Finished, HostArgs, HostError, Recognizer};
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioMs, HeardText, Lang, LangChoice, LangSet, SampleIndex, SpeechCaps, SpeechIo,
     SpeechModelInfo, SttEnd, SttRequest, TranscriptEvent,
 };
@@ -108,9 +108,9 @@ fn model_info() -> SpeechModelInfo {
             langs: LangSet::Listed(LANGS.iter().filter_map(|t| Lang::new(*t).ok()).collect()),
             max_audio: AudioMs(120_000),
             io: SpeechIo::In {
-                input: speech_provider::AudioFormat {
-                    rate: speech_provider::SampleRate(RATE),
-                    pcm: speech_provider::PcmFormat::S16Le,
+                input: speech_core::AudioFormat {
+                    rate: speech_core::SampleRate(RATE),
+                    pcm: speech_core::PcmFormat::S16Le,
                 },
             },
         },
@@ -238,9 +238,9 @@ impl Recognizer for SherpaRecognizer {
     }
 }
 
-fn model_info_input() -> speech_provider::AudioFormat {
-    speech_provider::AudioFormat {
-        rate: speech_provider::SampleRate(RATE),
-        pcm: speech_provider::PcmFormat::S16Le,
+fn model_info_input() -> speech_core::AudioFormat {
+    speech_core::AudioFormat {
+        rate: speech_core::SampleRate(RATE),
+        pcm: speech_core::PcmFormat::S16Le,
     }
 }

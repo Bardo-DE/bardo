@@ -9,8 +9,7 @@ use account_core::AppName;
 use base_ids::Px;
 use base_time::UnixSeconds;
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat, Point,
-    RunMode, Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
+    Button, ClickCount, ComputerUseAction, FinishOutcome, RunMode, Summary, Target, WindowTrust,
 };
 use computer_use_bus::{
     ComputerUseTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget,
@@ -19,6 +18,7 @@ use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{
     BackendCaps, BackendKind, MaskWhere, Stamp, ToplevelIdent, ToplevelInfo,
 };
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use computer_use_run::{ComputerUseConfig, ComputerUseModelError, Rules, Run, RunEnv};
 use inference_core::ComputerUseStepReply;
 use provenance::{

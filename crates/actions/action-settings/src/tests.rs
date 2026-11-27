@@ -7,8 +7,8 @@ use settings_store::{InvalidKey, UnknownKey};
 use std::collections::BTreeSet;
 
 /// A spend cap of `n` millionths of a US dollar.
-fn micro_usd(n: i64) -> model_provider::Money {
-    model_provider::Money::usd(rust_decimal::Decimal::new(n, 6))
+fn micro_usd(n: i64) -> model_types::Money {
+    model_types::Money::usd(n, 6)
 }
 
 fn schema() -> toml::Table {

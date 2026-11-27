@@ -9,9 +9,9 @@
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_provider::{ModelName, ProviderError, Support};
+use model_types::{ModelName, ProviderError, Support};
 use serde::{Deserialize, Serialize};
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang, LangChoice, LangSet,
     PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechDir, SpeechIo, SpeechModelInfo,
     SpeechToText, SttEnd, SttMode, SttRequest, TextToSpeech, TranscriptEvent, TranscriptSink,

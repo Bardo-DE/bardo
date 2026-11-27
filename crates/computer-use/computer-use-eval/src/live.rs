@@ -9,7 +9,7 @@
 //! model, an engine or an address.
 
 use base_ids::Tokens;
-use computer_use_action::{ComputerUseDialect, Size, WindowSpace};
+use computer_use_geometry::{Size, WindowSpace};
 use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink, ThoughtText,
 };
@@ -24,9 +24,11 @@ use inference_core::{
     NoteFrom, PrevResult, ServedBy, StepNote, TurnUsage,
 };
 use model_catalog::{ModelEntry, parse_entry};
-use model_provider::{
+use model_core::Provider;
+use model_types::ComputerUseDialect;
+use model_types::{
     Batching, ComputerUseSupport, EngineExtras, ImageBytes, ImageDetail, ImageInput, Limits,
-    ModelName, Provider, ProviderError, Reasoning, Sampling, ToolCallId, ToolParallelism,
+    ModelName, ProviderError, Reasoning, Sampling, ToolCallId, ToolParallelism,
 };
 use model_vision_prep::{Encoding, FrameMap, RawFrame, prepare};
 use std::sync::Arc;

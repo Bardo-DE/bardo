@@ -24,8 +24,8 @@ path = "src/main.rs"
 
 [dependencies]
 speech-host = { path = "../speech-host" }
-speech-provider = { path = "../../models/speech-provider" }
-model-provider = { path = "../../models/model-provider" }
+speech-core = { path = "../../models/speech-core" }
+model-types = { path = "../../models/model-types" }
 sherpa-onnx = { version = "=1.13.8", default-features = false, features = ["shared"] }
 
 [lints.rust]

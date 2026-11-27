@@ -2,7 +2,8 @@
 //! actions, and how step results encode back.
 //!
 //! ```
-//! use computer_use_action::{Coord, Size, WireDialect};
+//! use computer_use_geometry::{Coord, Size};
+//! use model_types::WireDialect;
 //! use computer_use_vendors::WireCodec;
 //!
 //! // A dialect declares its tool for an image of the given size.

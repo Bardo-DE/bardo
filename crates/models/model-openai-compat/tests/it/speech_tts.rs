@@ -4,10 +4,10 @@
 use crate::speech_fake;
 
 use model_openai_compat::{KOKORO_FORMAT, encode_speech_request};
-use model_provider::{ModelName, ProviderError, ServerStatus};
+use model_types::{ModelName, ProviderError, ServerStatus};
 use proptest::prelude::*;
+use speech_core::{AudioMs, SampleIndex, TextToSpeech};
 use speech_fake::*;
-use speech_provider::{AudioMs, SampleIndex, TextToSpeech};
 
 // ---- speech --------------------------------------------------------------------------------
 

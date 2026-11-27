@@ -18,6 +18,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 futures-util = { workspace = true, features = ["std"] }
 
 [dev-dependencies]
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
 # The in-process EIS server the seat is tested against.
 computer-use-fake = {path = "../computer-use-fake"}
 

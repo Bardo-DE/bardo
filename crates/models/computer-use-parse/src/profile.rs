@@ -1,14 +1,13 @@
 //! A model's action profile at read time: what a catalogue entry says about how its calls differ
-//! from the common convention (see `computer_use_action::ActionProfile`), and what the parser needs to
+//! from the common convention (see `model_types::ActionProfile`), and what the parser needs to
 //! know about the step to apply it.
 //!
 //! A profile claims a verb only when it states a difference for it. A verb it does not claim goes
 //! on to the dialect's own table, so the default profile changes nothing.
 
-use computer_use_action::{
-    ActionProfile, Button, ComputerUseAction, CoordSpace, DragStyle, ScrollAxis, Summary, Target,
-    VerbAlias,
-};
+use computer_use_action::{Button, ComputerUseAction, Summary, Target};
+use computer_use_geometry::CoordSpace;
+use model_types::{ActionProfile, DragStyle, ScrollAxis, VerbAlias};
 use serde_json::Value;
 
 use crate::DropReason;

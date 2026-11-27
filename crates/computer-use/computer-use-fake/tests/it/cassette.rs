@@ -1,22 +1,21 @@
 //! `ScriptedModel::from_cassette`: recorded turns replay as window-space replies.
 
 use base_ids::Tokens;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction};
 use computer_use_fake::{ScriptError, ScriptedModel};
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size};
 use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink,
 };
 use inference_core::{DropReason, SafetyHint, StepIndex};
-use model_provider::{
-    ChoiceScores, EngineExtras, JsonText, Knob, Limits, Message, Milli, ModelName, OutputShape,
-    Part, ProviderError, Reasoning, Role, SafetySignal, Sampling, StopReason, ToolCall, ToolCallId,
-    ToolChoice, ToolName, ToolParallelism, TurnEnd, TurnEvent, TurnRequest, TurnUsage,
-};
 use model_replay::{
     BuildLabel, Cassette, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp,
     Interaction, InteractionId, RecordedAt, RequestPrint,
+};
+use model_types::{
+    ChoiceScores, EngineExtras, JsonText, Knob, Limits, Message, Milli, ModelName, OutputShape,
+    Part, ProviderError, Reasoning, Role, SafetySignal, Sampling, StopReason, ToolCall, ToolCallId,
+    ToolChoice, ToolName, ToolParallelism, TurnEnd, TurnEvent, TurnRequest, TurnUsage,
 };
 use std::collections::BTreeSet;
 
@@ -122,7 +121,7 @@ fn blank_request() -> inference_core::ComputerUseStepRequest {
     )
 }
 
-fn left_click(x: u32, y: u32) -> ComputerUseAction<computer_use_action::WindowSpace> {
+fn left_click(x: u32, y: u32) -> ComputerUseAction<computer_use_geometry::WindowSpace> {
     ComputerUseAction::Click {
         at: computer_use_action::Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,

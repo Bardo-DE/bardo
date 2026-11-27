@@ -23,7 +23,7 @@ action-wire = {path = "../action-wire"}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 account-core = {path = "../../accounts/account-core"}
-model-provider = {path = "../../models/model-provider"}
+model-types = {path = "../../models/model-types"}
 provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

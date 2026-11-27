@@ -88,7 +88,7 @@ The tiers are one `[[tiers]]` entry in `layers.toml`, and the bans above are `[[
 
 The memory service never depends on the model layer, the actions service or computer use: their payloads (policy, consent, computer-use
 steps, sessions) are `EventBody::Area` in their owners' serde form, and `cargo xtask check layers`
-fails if any of their crates enters the tree of a memory crate (dev-dependencies included), and if a memory crate names `model-provider` directly. Other crates reach the accounts service's names through
+fails if any of their crates enters the tree of a memory crate (dev-dependencies included), and if a memory crate names `model-types` or `model-core` directly. Other crates reach the accounts service's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
 
 External boundaries (default features): `memory-core` never reaches `zbus zvariant tokio

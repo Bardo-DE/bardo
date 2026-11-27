@@ -63,21 +63,20 @@ inference-turns = {path = "../inference-turns"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-proto = { path = "../../settings/settings-proto" }
 settings-types = { path = "../../settings/settings-types" }
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
-iso_currency = { workspace = true, features = ["with-serde"] }
+model-core = {path = "../../models/model-core"}
+model-types = {path = "../../models/model-types"}
 model-catalog = {path = "../../models/model-catalog"}
 # What differs between the engines, what is installed and pinned, and where an engine is found.
 engine-spec = {path = "../../engines/engine-spec"}
 engine-manifest = {path = "../../engines/engine-manifest"}
-engine-probe = {path = "../../engines/engine-probe"}
+engine-fs = {path = "../../engines/engine-fs"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}
 model-http = {path = "../../models/model-http"}
 model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
 model-replay = {path = "../../models/model-replay"}
 model-wire = {path = "../../models/model-wire"}
-speech-provider = {path = "../../models/speech-provider"}
+speech-core = {path = "../../models/speech-core"}
 speech-host-client = {path = "../../speech/speech-host-client"}
 clap = {workspace = true, features = ["default", "derive"]}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
@@ -107,14 +106,14 @@ account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {path = "../inference-client", features = ["dbus"]}
 # `sealed_key`: the memfd the fake Broker hands a key on.
 account-secrets = {path = "../../accounts/account-secrets"}
-engine-supervisor = {features = ["testing"], path = "../../engines/engine-supervisor"}
-model-provider = {features = ["testing"], path = "../../models/model-provider"}
+computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+engine-fake = {path = "../../engines/engine-fake"}
 account-fake = {path = "../../accounts/account-fake"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # The scratch directory, the test catalog entries and the models they make.
 inference-router = {path = "../inference-router", features = ["testing"]}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
-computer-use-action = {path = "../../models/computer-use-action"}
 
 [lints]
 workspace = true

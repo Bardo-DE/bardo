@@ -5,8 +5,7 @@ use account_capability::ModelId;
 use account_core::AccountId;
 use base_ids::{Permille, Tokens, TurnCount};
 use inference_core::*;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
@@ -46,12 +45,12 @@ fn a_usage_writes_a_charge_only_when_the_provider_reported_one() {
         counted
     );
     let charged = TurnUsage {
-        charge: Some(Money::usd(Decimal::new(95, 5))),
+        charge: Some(Money::usd(95, 5)),
         ..counted
     };
     round_trip(&charged);
     round_trip(&ChargeTotal {
-        reported: Money::usd(Decimal::new(125, 2)),
+        reported: Money::usd(125, 2),
         unpriced: TurnCount(3),
     });
 }

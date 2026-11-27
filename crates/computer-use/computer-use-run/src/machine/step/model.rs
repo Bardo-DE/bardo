@@ -96,7 +96,7 @@ pub(super) fn model_replied(
         return;
     };
     run.used.spend = run.used.spend.counting(reply.charge);
-    let local_only = run.task.budget.spend.amount.is_zero();
+    let local_only = run.task.budget.spend.is_zero();
     if over_budget(run, RunBudgetKind::Spend) || (reply.cloud && local_only) {
         finish_plain(run, fx, ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend));
         return;

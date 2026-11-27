@@ -16,8 +16,7 @@ agent-registry = {path = "../agent-registry"}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 
 [dev-dependencies]
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+model-types = {path = "../../models/model-types"}
 settings-store = { path = "../../settings/settings-store" }
 tempfile = { workspace = true }
 

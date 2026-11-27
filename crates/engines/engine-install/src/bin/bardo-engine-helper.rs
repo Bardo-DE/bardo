@@ -7,8 +7,8 @@
 
 use engine_install::helper::{Helper, Report, parse_args};
 use engine_install::{CancelToken, Fetcher};
+use engine_manifest::Roots;
 use engine_manifest::{Arch, Failure, OsRelease};
-use engine_probe::Roots;
 use std::io::{BufRead, Write};
 use std::process::ExitCode;
 

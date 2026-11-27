@@ -22,8 +22,8 @@ use model_http::{
     WaitMs,
 };
 use rustix::process::Pid;
+use speech_core::SpeechToText;
 use speech_host_client::{HostSocket, SpeechHostClient};
-use speech_provider::SpeechToText;
 use std::collections::{BTreeMap, BTreeSet};
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};

@@ -5,9 +5,11 @@ use std::collections::BTreeSet;
 
 use serde::{Deserialize, Serialize};
 
+use computer_use_geometry::{CoordSpace, Length, Point, Rect, Size};
+
 use crate::{
-    Button, Choice, Chord, ClickCount, CoordSpace, ExtractedText, FieldName, Length, Modifier,
-    Notches, Point, Rect, Repeat, ScrollDir, Size, Summary, Target, TypedText, WaitMs,
+    Button, Choice, Chord, ClickCount, ExtractedText, FieldName, Modifier, Notches, Repeat,
+    ScrollDir, Summary, Target, TypedText, WaitMs,
 };
 
 /// One thing a model asks the computer to do, in space `S`.

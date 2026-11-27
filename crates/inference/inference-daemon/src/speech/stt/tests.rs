@@ -279,7 +279,7 @@ fn the_request_to_the_host_follows_the_begin_and_the_models_chunk() {
 
 #[test]
 fn transcript_events_become_heard_deltas_and_an_unspellable_language_is_dropped() {
-    let text = |t: &str| speech_provider::HeardText(t.into());
+    let text = |t: &str| speech_core::HeardText(t.into());
     let cases = [
         (
             "partial",

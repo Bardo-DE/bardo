@@ -8,7 +8,7 @@ use inference_bridge::{
 };
 use inference_core as pi;
 use inference_router::local::LocalModel;
-use model_provider as sp;
+use model_types as sp;
 
 /// The turn target of a model on this computer.
 #[must_use]

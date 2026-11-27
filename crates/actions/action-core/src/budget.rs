@@ -3,7 +3,7 @@
 use crate::spend::{Spent, check_turn};
 use action_vocab::{Depth, Seconds};
 use base_ids::Count;
-use model_provider::Money;
+use model_types::Money;
 use permission_core::BreakerTrip;
 use provenance::{Effect, SpaceId, UnixSeconds};
 use serde::{Deserialize, Serialize};

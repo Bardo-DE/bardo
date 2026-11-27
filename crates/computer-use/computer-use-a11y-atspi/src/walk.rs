@@ -8,8 +8,9 @@ use computer_use_a11y_tree::{A11yError, A11yTarget};
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeBudget, NodeValue, Parent, TreeSource, Truncation, TypedHint,
 };
-use computer_use_action::{Coord, NodeId, Point, Rect, Size, WindowSpace};
+use computer_use_action::NodeId;
 use computer_use_desktop::{Pid, Stamp};
+use computer_use_geometry::{Coord, Point, Rect, Size, WindowSpace};
 use provenance::{Label, Labelled, Source};
 use std::collections::VecDeque;
 

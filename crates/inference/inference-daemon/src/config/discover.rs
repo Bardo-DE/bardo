@@ -7,7 +7,8 @@
 //! checked here.
 
 use account_callers::root_held;
-use engine_probe::{Finder, Origin, Roots};
+use engine_fs::Finder;
+use engine_manifest::{Origin, Roots};
 use engine_spec::engine;
 use model_catalog::EngineKind;
 use std::os::unix::fs::PermissionsExt;
@@ -85,7 +86,7 @@ impl ProgramSearch {
         })
     }
 
-    fn found(&self, kind: EngineKind) -> Option<engine_probe::Found> {
+    fn found(&self, kind: EngineKind) -> Option<engine_manifest::Found> {
         self.installs.as_ref()?.find(kind)
     }
 }

@@ -41,7 +41,7 @@ settings-types = { path = "../../settings/settings-types" }
 md-5 = { workspace = true }
 engine-install = {path = "../../engines/engine-install"}
 engine-manifest = {path = "../../engines/engine-manifest"}
-engine-probe = {path = "../../engines/engine-probe"}
+engine-fs = {path = "../../engines/engine-fs"}
 engine-spec = {path = "../../engines/engine-spec"}
 inference-client = {path = "../../inference/inference-client", features = ["dbus", "lending"]}
 model-catalog = {path = "../../models/model-catalog"}

@@ -6,12 +6,11 @@ use account_core::{AccountId, AppName, DataClass};
 use action_core::CallRefusal;
 use action_gate_wire::EffectBasis;
 use base_ids::Count;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, Point, Summary, Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Summary, Target};
 use computer_use_action::{RunMode, WindowClass};
 use computer_use_bus::*;
 use computer_use_desktop::{BackendKind, Digest32, Stamp, ToplevelIdent, WindowTitle};
+use computer_use_geometry::{Coord, DeviceSize, Point, WindowSpace};
 use computer_use_types::{FrameDigest, InputOrigin, InputReceipt, SeatError, TextPath};
 use inference_core::{ChargeTotal, ServedBy, StepIndex};
 use provenance::{

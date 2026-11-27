@@ -3,8 +3,8 @@
 use crate::common;
 
 use common::*;
-use computer_use_action::ToolDialect;
 use computer_use_parse::{DropReason, ParseError};
+use model_types::ToolDialect;
 
 #[test]
 fn limits_hold_for_text() {

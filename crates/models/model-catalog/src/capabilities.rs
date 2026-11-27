@@ -4,12 +4,14 @@
 use std::collections::BTreeSet;
 
 use base_ids::Tokens;
-use model_provider::{
-    Caps, ComputerUseSupport, Constraint, EmbedCaps, ImageCount, ImageLimits, InputKind,
-    ModelSpace, ResizeRule, Support, ToolSupport,
+use computer_use_geometry::ModelSpace;
+use model_types::{
+    Caps, ComputerUseSupport, Constraint, EmbedCaps, ImageCount, ImageLimits, InputKind, Support,
+    ToolSupport,
 };
+use model_vision_prep::ResizeRule;
 use serde::{Deserialize, Serialize};
-use speech_provider::SpeechCaps;
+use speech_core::SpeechCaps;
 
 use crate::{EngineProfile, Modalities, Modality, SamplingDefaults};
 

@@ -1,7 +1,7 @@
 //! Speech request encoding and response decoding, with no I/O.
 
 use serde_json::{Value, json};
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioFormat, HeardText, LangChoice, PcmFormat, SampleIndex, SampleRate, SttRequest,
     TtsRequest,
 };
@@ -171,7 +171,7 @@ impl PcmDecoder {
         Some(AudioChunk {
             format: self.format,
             at,
-            pcm: speech_provider::PcmBytes::new(pcm),
+            pcm: speech_core::PcmBytes::new(pcm),
         })
     }
 }

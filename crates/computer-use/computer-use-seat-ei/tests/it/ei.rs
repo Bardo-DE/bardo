@@ -1,11 +1,12 @@
 //! `EiSeat` against `FakeEis`: the real reis client over a socketpair, no compositor.
 
 use base_ids::Px;
-use computer_use_action::{Button, Coord, Notches, Point, ScrollDir, TypedText};
+use computer_use_action::{Button, Notches, ScrollDir, TypedText};
 use computer_use_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Ms, SeatIsolation,
 };
 use computer_use_fake::{EisEvent, FakeEis, scene};
+use computer_use_geometry::{Coord, Point};
 use computer_use_seat_ei::EiSeat;
 use computer_use_seat_input::{
     AgentSeat, Emulation, InputOp, InputOrigin, Keycode, Press, Produces, SeatError,

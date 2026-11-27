@@ -1,7 +1,7 @@
 //! How loud a frame is, for the mic indicator and the orb.
 
 use serde::{Deserialize, Serialize};
-use speech_provider::Frame512;
+use speech_core::Frame512;
 
 /// Loudness in thousandths: RMS in dBFS clamped to -60..0 and mapped to 0..=1000 (-40 dBFS is 333).
 #[derive(

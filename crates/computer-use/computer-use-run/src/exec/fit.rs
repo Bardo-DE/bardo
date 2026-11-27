@@ -9,10 +9,11 @@ use super::observe::visibility_of;
 use crate::machine::input::Moved;
 use crate::observation::{Focus, Visibility};
 use account_core::AppName;
-use computer_use_action::{ComputerUseAction, Coord, Size, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_desktop::{
     GlobalRect, Pid, SeatIsolation, ToplevelIdent, ToplevelInfo, ToplevelState,
 };
+use computer_use_geometry::{Coord, Size, WindowSpace};
 
 /// The window as the last observation saw it: what an action was aimed at.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -202,7 +203,8 @@ mod tests {
 
     #[test]
     fn keys_and_a_click_with_modifiers_take_the_keyboard() {
-        use computer_use_action::{Button, ClickCount, Modifier, Point, Target};
+        use computer_use_action::{Button, ClickCount, Modifier, Target};
+        use computer_use_geometry::Point;
         let click = |mods: &[Modifier]| ComputerUseAction::Click {
             at: Target::Point(Point::new(Coord(1), Coord(1))),
             button: Button::Left,

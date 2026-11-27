@@ -3,11 +3,11 @@
 //! a dictation. Neither touches the bus, a device or the engine, so both callers step the same
 //! way and a test can drive them with plain samples.
 
-use speech_loop::CAPTURE_RATE;
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioFormat, FRAME_SAMPLES, Frame512, PcmBytes, PcmFormat, SampleIndex,
     VoiceActivity, Voiced,
 };
+use speech_loop::CAPTURE_RATE;
 use speech_vad::{Endpoint, EndpointParams, EnergyGate, EnergyGateParams, Framer, endpoint};
 use std::collections::VecDeque;
 

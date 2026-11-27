@@ -8,9 +8,8 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use base_ids::Permille;
-use computer_use_action::{
-    ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size, Target, WindowSpace,
-};
+use computer_use_action::{ComputerUseAction, Target};
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use inference_core::*;
 use serde::Serialize;
 use serde::de::DeserializeOwned;

@@ -9,8 +9,9 @@ use account_core::{AppId, AppName, Isolation};
 use base_time::FixedClock;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole as Role;
+use engine_fs::seal_of;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Manifest, Row};
-use engine_probe::{Record, Roots, Scope, seal_of};
+use engine_manifest::{Record, Roots, Scope};
 use inference_core::{Policy, TierMap};
 use inference_daemon::Engines;
 use inference_daemon::Installed;
@@ -159,15 +160,17 @@ fn made_install(roots: &Roots) -> (Manifest, PathBuf) {
     std::fs::write(&program, "#!/bin/sh\n").expect("program");
     std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o755)).expect("mode");
     let seal = seal_of(&tree).expect("seal").as_hex().to_owned();
-    Record {
-        engine: "llama_cpp".into(),
-        version: "b-test".into(),
-        backend: "cpu".into(),
-        seal: seal.clone(),
-        entries: std::collections::BTreeMap::default(),
-        venv_seal: None,
-    }
-    .write(&dir.join("installed.json"))
+    engine_fs::write_record(
+        &Record {
+            engine: "llama_cpp".into(),
+            version: "b-test".into(),
+            backend: "cpu".into(),
+            seal: seal.clone(),
+            entries: std::collections::BTreeMap::default(),
+            venv_seal: None,
+        },
+        &dir.join("installed.json"),
+    )
     .expect("record");
     let row = Row {
         engine: EngineKind::LlamaServer,

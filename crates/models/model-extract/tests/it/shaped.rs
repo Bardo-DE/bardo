@@ -8,7 +8,7 @@ use model_extract::{
     ExtractMode, ExtractSession, Extracted, FINAL_RESULT_TOOL, RepairBudget, ShapedSession,
     ToolsPresent, choose,
 };
-use model_provider::{
+use model_types::{
     CharCount, Constraint, Extract, JsonText, OutputShape, SchemaKeywordError, SchemaLimits,
     SchemaText, Shape, ShapeError, ShapeWithTools, StopReason, ToolCall, ToolCallId, ToolName,
     ToolSupport,
@@ -118,7 +118,7 @@ fn choose_reads_the_shape_of_the_schema_like_any_other() {
     // What goes to the engine says what the schema said.
     assert_eq!(
         sent,
-        shape.to_json_schema(model_provider::SchemaDialect::Plain)
+        shape.to_json_schema(model_types::SchemaDialect::Plain)
     );
     let none = caps(&[], ToolSupport::Absent);
     assert_eq!(

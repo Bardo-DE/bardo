@@ -19,7 +19,6 @@
 use crate::bridge::{self, BridgeError, Frames};
 use crate::tee::{Echo, Tee};
 use base_ids::Tokens;
-use computer_use_action::{AnswerShape, ComputerUseDialect};
 use computer_use_session::{
     ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, ObservationIn,
     RepairBudget, StepLines, StepNote as NoteLine, StepOutcome, TurnOptions,
@@ -30,9 +29,10 @@ use inference_core::{
     DroppedAction, FrameLayout, InferEvent, ModelError, NoteFrom, PrevResult, StepNote,
 };
 use inference_router::local::LocalModel;
-use model_provider::{
-    Batching, ComputerUseSupport, ImageInput, Limits, Provider, Reasoning, ToolCallId,
-    ToolParallelism,
+use model_core::Provider;
+use model_types::{AnswerShape, ComputerUseDialect};
+use model_types::{
+    Batching, ComputerUseSupport, ImageInput, Limits, Reasoning, ToolCallId, ToolParallelism,
 };
 use model_vision_prep::{Encoding, FrameMap, RawFrame, prepare};
 use std::ops::ControlFlow;

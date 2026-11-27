@@ -9,12 +9,13 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-model-provider = {path = "../model-provider"}
+model-types = {path = "../model-types"}
 serde_json = { workspace = true }
 
 [dev-dependencies]
 base-ids = {path = "../../base/base-ids"}
-computer-use-action = {path = "../computer-use-action"}
+computer-use-geometry = {path = "../computer-use-geometry"}
+model-core = {path = "../model-core"}
 model-vision-prep = {path = "../model-vision-prep"}
 
 [lints]

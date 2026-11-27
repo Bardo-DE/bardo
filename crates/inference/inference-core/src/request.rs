@@ -11,7 +11,7 @@ use account_core::consent::Usage;
 use account_match::DimsNeed;
 use serde::{Deserialize, Serialize};
 
-pub use model_provider::{EmbedRole, ToolCall, ToolStatus};
+pub use model_types::{EmbedRole, ToolCall, ToolStatus};
 
 /// One request to inferd.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

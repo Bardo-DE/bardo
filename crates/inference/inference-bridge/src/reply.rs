@@ -2,7 +2,7 @@
 //! `ProviderError` to `ModelError`. The only place the two vocabularies meet on the way out.
 
 use inference_core as pi;
-use model_provider as sp;
+use model_types as sp;
 
 use crate::scores::{NoScoresError, option_scores};
 

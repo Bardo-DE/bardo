@@ -22,7 +22,8 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 computer-use-eval = {path = "../computer-use-eval"}
 model-catalog = {path = "../../models/model-catalog"}
-model-provider = {path = "../../models/model-provider"}
+model-core = {path = "../../models/model-core"}
+model-types = {path = "../../models/model-types"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
@@ -31,9 +32,6 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 toml = { workspace = true }
 model-vision-prep = {path = "../../models/model-vision-prep"}
 zbus = {workspace = true, features = ["tokio"]}
-
-[dev-dependencies]
-rust_decimal = { workspace = true, features = ["std", "serde"] }
 
 [lints]
 workspace = true

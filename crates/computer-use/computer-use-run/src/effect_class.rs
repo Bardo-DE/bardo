@@ -6,7 +6,8 @@ use crate::rules::CommitRules;
 use action_gate_wire::EffectBasis;
 use computer_use_a11y_tree::{A11yNode, TypedHint};
 use computer_use_action::WindowClass;
-use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
+use computer_use_action::{ActionClass, ComputerUseAction};
+use computer_use_geometry::WindowSpace;
 use keyboard_types::{Key, NamedKey};
 use provenance::Effect;
 

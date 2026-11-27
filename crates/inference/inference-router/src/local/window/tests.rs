@@ -1,5 +1,5 @@
 use super::*;
-use model_provider::{Support, ToolSupport};
+use model_types::{Support, ToolSupport};
 use std::collections::BTreeSet;
 
 fn text(context: u32, context_max: Option<u32>, context_min: Option<u32>) -> TextOut {

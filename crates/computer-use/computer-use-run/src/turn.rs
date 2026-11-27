@@ -5,9 +5,10 @@ use crate::observation::{CursorObs, Observation, TreeObs};
 use crate::shortcut_guard::control_for;
 use action_core::{InboundLine, InboundPart, Reveal};
 use computer_use_a11y_tree::{A11yNode, render};
-use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
+use computer_use_action::{ActionClass, ComputerUseAction};
 use computer_use_bus::{ActionOutcome, ActionResult, LocalRefusal, Refusal};
 use computer_use_capture::{PixelBuf, WholeMask};
+use computer_use_geometry::WindowSpace;
 use inference_core::{
     AttachIndex, ComputerUseStepRequest, FrameImage, FrameLayout, ImageSource, MaskedRegions,
     NoteFrom, PrevResult, StepNote, TreeText, WindowGeometry,

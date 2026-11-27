@@ -13,9 +13,10 @@
 use crate::stage::Stage;
 use base_ids::Tokens;
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, Coord, FinishOutcome, Modifier, Notches, Point,
-    Repeat, ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Notches, Repeat,
+    ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs,
 };
+use computer_use_geometry::{Coord, Point, WindowSpace};
 use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment, StepSink};
 use inference_core::{
     ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage,

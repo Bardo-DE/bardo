@@ -188,7 +188,8 @@ mod tests {
     use action_core::{CallProgress, CallRefusal, ConfirmEnd};
     use action_gate_wire::{EffectBasis, GateAnswer};
     use action_wire::WireRefusal;
-    use computer_use_action::{ComputerUseAction, RunMode, WindowSpace, WindowTrust};
+    use computer_use_action::{ComputerUseAction, RunMode, WindowTrust};
+    use computer_use_geometry::WindowSpace;
     use provenance::ConfirmId;
     use provenance::{Effect, Label};
     use std::collections::VecDeque;

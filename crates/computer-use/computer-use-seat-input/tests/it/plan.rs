@@ -1,10 +1,11 @@
 //! What `plan` produces: structure, not timing (the size of a `Gap` is the fill's to choose).
 
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, Coord, Length, Modifier, NodeId, Notches, Point,
-    Repeat, ScrollBy, ScrollDir, Size, Target, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, Modifier, NodeId, Notches, Repeat, ScrollBy,
+    ScrollDir, Target,
 };
 use computer_use_desktop::SeatIsolation;
+use computer_use_geometry::{Coord, Length, Point, Size, WindowSpace};
 use computer_use_seat_input::{
     InputOp, Keycode, Keymap, KeymapEntry, PlanError, PlannedAction, Press, Produces,
     ResolvedPoints, SeatCaps, ShiftLevel, plan,

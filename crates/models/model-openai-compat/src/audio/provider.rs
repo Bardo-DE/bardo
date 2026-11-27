@@ -4,8 +4,8 @@ use model_http::{
     ContentType, Exchange, Framing, HttpClient, JsonBody, RawBody, RouteRoot, Upload,
     UploadTransport, UrlPath, Verb,
 };
-use model_provider::{ModelName, ProviderError};
-use speech_provider::{
+use model_types::{ModelName, ProviderError};
+use speech_core::{
     AudioChunk, AudioMs, AudioSink, AudioSource, SampleIndex, SpeechCaps, SpeechIo,
     SpeechModelInfo, SpeechToText, SttEnd, SttRequest, TextToSpeech, TranscriptEvent,
     TranscriptSink, TtsEnd, TtsRequest,
@@ -98,7 +98,7 @@ fn codec_error(error: AudioCodecError) -> ProviderError {
 fn described(
     known: &[SpeechModelInfo],
     listed: &[ModelName],
-    voices: Option<&[speech_provider::VoiceId]>,
+    voices: Option<&[speech_core::VoiceId]>,
 ) -> Vec<SpeechModelInfo> {
     known
         .iter()
@@ -176,7 +176,7 @@ impl<T: UploadTransport> SpeechToText for OpenAiTranscription<T> {
         let (from, to) = span(&chunks);
         let heard = if chunks.is_empty() {
             // Nothing was said: there is nothing to send.
-            speech_provider::HeardText(String::new())
+            speech_core::HeardText(String::new())
         } else {
             let form = encode_transcription(request, &chunks).map_err(codec_error)?;
             let up = Upload {

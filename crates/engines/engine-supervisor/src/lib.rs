@@ -53,12 +53,7 @@ mod unit;
 #[cfg(test)]
 mod testutil;
 
-#[cfg(feature = "testing")]
-mod fakes;
-
 pub use budget::{BudgetVerdict, EngineSpec, GpuMemory, budget};
-#[cfg(feature = "testing")]
-pub use fakes::{FakeEngineHost, FakeGpu, FakeReadyProbe, HostCall};
 pub use host::{EngineHost, GpuError, GpuProbe, HostError, ReadyProbe};
 pub use state::{Attempt, EngineFailure, EngineId, EngineState, ExitCode, MonoMs, Probe};
 pub use step::{Supervisor, SupervisorConfig, SupervisorIn, SupervisorOut, step};

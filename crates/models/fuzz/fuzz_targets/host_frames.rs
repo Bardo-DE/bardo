@@ -4,8 +4,8 @@
 
 use libfuzzer_sys::fuzz_target;
 use model_fuzz::{pieces, split};
+use speech_core::{HostIn, HostOut, decode_frame};
 use speech_host_client::FrameBuffer;
-use speech_provider::{HostIn, HostOut, decode_frame};
 
 fuzz_target!(|data: &[u8]| {
     let (cuts, bytes) = split(data);

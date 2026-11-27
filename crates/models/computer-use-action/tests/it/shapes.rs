@@ -3,11 +3,11 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    ActionClass, Button, Choice, Chord, ChordError, ClickCount, ComputerUseAction, Coord,
-    Extracted, ExtractedText, FieldName, FinishOutcome, GridSpace, ImageSpace, Length, Modifier,
-    NodeId, Notches, Point, Rect, Repeat, ScrollBy, ScrollDir, Size, Summary, Target, TextError,
-    TypedText, WaitMs, WindowSpace,
+    ActionClass, Button, Choice, Chord, ChordError, ClickCount, ComputerUseAction, Extracted,
+    ExtractedText, FieldName, FinishOutcome, Modifier, NodeId, Notches, Repeat, ScrollBy,
+    ScrollDir, Summary, Target, TextError, TypedText, WaitMs,
 };
+use computer_use_geometry::{Coord, GridSpace, ImageSpace, Length, Point, Rect, Size, WindowSpace};
 use keyboard_types::{Key, NamedKey};
 
 fn p(x: u32, y: u32) -> Point<WindowSpace> {

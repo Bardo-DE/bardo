@@ -9,8 +9,9 @@ use action_vocab::CallerRole;
 use action_wire::{
     CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionOpen, WireRefusal,
 };
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_action::{RunMode, WindowTrust};
+use computer_use_geometry::WindowSpace;
 use permission_core::{
     ActionGrantKey, DenyCode, GrantCaller, GrantTarget, Level, Limit, LimitCaller, LimitKey,
     LimitLevel, LimitMaker, LimitScope,

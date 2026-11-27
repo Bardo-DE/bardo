@@ -27,7 +27,7 @@ action-procroot = {path = "../../actions/action-procroot"}
 speech-pipewire = {path = "../speech-pipewire", optional = true}
 futures-util = { workspace = true, features = ["std"] }
 speech-vad = {path = "../speech-vad"}
-speech-provider = {path = "../../models/speech-provider"}
+speech-core = {path = "../../models/speech-core"}
 zbus = {workspace = true, features = ["tokio"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}

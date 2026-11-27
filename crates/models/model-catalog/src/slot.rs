@@ -8,7 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use model_provider::ToolSupport;
+use model_types::ToolSupport;
 
 use crate::{Capabilities, EngineKind, Locality, Modality, ModelEntry, Serving};
 

@@ -345,7 +345,7 @@ fn the_prompt_names_the_typed_action_labels_policy_and_history() {
 
 #[test]
 fn the_shape_of_each_stage_is_the_one_the_parser_reads() {
-    use model_provider::Shape;
+    use model_types::Shape;
     assert!(matches!(verdict_shape(Stage::Quick), Shape::Choice(c) if c.len() == 2));
     assert!(matches!(verdict_shape(Stage::Deliberate), Shape::Record(f) if f.len() == 3));
 }

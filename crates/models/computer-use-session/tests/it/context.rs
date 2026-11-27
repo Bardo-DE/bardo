@@ -3,17 +3,17 @@
 
 use crate::support;
 
-use computer_use_action::{
-    ComputerUseAction, ComputerUseDialect, FinishOutcome, ModelSpace, ToolDialect, WireDialect,
-};
+use computer_use_action::{ComputerUseAction, FinishOutcome};
+use computer_use_geometry::ModelSpace;
 use computer_use_session::{
     FrameBudget, MaskedRegions, ObservationIn, StepIndex, StepNote, StepOutcome, TranscriptSink,
     TreeText, TurnTranscript,
 };
 use computer_use_vendors::StepResult;
-use model_provider::{
+use model_core::check_sequence;
+use model_types::{ComputerUseDialect, ToolDialect, WireDialect};
+use model_types::{
     ImageCount, Part, SafetySignal, StopReason, ToolCallId, TurnEvent, TurnRequest, TurnSink,
-    check_sequence,
 };
 use support::*;
 

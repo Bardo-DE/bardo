@@ -6,7 +6,7 @@ use action_core::UserTurn;
 use action_manifest::ArgSink;
 use action_vocab::{ActionRef, CallId, CharCount, LabelText, ParamName, Value};
 use base_ids::Count;
-use model_provider::{ChoiceText, Field, FieldName, Shape};
+use model_types::{ChoiceText, Field, FieldName, Shape};
 use permission_core::{ArgLabels, ReasonCode, Stage, Strictness, TaskPolicy};
 use provenance::{ActionName, Effect, EntityKind, Source, SpaceId};
 use serde::{Deserialize, Serialize};
@@ -147,7 +147,7 @@ pub fn verdict_shape(stage: Stage) -> Shape {
                     field(
                         "reason",
                         Shape::Text {
-                            max: model_provider::CharCount(200),
+                            max: model_types::CharCount(200),
                         },
                     ),
                 ]

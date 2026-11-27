@@ -35,9 +35,9 @@ use crate::observation::{Observation, TreeObs};
 use crate::rules::InjectionRules;
 use account_core::AppName;
 use computer_use_a11y_tree::{A11yNode, NodeValue, Role};
-use computer_use_action::{Size, WindowSpace};
 use computer_use_bus::ScreenKind;
 use computer_use_desktop::Digest32;
+use computer_use_geometry::{Size, WindowSpace};
 use excerpt::{fold, readable};
 use serde::{Deserialize, Serialize};
 

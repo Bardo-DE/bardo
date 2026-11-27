@@ -4,11 +4,12 @@
 use crate::bus::inferd;
 use crate::chooser::OnPortal;
 use crate::engines::restart;
+use engine_fs::read_host;
 use engine_install::{
     EngineInstalls, Fetcher, HelperProgram, InstallChoice, Parts, Standing, StartError,
 };
 use engine_manifest::{BackendChoice, Failure, Manifest, engine_from_slug};
-use engine_probe::{Roots, Scope, read_host};
+use engine_manifest::{Roots, Scope};
 use inference_dbus::inference::{EngineState, LocalEngine};
 use model_catalog::EngineKind;
 use settings_app_link::bus::BusSource;

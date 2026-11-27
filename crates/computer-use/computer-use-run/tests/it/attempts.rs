@@ -6,14 +6,14 @@ use action_gate_wire::EffectBasis;
 use base_ids::Count;
 use computer_use_action::RunMode;
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, Coord, DeviceSize, Point, Repeat, Target,
-    TypedText, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, Repeat, Target, TypedText,
 };
 use computer_use_bus::{
     ActionResult, AuthorisedBy, BlockedOn, ComputerUseOutcome, ComputerUseRecord, FrameNote,
     LocalRefusal, Refusal, RunBudget, RunBudgetKind, TargetedAction, ThoughtDigest, WindowRef,
 };
 use computer_use_desktop::{BackendKind, Digest32};
+use computer_use_geometry::{Coord, DeviceSize, Point, WindowSpace};
 use computer_use_run::{
     Limits, Mark, Tried, Verb, digest, digest_within, stall_words, steps_words,
 };

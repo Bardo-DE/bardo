@@ -5,8 +5,8 @@
 //! The computer-use daemon's pixel diff ([`DamageSource::PixelDiff`]); on the fork they come from the compositor.
 
 use crate::pixels::{BYTES_PER_PIXEL, PixelBuf};
-use computer_use_action::{Coord, Point, Rect, Size, WindowSpace};
 use computer_use_desktop::{Ms, Stamp};
+use computer_use_geometry::{Coord, Point, Rect, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 
 /// Where a damage event came from.

@@ -1,6 +1,6 @@
 //! What happened to each call of the previous step.
 
-use model_provider::ToolCallId;
+use model_types::ToolCallId;
 use serde::{Deserialize, Serialize};
 
 /// The outcome of one call the model made. Vendors that batch stop at the first failure, so the

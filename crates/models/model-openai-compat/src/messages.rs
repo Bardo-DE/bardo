@@ -7,7 +7,7 @@
 //! pairing with the assistant's calls). Thoughts are not handed back: these servers' templates
 //! drop the reasoning of earlier turns.
 
-use model_provider::{ImageInput, Message, Part, Role, ToolCall, ToolResult};
+use model_types::{ImageInput, Message, Part, Role, ToolCall, ToolResult};
 use model_wire::CodecError;
 use serde_json::{Value, json};
 
@@ -167,7 +167,7 @@ fn image_part(image: &ImageInput) -> Value {
         .and_then(|v| v.as_str().map(str::to_owned))
         .unwrap_or_default();
     let mut url = json!({ "url": format!("data:image/{media};base64,{bytes}") });
-    if image.detail == model_provider::ImageDetail::Original {
+    if image.detail == model_types::ImageDetail::Original {
         url["detail"] = Value::String("high".into());
     }
     json!({ "type": "image_url", "image_url": url })

@@ -1,17 +1,16 @@
 use super::*;
 use account_capability::ComputerUseEnv;
 use base_testkit::Scratch;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, Point, Scale120, Size, Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
+use computer_use_geometry::{Coord, Point, Scale120, Size, WindowSpace};
 use inference_core::{
     AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusedError, MediaType, StepIndex,
     WindowGeometry,
 };
 use inference_router::testkit::models;
-use model_provider::{
-    ModelName, Part, Script, ScriptedProvider, StopReason, ToolCall, ToolCallId, TurnEnd,
-    TurnEvent, TurnUsage,
+use model_fake::{Script, ScriptedProvider};
+use model_types::{
+    ModelName, Part, StopReason, ToolCall, ToolCallId, TurnEnd, TurnEvent, TurnUsage,
 };
 use std::collections::BTreeSet;
 use std::io::Write;
@@ -48,8 +47,8 @@ fn request(step: u32) -> ComputerUseStepRequest {
 fn click(arguments: &str) -> TurnEvent {
     TurnEvent::ToolCallDone(ToolCall {
         id: ToolCallId("c".into()),
-        name: model_provider::ToolName::new("computer_use").expect("name"),
-        input: model_provider::JsonText::new(arguments).expect("json"),
+        name: model_types::ToolName::new("computer_use").expect("name"),
+        input: model_types::JsonText::new(arguments).expect("json"),
     })
 }
 
@@ -177,7 +176,7 @@ async fn the_run_remembers_its_steps_and_a_step_that_failed_to_reach_the_engine_
             // The engine fails on the second step.
             Script {
                 events: vec![],
-                end: Err(model_provider::ProviderError::Unreachable),
+                end: Err(model_types::ProviderError::Unreachable),
             },
             script(vec![click(
                 r#"{"action":"left_click","coordinate":[100,100]}"#,
@@ -325,7 +324,7 @@ async fn one_session_serves_every_step_and_a_failed_repair_leaves_its_budget_who
             script(vec![TurnEvent::TextDelta("hm".into())]),
             Script {
                 events: vec![],
-                end: Err(model_provider::ProviderError::Unreachable),
+                end: Err(model_types::ProviderError::Unreachable),
             },
             // The same step again: it may repair again, and does.
             script(vec![TurnEvent::TextDelta("hm".into())]),

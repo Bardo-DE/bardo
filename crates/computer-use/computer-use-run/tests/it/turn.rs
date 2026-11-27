@@ -5,15 +5,13 @@ use account_core::{AppName, DataClass};
 use action_core::{CallRefusal, InboundLine, InboundPart, Reveal};
 use computer_use_a11y_tree::TreeSource;
 use computer_use_action::WindowTrust;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
-    Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
 use computer_use_bus::{
     ActionOutcome, ActionResult, LocalRefusal, Refusal, TargetedAction, WindowRef,
 };
 use computer_use_capture::{Frame, FrameSeq, MaskReason, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{MaskWhere, Stamp};
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use computer_use_run::{
     ContextObs, CursorObs, Focus, Observation, TreeAbsence, TreeObs, Visibility, WindowInfo,
     note_of, turn, turn_after,
@@ -212,7 +210,7 @@ fn how_the_last_actions_ended_is_told_without_the_routers_reasons() {
 #[test]
 fn masked_regions_count_each_region_and_a_blacked_frame_once_more() {
     let region = |why| computer_use_capture::MaskRegion {
-        rect: computer_use_action::Rect {
+        rect: computer_use_geometry::Rect {
             origin: Point::new(Coord(0), Coord(0)),
             size: Size::new(Coord(2), Coord(2)),
         },

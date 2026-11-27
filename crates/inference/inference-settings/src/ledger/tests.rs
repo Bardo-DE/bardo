@@ -2,7 +2,6 @@ use super::*;
 use crate::{ScopeLimits, SpendLimits};
 use account_core::{AppName, Isolation};
 use base_ids::{Tokens, TurnCount};
-use rust_decimal::Decimal;
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -29,14 +28,14 @@ fn used(input: u32, output: u32) -> TurnUsage {
 /// US dollar.
 fn charged(input: u32, output: u32, milli: i64) -> TurnUsage {
     TurnUsage {
-        charge: Some(Money::usd(Decimal::new(milli, 3))),
+        charge: Some(Money::usd(milli, 3)),
         ..used(input, output)
     }
 }
 
 fn milli(milli: i64) -> ChargeTotal {
     ChargeTotal {
-        reported: Money::usd(Decimal::new(milli, 3)),
+        reported: Money::usd(milli, 3),
         unpriced: TurnCount(0),
     }
 }
@@ -251,7 +250,7 @@ fn usage_names_what_the_app_used_and_each_cap_that_is_set() {
     ledger.record(&who, &account("openrouter"), charged(40, 9, 321), LEAP_NOON);
     ledger.record(&who, &account("openai"), used(1, 1), LEAP_NOON);
     let rows = ledger.usage_of(line(10), &who, LEAP_NOON);
-    let money = |milli: i64| UsageValue::Money(Money::usd(Decimal::new(milli, 3)));
+    let money = |milli: i64| UsageValue::Money(Money::usd(milli, 3));
     let want = [
         ("tokens_in_day", UsageValue::Count(41)),
         ("tokens_out_day", UsageValue::Count(10)),
@@ -263,6 +262,6 @@ fn usage_names_what_the_app_used_and_each_cap_that_is_set() {
     ];
     let got: Vec<(&str, UsageValue)> = rows.iter().map(|(n, v)| (n.as_str(), *v)).collect();
     assert_eq!(got, want);
-    assert_eq!(written(Money::usd(Decimal::new(9500, 6))), "0.0095 USD");
-    assert_eq!(written(Money::usd(Decimal::ZERO)), "0 USD");
+    assert_eq!(written(Money::usd(9500, 6)), "0.0095 USD");
+    assert_eq!(written(Money::usd(0, 0)), "0 USD");
 }

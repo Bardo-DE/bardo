@@ -7,7 +7,7 @@ use account_capability::ComputerUseEnv;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
-use computer_use_action::{DeviceSize, PixelFormat};
+use computer_use_geometry::{DeviceSize, PixelFormat};
 use computer_use_run::{ComputerUseModel, ComputerUseModelError, ModelReach, StepEvent};
 use computer_use_system::InferdComputerUseModel;
 use inference_core::{

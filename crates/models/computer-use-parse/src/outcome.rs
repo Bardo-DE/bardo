@@ -1,6 +1,7 @@
 //! What a parse returns.
 
-use computer_use_action::{ComputerUseAction, GridMax, GridSpace, ImageSpace};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{GridMax, GridSpace, ImageSpace};
 use serde::{Deserialize, Serialize};
 
 use crate::ByteOffset;

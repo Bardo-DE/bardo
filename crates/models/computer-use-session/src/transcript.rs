@@ -1,6 +1,6 @@
 //! Gathering a streamed turn into the transcript `absorb` reads.
 
-use model_provider::{SafetySignal, ToolCall, TurnEnd, TurnEvent, TurnSink};
+use model_types::{SafetySignal, ToolCall, TurnEnd, TurnEvent, TurnSink};
 use std::ops::ControlFlow;
 
 use crate::TurnTranscript;

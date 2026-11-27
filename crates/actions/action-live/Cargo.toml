@@ -57,8 +57,7 @@ action-trace = {path = "../action-trace"}
 action-eval-core = {path = "../action-eval-core"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 account-core = {path = "../../accounts/account-core"}
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+model-types = {path = "../../models/model-types"}
 inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
 serde_json = { workspace = true }

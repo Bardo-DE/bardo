@@ -29,7 +29,7 @@ agent-skills-disk = {path = "../agent-skills-disk"}
 action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
-model-provider = {path = "../../models/model-provider"}
+model-types = {path = "../../models/model-types"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

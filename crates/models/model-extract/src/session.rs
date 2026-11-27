@@ -2,7 +2,7 @@
 
 use core::marker::PhantomData;
 
-use model_provider::{
+use model_types::{
     Extract, JsonError, JsonText, Message, OutputShape, Part, Role, SchemaDialect, Shape,
     ShapeError, StopReason, ToolCall, ToolChoice, ToolName, ToolSpec, TurnEnd, TurnRequest,
 };
@@ -13,7 +13,7 @@ use crate::repair::{FINAL_RESULT_DESCRIPTION, prompted_text, repair_text};
 /// The name of the synthetic tool of `ExtractMode::ToolCall`.
 pub const FINAL_RESULT_TOOL: &str = "final_result";
 
-pub use model_provider::RepairBudget;
+pub use model_types::RepairBudget;
 
 /// Repairs still available.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

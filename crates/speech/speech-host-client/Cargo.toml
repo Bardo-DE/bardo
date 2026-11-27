@@ -15,15 +15,14 @@ default = ["net"]
 net = ["dep:tokio"]
 
 [dependencies]
-speech-provider = {path = "../../models/speech-provider"}
-model-provider = {path = "../../models/model-provider"}
+speech-core = {path = "../../models/speech-core"}
+model-types = {path = "../../models/model-types"}
 serde = { workspace = true, features = ["derive"] }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
 proptest = { workspace = true }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
-speech-provider = {path = "../../models/speech-provider", features = ["testing"]}
 
 [lints]
 workspace = true

@@ -1,6 +1,5 @@
 //! A scripted inference session: plays canned events for each request kind, records every frame
-//! the client sent, and releases a transcript's events as the audio passes their sample index
-//! (the shape of the model layer's `ScriptedStt`).
+//! the client sent, and releases a transcript's events as the audio passes their sample index.
 
 use crate::{
     ClientFrame, InferEvent, InferRefusedError, InferReply, InferSession, RequestKind, SessionError,

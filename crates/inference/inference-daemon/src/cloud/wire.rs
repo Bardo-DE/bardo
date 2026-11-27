@@ -8,7 +8,7 @@
 
 use model_catalog::ProviderId;
 use model_openai_compat::{Flavor, OpenAiCodec};
-use model_provider::Charges;
+use model_types::Charges;
 use model_wire::ChatCodec;
 use serde_json::{Value, json};
 use std::collections::BTreeMap;

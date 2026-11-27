@@ -12,9 +12,9 @@
 //! and a newline.
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, GridMax, GridSpace, Notches, ScrollBy, ScrollDir,
-    Target, TypedText,
+    Button, ClickCount, ComputerUseAction, Notches, ScrollBy, ScrollDir, Target, TypedText,
 };
+use computer_use_geometry::{GridMax, GridSpace};
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
 use std::collections::BTreeSet;

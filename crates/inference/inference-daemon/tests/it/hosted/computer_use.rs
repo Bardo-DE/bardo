@@ -1,10 +1,8 @@
 //! Computer use over the bus: a begin, then a step whose frame rides as a memfd.
 
 use super::*;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
-    Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use inference_core::{
     AttachIndex, ComputerUseBegin, ComputerUseStepRequest, FrameImage, FrameLayout, ImageSource,
     StepIndex, WindowGeometry,

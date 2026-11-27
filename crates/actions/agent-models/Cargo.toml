@@ -25,8 +25,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+model-types = {path = "../../models/model-types"}
 action-fake = {path = "../action-fake"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 # The scripted model transport of companiond's tests is included by path (one file, not a copy).

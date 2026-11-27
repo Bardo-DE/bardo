@@ -14,8 +14,7 @@ action-core = {path = "../action-core"}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 settings-store = { path = "../../settings/settings-store" }
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+model-types = {path = "../../models/model-types"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }

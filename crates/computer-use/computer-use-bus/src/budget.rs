@@ -3,9 +3,7 @@
 use base_ids::Count;
 use computer_use_desktop::Ms;
 use inference_core::ChargeTotal;
-use iso_currency::Currency;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::{Currency, Money};
 use serde::{Deserialize, Serialize};
 
 /// What stopped a run that ran out of something.
@@ -56,10 +54,7 @@ impl RunBudget {
         stall_frames: Count(3),
         actions_per_min: Count(60),
         model_failures: Count(2),
-        spend: Money {
-            amount: Decimal::ZERO,
-            currency: Currency::USD,
-        },
+        spend: Money::zero(Currency::USD),
     };
 }
 
@@ -70,11 +65,7 @@ fn lesser<T: PartialOrd + Copy>(a: T, b: T) -> T {
 /// The smaller of two caps. Caps in different currencies cannot be compared, so `cap` (the
 /// person's own) wins.
 fn lesser_money(asked: Money, cap: Money) -> Money {
-    if asked.currency == cap.currency && asked.amount < cap.amount {
-        asked
-    } else {
-        cap
-    }
+    if asked < cap { asked } else { cap }
 }
 
 impl RunBudget {
@@ -157,7 +148,7 @@ mod tests {
             stall_frames: Count(0),
             actions_per_min: Count(u32::MAX),
             model_failures: Count(9),
-            spend: Money::usd(Decimal::MAX),
+            spend: Money::max(Currency::USD),
         };
         assert_eq!(greedy.capped_by(RunBudget::PROPOSED), RunBudget::PROPOSED);
         let modest = RunBudget {

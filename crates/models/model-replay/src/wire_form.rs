@@ -2,7 +2,7 @@
 //! and the plans that slice bytes into chunks.
 
 use model_http::{Exchange, Framing, HttpStatus, ResponseHead};
-use model_provider::JsonText;
+use model_types::JsonText;
 use serde_json::Value;
 use std::fmt::Write as _;
 
@@ -167,7 +167,7 @@ pub(crate) fn chunks(body: &WireBody, framing: Framing, plan: ChunkPlan) -> Vec<
 mod tests {
     use super::*;
     use model_http::{EventName, JsonBody, RouteRoot, UrlPath, Verb};
-    use model_provider::Seed;
+    use model_types::Seed;
 
     fn post(body: &str) -> Exchange {
         Exchange {

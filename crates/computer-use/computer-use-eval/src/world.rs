@@ -7,7 +7,6 @@ use account_core::{AppName, DataClass};
 use base_ids::{Count, Px};
 use base_time::UnixSeconds;
 use computer_use_a11y_tree::{A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget};
-use computer_use_action::{Coord, DeviceSize, Point, Rect, Scale120, Size};
 use computer_use_capture::{
     CaptureError, CaptureSession, DamageAt, DamageSource, Frame, FrameSeq, FrameWant, MaskRegion,
     MaskReport, WholeMask, WindowCapture,
@@ -18,6 +17,7 @@ use computer_use_desktop::{
     ToplevelIdent, ToplevelInfo,
 };
 use computer_use_fake::{FakeDesktop, MemoryEvents};
+use computer_use_geometry::{Coord, DeviceSize, Point, Rect, Scale120, Size};
 use computer_use_run::{Clock, ComputerUseModel, Seams};
 use computer_use_seat_input::{
     AgentSeat, Emulation, InputOp, InputOrigin, InputReceipt, Keymap, SeatCaps, SeatError,

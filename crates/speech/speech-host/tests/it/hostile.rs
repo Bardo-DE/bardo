@@ -3,14 +3,14 @@
 
 use std::io::{self, Cursor, Read, Write};
 
-use model_provider::{ModelName, ProviderError, Support};
+use model_types::{ModelName, ProviderError, Support};
 use proptest::prelude::*;
-use speech_host::{Finished, Recognizer, serve_connection};
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioFormat, AudioMs, HeardText, HostIn, HostOut, HostVocab, LangChoice, LangSet,
     MAX_FRAME_BYTES, PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechIo,
     SpeechModelInfo, SttEnd, SttMode, SttRequest, TranscriptEvent, decode_frame, encode_frame,
 };
+use speech_host::{Finished, Recognizer, serve_connection};
 
 const FORMAT: AudioFormat = AudioFormat {
     rate: SampleRate(16_000),

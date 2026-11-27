@@ -1,7 +1,8 @@
 //! A model that says what it was scripted to say.
 
 use base_ids::Tokens;
-use computer_use_action::{ComputerUseAction, ImageSpace, ModelSpace, ToolDialect, WindowSpace};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{ImageSpace, ModelSpace, WindowSpace};
 use computer_use_parse::{InSpace, ParseLimits, Parsed, parse_text, parse_tool_calls};
 use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, ModelReach, ModelSight, StepSink,
@@ -10,8 +11,9 @@ use inference_core::{
     ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, DropReason, DroppedAction,
     SafetyHint, ServedBy, TurnUsage,
 };
-use model_provider::{ProviderError, SafetySignal, ToolCall, TurnEvent};
 use model_replay::{Cassette, Interaction};
+use model_types::ToolDialect;
+use model_types::{ProviderError, SafetySignal, ToolCall, TurnEvent};
 use std::collections::VecDeque;
 
 /// Why a cassette could not become a script.
@@ -223,7 +225,7 @@ fn parsed_of(turn: &Turn) -> Option<Parsed> {
         .filter(|_| !turn.calls.is_empty())
         .filter_map(|d| parse_tool_calls(d, ModelSpace::Image, &turn.calls, limits).ok());
     let by_text = parse_text(
-        computer_use_action::TextDialect::UiTars15,
+        model_types::TextDialect::UiTars15,
         ModelSpace::Image,
         &turn.text,
         limits,
@@ -235,11 +237,11 @@ fn parsed_of(turn: &Turn) -> Option<Parsed> {
 }
 
 fn actions_of(space: &InSpace) -> Vec<ComputerUseAction<WindowSpace>> {
-    let same = |p: computer_use_action::Point<ImageSpace>| {
-        Ok::<_, std::convert::Infallible>(computer_use_action::Point::new(p.x, p.y))
+    let same = |p: computer_use_geometry::Point<ImageSpace>| {
+        Ok::<_, std::convert::Infallible>(computer_use_geometry::Point::new(p.x, p.y))
     };
-    let length = |l: computer_use_action::Length<ImageSpace>| {
-        Ok::<_, std::convert::Infallible>(computer_use_action::Length::new(l.coord()))
+    let length = |l: computer_use_geometry::Length<ImageSpace>| {
+        Ok::<_, std::convert::Infallible>(computer_use_geometry::Length::new(l.coord()))
     };
     match space {
         InSpace::Image(list) => list

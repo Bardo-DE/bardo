@@ -17,9 +17,7 @@ use account_core::{AccountId, AiAccountRow};
 use account_settings::accounts::{SPEND_CAP, SPEND_MONTH, account_tail};
 use inference_core::ChargeTotal;
 use inference_settings::written;
-use iso_currency::Currency;
-use model_provider::{Charges, Money};
-use rust_decimal::Decimal;
+use model_types::{Charges, Currency, Money};
 use settings_dbus::LiveError;
 use settings_types::schema::{Help, KeySpec};
 use std::sync::Arc;
@@ -34,13 +32,12 @@ pub trait SpendBook: Send + Sync + 'static {
 /// `money` as the spend rows show it: US dollars in whole cents, as digits, rounded up so a part
 /// of a cent shows as one; an amount in another currency as its digits and code (`3 EUR`).
 fn cents_up(money: Money) -> String {
-    if money.currency != Currency::USD {
+    if money.currency() != Currency::USD {
         return written(money);
     }
     money
-        .amount
-        .checked_mul(Decimal::ONE_HUNDRED)
-        .map_or_else(|| written(money), |cents| cents.ceil().to_string())
+        .round_up_to(2)
+        .map_or_else(|| written(money), |cents| cents.to_string())
 }
 
 /// The rows over the accounts accountd lists and the ledger of `spend`.

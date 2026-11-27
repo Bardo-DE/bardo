@@ -10,7 +10,8 @@ publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../computer-use-action"}
-model-provider = {path = "../model-provider"}
+computer-use-geometry = {path = "../computer-use-geometry"}
+model-types = {path = "../model-types"}
 computer-use-parse = {path = "../computer-use-parse"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

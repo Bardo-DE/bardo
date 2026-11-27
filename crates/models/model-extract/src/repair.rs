@@ -1,7 +1,7 @@
 //! The fixed words of a repair prompt and of the prompted mode. A fault names a field and a kind,
 //! never the model's output, which may hold untrusted text.
 
-use model_provider::{ShapeError, ShapeKind};
+use model_types::{ShapeError, ShapeKind};
 
 /// The user turn that asks for a corrected reply.
 pub(crate) fn repair_text(fault: &ShapeError) -> String {

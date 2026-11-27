@@ -5,8 +5,8 @@ use model_openai_compat::{
     AudioCodecError, KOKORO_FORMAT, PcmDecoder, decode_transcription, encode_speech_request,
     encode_transcription,
 };
-use model_provider::ModelName;
-use speech_provider::{
+use model_types::ModelName;
+use speech_core::{
     AudioChunk, AudioFormat, Lang, LangChoice, PcmBytes, PcmFormat, SampleIndex, SampleRate,
     SpokenText, SttMode, SttRequest, TtsRequest, VoiceId,
 };

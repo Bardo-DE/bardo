@@ -1,8 +1,9 @@
 //! The tool declarations and the result encodings.
 
-use computer_use_action::{Coord, Size, WireDialect};
+use computer_use_geometry::{Coord, Size};
 use computer_use_vendors::{StepResult, WireCodec};
-use model_provider::{ImageInput, Part, ToolCallId, ToolSpec, ToolStatus};
+use model_types::WireDialect;
+use model_types::{ImageInput, Part, ToolCallId, ToolSpec, ToolStatus};
 
 fn image() -> ImageInput {
     serde_json::from_value(serde_json::json!({

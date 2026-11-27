@@ -18,10 +18,10 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = { workspace = true }
 model-http = { path = "../model-http" }
-model-openai-compat = { path = "../model-openai-compat", features = ["testing"] }
-model-provider = { path = "../model-provider" }
+model-fake = { path = "../model-fake" }
+model-types = { path = "../model-types" }
 model-wire = { path = "../model-wire" }
-speech-provider = { path = "../speech-provider" }
+speech-core = { path = "../speech-core" }
 speech-host-client = { path = "../../speech/speech-host-client" }
 
 

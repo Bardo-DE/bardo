@@ -7,9 +7,8 @@ use account_capability::{Capability, ComputerUseEnv, LlmCap, LlmFeature, LlmWire
 use account_match::{ComputerUseNeed, LlmNeed, SpeechNeed};
 use base_ids::Tokens;
 use base_testkit::Scratch;
-use engine_supervisor::{
-    EngineFailure, ExitCode, FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig,
-};
+use engine_fake::{FakeGpu, FakeReadyProbe};
+use engine_supervisor::{EngineFailure, ExitCode, GpuMemory, Probe, SupervisorConfig};
 use inference_router::seams::Router;
 use model_catalog::MiB;
 

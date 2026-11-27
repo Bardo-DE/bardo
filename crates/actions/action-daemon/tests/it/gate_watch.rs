@@ -39,7 +39,8 @@ fn step(run: &RunId) -> ComputerUseAsk {
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space(),
-        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
+        action:
+            computer_use_action::ComputerUseAction::<computer_use_geometry::WindowSpace>::Observe,
         node: None,
         effect: Effect::Outbound,
         basis: EffectBasis::DefaultTable,

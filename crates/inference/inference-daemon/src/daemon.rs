@@ -91,8 +91,8 @@ impl Config {
     /// at its usual socket, callers read from `/proc`.
     #[must_use]
     pub fn new(dirs: Dirs, bus: BusTarget) -> Self {
-        let programs = ProgramSearch::system_with_installs(engine_probe::Roots::new(
-            PathBuf::from(engine_probe::Roots::SYSTEM),
+        let programs = ProgramSearch::system_with_installs(engine_manifest::Roots::new(
+            PathBuf::from(engine_manifest::Roots::SYSTEM),
             dirs.engines_own.clone(),
         ));
         Self {
@@ -327,8 +327,8 @@ fn attached_models(
 fn installed_engines(dirs: &Dirs, file: &ConfigFile) -> Installed {
     let reading = file.clone();
     Installed::new(
-        engine_probe::Roots::new(
-            PathBuf::from(engine_probe::Roots::SYSTEM),
+        engine_manifest::Roots::new(
+            PathBuf::from(engine_manifest::Roots::SYSTEM),
             dirs.engines_own.clone(),
         ),
         engine_manifest::Manifest::pinned(),

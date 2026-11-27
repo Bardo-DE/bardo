@@ -1,8 +1,9 @@
 //! The snapshot of one window's accessibility tree.
 
 use base_ids::Count;
-use computer_use_action::{NodeId, Rect, WindowSpace};
+use computer_use_action::NodeId;
 use computer_use_desktop::Stamp;
+use computer_use_geometry::{Rect, WindowSpace};
 pub use computer_use_types::Role;
 use provenance::{ActionName, Labelled};
 use serde::{Deserialize, Serialize};

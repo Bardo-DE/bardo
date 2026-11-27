@@ -4,7 +4,6 @@
 use crate::support::*;
 use action_gate_wire::GateAnswer;
 use action_wire::GrantAnswer;
-use computer_use_action::{Coord, Rect, Size};
 use computer_use_bus::{
     ActionResult, BlockedOn, CancelledBy, ComputerUseOutcome, FailReason, QuestionId,
     RunBudgetKind, SuccessCheck,
@@ -13,6 +12,7 @@ use computer_use_capture::{CaptureError, DamageAt, DamageSource, Settle};
 use computer_use_desktop::{
     BackendKind, DesktopEvent, GlowState, LeaseId, RevokeReason, Stamp, Suspend, ToplevelIdent,
 };
+use computer_use_geometry::{Coord, Rect, Size};
 use computer_use_run::{
     CheckResult, ComputerUseModelError, RunEffect, RunInput, RunPhase, StepEvent,
 };
@@ -40,7 +40,7 @@ fn damage(at: u64) -> DamageAt {
     DamageAt {
         at: Stamp(at),
         region: Rect {
-            origin: computer_use_action::Point::new(Coord(0), Coord(0)),
+            origin: computer_use_geometry::Point::new(Coord(0), Coord(0)),
             size: Size::new(Coord(1), Coord(1)),
         },
         source: DamageSource::PixelDiff,

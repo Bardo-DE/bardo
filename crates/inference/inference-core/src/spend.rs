@@ -4,8 +4,7 @@
 
 use account_core::{AccountId, AppId};
 use base_ids::{Permille, TurnCount};
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde::{Deserialize, Serialize};
 
 /// Who a cap limits.
@@ -71,7 +70,7 @@ pub struct ChargeTotal {
 impl Default for ChargeTotal {
     fn default() -> Self {
         Self {
-            reported: Money::usd(Decimal::ZERO),
+            reported: Money::usd(0, 0),
             unpriced: TurnCount(0),
         }
     }
@@ -91,7 +90,7 @@ impl ChargeTotal {
             return unpriced;
         };
         // A total that is still zero has no currency yet: the first charge gives it one.
-        let sum = if self.reported.amount.is_zero() {
+        let sum = if self.reported.is_zero() {
             Ok(charge)
         } else {
             self.reported.checked_add(charge)
@@ -108,17 +107,16 @@ impl ChargeTotal {
 /// one.
 #[must_use]
 pub fn spend_verdict(cap: &SpendCap, spent: &ChargeTotal) -> SpendVerdict {
-    if spent.reported.currency != cap.limit.currency {
+    if spent.reported.currency() != cap.limit.currency() {
         return SpendVerdict::Within;
     }
-    let (spent, limit) = (spent.reported.amount, cap.limit.amount);
+    let (spent, limit) = (spent.reported, cap.limit);
     if spent >= limit {
         return SpendVerdict::Stop;
     }
     // A warning line too large to hold is no line: only the limit speaks.
     let warn_line = limit
-        .checked_mul(Decimal::from(cap.warn_at.0))
-        .and_then(|scaled| scaled.checked_div(Decimal::ONE_THOUSAND))
+        .scaled(u32::from(cap.warn_at.0), 1000)
         .unwrap_or(limit);
     if spent >= warn_line {
         SpendVerdict::Warn
@@ -130,10 +128,10 @@ pub fn spend_verdict(cap: &SpendCap, spent: &ChargeTotal) -> SpendVerdict {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use iso_currency::Currency;
+    use model_types::Currency;
 
     fn usd(cents: i64) -> Money {
-        Money::usd(Decimal::new(cents, 2))
+        Money::usd(cents, 2)
     }
 
     fn total(cents: i64) -> ChargeTotal {
@@ -181,7 +179,7 @@ mod tests {
     #[test]
     fn a_cap_in_another_currency_than_the_reports_is_never_met() {
         let euros = SpendCap {
-            limit: Money::new(Decimal::ONE, Currency::EUR),
+            limit: Money::new(1, 0, Currency::EUR),
             ..cap(1)
         };
         assert_eq!(
@@ -192,13 +190,13 @@ mod tests {
 
     #[test]
     fn reported_charges_add_exactly_and_the_rest_are_counted_unpriced() {
-        let first = ChargeTotal::default().counting(Some(Money::usd(Decimal::new(1, 1))));
-        let both = first.counting(Some(Money::usd(Decimal::new(2, 1))));
-        assert_eq!(both.reported, Money::usd(Decimal::new(3, 1)));
+        let first = ChargeTotal::default().counting(Some(Money::usd(1, 1)));
+        let both = first.counting(Some(Money::usd(2, 1)));
+        assert_eq!(both.reported, Money::usd(3, 1));
         assert_eq!(both.unpriced, TurnCount(0));
 
         // The first charge gives an empty total its currency.
-        let euros = Money::new(Decimal::new(5, 0), Currency::EUR);
+        let euros = Money::new(5, 0, Currency::EUR);
         assert_eq!(ChargeTotal::default().counting(Some(euros)).reported, euros);
 
         // A charge in another currency than the total's is not added, and not lost: it is counted.
@@ -208,10 +206,10 @@ mod tests {
 
         // So is a sum too large to hold.
         let top = ChargeTotal {
-            reported: Money::usd(Decimal::MAX),
+            reported: Money::max(Currency::USD),
             unpriced: TurnCount(0),
         };
-        let over = top.counting(Some(Money::usd(Decimal::ONE)));
+        let over = top.counting(Some(Money::usd(1, 0)));
         assert_eq!((over.reported, over.unpriced), (top.reported, TurnCount(1)));
     }
 }

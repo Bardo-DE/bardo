@@ -103,7 +103,8 @@ fn a_refused_action_is_told_to_the_model_and_the_run_goes_on() {
 #[test]
 fn input_goes_only_to_the_window_that_is_focused_and_visible() {
     type Change = fn(&mut computer_use_desktop::ToplevelInfo);
-    type Action = fn() -> computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>;
+    type Action =
+        fn() -> computer_use_action::ComputerUseAction<computer_use_geometry::WindowSpace>;
     // Keys need the focus; a click does not (it is how a window gets it), but no input goes to a
     // window the person cannot see.
     let cases: [(&str, Action, Change); 3] = [

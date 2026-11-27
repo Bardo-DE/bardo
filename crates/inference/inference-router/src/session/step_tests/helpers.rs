@@ -222,11 +222,11 @@ pub(super) fn computer_use_step() -> InferRequest {
     InferRequest::ComputerUseStep(inference_core::ComputerUseStepRequest::new(
         inference_core::StepIndex(0),
         inference_core::WindowGeometry {
-            logical: computer_use_action::Size::new(
-                computer_use_action::Coord(1),
-                computer_use_action::Coord(1),
+            logical: computer_use_geometry::Size::new(
+                computer_use_geometry::Coord(1),
+                computer_use_geometry::Coord(1),
             ),
-            scale: computer_use_action::Scale120(120),
+            scale: computer_use_geometry::Scale120(120),
         },
         inference_core::FrameImage {
             source: inference_core::ImageSource::Attached(inference_core::AttachIndex(0)),

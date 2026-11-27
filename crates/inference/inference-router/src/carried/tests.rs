@@ -54,11 +54,11 @@ fn step() -> InferRequest {
     InferRequest::ComputerUseStep(ComputerUseStepRequest::new(
         StepIndex(0),
         WindowGeometry {
-            logical: computer_use_action::Size::new(
-                computer_use_action::Coord(1),
-                computer_use_action::Coord(1),
+            logical: computer_use_geometry::Size::new(
+                computer_use_geometry::Coord(1),
+                computer_use_geometry::Coord(1),
             ),
-            scale: computer_use_action::Scale120(120),
+            scale: computer_use_geometry::Scale120(120),
         },
         FrameImage {
             source: ImageSource::Attached(AttachIndex(0)),

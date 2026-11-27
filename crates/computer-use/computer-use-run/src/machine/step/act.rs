@@ -11,13 +11,14 @@ use crate::machine::run::Run;
 use crate::machine::track::SettleWatch;
 use crate::observation::CursorObs;
 use base_ids::Count;
-use computer_use_action::{ComputerUseAction, Point, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_bus::{
     ActionOutcome, ActionResult, ComputerUseOutcome, FailReason, LocalRefusal, Refusal,
     RunBudgetKind, TargetedAction,
 };
 use computer_use_capture::{DamageAt, FrameWant, Settle, settle};
 use computer_use_desktop::{Ms, Stamp};
+use computer_use_geometry::{Point, WindowSpace};
 use computer_use_seat_input::{InputReceipt, SeatError};
 use inference_core::StepIndex;
 

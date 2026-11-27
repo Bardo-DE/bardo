@@ -568,8 +568,8 @@ async fn an_exhausted_budget_overrides_an_allow() {
     assert_eq!(refused, CallRefusal::OverBudget(BudgetKind::Calls));
 }
 
-fn usd(cents: i64) -> model_provider::Money {
-    model_provider::Money::usd(rust_decimal::Decimal::new(cents, 2))
+fn usd(cents: i64) -> model_types::Money {
+    model_types::Money::usd(cents, 2)
 }
 
 #[tokio::test]

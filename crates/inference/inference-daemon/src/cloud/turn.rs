@@ -22,9 +22,9 @@ use inference_core::{
 use inference_settings::SpendLine;
 use inference_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
 use inference_turns::local::RETRY;
+use model_core::{Provider, Retrying};
 use model_openai_compat::OpenAiCodec;
-use model_provider as sp;
-use model_provider::{Provider, Retrying};
+use model_types as sp;
 use model_wire::Driver;
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
@@ -318,14 +318,13 @@ fn counted(report: Option<sp::UsageReport>) -> Option<TurnUsage> {
 mod tests {
     use super::*;
     use base_ids::Tokens;
-    use rust_decimal::Decimal;
 
     /// A count is counted as given with its charge, a request no model ran is counted as
     /// nothing, and an attempt that may have run without a count (or sent no report) is counted
     /// as a turn with what was seen and no charge.
     #[test]
     fn an_attempt_is_counted_from_how_the_provider_says_it_ended() {
-        let charge = sp::Money::usd(Decimal::new(95, 5));
+        let charge = sp::Money::usd(95, 5);
         let used = sp::TurnUsage {
             input: base_ids::Tokens(10),
             output: base_ids::Tokens(5),

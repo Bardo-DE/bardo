@@ -2,10 +2,10 @@
 //! streamed PCM body cut into chunks, and the two listings.
 
 use model_http::{BodyKind, BodySink, HttpError, HttpStatus, ResponseHead};
-use model_provider::{ModelName, ProviderError};
+use model_types::{ModelName, ProviderError};
 use model_wire::http_error;
 use serde_json::Value;
-use speech_provider::{AudioFormat, AudioMs, AudioSink, VoiceId};
+use speech_core::{AudioFormat, AudioMs, AudioSink, VoiceId};
 use std::ops::ControlFlow;
 
 use super::PcmDecoder;

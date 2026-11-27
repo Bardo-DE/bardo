@@ -2,7 +2,7 @@
 //! and the three of them chained over synthetic audio.
 
 use proptest::prelude::*;
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioFormat, AudioMs, Frame512, PcmBytes, PcmFormat, SampleIndex, SampleRate,
     VoiceActivity, Voiced,
 };

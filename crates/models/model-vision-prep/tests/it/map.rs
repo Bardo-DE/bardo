@@ -1,12 +1,12 @@
 //! The frame map: tables, the refusal rule, and the round trip.
 
-use computer_use_action::{
+use computer_use_geometry::{
     Coord, GridMax, GridSpace, ImageSpace, Length, ModelSpace, Point, Scale120, Size, WindowSpace,
 };
 use model_vision_prep::{FitError, FrameMap, MapError, PatchFactor, PixelCount, ResizeRule};
 use proptest::prelude::*;
 
-fn size<S: computer_use_action::CoordSpace>(w: u32, h: u32) -> Size<S> {
+fn size<S: computer_use_geometry::CoordSpace>(w: u32, h: u32) -> Size<S> {
     Size::new(Coord(w), Coord(h))
 }
 

@@ -665,7 +665,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
         // Only an engine run from a folder the person pointed at (Strata) can be counted.
         let holds = path.is_absolute()
             && engine_manifest::engine_from_slug(&engine)
-                .is_some_and(|kind| engine_probe::pointed(kind, &path).is_some());
+                .is_some_and(|kind| engine_fs::pointed(kind, &path).is_some());
         if !holds {
             return Err(fdo::Error::InvalidArgs(
                 "inferd: that folder does not hold the engine".into(),

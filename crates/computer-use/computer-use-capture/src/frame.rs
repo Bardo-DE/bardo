@@ -2,8 +2,8 @@
 
 use crate::mask::MaskReport;
 use crate::pixels::{FrameSeq, PixelBuf};
-use computer_use_action::{Rect, Scale120, Size, WindowSpace};
 use computer_use_desktop::Stamp;
+use computer_use_geometry::{Rect, Scale120, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 
 /// A masked frame of the leased window, cropped to its geometry.

@@ -21,17 +21,17 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-secret = { path = "../../base/base-secret" }
 inference-core = {path = "../inference-core"}
-computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-types = {path = "../../models/model-types"}
 # Which program an engine kind runs (`Engine`), and the folder a person pointed at (Strata).
 engine-spec = {path = "../../engines/engine-spec"}
-engine-probe = {path = "../../engines/engine-probe"}
+engine-fs = {path = "../../engines/engine-fs"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}
 model-catalog = {path = "../../models/model-catalog"}
 # The types of an engine's address and token only: no `client`, no `tls`, so no runtime.
 model-http = {path = "../../models/model-http"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
-model-provider = {path = "../../models/model-provider"}
-speech-provider = {path = "../../models/speech-provider"}
+speech-core = {path = "../../models/speech-core"}
 model-vision-prep = {path = "../../models/model-vision-prep"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }

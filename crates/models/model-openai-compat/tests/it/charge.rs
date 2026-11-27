@@ -3,9 +3,8 @@
 
 use base_ids::Tokens;
 use model_openai_compat::{Flavor, StreamDecoder, read_charge};
-use model_provider::{ModelName, Money, TurnEvent, TurnUsage};
+use model_types::{ModelName, Money, TurnEvent, TurnUsage};
 use model_wire::ChatDecoder;
-use rust_decimal::Decimal;
 
 const FROM_DOCS: &str = include_str!("../fixtures/openrouter_stream_cost_from_docs.sse");
 
@@ -36,7 +35,7 @@ fn the_documented_stream_ends_with_its_exact_charge() {
     let usage = usage_of(Flavor::OpenRouter, &frames);
     assert_eq!(usage.input, Tokens(194));
     assert_eq!(usage.output, Tokens(2));
-    assert_eq!(usage.charge, Some(Money::usd(Decimal::new(95, 5))));
+    assert_eq!(usage.charge, Some(Money::usd(95, 5)));
 }
 
 #[test]
@@ -44,27 +43,20 @@ fn only_the_openrouter_flavor_reads_a_charge() {
     for flavor in [Flavor::LlamaServer, Flavor::Vllm, Flavor::LiteLlm] {
         assert_eq!(charge_of(flavor, "0.5"), None, "{flavor:?}");
     }
-    assert_eq!(
-        charge_of(Flavor::OpenRouter, "0.5"),
-        Some(Money::usd(Decimal::new(5, 1)))
-    );
+    assert_eq!(charge_of(Flavor::OpenRouter, "0.5"), Some(Money::usd(5, 1)));
 }
 
 #[test]
 fn the_number_is_read_from_its_text() {
     let cases = [
-        ("0.1", Decimal::new(1, 1)),
-        ("0.000001234567", Decimal::new(1_234_567, 12)),
-        ("1.4e-7", Decimal::new(14, 8)),
-        ("0", Decimal::ZERO),
-        ("3", Decimal::from(3)),
+        ("0.1", Money::usd(1, 1)),
+        ("0.000001234567", Money::usd(1_234_567, 12)),
+        ("1.4e-7", Money::usd(14, 8)),
+        ("0", Money::usd(0, 0)),
+        ("3", Money::usd(3, 0)),
     ];
     for (text, want) in cases {
-        assert_eq!(
-            charge_of(Flavor::OpenRouter, text),
-            Some(Money::usd(want)),
-            "{text}"
-        );
+        assert_eq!(charge_of(Flavor::OpenRouter, text), Some(want), "{text}");
     }
 }
 
@@ -86,7 +78,7 @@ fn a_usage_chunk_without_cost_has_no_charge() {
 #[test]
 fn a_whole_reply_body_gives_its_charge_and_a_body_without_one_gives_none() {
     let body = r#"{"id":"gen-1","type":"message","content":[],"usage":{"input_tokens":5,"output_tokens":1,"cost":0.00042}}"#;
-    assert_eq!(read_charge(body), Some(Money::usd(Decimal::new(42, 5))));
+    assert_eq!(read_charge(body), Some(Money::usd(42, 5)));
     assert_eq!(read_charge(r#"{"usage":{"input_tokens":5}}"#), None);
     assert_eq!(read_charge("not json"), None);
 }

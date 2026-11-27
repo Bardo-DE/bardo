@@ -2,7 +2,7 @@
 
 use base_ids::Tokens;
 use model_http::{Exchange, Framing, JsonBody, RouteRoot, UrlPath, Verb};
-use model_provider::{EmbedEnd, EmbedTurn, EmbedVector, Knob, ModelName, TurnUsage};
+use model_types::{EmbedEnd, EmbedTurn, EmbedVector, Knob, ModelName, TurnUsage};
 use model_wire::CodecError;
 use serde_json::{Map, Value, json};
 

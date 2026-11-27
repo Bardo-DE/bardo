@@ -21,8 +21,9 @@ use inference_client::{OpenOptions, Transport, TransportError};
 use inference_core::{
     ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest, InferSession, ModelError,
 };
-use model_provider as sp;
-use model_provider::{Provider, ProviderError, TurnEvent, TurnSink};
+use model_core::Provider;
+use model_types as sp;
+use model_types::{ProviderError, TurnEvent, TurnSink};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

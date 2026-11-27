@@ -1,14 +1,14 @@
 //! The controls of a chat turn beyond its messages (design/31 §5.5): which tool the model may
 //! call, how many at once, how long the reply may be, whether it reasons, how it samples, where
 //! it stops. All typed: there is no untyped parameter bag, so a knob is a field here or it does
-//! not exist. The vocabulary (`Knob`, `ToolChoice`, `Reasoning`, ...) is the model layer's `model-provider`
+//! not exist. The vocabulary (`Knob`, `ToolChoice`, `Reasoning`, ...) is the model layer's `model-types`
 //! one, re-exported; sampling included.
 
 use crate::scores::ScoreOptions;
 use base_ids::Tokens;
 use serde::{Deserialize, Serialize};
 
-pub use model_provider::{
+pub use model_types::{
     Effort, Knob, Milli, Reasoning, Sampling, Seed, StopReason, ThoughtSeal, ToolChoice,
     ToolParallelism,
 };

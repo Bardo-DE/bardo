@@ -6,14 +6,13 @@
 
 use std::collections::BTreeSet;
 
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, GridMax, GridSpace, ImageSpace, ModelSpace,
-    Point, Target, TextDialect, ToolDialect,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
+use computer_use_geometry::{Coord, GridMax, GridSpace, ImageSpace, ModelSpace, Point};
 use computer_use_parse::{
     DropReason, InSpace, ParseError, ParseLimits, Parsed, parse_text, parse_tool_calls,
 };
-use model_provider::{JsonText, ToolCall, ToolCallId, ToolName};
+use model_types::{JsonText, ToolCall, ToolCallId, ToolName};
+use model_types::{TextDialect, ToolDialect};
 
 pub fn at(x: u32, y: u32) -> Target<ImageSpace> {
     Target::Point(Point::new(Coord(x), Coord(y)))

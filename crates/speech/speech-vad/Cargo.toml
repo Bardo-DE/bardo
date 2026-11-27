@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-speech-provider = {path = "../../models/speech-provider"}
+speech-core = {path = "../../models/speech-core"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 

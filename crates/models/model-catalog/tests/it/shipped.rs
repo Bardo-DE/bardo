@@ -107,7 +107,7 @@ fn every_entry_names_its_family() {
 
 #[test]
 fn every_client_parsed_entry_serves_without_a_server_parser() {
-    use model_provider::ToolSupport;
+    use model_types::ToolSupport;
     let client: Vec<&str> = IDS
         .iter()
         .chain(PROFILED.iter())
@@ -128,7 +128,7 @@ fn every_client_parsed_entry_serves_without_a_server_parser() {
 
 #[test]
 fn a_model_without_json_schema_declares_json_object() {
-    use model_provider::Constraint;
+    use model_types::Constraint;
     let text = |id| shipped(id).capabilities.text_out.unwrap().structured;
     assert_eq!(text("deepseek-v4-pro"), [Constraint::JsonObject].into());
     assert_eq!(text("holo-3.1-4b"), [Constraint::JsonSchema].into());

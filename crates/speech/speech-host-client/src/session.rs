@@ -3,9 +3,9 @@
 use std::ops::ControlFlow;
 use std::pin::Pin;
 
-use model_provider::ProviderError;
+use model_types::ProviderError;
 use serde::Serialize;
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioSource, HostIn, HostOut, HostVocab, SpeechModelInfo, SttEnd, SttRequest,
     TranscriptSink,
 };
@@ -58,7 +58,7 @@ impl Drop for Wire<'_> {
             return;
         }
         // Best effort: a full socket buffer or a closed peer just means no `Cancel`.
-        if let Ok(frame) = speech_provider::encode_frame(&HostIn::Cancel) {
+        if let Ok(frame) = speech_core::encode_frame(&HostIn::Cancel) {
             let _ = self.stream.try_write(&frame);
         }
     }

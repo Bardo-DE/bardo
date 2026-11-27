@@ -1,6 +1,6 @@
 [package]
 name = "inference-bridge"
-description = "The one mapping between the app's wire types (inference-core) and the engine's turn types (model-provider): a chat, task or embedding request as a turn, a turn's events and end as the app's, a provider error as a ModelError. Pure: no runtime, no socket, no file, no HTTP. inferd and inference-client's in-process engine host share it."
+description = "The one mapping between the app's wire types (inference-core) and the engine's turn types (model-types): a chat, task or embedding request as a turn, a turn's events and end as the app's, a provider error as a ModelError. Pure: no runtime, no socket, no file, no HTTP. inferd and inference-client's in-process engine host share it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,7 +11,8 @@ publish.workspace = true
 [dependencies]
 model-catalog = {path = "../../models/model-catalog"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
-model-provider = {path = "../../models/model-provider"}
+model-core = {path = "../../models/model-core"}
+model-types = {path = "../../models/model-types"}
 account-core = {path = "../../accounts/account-core"}
 account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
@@ -19,9 +20,6 @@ base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../inference-core"}
 thiserror = { workspace = true }
 model-vision-prep = {path = "../../models/model-vision-prep"}
-
-[dev-dependencies]
-rust_decimal = { workspace = true, features = ["std", "serde"] }
 
 [lints]
 workspace = true

@@ -1,6 +1,7 @@
 //! A model with a stopwatch, and what it said.
 
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::WindowSpace;
 use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink,
 };

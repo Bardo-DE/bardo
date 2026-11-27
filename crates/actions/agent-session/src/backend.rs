@@ -9,7 +9,7 @@ use crate::plan::ResumePlan;
 use action_core::{ConfirmId, ConfirmRequest, Reveal, StepLine, UserTurn};
 use base_ids::Count;
 use companion_wire::NeedsYou;
-use model_provider::Money;
+use model_types::Money;
 use permission_core::BreakerTrip;
 use provenance::SessionId;
 

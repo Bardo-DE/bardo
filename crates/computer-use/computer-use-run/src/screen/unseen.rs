@@ -15,7 +15,8 @@ use base_ids::Count;
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, Parent, Truncation, secret_rects_of,
 };
-use computer_use_action::{NodeId, Rect, Size, WindowSpace};
+use computer_use_action::NodeId;
+use computer_use_geometry::{Rect, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 

@@ -17,10 +17,11 @@
 //! shows what the model writes; the fixtures under `fixtures/` pin what is read today.
 
 use computer_use_action::{
-    Button, Choice, ClickCount, ComputerUseAction, CoordSpace, FinishOutcome, Notches, ScrollBy,
-    ScrollDir, Summary, Target, TypedText, WaitMs,
+    Button, Choice, ClickCount, ComputerUseAction, FinishOutcome, Notches, ScrollBy, ScrollDir,
+    Summary, Target, TypedText, WaitMs,
 };
-use model_provider::ToolCall;
+use computer_use_geometry::CoordSpace;
+use model_types::ToolCall;
 use serde_json::{Map, Value};
 
 use crate::common::{Batch, Collected, Ctx, Dialect, bounded, click, scroll_length};
@@ -177,7 +178,7 @@ pub(crate) fn point<S: CoordSpace>(
     ctx: Ctx,
     args: &Args,
     prefixes: &[&str],
-) -> Verdict<computer_use_action::Point<S>> {
+) -> Verdict<computer_use_geometry::Point<S>> {
     for prefix in prefixes {
         if let Some(pair) = args.get(&format!("{prefix}coordinate")) {
             let [x, y] = pair

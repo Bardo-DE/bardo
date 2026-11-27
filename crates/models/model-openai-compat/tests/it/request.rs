@@ -4,7 +4,7 @@ use crate::support;
 
 use base_ids::Count;
 use model_openai_compat::{CodecError, Flavor, encode_request, enforceable};
-use model_provider::{
+use model_types::{
     Constraint, Effort, EngineExtras, Knob, LlamaExtras, Milli, OutputShape, Part, PromptCache,
     Reasoning, Role, Seed, SlotId, ToolChoice, ToolName, ToolParallelism, VllmExtras,
 };
@@ -188,7 +188,7 @@ fn no_tools_means_no_tool_fields() {
 
 #[test]
 fn a_native_tool_is_refused() {
-    use model_provider::{NativeTool, ToolSpec};
+    use model_types::{NativeTool, ToolSpec};
     let native: NativeTool =
         serde_json::from_value(json!({"dialect": "open_ai_computer", "config": "{}"})).unwrap();
     let mut r = base();
@@ -232,7 +232,7 @@ fn a_user_message_is_a_string_or_a_list_of_parts() {
 #[test]
 fn an_original_detail_image_asks_for_high_detail() {
     let mut original = image("jpeg", b"abc");
-    original.detail = model_provider::ImageDetail::Original;
+    original.detail = model_types::ImageDetail::Original;
     let mut r = base();
     r.messages = vec![msg(Role::User, vec![Part::Image(original)])];
     assert_eq!(
@@ -251,7 +251,7 @@ fn an_assistant_turn_carries_its_text_and_calls_and_drops_its_thoughts() {
             vec![
                 Part::Thought {
                     text: "hmm".into(),
-                    seal: model_provider::ThoughtSeal::None,
+                    seal: model_types::ThoughtSeal::None,
                 },
                 text("ok"),
                 Part::ToolCall(call("c1", "click", r#"{"x":1}"#)),
@@ -421,8 +421,8 @@ fn a_message_with_no_parts_is_left_out() {
 }
 
 fn schema() -> OutputShape {
-    OutputShape::JsonSchema(model_provider::SchemaText(
-        model_provider::JsonText::new(r#"{"type":"object"}"#).unwrap(),
+    OutputShape::JsonSchema(model_types::SchemaText(
+        model_types::JsonText::new(r#"{"type":"object"}"#).unwrap(),
     ))
 }
 

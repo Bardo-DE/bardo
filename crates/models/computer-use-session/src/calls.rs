@@ -4,8 +4,8 @@
 //! dialect (`shown`), so no per-model prompt exists; the request then declares no tools, because a
 //! server that saw them would run its own parser and strip the text we read the calls from.
 
-use computer_use_action::{ActionProfile, CallFormat};
-use model_provider::ToolSpec;
+use model_types::ToolSpec;
+use model_types::{ActionProfile, CallFormat};
 use serde_json::{Value, json};
 
 use crate::prompt::body;

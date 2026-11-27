@@ -11,7 +11,9 @@ publish.workspace = true
 [dependencies]
 engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}
+serde = { workspace = true, features = ["derive"] }
 sha2 = { workspace = true }
+thiserror = { workspace = true }
 
 [lints]
 workspace = true

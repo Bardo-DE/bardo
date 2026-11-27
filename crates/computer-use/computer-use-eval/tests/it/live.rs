@@ -6,9 +6,10 @@ use base_ids::Tokens;
 use computer_use_eval::eval::run_live;
 use computer_use_eval::live::{LiveError, Plan, Thinking};
 use computer_use_eval::verdict::Verdict;
-use model_provider::{
-    ModelInfo, ModelName, Part, Script, ScriptedProvider, StopReason, ToolCall, ToolCallId,
-    ToolName, TurnEnd, TurnEvent, TurnUsage,
+use model_fake::{Script, ScriptedProvider};
+use model_types::{
+    ModelInfo, ModelName, Part, StopReason, ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent,
+    TurnUsage,
 };
 use std::sync::Arc;
 
@@ -18,7 +19,7 @@ fn call(arguments: &str) -> TurnEvent {
     TurnEvent::ToolCallDone(ToolCall {
         id: ToolCallId("c1".into()),
         name: ToolName::new("computer_use").unwrap(),
-        input: model_provider::JsonText::new(arguments).unwrap(),
+        input: model_types::JsonText::new(arguments).unwrap(),
     })
 }
 

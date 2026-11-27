@@ -57,10 +57,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         Some(PathBuf::from("/home/bardo/computer-use"))
     );
     let value = locator.read_with(&files, base(), read).value;
-    assert_eq!(
-        value.config.budget.spend,
-        model_provider::Money::usd(rust_decimal::Decimal::new(900, 6))
-    );
+    assert_eq!(value.config.budget.spend, model_types::Money::usd(900, 6));
     // The first file wins whole: the later directory's other keys are not merged in.
     assert!(!value.config.enabled);
     let none = super::locator(&|_: &str| None::<String>);
@@ -77,7 +74,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
     let loaded = locator_for("/blocked", "/etc").read_with(&files, base(), read);
     assert_eq!(
         loaded.value.config.budget.spend,
-        model_provider::Money::usd(rust_decimal::Decimal::new(1900, 6))
+        model_types::Money::usd(1900, 6)
     );
     assert_eq!(loaded.invalid.len(), 1);
     assert!(loaded.invalid[0].reason.starts_with("could not be read"));

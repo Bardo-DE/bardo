@@ -443,7 +443,8 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space(),
-        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
+        action:
+            computer_use_action::ComputerUseAction::<computer_use_geometry::WindowSpace>::Observe,
         node: None,
         effect: provenance::Effect::Outbound,
         basis: EffectBasis::DefaultTable,

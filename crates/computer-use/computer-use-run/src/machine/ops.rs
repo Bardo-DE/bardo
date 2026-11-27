@@ -13,12 +13,13 @@ use account_core::DataClass;
 use action_gate_wire::ComputerUseAsk;
 use action_gate_wire::NodeFacts;
 use computer_use_a11y_tree::{A11yNode, role_word};
-use computer_use_action::{ComputerUseAction, Coord, Point, Rect, Size, Target, WindowSpace};
+use computer_use_action::{ComputerUseAction, Target};
 use computer_use_bus::{
     ActionOutcome, ActionResult, ComputerUseRecord, FrameNote, TargetedAction, ThoughtDigest,
 };
 use computer_use_capture::FrameWant;
 use computer_use_desktop::{Digest32, GlowState, Stamp};
+use computer_use_geometry::{Coord, Point, Rect, Size, WindowSpace};
 use computer_use_seat_input::{InputReceipt, PlannedAction, ResolvedPoints, centre_of};
 use inference_core::StepIndex;
 use provenance::{Label, Source};
@@ -348,7 +349,7 @@ pub(crate) fn step_record(
         result: outcome.result.clone(),
         frame: run.track.frame.clone().unwrap_or(FrameNote::NotKept {
             digest: computer_use_capture::FrameDigest(Digest32([0; 32])),
-            size: computer_use_action::DeviceSize { w: 0, h: 0 },
+            size: computer_use_geometry::DeviceSize { w: 0, h: 0 },
         }),
         input,
     }))

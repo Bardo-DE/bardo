@@ -15,7 +15,7 @@ path = "src/bin/bardo-engine-helper.rs"
 [dependencies]
 base-secret = { path = "../../base/base-secret" }
 engine-manifest = {path = "../engine-manifest"}
-engine-probe = {path = "../engine-probe"}
+engine-fs = {path = "../engine-fs"}
 engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}
 model-http = {path = "../../models/model-http"}

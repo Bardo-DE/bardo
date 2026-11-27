@@ -2,10 +2,10 @@
 //! interaction.
 
 use base_ids::Tokens;
-use model_provider::{ModelName, ProviderError, TurnEnd, TurnEvent};
+use model_types::{ModelName, ProviderError, TurnEnd, TurnEvent};
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use speech_provider::SpeechCaps;
+use speech_core::SpeechCaps;
 
 use crate::{PrintHash, RequestPrint, StreamError, check_sequence};
 

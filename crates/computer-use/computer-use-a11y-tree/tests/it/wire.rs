@@ -5,8 +5,9 @@ use account_core::AppName;
 use computer_use_a11y_tree::{
     A11yError, A11yTarget, NameMatch, NodeSelector, Resolution, Role, SelectorStep, TreeDiff,
 };
-use computer_use_action::{Coord, NodeId, Size};
+use computer_use_action::NodeId;
 use computer_use_desktop::{Pid, WindowTitle};
+use computer_use_geometry::{Coord, Size};
 
 fn round_trip<T: serde::Serialize + serde::de::DeserializeOwned + PartialEq + std::fmt::Debug>(
     value: &T,

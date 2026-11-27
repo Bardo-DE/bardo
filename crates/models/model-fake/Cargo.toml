@@ -1,0 +1,20 @@
+[package]
+name = "model-fake"
+description = "Test fakes of the model layer: a provider that plays scripted turns, and the reply-stream harness of the OpenAI-compatible driver."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+model-core = {path = "../model-core"}
+model-http = {path = "../model-http"}
+model-openai-compat = {path = "../model-openai-compat"}
+model-types = {path = "../model-types"}
+model-wire = {path = "../model-wire"}
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

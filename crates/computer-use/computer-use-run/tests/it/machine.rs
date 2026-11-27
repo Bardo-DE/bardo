@@ -5,9 +5,7 @@ use crate::support::rules;
 use account_core::{AppName, DataClass};
 use action_wire::GrantAnswer;
 use computer_use_action::RunMode;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, Point, Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
 use computer_use_bus::{
     BlockedOn, BudgetUse, CancelledBy, ComputerUseOutcome, ComputerUseTask, ReportRoute, RunBudget,
     RunOrigin, SuccessCheck, TargetedAction, TaskTarget, WindowRef,
@@ -15,6 +13,7 @@ use computer_use_bus::{
 use computer_use_desktop::{
     BackendCaps, BackendKind, ConsentGuard, DesktopEvent, LeaseId, Stamp, Suspend, ToplevelIdent,
 };
+use computer_use_geometry::{Coord, Point, WindowSpace};
 use computer_use_run::{
     ActionQueue, ComputerUseConfig, ComputerUseSignal, Repeats, Run, RunEffect, RunEnv, RunInput,
     RunPhase, RunTrack,

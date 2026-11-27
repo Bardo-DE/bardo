@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-types = {path = "../computer-use-types"}
 serde = { workspace = true, features = ["derive"] }

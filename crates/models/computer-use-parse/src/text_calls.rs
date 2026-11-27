@@ -3,7 +3,7 @@
 //! A model fine-tuned on its chat template's call format writes `<tool_call>` blocks, and a
 //! server-side tool parser (vLLM's `--tool-call-parser`) would strip them from the text, which
 //! breaks a model that also reasons in that format. Such a catalogue entry says its calls are read
-//! by us (`computer_use_action::CallFormat`); this module turns the text into the same `ToolCall` values
+//! by us (`model_types::CallFormat`); this module turns the text into the same `ToolCall` values
 //! the server path produces, so profile aliases and verb handling run unchanged after it.
 //!
 //! The reading is strict and total. Only `<tool_call>` blocks count; a call in any other form (an
@@ -14,8 +14,8 @@
 
 use std::collections::BTreeMap;
 
-use computer_use_action::CallFormat;
-use model_provider::{JsonText, ToolCall, ToolCallId, ToolName};
+use model_types::CallFormat;
+use model_types::{JsonText, ToolCall, ToolCallId, ToolName};
 use serde_json::{Map, Value};
 
 use crate::{ParseError, ParseLimits};

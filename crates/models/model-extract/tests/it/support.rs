@@ -5,8 +5,8 @@
 )]
 
 use base_ids::Tokens;
-use computer_use_action::{GridMax, ModelSpace};
-use model_provider::{
+use computer_use_geometry::{GridMax, ModelSpace};
+use model_types::{
     Caps, ComputerUseSupport, Constraint, EngineExtras, ImageCount, ImageLimits, InputKind, Knob,
     Limits, Message, Milli, ModelName, OutputShape, Part, Reasoning, Role, Sampling, StopReason,
     Support, ToolChoice, ToolParallelism, ToolSupport, TurnEnd, TurnRequest, TurnUsage,
@@ -61,7 +61,7 @@ pub fn base() -> TurnRequest {
         },
         reasoning: Reasoning::Off,
         engine: EngineExtras::None,
-        choice_scores: model_provider::ChoiceScores::Off,
+        choice_scores: model_types::ChoiceScores::Off,
     }
 }
 

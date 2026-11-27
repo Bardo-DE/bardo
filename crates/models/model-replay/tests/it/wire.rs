@@ -1,11 +1,11 @@
 use base_ids::Tokens;
 use model_http::{BodyKind, EventName, HttpStatus, RouteRoot, UrlPath, Verb, WaitSeconds};
-use model_provider::{JsonText, ModelName};
 use model_replay::{
     BuildLabel, CassetteError, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel,
     EngineStamp, HeadPrint, RecordedAt, WireBody, WireCassette, WireEnd, WireExchange, WireFrame,
     WireReply, WireRequest,
 };
+use model_types::{JsonText, ModelName};
 
 fn header() -> CassetteHeader {
     CassetteHeader {

@@ -1,7 +1,8 @@
 //! The two entry points.
 
-use computer_use_action::{ModelSpace, TextDialect, ToolDialect};
-use model_provider::ToolCall;
+use computer_use_geometry::ModelSpace;
+use model_types::ToolCall;
+use model_types::{TextDialect, ToolDialect};
 
 use crate::common::in_space;
 use crate::profile::ToolContext;

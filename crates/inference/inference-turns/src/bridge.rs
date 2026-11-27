@@ -1,5 +1,5 @@
 //! The seam between the app's wire types (`inference-core`) and the engine's turn types
-//! (`model-provider`).
+//! (`model-types`).
 //!
 //! `ChatRequest` to `TurnRequest`, `TurnEvent` to `InferEvent`, `ProviderError` to `ModelError`. The mapping itself is
 //! `inference-bridge` (shared with inference-client's in-process engine host); what stays here is the

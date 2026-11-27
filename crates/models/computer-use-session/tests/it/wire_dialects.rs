@@ -3,12 +3,13 @@
 
 use crate::support;
 
-use computer_use_action::{
-    ComputerUseAction, ComputerUseDialect, FinishOutcome, ModelSpace, WireDialect,
-};
+use computer_use_action::{ComputerUseAction, FinishOutcome};
+use computer_use_geometry::ModelSpace;
 use computer_use_session::{StepOutcome, TurnTranscript};
 use computer_use_vendors::StepResult;
-use model_provider::{Part, Role, StopReason, ToolCallId, ToolSpec, check_sequence};
+use model_core::check_sequence;
+use model_types::{ComputerUseDialect, WireDialect};
+use model_types::{Part, Role, StopReason, ToolCallId, ToolSpec};
 use support::*;
 
 const ANTHROPIC: ComputerUseDialect =

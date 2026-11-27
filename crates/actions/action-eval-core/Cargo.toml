@@ -15,8 +15,7 @@ permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+model-types = {path = "../../models/model-types"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

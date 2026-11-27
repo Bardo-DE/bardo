@@ -4,7 +4,7 @@ use crate::support;
 
 use base_ids::Count;
 use model_extract::{ExtractMode, FINAL_RESULT_TOOL, ToolsPresent, choose};
-use model_provider::{
+use model_types::{
     CharCount, ChoiceText, Constraint, Field, FieldName, OutputShape, SchemaDialect, Shape,
     ShapeWithTools, ToolName, ToolSupport,
 };

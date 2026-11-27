@@ -4,7 +4,7 @@
 
 use crate::lease::{RevokeReason, Suspend};
 use computer_use_action::RunMode;
-use computer_use_action::{Rect, WindowSpace};
+use computer_use_geometry::{Rect, WindowSpace};
 use serde::{Deserialize, Serialize};
 
 /// What the run looks like from outside: the compositor (fork) or the shell (stock) draws it.
@@ -92,7 +92,7 @@ pub fn mode_code(mode: RunMode) -> WireCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computer_use_action::{Coord, Point, Size};
+    use computer_use_geometry::{Coord, Point, Size};
 
     fn region() -> Rect<WindowSpace> {
         Rect {

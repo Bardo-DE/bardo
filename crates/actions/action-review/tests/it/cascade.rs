@@ -233,7 +233,7 @@ fn the_second_opinion_must_come_from_another_family() {
 
 #[test]
 fn verdict_shapes_are_a_token_for_quick_and_a_record_for_the_rest() {
-    use model_provider::Shape;
+    use model_types::Shape;
     let Shape::Choice(words) = verdict_shape(Stage::Quick) else {
         panic!("a choice")
     };

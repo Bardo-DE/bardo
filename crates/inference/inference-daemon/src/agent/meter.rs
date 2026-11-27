@@ -15,7 +15,7 @@ use inference_core::{AuditEntry, ServedBy, TurnUsage, Why};
 use inference_turns::audit::AuditOut;
 use model_http::SseDecoder;
 use model_openai_compat::read_charge;
-use model_provider::{Charges, Money};
+use model_types::{Charges, Money};
 use serde_json::Value;
 
 /// A provider's usage figures as they arrive.
@@ -199,7 +199,7 @@ const NO_TOKENS: TurnUsage = TurnUsage {
     input: Tokens(0),
     output: Tokens(0),
     cached: Tokens(0),
-    images: model_provider::ImageCount(0),
+    images: model_types::ImageCount(0),
     charge: None,
 };
 

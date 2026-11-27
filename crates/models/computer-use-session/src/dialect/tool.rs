@@ -3,11 +3,12 @@
 
 use std::borrow::Cow;
 
-use computer_use_action::{ActionProfile, CallFormat, ModelSpace, ResolutionWording, ToolDialect};
+use computer_use_geometry::ModelSpace;
 use computer_use_parse::{
     ParamKinds, ParseError, ParseLimits, Parsed, ToolContext, parse_tool_calls_with, read_calls,
 };
-use model_provider::{JsonText, SchemaText, ToolCall, ToolName, ToolSpec};
+use model_types::{ActionProfile, CallFormat, ResolutionWording, ToolDialect};
+use model_types::{JsonText, SchemaText, ToolCall, ToolName, ToolSpec};
 use model_vision_prep::FrameMap;
 
 use super::ActionDialect;

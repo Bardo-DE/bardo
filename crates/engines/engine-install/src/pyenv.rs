@@ -8,8 +8,9 @@ use crate::extract::{settle_modes, unpack};
 use crate::fetch::Fetcher;
 use crate::installer::{InstallError, Installer, blocking, record_of};
 use crate::progress::{CancelToken, Meter};
+use engine_fs::{entry_digests, seal_of, write_record};
+use engine_manifest::InstallDir;
 use engine_manifest::{Delivery, Row};
-use engine_probe::{InstallDir, entry_digests, seal_of};
 use std::ffi::OsString;
 use std::path::Path;
 use std::process::Stdio;
@@ -107,7 +108,7 @@ pub(crate) async fn build(
         record.seal = pinned.to_owned();
         record.entries = entry_digests(&tree_done, package)?;
         record.venv_seal = Some(seal_of(&tree_done.join("venv"))?.as_hex().to_owned());
-        record.write(&record_at).map_err(InstallError::from)
+        write_record(&record, &record_at).map_err(InstallError::from)
     })
     .await
 }

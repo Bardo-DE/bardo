@@ -1,12 +1,12 @@
 //! The vendor protocols: the tool declaration carries the prompt and the reply is decoded by
 //! `computer-use-vendors`.
 
-use computer_use_action::{
-    ActionProfile, ComputerUseAction, FinishOutcome, ModelSpace, Summary, WireDialect,
-};
+use computer_use_action::{ComputerUseAction, FinishOutcome, Summary};
+use computer_use_geometry::ModelSpace;
 use computer_use_parse::{ByteOffset, InSpace, ParseError, ParseLimits, Parsed, ToolContext};
 use computer_use_vendors::WireCodec;
-use model_provider::ToolSpec;
+use model_types::ToolSpec;
+use model_types::{ActionProfile, WireDialect};
 use model_vision_prep::FrameMap;
 
 use super::ActionDialect;

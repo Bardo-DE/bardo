@@ -104,10 +104,7 @@ async fn a_bad_value_in_the_file_leaves_the_running_value_and_is_reported() {
     sup.adopt(&loaded);
     assert_eq!(loaded.invalid.len(), 1);
     assert_eq!(loaded.invalid[0].path, "computer_use.budget.spend_microusd");
-    assert_eq!(
-        sup.settings().budget.spend,
-        model_provider::Money::usd(rust_decimal::Decimal::new(0, 6))
-    );
+    assert_eq!(sup.settings().budget.spend, model_types::Money::usd(0, 6));
 }
 
 #[tokio::test]
@@ -130,7 +127,7 @@ async fn a_settings_file_that_cannot_be_read_is_reported_and_the_next_directory_
     let loaded = watch_settings(&locator(&env), base).current();
     assert_eq!(
         loaded.value.config.budget.spend,
-        model_provider::Money::usd(rust_decimal::Decimal::new(1900, 6))
+        model_types::Money::usd(1900, 6)
     );
     assert_eq!(loaded.invalid.len(), 1);
     assert!(loaded.invalid[0].reason.starts_with("could not be read"));

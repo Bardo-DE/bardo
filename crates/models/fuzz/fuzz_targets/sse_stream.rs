@@ -3,7 +3,8 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use model_fuzz::{pipe, split};
+use model_fake::stream as pipe;
+use model_fuzz::split;
 
 fuzz_target!(|data: &[u8]| {
     let (cuts, bytes) = split(data);

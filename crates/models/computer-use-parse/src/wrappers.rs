@@ -1,5 +1,5 @@
 //! The wrappers of a reply shaped `<think>...</think>`, `<action>...</action>`, then the calls
-//! (`computer_use_action::AnswerShape::ThinkActionCall`). The calls are found without them
+//! (`model_types::AnswerShape::ThinkActionCall`). The calls are found without them
 //! (`read_calls`), so a reply that leaves a wrapper out still acts; this reads the wrappers for
 //! the words of the step. Total and bounded: ASCII case does not matter, nothing is evaluated.
 

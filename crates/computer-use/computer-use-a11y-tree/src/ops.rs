@@ -4,7 +4,8 @@ use crate::model::{A11yNode, A11ySnapshot, NodeBudget, NodeState, Parent, Trunca
 use crate::render::is_secret;
 use crate::selector::{NameMatch, NodeSelector, Resolution, SelectorStep};
 use base_ids::Count;
-use computer_use_action::{NodeId, Rect, WindowSpace};
+use computer_use_action::NodeId;
+use computer_use_geometry::{Rect, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 

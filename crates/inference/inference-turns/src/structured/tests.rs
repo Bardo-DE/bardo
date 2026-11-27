@@ -3,9 +3,9 @@ use account_capability::Tier;
 use account_core::{DataClass, consent::Usage};
 use base_testkit::Scratch;
 use inference_router::testkit::models;
-use model_provider::{
-    ModelName, OutputShape, Part, ProviderError, Role, Script, ScriptedProvider, StopReason,
-    TurnEnd, TurnEvent, TurnUsage,
+use model_fake::{Script, ScriptedProvider};
+use model_types::{
+    ModelName, OutputShape, Part, ProviderError, Role, StopReason, TurnEnd, TurnEvent, TurnUsage,
 };
 
 const SCORE: &str = r#"{"type":"object","additionalProperties":false,

@@ -2,7 +2,7 @@
 
 use base_ids::Tokens;
 use model_http::{BodyKind, ResponseHead};
-use model_provider::{ProviderDetail, ProviderError, RetrySeconds, ServerStatus};
+use model_types::{ProviderDetail, ProviderError, RetrySeconds, ServerStatus};
 use serde_json::Value;
 
 use crate::envelope::envelope_error;

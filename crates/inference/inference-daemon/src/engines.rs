@@ -39,7 +39,7 @@ use inference_router::startup::Cause;
 use inference_router::swap::{Budget, running_of, swap_cost};
 use inference_settings::{Settings, UsageValue};
 use model_catalog::Licence;
-use model_provider::Money;
+use model_types::Money;
 use std::sync::Arc;
 use std::time::Duration;
 

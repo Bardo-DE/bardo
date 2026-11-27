@@ -6,9 +6,6 @@ use crate::support::{FakeCompositor, Stance, Window};
 use account_core::AppName;
 use base_ids::Px;
 use base_time::ManualMonotonic;
-use computer_use_action::{
-    Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
-};
 use computer_use_capture::{
     CaptureError, CaptureSession, DamageSource, FrameWant, MaskReason, MaskRegion, WholeMask,
     WindowCapture,
@@ -17,6 +14,9 @@ use computer_use_capture_wayland::{BardoMaskedCapture, StockToplevelCapture};
 use computer_use_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
     ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
+};
+use computer_use_geometry::{
+    Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
 };
 use desktop_protocols::server::bardo_agent_v1::bardo_agent_lease_v1::RevokeReason;
 use std::collections::BTreeSet;

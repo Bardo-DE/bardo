@@ -4,7 +4,7 @@
 
 use crate::support::{node, rules, tree};
 use computer_use_a11y_tree::{A11yNode, NodeState, NodeValue, Parent, Role, render};
-use computer_use_action::{Coord, Size};
+use computer_use_geometry::{Coord, Size};
 use computer_use_run::{
     EXCERPT_CHARS, Family, HiddenKind, MAX_REASONS, PatternCheck, Reason, ScreenVerdict,
     ScreenView, TreeObs, UnseenWhy, Withheld, secret_masks, split_unseen,
@@ -33,7 +33,7 @@ fn causes(verdict: &ScreenVerdict) -> Vec<Cause> {
         .collect()
 }
 
-fn window() -> Size<computer_use_action::WindowSpace> {
+fn window() -> Size<computer_use_geometry::WindowSpace> {
     Size::new(Coord(100), Coord(80))
 }
 

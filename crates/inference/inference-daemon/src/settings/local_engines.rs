@@ -6,7 +6,7 @@
 use super::missing::{engine_name, serves, state};
 use crate::installed::{Installed, Standing};
 use crate::supervise::Programs;
-use engine_probe::Origin;
+use engine_manifest::Origin;
 use engine_spec::{ENGINES, engine};
 use inference_core::Slot;
 use inference_dbus::inference::{EnginePlace, EngineState, LocalEngine};

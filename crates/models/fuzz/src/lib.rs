@@ -1,7 +1,5 @@
 //! Shared by the fuzz targets: the chunk-splitting prefix of an input. The pipeline and its
-//! invariants are model-openai-compat's `testing` module, which its `hostile` suite uses too.
-
-pub use model_openai_compat::testing as pipe;
+//! invariants are `model_fake::stream`, which the `hostile` suite of model-openai-compat uses too.
 
 /// An input is: one byte (how many cuts, 0 to 7), that many 16-bit cut points, then the payload
 /// the targets decode. The same payload with other cuts must decode alike.

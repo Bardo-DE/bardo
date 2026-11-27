@@ -2,7 +2,7 @@
 //! (`QwenComputerUse`'s `computer_use` function with an `action` argument). A new dialect adds
 //! a table here, not an arm in the parser.
 
-use computer_use_action::ToolDialect;
+use model_types::ToolDialect;
 
 /// What one tool dialect adds to the common convention.
 pub(crate) struct Verbs {

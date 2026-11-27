@@ -11,9 +11,9 @@
 //! `click` buttons `back` and `forward` are dropped; `wheel` is the middle button.
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, ImageSpace, Length, ScrollBy, ScrollDir, Target,
-    TypedText, WaitMs,
+    Button, ClickCount, ComputerUseAction, ScrollBy, ScrollDir, Target, TypedText, WaitMs,
 };
+use computer_use_geometry::{ImageSpace, Length};
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
 use std::collections::BTreeSet;
@@ -97,7 +97,7 @@ fn scroll(args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
     Ok(ComputerUseAction::Scroll {
         at: at(args)?,
         dir,
-        by: ScrollBy::Distance(Length::new(computer_use_action::Coord(pixels))),
+        by: ScrollBy::Distance(Length::new(computer_use_geometry::Coord(pixels))),
     })
 }
 

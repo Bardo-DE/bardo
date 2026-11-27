@@ -15,11 +15,9 @@ use agent_client_protocol::schema::v1::{
 };
 use agent_session::{BackendEvent, CallEvent, CallOpen, UsageNote};
 use base_ids::Count;
-use iso_currency::Currency;
-use model_provider::Money;
+use model_types::{Currency, Money};
 use permission_core::PermissionKind;
 use provenance::Effect;
-use rust_decimal::Decimal;
 use std::collections::BTreeMap;
 
 /// What was heard.
@@ -82,9 +80,8 @@ fn reported_money(amount: f64, code: &str) -> Option<Money> {
     if amount < 0.0 {
         return None;
     }
-    let amount = Decimal::try_from(amount).ok()?;
     let currency = Currency::from_code(code)?;
-    Some(Money::new(amount, currency))
+    Money::parse(&amount.to_string(), currency)
 }
 
 fn usage(update: &agent_client_protocol::schema::v1::UsageUpdate) -> UsageNote {
@@ -193,14 +190,10 @@ mod tests {
 
     #[test]
     fn a_reported_cost_is_money_only_when_amount_and_currency_read_exactly() {
-        let usd = |amount| Money::new(amount, Currency::USD);
-        assert_eq!(
-            reported_money(0.0042, "USD"),
-            Some(usd(Decimal::new(42, 4)))
-        );
+        assert_eq!(reported_money(0.0042, "USD"), Some(Money::usd(42, 4)));
         assert_eq!(
             reported_money(1.5, "EUR"),
-            Some(Money::new(Decimal::new(15, 1), Currency::EUR))
+            Some(Money::new(15, 1, Currency::EUR))
         );
         assert_eq!(reported_money(1.0, "credits"), None);
         assert_eq!(reported_money(f64::NAN, "USD"), None);

@@ -13,7 +13,7 @@ use inference_core::{
     ComputerUseStepRequest, ModelError,
 };
 use inference_router::local::LocalModel;
-use model_provider::Provider;
+use model_core::Provider;
 
 /// Only `Screen` data may enter a computer-use session.
 ///

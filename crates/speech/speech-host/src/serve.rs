@@ -6,8 +6,8 @@ use std::os::unix::fs::{DirBuilderExt, FileTypeExt, PermissionsExt};
 use std::os::unix::net::UnixListener;
 use std::path::Path;
 
-use model_provider::ProviderError;
-use speech_provider::{HostIn, HostOut, decode_frame, encode_frame, frame_length};
+use model_types::ProviderError;
+use speech_core::{HostIn, HostOut, decode_frame, encode_frame, frame_length};
 
 use crate::{HostArgs, HostError, Recognizer, Session};
 

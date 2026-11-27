@@ -8,12 +8,13 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    ActionProfile, Button, Chord, ClickCount, ComputerUseAction, Coord, DragStyle, FinishOutcome,
-    GridMax, GridSpace, Length, ModelSpace, Modifier, Repeat, ScrollAxis, ScrollBy, ScrollDir,
-    Summary, Target, ToolDialect, VerbAlias, WaitMs,
+    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Repeat, ScrollBy,
+    ScrollDir, Summary, Target, WaitMs,
 };
+use computer_use_geometry::{Coord, GridMax, GridSpace, Length, ModelSpace};
 use computer_use_parse::{CursorAt, DropReason, Parsed, ToolContext, parse_tool_calls_with};
 use keyboard_types::{Key, NamedKey};
+use model_types::{ActionProfile, DragStyle, ScrollAxis, ToolDialect, VerbAlias};
 
 const QWEN: ToolDialect = ToolDialect::QwenComputerUse;
 const CURSOR: CursorAt = CursorAt { x: 100, y: 200 };

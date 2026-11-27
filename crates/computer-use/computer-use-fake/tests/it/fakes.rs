@@ -6,7 +6,6 @@ use action_core::{CallRefusal, ConfirmEnd, DraftPart, InboxAsk, MessageDraft};
 use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk};
 use base_ids::Px;
-use computer_use_action::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size};
 use computer_use_bus::ComputerUseRecord;
 use computer_use_capture::{
     CaptureError, CaptureSession, Frame, FrameSeq, MaskReport, PixelBuf, WholeMask, WindowCapture,
@@ -18,6 +17,7 @@ use computer_use_desktop::{
 use computer_use_fake::{
     DesktopCall, FakeCapture, FakeDesktop, FakePdp, MemoryEvents, ScriptedModel, Verdict,
 };
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size};
 use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, GateCheck, GateEvent, GateLink,
     MessageLink, RecordSink, StepSink,

@@ -2,7 +2,6 @@ use super::*;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
-use rust_decimal::Decimal;
 
 fn served() -> pi::ServedBy {
     pi::ServedBy {
@@ -28,7 +27,7 @@ fn end(stop: sp::StopReason) -> sp::TurnEnd {
             output: base_ids::Tokens(4),
             cached: base_ids::Tokens(3),
             images: sp::ImageCount(1),
-            charge: Some(sp::Money::usd(Decimal::new(95, 5))),
+            charge: Some(sp::Money::usd(95, 5)),
         },
         served: sp::ModelName("m".into()),
         first_token: None,

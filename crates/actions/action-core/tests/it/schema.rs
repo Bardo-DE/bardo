@@ -128,7 +128,7 @@ fn conforms_table() {
 
 #[test]
 fn value_schemas_render_as_shapes() {
-    use model_provider::Shape;
+    use model_types::Shape;
     let schema = ValueSchema::Record(vec![
         (
             param("kind"),

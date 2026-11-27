@@ -2,7 +2,7 @@
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use computer_use_action::{DeviceSize, PixelFormat};
+use computer_use_geometry::{DeviceSize, PixelFormat};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::sync::Arc;

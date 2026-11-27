@@ -14,8 +14,8 @@ use std::time::Duration;
 
 use model_http::{AuthHeader, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs};
 use model_openai_compat::{KOKORO_FORMAT, KokoroSpeech, OpenAiTranscription};
-use model_provider::ModelName;
-use speech_provider::{
+use model_types::ModelName;
+use speech_core::{
     AudioChunk, AudioFormat, AudioSink, AudioSource, Lang, LangChoice, PcmBytes, PcmFormat,
     SampleIndex, SampleRate, SpokenText, SttMode, SttRequest, TranscriptEvent, TranscriptSink,
     TtsRequest, VoiceId,
@@ -93,7 +93,7 @@ pub fn endpoint(target: HttpTarget) -> HttpEndpoint {
 pub fn scratch() -> PathBuf {
     static N: AtomicU32 = AtomicU32::new(0);
     let dir = std::env::temp_dir().join(format!(
-        "speech-provider-{}-{}",
+        "speech-core-{}-{}",
         std::process::id(),
         N.fetch_add(1, Ordering::SeqCst)
     ));

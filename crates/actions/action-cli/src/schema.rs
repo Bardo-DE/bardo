@@ -9,7 +9,7 @@ use crate::resolve::{short_name, slug};
 use action_manifest::{ActionDecl, Manifest, ParamDecl, ParamNeed};
 use action_vocab::ParamType;
 use base_ids::Count;
-use model_provider::{CharCount, ChoiceText, Field, FieldName, SchemaDialect, Shape};
+use model_types::{CharCount, ChoiceText, Field, FieldName, SchemaDialect, Shape};
 use serde_json::{Value, json};
 
 /// The longest list of things a flag may repeat to.

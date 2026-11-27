@@ -3,9 +3,9 @@
 
 use std::time::Duration;
 
+use model_core::Provider;
 use model_http::{AuthHeader, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs};
 use model_openai_compat::{Flavor, OpenAiCodec};
-use model_provider::Provider;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::UnixListener;
 

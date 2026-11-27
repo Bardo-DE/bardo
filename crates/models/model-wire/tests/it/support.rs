@@ -13,7 +13,7 @@ use model_http::{
     BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, JsonBody, ResponseHead,
     RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
-use model_provider::{
+use model_types::{
     EmbedEnd, EmbedTurn, EmbedVector, Knob, Limits, Milli, ModelInfo, ModelName, OutputShape,
     ProviderError, Reasoning, RetrySeconds, Sampling, StopReason, ToolChoice, ToolParallelism,
     TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage,
@@ -330,8 +330,8 @@ pub fn request(model: &str) -> TurnRequest {
             seed: Knob::Off,
         },
         reasoning: Reasoning::Off,
-        engine: model_provider::EngineExtras::None,
-        choice_scores: model_provider::ChoiceScores::Off,
+        engine: model_types::EngineExtras::None,
+        choice_scores: model_types::ChoiceScores::Off,
     }
 }
 
@@ -339,7 +339,7 @@ pub fn embed_turn(inputs: &[&str], dims: Knob<Dims>) -> EmbedTurn {
     EmbedTurn {
         model: ModelName("e".into()),
         inputs: inputs.iter().map(|s| (*s).to_owned()).collect(),
-        role: model_provider::EmbedRole::Document,
+        role: model_types::EmbedRole::Document,
         dims,
     }
 }
@@ -349,11 +349,11 @@ pub fn embed_turn(inputs: &[&str], dims: Knob<Dims>) -> EmbedTurn {
 pub struct Keep {
     pub events: Vec<TurnEvent>,
     pub stop_after: Option<usize>,
-    pub reports: Vec<model_provider::UsageReport>,
+    pub reports: Vec<model_types::UsageReport>,
 }
 
 impl TurnSink for Keep {
-    fn ended(&mut self, report: model_provider::UsageReport) {
+    fn ended(&mut self, report: model_types::UsageReport) {
         self.reports.push(report);
     }
 

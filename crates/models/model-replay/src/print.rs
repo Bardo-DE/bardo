@@ -1,6 +1,6 @@
 //! The fingerprint of a request: what a cassette stores in place of the request itself.
 
-use model_provider::{
+use model_types::{
     EngineExtras, ImageDetail, Limits, ModelName, OutputShape, Part, Reasoning, Role, Sampling,
     ThoughtSeal, ToolCall, ToolCallId, ToolChoice, ToolParallelism, ToolSpec, ToolStatus,
     TurnRequest,

@@ -1,6 +1,6 @@
 //! How to ask.
 
-use model_provider::{
+use model_types::{
     Caps, Constraint, OutputShape, SchemaDialect, Shape, ShapeWithTools, ToolName, ToolSupport,
 };
 

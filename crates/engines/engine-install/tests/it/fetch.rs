@@ -1,8 +1,8 @@
 use crate::host::FileHost;
 use crate::support::fetcher;
+use engine_fs::file_digest;
 use engine_install::{CancelToken, FetchError, Meter};
 use engine_manifest::{Artifact, hex};
-use engine_probe::file_digest;
 use model_http::HttpError;
 use sha2::{Digest, Sha256};
 

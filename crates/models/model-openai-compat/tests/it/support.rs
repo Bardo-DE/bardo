@@ -6,7 +6,7 @@
 )]
 
 use base_ids::Tokens;
-use model_provider::{
+use model_types::{
     EngineExtras, ImageInput, Knob, Limits, Message, Milli, ModelName, OutputShape, Part,
     Reasoning, Role, Sampling, SchemaText, ToolCall, ToolCallId, ToolChoice, ToolName,
     ToolParallelism, ToolResult, ToolSpec, ToolStatus, TurnRequest,
@@ -50,7 +50,7 @@ pub fn base() -> TurnRequest {
         },
         reasoning: Reasoning::Off,
         engine: EngineExtras::None,
-        choice_scores: model_provider::ChoiceScores::Off,
+        choice_scores: model_types::ChoiceScores::Off,
     }
 }
 
@@ -81,7 +81,7 @@ pub fn call(id: &str, name: &str, input: &str) -> ToolCall {
     ToolCall {
         id: ToolCallId(id.into()),
         name: ToolName::new(name).unwrap(),
-        input: model_provider::JsonText::new(input).unwrap(),
+        input: model_types::JsonText::new(input).unwrap(),
     }
 }
 
@@ -97,7 +97,7 @@ pub fn function(name: &str, schema: &str) -> ToolSpec {
     ToolSpec::Function {
         name: ToolName::new(name).unwrap(),
         description: format!("does {name}"),
-        parameters: SchemaText(model_provider::JsonText::new(schema).unwrap()),
+        parameters: SchemaText(model_types::JsonText::new(schema).unwrap()),
     }
 }
 
@@ -134,7 +134,7 @@ pub fn chat_request(body: Option<&str>) -> WireRequest {
         verb: model_http::Verb::PostJson,
         root: model_http::RouteRoot::Base,
         path: model_http::UrlPath("/chat/completions".into()),
-        body: body.map(|b| model_provider::JsonText::new(b).unwrap()),
+        body: body.map(|b| model_types::JsonText::new(b).unwrap()),
     }
 }
 

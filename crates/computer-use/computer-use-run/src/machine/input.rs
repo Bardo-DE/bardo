@@ -14,7 +14,7 @@ use computer_use_capture::{CaptureError, DamageAt};
 use computer_use_desktop::{DesktopError, DesktopEvent, LeaseGrant};
 use computer_use_seat_input::{InputReceipt, SeatError};
 use inference_core::{ComputerUseStepReply, ServedBy, TurnUsage};
-use model_provider::Money;
+use model_types::Money;
 use provenance::{ConfirmId, Labelled};
 use serde::{Deserialize, Serialize};
 

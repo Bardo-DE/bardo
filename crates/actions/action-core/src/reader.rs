@@ -7,7 +7,7 @@ use crate::planner::{HandleShape, StepLine};
 use account_capability::Tier;
 use action_vocab::{CharCount, ChoiceId, Handle, ParamName, Value};
 use base_ids::Count;
-use model_provider::{ChoiceText, Field, FieldName, Shape};
+use model_types::{ChoiceText, Field, FieldName, Shape};
 use provenance::{EntityId, Quarantined, SessionId};
 use serde::{Deserialize, Serialize};
 
@@ -252,7 +252,7 @@ impl ValueSchema {
                 max: count(ids.len()),
             }),
             ValueSchema::Text { max } => Ok(Shape::Text {
-                max: model_provider::CharCount(max.0),
+                max: model_types::CharCount(max.0),
             }),
             ValueSchema::Record(fields) => fields
                 .iter()
@@ -286,7 +286,7 @@ impl ValueSchema {
     pub fn json_schema(&self) -> Result<String, SchemaError> {
         Ok(self
             .shape()?
-            .to_json_schema(model_provider::SchemaDialect::Plain)
+            .to_json_schema(model_types::SchemaDialect::Plain)
             .0
             .as_str()
             .to_owned())

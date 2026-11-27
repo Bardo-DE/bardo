@@ -18,7 +18,7 @@ use account_core::AccountId;
 use account_core::AppId;
 use base_time::UnixSeconds;
 use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TurnUsage, spend_verdict};
-use model_provider::Money;
+use model_types::Money;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Mutex, PoisonError};
@@ -390,7 +390,7 @@ pub enum UsageValue {
 /// space and its ISO 4217 code (`0.0095 USD`).
 #[must_use]
 pub fn written(money: Money) -> String {
-    format!("{} {}", money.amount.normalize(), money.currency.code())
+    money.to_string()
 }
 
 fn strictest(a: SpendVerdict, b: SpendVerdict) -> SpendVerdict {

@@ -8,8 +8,9 @@
 //! engine then stands as [`Standing::Changed`] and is not started until it is installed again.
 
 use crate::hosts::LaunchGuard;
+use engine_fs::{Finder, Verifier, pointed};
 use engine_manifest::Manifest;
-use engine_probe::{Finder, Found, Roots, Verdict, Verifier, pointed};
+use engine_manifest::{Found, Roots, Verdict};
 use engine_spec::engine;
 use inference_router::startup::Cause;
 use model_catalog::EngineKind;

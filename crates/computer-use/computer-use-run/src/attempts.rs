@@ -4,10 +4,11 @@
 use crate::machine::finish::said_of;
 use crate::turn::sent_input;
 use account_core::AppName;
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_bus::{
     ActionResult, ComputerUseOutcome, ComputerUseRecord, LocalRefusal, Refusal,
 };
+use computer_use_geometry::WindowSpace;
 use provenance::RunId;
 use serde::{Deserialize, Serialize};
 

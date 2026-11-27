@@ -269,7 +269,7 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
         one("computer_use.budget.spend_microusd", int(2_500_000))
             .budget
             .spend,
-        model_provider::Money::usd(rust_decimal::Decimal::new(2_500_000, 6))
+        model_types::Money::usd(2_500_000, 6)
     );
 }
 
@@ -309,8 +309,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
             if other == "computer_use.enabled" {
                 want.config.enabled = true;
             } else {
-                want.config.budget.spend =
-                    model_provider::Money::usd(rust_decimal::Decimal::new(700, 6));
+                want.config.budget.spend = model_types::Money::usd(700, 6);
             }
             assert_eq!(loaded.value, want, "{p} = {value}");
             assert_eq!(loaded.invalid.len(), 1, "{p} = {value}");
@@ -322,7 +321,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
 #[test]
 fn a_fallback_is_the_base_value_not_the_default() {
     let mut start = base();
-    start.config.budget.spend = model_provider::Money::usd(rust_decimal::Decimal::new(11, 6));
+    start.config.budget.spend = model_types::Money::usd(11, 6);
     let loaded = read(
         "[computer_use.budget]\nspend_microusd = -1\n",
         start.clone(),

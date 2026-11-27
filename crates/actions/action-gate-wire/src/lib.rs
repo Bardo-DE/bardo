@@ -7,7 +7,8 @@
 
 use account_core::AppName;
 use action_core::CallRefusal;
-use computer_use_action::{ComputerUseAction, RunMode, WindowClass, WindowSpace, WindowTrust};
+use computer_use_action::{ComputerUseAction, RunMode, WindowClass, WindowTrust};
+use computer_use_geometry::WindowSpace;
 use provenance::{ActionName, Labelled};
 use provenance::{Effect, Label, RunId, SpaceId};
 use serde::{Deserialize, Serialize};

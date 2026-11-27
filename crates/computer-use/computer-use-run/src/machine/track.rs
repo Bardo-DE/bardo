@@ -5,10 +5,11 @@ use crate::attempts::Tried;
 use crate::progress::Look;
 use crate::screen::ScreenTrack;
 use crate::sensitivity::WindowSensitivity;
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_bus::{ActionOutcome, AuthorisedBy, FrameNote, ThoughtDigest};
 use computer_use_capture::DamageAt;
 use computer_use_desktop::{Ms, Stamp};
+use computer_use_geometry::WindowSpace;
 use serde::{Deserialize, Serialize};
 
 /// How often the capture of this step has been tried.

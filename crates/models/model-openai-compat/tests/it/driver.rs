@@ -12,15 +12,16 @@ use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use base_ids::{Dims, Tokens};
+use model_core::{Embedder, Provider};
 use model_http::{BodyKind, HttpStatus, ResponseHead};
 use model_openai_compat::{Flavor, OpenAiCodec};
-use model_provider::{
-    CallIndex, EmbedRole, EmbedTurn, Embedder, JsonText, Knob, ModelName, Provider, ProviderError,
-    StopReason, ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent, TurnSink, TurnUsage,
-};
 use model_replay::{
     ByteStep, ChunkPlan, HeadPrint, RecordingTransport, ReplayMode, ReplayTransport, WireBody,
     WireCassette, WireEnd, WireExchange, WireFrame, WireReply, WireRequest, WireSink,
+};
+use model_types::{
+    CallIndex, EmbedRole, EmbedTurn, JsonText, Knob, ModelName, ProviderError, StopReason,
+    ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent, TurnSink, TurnUsage,
 };
 use model_wire::Driver;
 use serde_json::{Value, json};
@@ -142,7 +143,7 @@ fn turn(
 fn plans() -> Vec<ChunkPlan> {
     let mut plans = vec![ChunkPlan::Whole, ChunkPlan::Lines];
     plans.extend([1, 2, 3, 5, 7, 16, 100].map(|n| ChunkPlan::Every(ByteStep(n))));
-    plans.extend((0..25).map(|s| ChunkPlan::Seeded(model_provider::Seed(s))));
+    plans.extend((0..25).map(|s| ChunkPlan::Seeded(model_types::Seed(s))));
     plans
 }
 

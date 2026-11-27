@@ -1,8 +1,10 @@
 //! The codec trait, implemented by each [`WireDialect`].
 
-use computer_use_action::{ComputerUseAction, CoordSpace, ImageSpace, Size, WireDialect};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{CoordSpace, ImageSpace, Size};
 use computer_use_parse::{Batch, DropReason, InSpace, ParseLimits, Parsed};
-use model_provider::{ImageInput, JsonText, NativeTool, Part, SafetySignal, ToolCall, ToolSpec};
+use model_types::WireDialect;
+use model_types::{ImageInput, JsonText, NativeTool, Part, SafetySignal, ToolCall, ToolSpec};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 

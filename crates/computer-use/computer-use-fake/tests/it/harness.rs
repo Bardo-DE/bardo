@@ -4,8 +4,7 @@ use account_core::AppName;
 use base_ids::Px;
 use base_time::UnixSeconds;
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat, Point,
-    RunMode, Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
+    Button, ClickCount, ComputerUseAction, FinishOutcome, RunMode, Summary, Target, WindowTrust,
 };
 use computer_use_bus::{
     ComputerUseOutcome, ComputerUseTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck,
@@ -17,6 +16,7 @@ use computer_use_fake::{
     DesktopCall, FakeA11y, FakeCapture, FakeDesktop, FakePdp, FakeSeat, FixedClock, Fixture,
     MemoryEvents, ScriptedModel, SeatEvent, World, run_harness_answering,
 };
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use computer_use_run::{
     AcquirePhase, ComputerUseConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
 };

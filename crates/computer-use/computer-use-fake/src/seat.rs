@@ -188,7 +188,8 @@ impl AgentSeat for FakeSeat {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computer_use_action::{Button, Coord, Point};
+    use computer_use_action::Button;
+    use computer_use_geometry::{Coord, Point};
     use computer_use_seat_input::Press;
     use std::pin::pin;
     use std::task::{Context, Poll, Waker};

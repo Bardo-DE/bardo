@@ -8,7 +8,7 @@
 
 use std::borrow::Cow;
 
-use computer_use_action::{ActionProfile, DragStyle, ScrollAxis, VerbAlias};
+use model_types::{ActionProfile, DragStyle, ScrollAxis, VerbAlias};
 use serde_json::{Map, Value, json};
 
 /// A drag that presses at the cursor.
@@ -154,7 +154,7 @@ fn mentions(profile: ActionProfile, text: &str) -> String {
     profile
         .aliases
         .iter()
-        .map(computer_use_action::VerbAlias::canonical)
+        .map(model_types::VerbAlias::canonical)
         .fold(text.to_owned(), |text, canonical| {
             let shown: Vec<String> = shown_names(profile, canonical)
                 .iter()

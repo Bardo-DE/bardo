@@ -3,7 +3,7 @@
 use base_ids::{Dims, Tokens};
 use model_http::{Framing, RouteRoot, Verb};
 use model_openai_compat::{CodecError, Flavor, OpenAiCodec};
-use model_provider::{EmbedRole, EmbedTurn, EmbedVector, Knob, ModelInfo, ModelName};
+use model_types::{EmbedRole, EmbedTurn, EmbedVector, Knob, ModelInfo, ModelName};
 use model_wire::{ChatCodec, EmbedCodec};
 use serde_json::{Value, json};
 
@@ -179,7 +179,7 @@ fn dimensions_are_sent_only_where_the_server_honours_them() {
     clippy::needless_pass_by_value,
     reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
 )]
-fn decode(body: Value) -> Result<model_provider::EmbedEnd, CodecError> {
+fn decode(body: Value) -> Result<model_types::EmbedEnd, CodecError> {
     OpenAiCodec::new(Flavor::Vllm)
         .decode_embed(ModelName("nomic".into()), body.to_string().as_bytes())
 }

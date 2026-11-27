@@ -7,7 +7,7 @@ use crate::scores::OptionScores;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
-pub use model_provider::{EmbedVector, TurnUsage};
+pub use model_types::{EmbedVector, TurnUsage};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

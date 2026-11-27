@@ -2,9 +2,10 @@
 //! the limits it was given.
 #![no_main]
 
-use computer_use_action::{GridMax, ModelSpace, TextDialect};
+use computer_use_geometry::{GridMax, ModelSpace};
 use computer_use_parse::{InSpace, ParseLimits, parse_text};
 use libfuzzer_sys::fuzz_target;
+use model_types::TextDialect;
 
 fuzz_target!(|data: &[u8]| {
     let text = String::from_utf8_lossy(data);

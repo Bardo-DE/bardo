@@ -63,7 +63,8 @@ fn ask_for_run() -> ComputerUseAsk {
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: provenance::SpaceId::parse("work").expect("space"),
-        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
+        action:
+            computer_use_action::ComputerUseAction::<computer_use_geometry::WindowSpace>::Observe,
         node: None,
         effect: provenance::Effect::Read,
         basis: EffectBasis::DefaultTable,

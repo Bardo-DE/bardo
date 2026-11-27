@@ -1,7 +1,8 @@
 use super::*;
 use crate::replay::Replays;
 use crate::supervise::{Ports, Supervised};
-use engine_supervisor::{FakeReadyProbe, GpuError, GpuMemory, GpuProbe, Probe, SupervisorConfig};
+use engine_fake::FakeReadyProbe;
+use engine_supervisor::{GpuError, GpuMemory, GpuProbe, Probe, SupervisorConfig};
 use inference_router::local::NamedEngine;
 
 /// A computer with no `nvidia-smi`.

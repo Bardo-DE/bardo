@@ -114,7 +114,7 @@ impl Operation {
     }
 }
 
-/// The `gen_ai.response.finish_reasons` values. `model-provider` converts its `StopReason`.
+/// The `gen_ai.response.finish_reasons` values. `model-types` converts its `StopReason`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Finish {
     Stop,

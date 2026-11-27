@@ -25,7 +25,7 @@ use inference_core::{ModelCard, ModelRef};
 use model_catalog::{EngineKind, EngineProfile, ModelEntry, SamplingDefaults};
 use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath};
 use model_openai_compat::Flavor;
-use model_provider::{Caps, EmbedCaps, ModelName};
+use model_types::{Caps, EmbedCaps, ModelName};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -121,7 +121,7 @@ impl EngineConfig {
     pub fn program(&self, kind: EngineKind) -> Option<PathBuf> {
         let named = self.named_path(kind)?;
         match engine(kind).pointed() {
-            Some(_) => engine_probe::pointed(kind, named).map(|found| found.program),
+            Some(_) => engine_fs::pointed(kind, named).map(|found| found.program),
             None => Some(named.to_path_buf()),
         }
     }

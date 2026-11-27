@@ -36,6 +36,3 @@ pub use leak::LeakMarker;
 pub use model_wire::CodecError;
 pub use provider::OpenAiCompat;
 pub use request::{encode_request, enforceable};
-
-#[cfg(feature = "testing")]
-pub mod testing;

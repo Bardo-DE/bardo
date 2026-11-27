@@ -1,7 +1,7 @@
 //! `fit` against the reference `smart_resize` (`fixtures/smart_resize.csv`, made by
 //! dev/smart-resize-vectors.py from qwen-vl-utils) and tables for the other rules.
 
-use computer_use_action::{Coord, DeviceSize, ImageSpace, Size};
+use computer_use_geometry::{Coord, DeviceSize, ImageSpace, Size};
 use model_vision_prep::{
     FitError, ImageTokens, PatchFactor, PixelCount, ResizeRule, fit, image_tokens,
 };

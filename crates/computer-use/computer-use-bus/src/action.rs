@@ -2,7 +2,8 @@
 
 use crate::ids::WindowRef;
 use action_core::CallRefusal;
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::WindowSpace;
 use computer_use_types::SeatError;
 use provenance::Labelled;
 use serde::{Deserialize, Serialize};

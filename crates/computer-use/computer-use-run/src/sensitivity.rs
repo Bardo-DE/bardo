@@ -96,7 +96,8 @@ mod tests {
     use super::*;
     use crate::rules::shipped;
     use computer_use_a11y_tree::{NodeState, NodeValue, Parent, TypedHint};
-    use computer_use_action::{Coord, NodeId, Point, Rect, Size};
+    use computer_use_action::NodeId;
+    use computer_use_geometry::{Coord, Point, Rect, Size};
     use provenance::{Label, Labelled};
     use std::collections::BTreeSet;
 

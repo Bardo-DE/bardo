@@ -1,6 +1,6 @@
 //! A fake speech host: the `bardo-speech-host` protocol.
 //!
-//! A fake speech host: the `bardo-speech-host` protocol (`speech_provider::host_wire`, a 4-byte length
+//! A fake speech host: the `bardo-speech-host` protocol (`speech_core::host_wire`, a 4-byte length
 //! and JSON) served on a Unix socket, and an engine host that "runs" it when the supervisor
 //! spawns the speech engine. It plays the part of the real binary and never loads a model or a
 //! native library.
@@ -14,7 +14,7 @@
 )]
 
 use engine_supervisor::{EngineHost, EngineId, ExitCode, HostError, UnitSpec};
-use speech_provider::{
+use speech_core::{
     AudioMs, HeardText, HostIn, HostOut, HostVocab, SampleIndex, SttEnd, SttRequest,
     TranscriptEvent, decode_frame, encode_frame, frame_length,
 };
@@ -62,7 +62,7 @@ async fn write_out(stream: &mut UnixStream, out: &HostOut) -> bool {
 }
 
 struct Utterance {
-    model: speech_provider::SttRequest,
+    model: speech_core::SttRequest,
     chunks: usize,
     samples: u64,
 }

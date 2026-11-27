@@ -1,7 +1,8 @@
 //! Parsed actions into window space: a point that falls outside the frame is dropped, never
 //! clamped.
 
-use computer_use_action::{ComputerUseAction, CoordSpace, Length, Point, WindowSpace};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{CoordSpace, Length, Point, WindowSpace};
 use computer_use_parse::{DropReason, Dropped, InSpace, VerbText};
 use model_vision_prep::{FrameMap, MapError};
 

@@ -16,6 +16,8 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-types = {path = "../../models/model-types"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 keymap = {path = "../../keymap/keymap"}
 computer-use-capture = {path = "../computer-use-capture"}
@@ -26,7 +28,6 @@ action-core = {path = "../../actions/action-core"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
-model-provider = {path = "../../models/model-provider"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 
@@ -34,7 +35,6 @@ keyboard-types = {workspace = true, features = ["serde"]}
 blake3 = { workspace = true }
 
 [dev-dependencies]
-rust_decimal = { workspace = true, features = ["std", "serde"] }
 action-vocab = {path = "../../actions/action-vocab"}
 computer-use-fake = {path = "../computer-use-fake"}
 serde_json = { workspace = true }

@@ -73,7 +73,8 @@ fn computer_use_ask() -> ComputerUseAsk {
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
-        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
+        action:
+            computer_use_action::ComputerUseAction::<computer_use_geometry::WindowSpace>::Observe,
         node: None,
         effect: Effect::Read,
         basis: EffectBasis::DefaultTable,

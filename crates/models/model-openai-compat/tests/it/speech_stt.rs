@@ -5,11 +5,11 @@ use crate::speech_fake;
 
 use model_http::{HttpTarget, WaitMs};
 use model_openai_compat::{OpenAiTranscription, encode_transcription};
-use model_provider::{ProviderError, RetrySeconds, ServerStatus};
-use speech_fake::*;
-use speech_provider::{
+use model_types::{ProviderError, RetrySeconds, ServerStatus};
+use speech_core::{
     AudioMs, HeardText, Lang, LangChoice, SampleIndex, SpeechToText, TranscriptEvent,
 };
+use speech_fake::*;
 use std::collections::VecDeque;
 
 // ---- transcription -------------------------------------------------------------------------

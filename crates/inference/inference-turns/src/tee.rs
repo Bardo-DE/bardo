@@ -7,7 +7,7 @@
 
 use computer_use_session::TranscriptSink;
 use inference_core::InferEvent;
-use model_provider::{TurnEnd, TurnEvent, TurnSink};
+use model_types::{TurnEnd, TurnEvent, TurnSink};
 use std::ops::ControlFlow;
 
 /// What of the turn's text is shown as thinking while the turn runs.
@@ -79,7 +79,7 @@ impl<F: FnMut(InferEvent) -> ControlFlow<()> + Send> TurnSink for Tee<'_, F> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use model_provider::{ModelName, StopReason, TurnUsage};
+    use model_types::{ModelName, StopReason, TurnUsage};
 
     fn end() -> TurnEnd {
         TurnEnd {

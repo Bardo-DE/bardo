@@ -1,0 +1,181 @@
+use model_types::{ModelName, Support};
+use speech_core::{
+    AudioChunk, AudioFormat, AudioMs, FRAME_SAMPLES, Frame512, FrameError, FrameLenError,
+    HeardText, HostIn, HostVocab, Lang, LangChoice, LangSet, MAX_FRAME_BYTES, PcmBytes, PcmFormat,
+    SampleIndex, SampleRate, SpeechCaps, SpeechIo, SpokenText, SttMode, SttRequest,
+    TranscriptEvent, TtsRequest, VoiceId, decode_frame, encode_frame, frame_length,
+};
+
+const S16_16K: AudioFormat = AudioFormat {
+    rate: SampleRate(16_000),
+    pcm: PcmFormat::S16Le,
+};
+
+fn lang(tag: &str) -> Lang {
+    Lang::new(tag).unwrap()
+}
+
+fn chunk(bytes: Vec<u8>) -> AudioChunk {
+    AudioChunk {
+        format: S16_16K,
+        at: SampleIndex(320),
+        pcm: PcmBytes::new(bytes),
+    }
+}
+
+fn stt_request() -> SttRequest {
+    SttRequest {
+        model: ModelName("nemotron-3.5-asr-streaming".into()),
+        mode: SttMode::Streaming {
+            chunk: AudioMs(560),
+        },
+        lang: LangChoice::Prefer(vec![lang("zh-CN"), lang("en-US")]),
+        format: S16_16K,
+    }
+}
+
+fn out_caps() -> SpeechCaps {
+    SpeechCaps {
+        streaming: Support::Present,
+        partials: Support::Absent,
+        punctuation: Support::Absent,
+        timestamps: Support::Absent,
+        langs: LangSet::Any,
+        max_audio: AudioMs(60_000),
+        io: SpeechIo::Out {
+            output: AudioFormat {
+                rate: SampleRate(24_000),
+                pcm: PcmFormat::S16Le,
+            },
+            voices: vec![VoiceId::new("af_heart").unwrap()],
+        },
+    }
+}
+
+#[test]
+fn wire_json_is_pinned() {
+    assert_eq!(
+        serde_json::to_string(&HostIn::End).unwrap(),
+        r#"{"kind":"end"}"#
+    );
+    assert_eq!(
+        serde_json::to_string(&HostIn::Hello {
+            vocab: HostVocab::CURRENT
+        })
+        .unwrap(),
+        r#"{"kind":"hello","v":{"vocab":1}}"#
+    );
+    assert_eq!(
+        serde_json::to_string(&HostIn::Audio(chunk(vec![0xff, 0xd8, 0xff]))).unwrap(),
+        r#"{"kind":"audio","v":{"format":{"rate":16000,"pcm":"s16_le"},"at":320,"pcm":"/9j/"}}"#
+    );
+    assert_eq!(
+        serde_json::to_string(&TranscriptEvent::Final {
+            text: HeardText("hi".into()),
+            from: SampleIndex(1),
+            to: SampleIndex(2),
+        })
+        .unwrap(),
+        r#"{"kind":"final","v":{"text":"hi","from":1,"to":2}}"#
+    );
+    assert_eq!(
+        serde_json::to_string(&stt_request()).unwrap(),
+        r#"{"model":"nemotron-3.5-asr-streaming","mode":{"kind":"streaming","v":{"chunk":560}},"lang":{"kind":"prefer","v":["zh-CN","en-US"]},"format":{"rate":16000,"pcm":"s16_le"}}"#
+    );
+    assert_eq!(
+        serde_json::to_string(&out_caps()).unwrap(),
+        r#"{"streaming":"present","partials":"absent","punctuation":"absent","timestamps":"absent","langs":{"kind":"any"},"max_audio_ms":60000,"dir":"out","output":{"rate":24000,"pcm":"s16_le"},"voices":["af_heart"]}"#
+    );
+}
+
+#[test]
+fn pcm_is_base64_and_never_prints() {
+    let pcm = PcmBytes::new(vec![0xff, 0xd8, 0xff]);
+    assert_eq!(serde_json::to_string(&pcm).unwrap(), r#""/9j/""#);
+    serde_json::from_str::<PcmBytes>(r#""!!""#).unwrap_err();
+    assert_eq!(format!("{pcm:?}"), "PcmBytes(<3 bytes>)");
+}
+
+#[test]
+fn pcm_debug_redacts() {
+    let c = chunk(vec![0xAB; 64]);
+    let printed = format!("{c:?}");
+    assert!(printed.contains("<64 bytes>"), "{printed}");
+    assert!(
+        !printed.contains("171") && !printed.to_lowercase().contains("ab,"),
+        "{printed}"
+    );
+    assert_eq!(
+        format!("{:?}", HeardText("secret words".into())),
+        "HeardText(<12 bytes>)"
+    );
+    assert_eq!(
+        format!("{:?}", SpokenText::new("secret words").unwrap()),
+        "SpokenText(<12 bytes>)"
+    );
+    let req = TtsRequest {
+        model: ModelName("kokoro-82m".into()),
+        text: SpokenText::new("private").unwrap(),
+        voice: VoiceId::new("af_heart").unwrap(),
+        lang: lang("en-US"),
+        format: S16_16K,
+    };
+    assert!(!format!("{req:?}").contains("private"));
+    let frame = Frame512::new(&[7; FRAME_SAMPLES]).unwrap();
+    assert_eq!(format!("{frame:?}"), "Frame512(<512 samples>)");
+}
+
+#[test]
+fn languages_and_voices_are_checked() {
+    for good in ["en", "zh-TW", "zh-Hant-TW", "en-US"] {
+        assert!(Lang::new(good).is_ok(), "{good}");
+    }
+    for bad in ["", "en_US", "en US", "日本語", &"a".repeat(36)] {
+        assert!(Lang::new(bad).is_err(), "{bad}");
+    }
+    serde_json::from_str::<Lang>(r#""en_US""#).unwrap_err();
+    VoiceId::new("af_heart").unwrap();
+    VoiceId::new("").unwrap_err();
+    VoiceId::new("a b").unwrap_err();
+    SpokenText::new("x".repeat(4096)).unwrap();
+    SpokenText::new("x".repeat(4097)).unwrap_err();
+    SpokenText::new("").unwrap_err();
+    serde_json::from_str::<SpokenText>(r#""""#).unwrap_err();
+}
+
+#[test]
+fn a_frame_is_exactly_512_samples() {
+    Frame512::new(&[0; 512]).unwrap();
+    assert_eq!(Frame512::new(&[0; 511]).unwrap_err(), FrameLenError(511));
+    assert_eq!(Frame512::new(&[0; 513]).unwrap_err(), FrameLenError(513));
+}
+
+#[test]
+fn frames_are_length_prefixed_and_capped() {
+    let framed = encode_frame(&HostIn::End).unwrap();
+    assert_eq!(&framed[..4], &[0, 0, 0, 14]);
+    assert_eq!(&framed[4..], br#"{"kind":"end"}"#);
+    let len = frame_length([framed[0], framed[1], framed[2], framed[3]]).unwrap();
+    assert_eq!(
+        decode_frame::<HostIn>(&framed[4..4 + len]).unwrap(),
+        HostIn::End
+    );
+
+    let over = u32::try_from(MAX_FRAME_BYTES + 1).unwrap().to_be_bytes();
+    assert_eq!(
+        frame_length(over),
+        Err(FrameError::TooLarge {
+            len: MAX_FRAME_BYTES + 1
+        })
+    );
+    frame_length(u32::try_from(MAX_FRAME_BYTES).unwrap().to_be_bytes()).unwrap();
+    assert!(matches!(
+        decode_frame::<HostIn>(b"{nope"),
+        Err(FrameError::Json(_))
+    ));
+    let big = chunk(vec![0; MAX_FRAME_BYTES]);
+    assert!(matches!(
+        encode_frame(&HostIn::Audio(big)),
+        Err(FrameError::TooLarge { .. })
+    ));
+}

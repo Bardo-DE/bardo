@@ -9,7 +9,7 @@
 
 use std::collections::BTreeSet;
 
-use model_provider::{CallIndex, JsonText, ToolCall, ToolCallId, ToolName, TurnEvent};
+use model_types::{CallIndex, JsonText, ToolCall, ToolCallId, ToolName, TurnEvent};
 use model_wire::CodecError;
 
 /// The most argument text one call may accumulate (rig's `MAX_TOOL_INPUT_BYTES`).

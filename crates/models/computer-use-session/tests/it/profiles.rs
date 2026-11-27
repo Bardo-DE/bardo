@@ -3,14 +3,15 @@
 
 use crate::support;
 
-use computer_use_action::{
-    ActionProfile, AnswerShape, CallFormat, ComputerUseAction, ComputerUseDialect, Coord,
-    DragStyle, GridMax, HistoryShape, ModelSpace, Point, ResolutionWording, ScrollAxis,
-    ToolDialect, VerbAlias,
-};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{Coord, GridMax, ModelSpace, Point};
 use computer_use_parse::DropReason;
 use computer_use_session::{ComputerUseSession, StepOutcome, TurnTranscript};
-use model_provider::{ModelName, Part, Role, StopReason, ToolSpec};
+use model_types::{
+    ActionProfile, AnswerShape, CallFormat, ComputerUseDialect, DragStyle, HistoryShape,
+    ResolutionWording, ScrollAxis, ToolDialect, VerbAlias,
+};
+use model_types::{ModelName, Part, Role, StopReason, ToolSpec};
 use support::*;
 
 const QWEN: ComputerUseDialect = ComputerUseDialect::Tool(ToolDialect::QwenComputerUse);
@@ -474,7 +475,7 @@ fn replaying(history: u8) -> ComputerUseSession {
 
 /// Takes `replies` as the first steps, each answering a frame `f0`, `f1`, ..., and returns the
 /// request for the next step.
-fn after(mut s: ComputerUseSession, replies: &[String]) -> model_provider::TurnRequest {
+fn after(mut s: ComputerUseSession, replies: &[String]) -> model_types::TurnRequest {
     let m = map(grid());
     for (n, reply) in replies.iter().enumerate() {
         let sent = s.request(

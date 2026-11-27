@@ -2,7 +2,7 @@
 //! in tokens, and the map from the model's coordinates back to the window's.
 //!
 //! ```
-//! use computer_use_action::{Coord, DeviceSize, Size};
+//! use computer_use_geometry::{Coord, DeviceSize, Size};
 //! use model_vision_prep::{ImageTokens, PatchFactor, PixelCount, ResizeRule, fit, image_tokens};
 //!
 //! // A Qwen-VL style rule: sides round to a multiple of 28.

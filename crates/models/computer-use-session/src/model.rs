@@ -1,12 +1,12 @@
 //! The state and the values that go in and out of a session (data only).
 
 use base_ids::Tokens;
-use computer_use_action::{
-    ActionProfile, ComputerUseAction, ComputerUseDialect, ModelSpace, Point, WindowSpace,
-};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::{ModelSpace, Point, WindowSpace};
 use computer_use_parse::{Dropped, ParseError};
 use computer_use_vendors::StepResult;
-use model_provider::{
+use model_types::{ActionProfile, ComputerUseDialect};
+use model_types::{
     EngineExtras, ImageCount, ImageLimits, Knob, Limits, Milli, Reasoning, SafetySignal, Sampling,
     ToolCall, ToolParallelism, TurnEnd, TurnRequest,
 };
@@ -43,7 +43,7 @@ impl FrameBudget {
     }
 }
 
-pub use model_provider::RepairBudget;
+pub use model_types::RepairBudget;
 
 /// How many earlier steps the prompt lists as one line each (the frames are `FrameBudget`'s).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

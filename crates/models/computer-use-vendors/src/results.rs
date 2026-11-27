@@ -4,7 +4,7 @@
 //! the first that was not done is `NotRun`, whatever the caller reported, with the text the
 //! vendor requires (Anthropic: "Not executed: an earlier computer action in this turn failed.").
 
-use model_provider::{ImageInput, Part, ToolCallId, ToolResult, ToolStatus};
+use model_types::{ImageInput, Part, ToolCallId, ToolResult, ToolStatus};
 
 use crate::StepResult;
 

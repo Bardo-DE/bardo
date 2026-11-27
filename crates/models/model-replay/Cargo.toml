@@ -12,8 +12,9 @@ publish.workspace = true
 base-ids = {path = "../../base/base-ids"}
 http-core = {path = "../../network/http-core"}
 model-http = {path = "../model-http"}
-model-provider = {path = "../model-provider"}
-speech-provider = {path = "../speech-provider"}
+model-core = {path = "../model-core"}
+model-types = {path = "../model-types"}
+speech-core = {path = "../speech-core"}
 model-vision-prep = {path = "../model-vision-prep"}
 blake3 = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
@@ -22,7 +23,7 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
-model-provider = {path = "../model-provider", features = ["testing"]}
+model-fake = {path = "../model-fake"}
 proptest = { workspace = true }
 
 

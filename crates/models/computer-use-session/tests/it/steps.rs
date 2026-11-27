@@ -4,18 +4,18 @@
 use crate::support;
 use std::ops::ControlFlow;
 
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, ComputerUseDialect, Coord, ModelSpace, Point,
-    TextDialect, ToolDialect,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction};
+use computer_use_geometry::{Coord, ModelSpace, Point};
 use computer_use_parse::{DropReason, ParseError};
 use computer_use_session::{
     MaskedRegions, StepIndex, StepLines, StepOutcome, TranscriptSink, TurnOptions,
 };
 use computer_use_vendors::StepResult;
-use model_provider::{
-    Knob, Milli, ModelName, Part, Provider, Role, Script, ScriptedProvider, StopReason, ToolCallId,
-    ToolSpec, TurnEvent, TurnRequest, check_sequence,
+use model_core::{Provider, check_sequence};
+use model_fake::{Script, ScriptedProvider};
+use model_types::{ComputerUseDialect, TextDialect, ToolDialect};
+use model_types::{
+    Knob, Milli, ModelName, Part, Role, StopReason, ToolCallId, ToolSpec, TurnEvent, TurnRequest,
 };
 use support::*;
 
@@ -51,7 +51,7 @@ fn click_at(x: u32, y: u32) -> String {
 fn actions(
     outcome: StepOutcome,
 ) -> (
-    Vec<ComputerUseAction<computer_use_action::WindowSpace>>,
+    Vec<ComputerUseAction<computer_use_geometry::WindowSpace>>,
     Vec<computer_use_parse::Dropped>,
 ) {
     match outcome {
@@ -550,7 +550,7 @@ trait Probe {
 
 impl Probe for TranscriptSink {
     fn event_flow(mut self) -> ControlFlow<()> {
-        model_provider::TurnSink::event(&mut self, TurnEvent::TextDelta("x".into()))
+        model_types::TurnSink::event(&mut self, TurnEvent::TextDelta("x".into()))
     }
 }
 
@@ -596,10 +596,10 @@ mod never_panics {
                 let s = session(dialect, grid(), 1, 1);
                 let sent = s.request(&obs(0), &m, frame("f"));
                 let mut reply = said(&text);
-                if let Ok(json) = model_provider::JsonText::new(args.clone()) {
-                    reply.calls.push(model_provider::ToolCall {
+                if let Ok(json) = model_types::JsonText::new(args.clone()) {
+                    reply.calls.push(model_types::ToolCall {
                         id: ToolCallId("c".into()),
-                        name: model_provider::ToolName::new("computer_use").unwrap(),
+                        name: model_types::ToolName::new("computer_use").unwrap(),
                         input: json,
                     });
                 }

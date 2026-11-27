@@ -8,11 +8,9 @@ use account_capability::{Locality, ModelId, Tier};
 use account_core::{AccountId, DataClass};
 use account_match::Need;
 use base_ids::Tokens;
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
-    Target, WindowSpace,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target};
 use computer_use_capture::PixelBuf;
+use computer_use_geometry::{Coord, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use computer_use_run::{FrameAttachment, StepEvent, StepSink};
 use inference_client::{Transport, TransportError};
 use inference_core::{

@@ -1,7 +1,8 @@
 //! UI-TARS 1.5: the model answers in `Thought:` and `Action:` text.
 
-use computer_use_action::{ActionProfile, ModelSpace, TextDialect};
+use computer_use_geometry::ModelSpace;
 use computer_use_parse::{ParseError, ParseLimits, Parsed, ToolContext, parse_text};
+use model_types::{ActionProfile, TextDialect};
 use model_vision_prep::FrameMap;
 
 use super::ActionDialect;

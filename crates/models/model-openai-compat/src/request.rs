@@ -5,7 +5,7 @@
 //! spellings were checked against the engines' current docs on 2026-10-03 (see `FINDINGS.md`);
 //! the rows marked "to verify" there wait for a recorded request.
 
-use model_provider::{
+use model_types::{
     Constraint, Knob, Limits, Message, Milli, OutputShape, Part, Reasoning, Sampling,
     ShapeWithTools, ToolChoice, ToolParallelism, ToolSpec, TurnRequest,
 };

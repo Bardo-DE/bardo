@@ -26,8 +26,8 @@ mod tests {
     use action_settings::{AgentSettings, read};
     use settings_store::Loaded;
 
-    fn micro_usd(n: i64) -> model_provider::Money {
-        model_provider::Money::usd(rust_decimal::Decimal::new(n, 6))
+    fn micro_usd(n: i64) -> model_types::Money {
+        model_types::Money::usd(n, 6)
     }
 
     #[test]

@@ -3,11 +3,10 @@
 
 use std::borrow::Cow;
 
-use computer_use_action::{
-    ActionProfile, ComputerUseDialect, ModelSpace, ToolDialect, WireDialect,
-};
+use computer_use_geometry::ModelSpace;
 use computer_use_parse::{ParseError, ParseLimits, Parsed, ToolContext};
-use model_provider::ToolSpec;
+use model_types::ToolSpec;
+use model_types::{ActionProfile, ComputerUseDialect, ToolDialect, WireDialect};
 use model_vision_prep::FrameMap;
 
 use crate::{ComputerUseTaskText, TurnTranscript};

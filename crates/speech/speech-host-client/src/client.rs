@@ -1,9 +1,7 @@
 //! The `SpeechToText` impl over the host's Unix socket (the `net` feature).
 
-use model_provider::ProviderError;
-use speech_provider::{
-    AudioSource, SpeechModelInfo, SpeechToText, SttEnd, SttRequest, TranscriptSink,
-};
+use model_types::ProviderError;
+use speech_core::{AudioSource, SpeechModelInfo, SpeechToText, SttEnd, SttRequest, TranscriptSink};
 use tokio::net::UnixStream;
 
 use crate::{HostSocket, SpeechHostClient, session};

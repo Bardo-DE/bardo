@@ -2,11 +2,11 @@
 
 use std::collections::VecDeque;
 
-use computer_use_action::{
-    ActionProfile, ComputerUseAction, ComputerUseDialect, CoordSpace, HistoryShape, Target,
-};
+use computer_use_action::{ComputerUseAction, Target};
+use computer_use_geometry::CoordSpace;
 use computer_use_parse::InSpace;
-use model_provider::{ImageInput, Message, Part, Role, ToolCall, ToolResult};
+use model_types::{ActionProfile, ComputerUseDialect, HistoryShape};
+use model_types::{ImageInput, Message, Part, Role, ToolCall, ToolResult};
 
 use crate::{FrameBudget, StepLines};
 

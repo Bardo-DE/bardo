@@ -1,7 +1,7 @@
 //! Reading the arguments of one vendor call: a JSON object, and the few shapes its fields take.
 //! Every reader answers a `DropReason`, never a panic.
 
-use computer_use_action::{Coord, CoordSpace, Point};
+use computer_use_geometry::{Coord, CoordSpace, Point};
 use computer_use_parse::DropReason;
 use serde_json::{Map, Value};
 

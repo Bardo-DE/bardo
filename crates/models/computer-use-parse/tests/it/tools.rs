@@ -6,12 +6,13 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    Button, Choice, Chord, ClickCount, ComputerUseAction, Coord, FinishOutcome, ImageSpace, Length,
-    Modifier, Notches, Repeat, ScrollBy, ScrollDir, Summary, Target, ToolDialect, TypedText,
-    WaitMs,
+    Button, Choice, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Notches, Repeat,
+    ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs,
 };
+use computer_use_geometry::{Coord, ImageSpace, Length};
 use computer_use_parse::{DropReason, ParseError};
 use keyboard_types::{Key, NamedKey};
+use model_types::ToolDialect;
 use serde_json::Value;
 
 const QWEN: ToolDialect = ToolDialect::QwenComputerUse;
@@ -25,7 +26,7 @@ fn holo(name: &str, arguments: &str) -> computer_use_parse::Parsed {
     tools(HOLO, &[call(name, arguments)]).unwrap()
 }
 
-fn fixture_calls(dir: &str, name: &str) -> Vec<model_provider::ToolCall> {
+fn fixture_calls(dir: &str, name: &str) -> Vec<model_types::ToolCall> {
     let path = format!(
         "{}/../../models/fixtures/{dir}/{name}",
         env!("CARGO_MANIFEST_DIR")
@@ -409,7 +410,7 @@ fn holo_schema_variants() {
 
 #[test]
 fn grid_space_checks_the_top() {
-    use computer_use_action::{GridMax, ModelSpace};
+    use computer_use_geometry::{GridMax, ModelSpace};
     let space = ModelSpace::Grid(GridMax(1000));
     let calls = [
         call(
@@ -437,10 +438,10 @@ fn deeply_nested_arguments_do_not_overflow() {
     let deep = format!("{}1{}", "[".repeat(5000), "]".repeat(5000));
     let args = format!(r#"{{"action":"left_click","coordinate":{deep}}}"#);
     // JsonText accepts only what serde_json can read; if it refuses, the boundary did its job.
-    if let Ok(input) = model_provider::JsonText::new(args) {
-        let c = model_provider::ToolCall {
-            id: model_provider::ToolCallId("x".into()),
-            name: model_provider::ToolName::new("computer_use").unwrap(),
+    if let Ok(input) = model_types::JsonText::new(args) {
+        let c = model_types::ToolCall {
+            id: model_types::ToolCallId("x".into()),
+            name: model_types::ToolName::new("computer_use").unwrap(),
             input,
         };
         let p = tools(QWEN, &[c]).unwrap();

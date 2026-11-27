@@ -2,7 +2,7 @@
 
 use core::any::TypeId;
 
-use computer_use_action::{
+use computer_use_geometry::{
     Coord, CoordSpace, DeviceSize, GridSpace, ImageSpace, Length, ModelSpace, Point, Scale120,
     Size, WindowSpace,
 };

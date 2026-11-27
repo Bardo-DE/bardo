@@ -8,13 +8,13 @@ use model_http::{
     BodyKind, BodySink, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
-use model_provider::ModelName;
 use model_replay::{
     BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
     EngineStamp, HeadPrint, InteractionId, RecordedAt, RecordingTransport, ReplayMode,
     ReplayTransport, SinkError, WireBody, WireCassette, WireEnd, WireExchange, WireFrame,
     WireMissError, WireReply, WireRequest, WireSink,
 };
+use model_types::ModelName;
 
 fn block_on<T>(future: impl Future<Output = T>) -> T {
     use std::pin::pin;
@@ -79,7 +79,7 @@ fn req(path: &str, body: Option<&str>) -> WireRequest {
         },
         root: RouteRoot::Base,
         path: UrlPath(path.into()),
-        body: body.map(|b| model_provider::JsonText::new(b).unwrap()),
+        body: body.map(|b| model_types::JsonText::new(b).unwrap()),
     }
 }
 

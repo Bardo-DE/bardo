@@ -17,11 +17,10 @@ use computer_use_bus::{
 use computer_use_desktop::{Stamp, ToplevelIdent};
 use computer_use_fake::FixedClock;
 use keymap::Keymap;
-use model_provider::Money;
+use model_types::Money;
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, SessionId, Source, SpaceId,
 };
-use rust_decimal::Decimal;
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU32;
@@ -108,10 +107,10 @@ impl Arena {
         let budget = RunBudget {
             steps: Count(self.task.steps),
             // Millionths of a US dollar in the task file; 0 is local models only.
-            spend: Money::usd(Decimal::from_i128_with_scale(
-                i128::from(self.task.spend_microusd),
+            spend: Money::usd(
+                i64::try_from(self.task.spend_microusd).unwrap_or(i64::MAX),
                 6,
-            )),
+            ),
             ..RunBudget::PROPOSED
         };
         Ok(ComputerUseTask {

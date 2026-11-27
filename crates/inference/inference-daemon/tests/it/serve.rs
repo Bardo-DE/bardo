@@ -470,11 +470,11 @@ async fn a_computer_use_step_before_a_begin_is_refused_and_after_one_it_runs() {
             inference_core::ComputerUseStepRequest::new(
                 inference_core::StepIndex(n),
                 inference_core::WindowGeometry {
-                    logical: computer_use_action::Size::new(
-                        computer_use_action::Coord(1),
-                        computer_use_action::Coord(1),
+                    logical: computer_use_geometry::Size::new(
+                        computer_use_geometry::Coord(1),
+                        computer_use_geometry::Coord(1),
                     ),
-                    scale: computer_use_action::Scale120(120),
+                    scale: computer_use_geometry::Scale120(120),
                 },
                 inference_core::FrameImage {
                     source: ImageSource::Attached(AttachIndex(0)),

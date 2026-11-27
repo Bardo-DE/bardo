@@ -3,9 +3,10 @@
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_provider::{
-    Charges, ModelInfo, ModelName, Provider, ProviderError, StopReason, TurnEnd, TurnEvent,
-    TurnRequest, TurnSink, TurnUsage, UsageReport,
+use model_core::Provider;
+use model_types::{
+    Charges, ModelInfo, ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnRequest,
+    TurnSink, TurnUsage, UsageReport,
 };
 use serde::{Deserialize, Serialize};
 

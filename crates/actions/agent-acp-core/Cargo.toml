@@ -18,9 +18,7 @@ action-manifest = {path = "../action-manifest"}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 agent-session = {path = "../agent-session"}
-model-provider = {path = "../../models/model-provider"}
-iso_currency = { workspace = true, features = ["with-serde"] }
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+model-types = {path = "../../models/model-types"}
 provenance = {path = "../../provenance/provenance"}
 serde_json = { workspace = true }
 thiserror = { workspace = true }

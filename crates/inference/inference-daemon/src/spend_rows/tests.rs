@@ -74,7 +74,7 @@ fn the_spend_rows_name_the_same_account_as_accountds_rows_for_an_id_with_a_dot()
 async fn the_rows_read_the_ledger_in_whole_cents_rounded_up() {
     let list = AccountList::default();
     list.replace(vec![account("hosted", "openrouter", "Work", true)]);
-    let usd = |millionths: i64| Money::usd(Decimal::new(millionths, 6));
+    let usd = |millionths: i64| Money::usd(millionths, 6);
     let rows = SpendRows::new(
         list,
         Arc::new(Fixed(Some(usd(5_000_000)), ChargeTotal::default())),
@@ -102,12 +102,12 @@ async fn the_rows_read_the_ledger_in_whole_cents_rounded_up() {
 
 #[test]
 fn spend_is_whole_cents_and_a_part_of_a_cent_counts_as_one() {
-    let usd = |millionths: i64| Money::usd(Decimal::new(millionths, 6));
+    let usd = |millionths: i64| Money::usd(millionths, 6);
     assert_eq!(cents_up(usd(0)), "0");
     assert_eq!(cents_up(usd(1)), "1");
     assert_eq!(cents_up(usd(10_000)), "1");
     assert_eq!(cents_up(usd(1_234_567)), "124");
-    let euros = Money::new(Decimal::new(3, 0), Currency::EUR);
+    let euros = Money::new(3, 0, Currency::EUR);
     assert_eq!(
         cents_up(euros),
         "3 EUR",

@@ -17,8 +17,7 @@ use action_accept::world::{
 use action_dbus::BusConnection;
 use base_testkit::{PrivateBus, Reaped, TestEnv};
 use inference_core::ChargeTotal;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use std::path::{Path, PathBuf};
 
 /// The running world.
@@ -113,7 +112,7 @@ impl InferdWorld {
     /// Zero US dollars when nothing is reported or the ledger cannot be read.
     #[must_use]
     pub fn reported_charge(&self) -> Money {
-        let none = Money::usd(Decimal::ZERO);
+        let none = Money::usd(0, 0);
         let file: PathBuf = self.root().join("state/bardo/inference/spend.json");
         let Ok(text) = std::fs::read_to_string(file) else {
             return none;
@@ -130,8 +129,10 @@ impl InferdWorld {
                 serde_json::from_value::<ChargeTotal>(row["spent"]["charges"].clone()).ok()
             })
             .map(|charges| charges.reported)
-            .max_by_key(|reported| reported.amount)
-            .unwrap_or(none)
+            .fold(
+                none,
+                |most, reported| if reported > most { reported } else { most },
+            )
     }
 
     /// How long a wait may take before a run fails instead of hanging.

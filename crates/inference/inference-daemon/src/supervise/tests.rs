@@ -4,7 +4,7 @@
 use super::*;
 use crate::testkit::{Recorder, models};
 use base_testkit::Scratch;
-use engine_supervisor::{FakeGpu, FakeReadyProbe};
+use engine_fake::{FakeGpu, FakeReadyProbe};
 use inference_router::startup::{Level, Log};
 use std::sync::Mutex;
 

@@ -6,7 +6,7 @@ use http_core::Progress;
 use model_http::{
     BodySink, Framing, HttpError, HttpStatus, NdjsonDecoder, ResponseHead, SseDecoder, WaitMs,
 };
-use model_provider::{
+use model_types::{
     ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport,
 };
 use std::ops::ControlFlow;

@@ -20,6 +20,9 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-core = {path = "../../models/model-core"}
+model-types = {path = "../../models/model-types"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 keymap = {path = "../../keymap/keymap"}
 computer-use-capture = {path = "../computer-use-capture"}
@@ -39,8 +42,6 @@ model-catalog = {path = "../../models/model-catalog"}
 model-http = {path = "../../models/model-http"}
 model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
 model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
 keyboard-types = {workspace = true, features = ["serde"]}
 serde = { workspace = true, features = ["derive"] }
@@ -51,7 +52,7 @@ tracing = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
-model-provider = {features = ["testing"], path = "../../models/model-provider"}
+model-fake = {path = "../../models/model-fake"}
 
 [lints]
 workspace = true

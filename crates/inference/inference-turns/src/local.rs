@@ -25,10 +25,10 @@ use inference_core::{
 };
 use inference_router::local::LocalModel;
 use inference_router::seams::TurnStep;
+use model_core::Retrying;
 use model_http::{HttpClient, Timeouts, WaitMs as HttpWaitMs};
 use model_openai_compat::{Flavor, OpenAiCodec, OpenAiCompat};
-use model_provider as sp;
-use model_provider::Retrying;
+use model_types as sp;
 use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
@@ -39,7 +39,7 @@ mod turn;
 pub use turn::LocalTurn;
 
 /// Three attempts, a quarter of a second doubling to four seconds (inference-bridge's).
-pub const RETRY: sp::RetryPolicy = inference_bridge::ENGINE_RETRY;
+pub const RETRY: model_core::RetryPolicy = inference_bridge::ENGINE_RETRY;
 
 /// An engine on a local socket answers its first byte after the prompt is read, which for an
 /// image prompt on a cold cache takes a while; between chunks it should not stall.
@@ -139,7 +139,7 @@ where
 /// is the gathered text, thought and tool calls with the turn's usage. The second value says why
 /// a turn that asked for option shares has none, for the caller to note; the reply is the same
 /// either way.
-pub async fn run_turn<P: sp::Provider>(
+pub async fn run_turn<P: model_core::Provider>(
     provider: &P,
     turn: &sp::TurnRequest,
     served: &ServedBy,
@@ -162,7 +162,7 @@ pub async fn run_turn<P: sp::Provider>(
 }
 
 /// [`run_turn`] with the reply as the session's [`InferReply`].
-pub async fn run_chat<P: sp::Provider>(
+pub async fn run_chat<P: model_core::Provider>(
     provider: &P,
     turn: &sp::TurnRequest,
     served: &ServedBy,

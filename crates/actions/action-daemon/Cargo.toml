@@ -73,8 +73,9 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 [dev-dependencies]
 action-daemon = {path = ".", features = ["test-system-callers"]}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
-model-provider = {path = "../../models/model-provider"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
+computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-types = {path = "../../models/model-types"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 memory-core = {path = "../../memory/memory-core"}
@@ -89,7 +90,6 @@ agent-reader-daemon = {path = "../agent-reader-daemon"}
 proptest = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
 action-provider = {path = "../action-provider", features = ["dbus"]}
-computer-use-action = {path = "../../models/computer-use-action"}
 serde_json = { workspace = true }
 tempfile = { workspace = true }
 toml = { workspace = true }

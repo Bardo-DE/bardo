@@ -3,7 +3,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use base_ids::Tokens;
-use model_provider::{
+use model_types::{
     CallIndex, Charges, ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnUsage,
 };
 use model_wire::{ChatDecoder, CodecError};

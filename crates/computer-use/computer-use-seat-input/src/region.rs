@@ -5,8 +5,8 @@
 //! window-local point (measured: a click at global (814,198) landed at surface-local (100,50)
 //! in a window at (714,148)).
 
-use computer_use_action::{Coord, Point, WindowSpace};
 use computer_use_desktop::{GlobalCoord, GlobalRect};
+use computer_use_geometry::{Coord, Point, WindowSpace};
 
 /// A point in the EI region's space. Lives in this module only: nothing else in computer use names it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

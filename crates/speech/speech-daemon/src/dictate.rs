@@ -17,8 +17,8 @@ use inference_core::{
 use speech_audio::{
     AudioDevice, CaptureFormat, CaptureStream, SNAPSHOT_BUDGET, choose_capture, snapshot_before,
 };
+use speech_core::FRAME_SAMPLES;
 use speech_loop::CAPTURE_RATE;
-use speech_provider::FRAME_SAMPLES;
 use speech_wire::{HeardText, VoiceFault};
 
 /// What dictation heard.

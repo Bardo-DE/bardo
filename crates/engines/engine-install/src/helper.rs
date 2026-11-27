@@ -10,7 +10,7 @@ use crate::installer::{InstallError, Installer};
 use crate::package::install_package;
 use crate::progress::{CancelToken, Meter};
 use engine_manifest::{Arch, Backend, Failure, Manifest, OsRelease, Row, engine_from_slug};
-use engine_probe::{Roots, Scope};
+use engine_manifest::{Roots, Scope};
 use engine_spec::PackageSource;
 use model_catalog::EngineKind;
 use std::ffi::OsString;

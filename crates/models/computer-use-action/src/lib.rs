@@ -5,7 +5,8 @@
 //! the space parameter changes as a point travels from the model's grid to the leased window.
 //!
 //! ```
-//! use computer_use_action::{ActionClass, Button, ClickCount, Coord, ComputerUseAction, Point, Target, WindowSpace};
+//! use computer_use_action::{ActionClass, Button, ClickCount, ComputerUseAction, Target};
+//! use computer_use_geometry::{Coord, Point, WindowSpace};
 //! use std::collections::BTreeSet;
 //!
 //! let at = Target::Point(Point::<WindowSpace>::new(Coord(10), Coord(20)));
@@ -23,26 +24,16 @@
 )]
 
 mod action;
-mod dialect;
 mod gate;
-mod geometry;
 mod keys;
-mod profile;
-mod space;
 mod target;
 mod text;
-mod trained;
 
 pub use action::{ActionClass, ComputerUseAction, Extracted, FinishOutcome, ScrollBy};
-pub use dialect::{ComputerUseDialect, ModelSpace, TextDialect, ToolDialect, WireDialect};
 pub use gate::{RunMode, WindowClass, WindowTrust};
-pub use geometry::{Coord, DeviceSize, GridMax, Length, PixelFormat, Point, Rect, Scale120, Size};
 pub use keys::{
     Button, Chord, ChordError, ClickCount, Modifier, Notches, Repeat, RepeatError, ScrollDir,
     WaitError, WaitMs,
 };
-pub use profile::{ActionProfile, DragStyle, ScrollAxis, VerbAlias, VerbAliases};
-pub use space::{CoordSpace, GridSpace, ImageSpace, WindowSpace};
 pub use target::{NodeId, Target};
 pub use text::{Choice, ExtractedText, FieldName, Summary, TextError, TypedText};
-pub use trained::{AnswerShape, CallFormat, HistoryShape, ResolutionWording};

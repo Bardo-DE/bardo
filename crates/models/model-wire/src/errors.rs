@@ -2,7 +2,7 @@
 //! carries no body and no model text (a body can echo the prompt).
 
 use model_http::{HttpError, ResponseHead};
-use model_provider::{ProviderError, RetrySeconds, ServerStatus};
+use model_types::{ProviderError, RetrySeconds, ServerStatus};
 
 use crate::CodecError;
 

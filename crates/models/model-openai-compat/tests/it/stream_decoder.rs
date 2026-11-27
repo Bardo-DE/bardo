@@ -3,7 +3,7 @@
 
 use base_ids::Tokens;
 use model_openai_compat::{CodecError, Flavor, StreamDecoder};
-use model_provider::{
+use model_types::{
     CallIndex, JsonText, ModelName, ProviderError, StopReason, ToolCall, ToolCallId, ToolName,
     TurnEnd, TurnEvent, TurnUsage,
 };
@@ -753,7 +753,7 @@ fn an_error_envelope_in_a_200_is_unreadable_and_names_its_fault() {
         ),
         (
             json!({"error":{"message":"x","type":"rate_limit_error"}}),
-            ProviderError::RateLimited(model_provider::RetrySeconds(0)),
+            ProviderError::RateLimited(model_types::RetrySeconds(0)),
         ),
         (
             json!({"error":{"message":"x","type":"authentication_error"}}),
@@ -761,11 +761,11 @@ fn an_error_envelope_in_a_200_is_unreadable_and_names_its_fault() {
         ),
         (
             json!({"error":{"message":"x","type":"server_error"}}),
-            ProviderError::Server(model_provider::ServerStatus(500)),
+            ProviderError::Server(model_types::ServerStatus(500)),
         ),
         (
             json!({"error":{"message":"x","code":503}}),
-            ProviderError::Server(model_provider::ServerStatus(503)),
+            ProviderError::Server(model_types::ServerStatus(503)),
         ),
         (
             json!({"error":{"message":"secret","type":"Weird Type!"}}),

@@ -1,6 +1,6 @@
 //! How a model wants an image resized, and what the resized image costs.
 
-use computer_use_action::{Coord, DeviceSize, ImageSpace, Size};
+use computer_use_geometry::{Coord, DeviceSize, ImageSpace, Size};
 use serde::{Deserialize, Serialize};
 
 /// The side a Qwen-VL style model rounds an image to: 28 for Qwen2.5-VL and UI-TARS-1.5, 32

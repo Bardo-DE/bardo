@@ -1,6 +1,6 @@
 //! Cuts audio chunks into 512-sample frames, carrying the remainder to the next chunk.
 
-use speech_provider::{
+use speech_core::{
     AudioChunk, AudioFormat, FRAME_SAMPLES, Frame512, PcmFormat, SampleIndex, SampleRate,
 };
 

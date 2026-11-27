@@ -1,0 +1,23 @@
+[package]
+name = "model-core"
+description = "The Provider trait over model-types, the retry wrapper, the embedding seam and the check of a conversation's order."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-time = { path = "../../base/base-time" }
+model-types = {path = "../model-types"}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+base-ids = { path = "../../base/base-ids" }
+model-fake = {path = "../model-fake"}
+proptest = { workspace = true }
+
+[lints]
+workspace = true

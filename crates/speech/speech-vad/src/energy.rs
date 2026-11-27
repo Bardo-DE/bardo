@@ -1,7 +1,7 @@
 //! The energy gate: speech when a frame is louder than a threshold, held for a few frames.
 
 use serde::{Deserialize, Serialize};
-use speech_provider::{Frame512, SpeechProb, VoiceActivity, Voiced};
+use speech_core::{Frame512, SpeechProb, VoiceActivity, Voiced};
 
 use crate::{Level, level_of};
 

@@ -1,6 +1,6 @@
 //! One extraction of a shape known only at run time: a schema a caller holds as text.
 
-use model_provider::{
+use model_types::{
     JsonText, SchemaError, SchemaLimits, SchemaText, Shape, ToolCall, TurnEnd, TurnRequest,
 };
 

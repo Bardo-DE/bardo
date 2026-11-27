@@ -9,8 +9,8 @@ use crate::warm::Warm;
 use inference_client::Transport;
 use inference_core::{HeardDelta, InferEvent, InferReply, ModelError};
 use speech_audio::AudioDevice;
+use speech_core::{FRAME_SAMPLES, Frame512};
 use speech_loop::{Transcript, UtteranceEvent, UtteranceState};
-use speech_provider::{FRAME_SAMPLES, Frame512};
 use speech_vad::level_of;
 use speech_wire::{HeardSegment, HeardTail, HeardText, VoiceFault};
 

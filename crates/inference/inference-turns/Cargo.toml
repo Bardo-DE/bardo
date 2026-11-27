@@ -22,7 +22,8 @@ inference-router = {path = "../inference-router"}
 inference-fs = {path = "../inference-fs"}
 # The structured-reply limits (`ai.structured.*`) a turn runs under.
 inference-settings = {path = "../inference-settings"}
-computer-use-action = {path = "../../models/computer-use-action"}
+model-core = {path = "../../models/model-core"}
+model-types = {path = "../../models/model-types"}
 computer-use-session = {path = "../../models/computer-use-session"}
 computer-use-vendors = {path = "../../models/computer-use-vendors"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}
@@ -31,7 +32,6 @@ model-extract = {path = "../../models/model-extract"}
 model-http = {path = "../../models/model-http"}
 model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
-model-provider = {path = "../../models/model-provider"}
 # `pixels`: the frame resize of a computer-use step.
 model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
 serde_json = { workspace = true }
@@ -39,7 +39,9 @@ tracing = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
-model-provider = {features = ["testing"], path = "../../models/model-provider"}
+computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-fake = {path = "../../models/model-fake"}
 inference-router = {path = "../inference-router", features = ["testing"]}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 base-testkit = {path = "../../base/base-testkit"}

@@ -410,11 +410,14 @@ kind = "unclassified"
 kind = "unclassified"
 
 # engines
+[crate.engine-fake]
+kind = "unclassified"
+lints = "baseline"
+[crate.engine-fs]
+kind = "unclassified"
 [crate.engine-install]
 kind = "unclassified"
 [crate.engine-manifest]
-kind = "unclassified"
-[crate.engine-probe]
 kind = "unclassified"
 [crate.engine-spec]
 kind = "unclassified"
@@ -593,6 +596,8 @@ kind = "unclassified"
 [crate.computer-use-action]
 kind = "unclassified"
 lints = "baseline"
+[crate.computer-use-geometry]
+kind = "unclassified"
 [crate.computer-use-parse]
 kind = "unclassified"
 lints = "baseline"
@@ -623,7 +628,11 @@ kind = "unclassified"
 [crate.model-openai-compat]
 kind = "unclassified"
 lints = "baseline"
-[crate.model-provider]
+[crate.model-core]
+kind = "unclassified"
+[crate.model-fake]
+kind = "unclassified"
+[crate.model-types]
 kind = "unclassified"
 lints = "baseline"
 [crate.model-replay]
@@ -635,7 +644,7 @@ lints = "baseline"
 [crate.model-wire]
 kind = "unclassified"
 lints = "baseline"
-[crate.speech-provider]
+[crate.speech-core]
 kind = "unclassified"
 lints = "baseline"
 
@@ -2879,7 +2888,7 @@ forbid = ["action-*", "agent-*", "companion-*", "permission-*", "computer-use-*"
   "shell-app", "shell-bar", "shell-dock", "shell-ipc", "shell-kit", "shell-launcher",
   "shell-launcher-ui", "shell-model", "shell-notify-ui", "shell-overlays", "shell-search",
   "shell-services", "shell-settings", "shell-testkit", "shell-ui-kit", "layer-shell-host",
-  "model-*", "engine-supervisor", "model-vision-prep", "speech-provider"]
+  "model-*", "engine-supervisor", "model-vision-prep", "speech-core"]
 why = "B12 no compositor crate reaches the agent tier or a shell crate"
 
 # B13 no compositor crate reaches ui-settings: the compositor reads `appearance-settings` and
@@ -3848,8 +3857,8 @@ why = "the daemon reaches the bus, a runtime, wayland, EIS and AT-SPI, never HTT
 crate = "computer-use-bus"
 features = "all"
 exactly = ["account-core", "action-core", "action-gate-wire", "action-vocab", "base-ids", "base-time",
-  "computer-use-action", "computer-use-desktop", "computer-use-types", "inference-core",
-  "memory-core", "model-provider", "provenance"]
+  "computer-use-action", "computer-use-desktop", "computer-use-geometry", "computer-use-types",
+  "inference-core", "memory-core", "model-types", "provenance"]
 why = "bus bodies use only the vocabulary crates named here, none of them a capability crate"
 
 # Computer use sits above the actions service and below the shell in the repo order, and the GPL
@@ -4471,13 +4480,13 @@ dev = true
 forbid = ["action-core", "action-router", "action-daemon", "computer-use-run", "computer-use-bus", "computer-use-daemon", "companion-wire"]
 why = "the memory service stores other areas' payloads opaquely: none of their crates enters its trees"
 
-# model-provider comes in under inference-core; a memory crate must not name it directly (a manifest line, dev-dependencies included).
+# model-types and model-core come in under inference-core; a memory crate must not name them directly (a manifest line, dev-dependencies included).
 [[source]]
 path = "crates/memory/*/Cargo.toml"
-pattern = '^model-provider\s*[=.]'
+pattern = '^model-(types|core)\s*[=.]'
 files = "all"
 tests = true
-why = "the memory service never names a model payload: no memory crate depends on model-provider directly"
+why = "the memory service never names a model payload: no memory crate depends on model-types or model-core directly"
 
 # The test-only switches are never on in a default build of the daemon, and the file-backed key store never links.
 [[reach]]
@@ -4495,12 +4504,22 @@ forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest
 why = "what this crate reaches through any path (default features) is limited to its tier"
 
 [[reach]]
+crate = "computer-use-geometry"
+forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider"]
+why = "what this crate reaches through any path (default features) is limited to its tier"
+
+[[reach]]
 crate = "model-vision-prep"
 forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider", "image", "fast_image_resize"]
 why = "reaches the image stack only through its pixels feature"
 
 [[reach]]
-crate = "model-provider"
+crate = "model-types"
+forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider"]
+why = "what this crate reaches through any path (default features) is limited to its tier"
+
+[[reach]]
+crate = "model-core"
 forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider"]
 why = "what this crate reaches through any path (default features) is limited to its tier"
 
@@ -4535,6 +4554,11 @@ forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest
 why = "what this crate reaches through any path (default features) is limited to its tier"
 
 [[reach]]
+crate = "engine-fake"
+forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider"]
+why = "what this crate reaches through any path (default features) is limited to its tier"
+
+[[reach]]
 crate = "model-http"
 forbid = ["zbus", "zvariant", "reqwest", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider"]
 why = "the one client crate with an HTTP stack may reach a runtime but no bus, compositor, database, inference runtime or accounts crate"
@@ -4560,7 +4584,7 @@ forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest
 why = "no audio device crate and no GPL text-to-speech stack is ever linked; engines run as their own process"
 
 [[reach]]
-crate = "speech-provider"
+crate = "speech-core"
 forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider", "pipewire", "libpulse-binding", "libpulse-simple-binding", "cpal", "espeak-rs", "espeak-ng", "espeak-ng-sys", "piper-rs"]
 why = "no audio device crate and no GPL text-to-speech stack is ever linked; engines run as their own process"
 
@@ -4590,7 +4614,7 @@ forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest
 why = "what this crate reaches through any path (default features) is limited to its tier"
 
 [[reach]]
-crate = "engine-probe"
+crate = "engine-fs"
 forbid = ["tokio", "hyper", "hyper-util", "rustls", "zbus", "zvariant", "reqwest", "ureq", "wayland-client", "wayland-backend", "reis", "atspi", "oo7", "ort", "fastembed", "rusqlite", "notify", "cedar-policy", "rmcp", "account-core", "inference-core", "account-client", "account-provider"]
 why = "what this crate reaches through any path (default features) is limited to its tier"
 
@@ -4611,6 +4635,11 @@ why = "reaches no accounts crate, no audio device crate and no GPL text-to-speec
 
 [[source]]
 path = "crates/*/computer-use-action/src"
+pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
+why = "a pure crate does no I/O, reads no clock and names no UI word"
+
+[[source]]
+path = "crates/*/computer-use-geometry/src"
 pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 why = "a pure crate does no I/O, reads no clock and names no UI word"
 
@@ -4640,7 +4669,12 @@ pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}
 why = "a pure crate does no I/O, reads no clock and names no UI word"
 
 [[source]]
-path = "crates/*/model-provider/src"
+path = "crates/*/model-types/src"
+pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
+why = "a pure crate does no I/O, reads no clock and names no UI word"
+
+[[source]]
+path = "crates/*/model-core/src"
 pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 why = "a pure crate does no I/O, reads no clock and names no UI word"
 
@@ -4660,6 +4694,11 @@ pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}
 why = "a pure crate does no I/O, reads no clock and names no UI word"
 
 [[source]]
+path = "crates/*/engine-fake/src"
+pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
+why = "a pure crate does no I/O, reads no clock and names no UI word"
+
+[[source]]
 path = "crates/*/model-wire/src"
 pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 why = "a pure crate does no I/O, reads no clock and names no UI word"
@@ -4675,7 +4714,7 @@ pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}
 why = "a pure crate does no I/O, reads no clock and names no UI word"
 
 [[source]]
-path = "crates/*/speech-provider/src"
+path = "crates/*/speech-core/src"
 pattern = 'std::(fs|\{[^}]*\bfs\b)|std::(env|\{[^}]*\benv\b)|std::(process|\{[^}]*\bprocess\b)|std::(net|os::unix::net|\{[^}]*\bnet\b)|SystemTime::now|Instant::now|thread::sleep|\btokio\b|\bhyper\b|\breqwest\b|\bzbus\b|\brustix\b|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 why = "a pure crate does no I/O, reads no clock and names no UI word"
 
@@ -4710,7 +4749,7 @@ pattern = '\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 why = "a client crate names no UI word"
 
 [[source]]
-path = "crates/*/engine-probe/src"
+path = "crates/*/engine-fs/src"
 pattern = '\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 why = "a client crate names no UI word"
 
@@ -4726,8 +4765,8 @@ why = "a client crate names no UI word"
 [[tiers]]
 name = "models"
 tiers = [
-  ["computer-use-action", "model-vision-prep", "computer-use-parse", "computer-use-vendors", "computer-use-session", "model-genai-names", "model-provider", "model-extract", "model-catalog", "engine-supervisor", "model-wire", "model-openai-compat", "model-replay", "speech-provider", "speech-vad", "model-http", "engine-spec", "engine-manifest"],
-  ["speech-host-client", "speech-host", "engine-probe", "engine-install"],
+  ["computer-use-action", "computer-use-geometry", "model-vision-prep", "computer-use-parse", "computer-use-vendors", "computer-use-session", "model-genai-names", "model-types", "model-core", "model-extract", "model-catalog", "engine-supervisor", "model-wire", "model-openai-compat", "model-replay", "speech-core", "speech-vad", "model-http", "engine-spec", "engine-manifest"],
+  ["speech-host-client", "speech-host", "engine-fs", "engine-install"],
   ["computer-use-parse-fuzz"],
 ]
 why = "pure crates, then client crates, then programs: a crate depends on its own tier or a lower one, never up"
@@ -4954,7 +4993,6 @@ exactly = [
     "desktop-protocols",
     "engine-install",
     "engine-manifest",
-    "engine-probe",
     "engine-spec",
     "inference-client",
     "inference-dbus",
@@ -4975,6 +5013,7 @@ exactly = [
     "sync-bus",
     "updater-dbus",
     "base-clock",
+    "engine-fs",
 ]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -5203,7 +5242,6 @@ exactly = [
     "base-words",
     "companion-model",
     "companion-wire",
-    "computer-use-action",
     "http-reqwest",
     "memory-core",
     "permission-core",

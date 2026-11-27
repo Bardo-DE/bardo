@@ -25,8 +25,9 @@ use base_ids::Tokens;
 use inference_core::{self as pi, ChargeTotal, InferEvent, ModelError};
 use inference_router::local::LocalModel;
 use inference_settings::structured::Limits;
+use model_core::Provider;
 use model_extract::{ExtractFailure, Extracted, ShapedSession, ToolsPresent, choose};
-use model_provider::{ChoiceText, JsonText, Provider, SchemaText, Shape, TurnRequest};
+use model_types::{ChoiceText, JsonText, SchemaText, Shape, TurnRequest};
 use std::ops::ControlFlow;
 
 /// Whether a reply is a JSON value or one of the offered strings (which the app gets bare).
@@ -97,7 +98,7 @@ pub struct Validated {
     pub usage: pi::TurnUsage,
     /// The first answer token's candidates, from the attempt whose reply passed (a repaired
     /// attempt's are not the answer's), when the turn asked and the engine gave them.
-    pub first_token: Option<model_provider::FirstTokenLogprobs>,
+    pub first_token: Option<model_types::FirstTokenLogprobs>,
 }
 
 fn add(a: Tokens, b: Tokens) -> Tokens {

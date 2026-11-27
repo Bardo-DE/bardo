@@ -2,8 +2,8 @@
 
 use crate::model::{A11ySnapshot, NodeBudget};
 use account_core::AppName;
-use computer_use_action::{Size, WindowSpace};
 use computer_use_desktop::{Pid, WindowTitle};
+use computer_use_geometry::{Size, WindowSpace};
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 

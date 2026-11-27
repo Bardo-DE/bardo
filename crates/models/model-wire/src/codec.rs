@@ -1,7 +1,7 @@
 //! The seams a wire implements.
 
 use model_http::{Exchange, ResponseHead};
-use model_provider::{
+use model_types::{
     Charges, EmbedEnd, EmbedTurn, ModelInfo, ModelName, ProviderError, TurnEnd, TurnEvent,
     TurnRequest,
 };

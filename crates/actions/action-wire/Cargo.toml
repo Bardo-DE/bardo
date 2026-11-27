@@ -24,6 +24,7 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
 serde_json = { workspace = true }
 
 [lints]

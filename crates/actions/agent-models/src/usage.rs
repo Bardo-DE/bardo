@@ -23,8 +23,7 @@ pub fn report_of(usage: TurnUsage) -> TurnReport {
 mod tests {
     use super::*;
     use base_ids::Tokens;
-    use model_provider::Money;
-    use rust_decimal::Decimal;
+    use model_types::Money;
 
     fn usage(input: u32, output: u32, cached: u32, charge: Option<Money>) -> TurnUsage {
         TurnUsage {
@@ -38,7 +37,7 @@ mod tests {
 
     #[test]
     fn usage_becomes_a_report_with_the_charge_as_reported() {
-        let charge = Money::usd(Decimal::new(42, 4));
+        let charge = Money::usd(42, 4);
         let tokens = TokenTotals {
             input: Tokens(1000),
             output: Tokens(100),

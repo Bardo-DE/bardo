@@ -3,10 +3,11 @@
 //! boundary types refuse are skipped, as an engine's output would be refused before it got here.
 #![no_main]
 
-use computer_use_action::{GridMax, ModelSpace, ToolDialect};
+use computer_use_geometry::{GridMax, ModelSpace};
 use computer_use_parse::{InSpace, ParseLimits, parse_tool_calls};
 use libfuzzer_sys::fuzz_target;
-use model_provider::{JsonText, ToolCall, ToolCallId, ToolName};
+use model_types::ToolDialect;
+use model_types::{JsonText, ToolCall, ToolCallId, ToolName};
 
 fuzz_target!(|data: &[u8]| {
     let Some((head, rest)) = data.split_first() else {

@@ -4,8 +4,8 @@
 use super::def::{Echo, Kind, View};
 use super::state::{Placed, Surface};
 use crate::font_data::GLYPHS;
-use computer_use_action::{DeviceSize, PixelFormat};
 use computer_use_capture::PixelBuf;
+use computer_use_geometry::{DeviceSize, PixelFormat};
 use std::sync::Arc;
 
 /// The height of the window's title bar; screens start their content below it.

@@ -2,9 +2,10 @@
 //! actions, and a block removes the actions and ends the run as infeasible. Nothing a vendor says
 //! can take an ask away or make an action more permitted.
 
-use computer_use_action::{ComputerUseAction, CoordSpace, FinishOutcome, Summary};
+use computer_use_action::{ComputerUseAction, FinishOutcome, Summary};
+use computer_use_geometry::CoordSpace;
 use computer_use_parse::InSpace;
-use model_provider::SafetySignal;
+use model_types::SafetySignal;
 
 /// Text of a hint as a `Summary`: control characters dropped, cut to the limit.
 fn summary(prefix: &str, text: &str) -> Summary {

@@ -11,7 +11,7 @@
 //!
 //! Pure and portable: serde only. Names `prov` for who and what, `account-core` for accounts and
 //! labels, `memory-core` for the pure shapes of memory (episodes, recall, recent) and
-//! `model-provider` for the structured-output shapes `ValueSchema` renders through.
+//! `model-types` for the structured-output shapes `ValueSchema` renders through.
 
 mod audit;
 mod brief;

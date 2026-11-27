@@ -6,9 +6,8 @@ use crate::report::{Metrics, StageLatency, wilson};
 use action_core::AuditRecord;
 use action_vocab::Millis;
 use base_ids::{Count, Permille};
-use model_provider::Money;
+use model_types::Money;
 use permission_core::Stage;
-use rust_decimal::Decimal;
 use std::collections::BTreeMap;
 
 /// What one corpus has seen so far.
@@ -130,9 +129,7 @@ fn plus(total: Option<Money>, more: Option<Money>) -> Option<Money> {
 /// The reported charges per thousand cases, when any case reported one.
 fn per_1000(reported: Option<Money>, cases: u32) -> Option<Money> {
     let reported = reported?;
-    let scaled = reported.amount.checked_mul(Decimal::ONE_THOUSAND)?;
-    let each = scaled.checked_div(Decimal::from(cases))?;
-    Some(Money::new(each, reported.currency))
+    reported.scaled(1000, cases)
 }
 
 fn fold(tally: &mut Tally, case: &Case, result: &CaseResult, observed: &Observed) {

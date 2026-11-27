@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use model_provider::{CallIndex, ToolCall, TurnEvent};
+use model_types::{CallIndex, ToolCall, TurnEvent};
 use model_wire::CodecError;
 
 use super::{Fragment, IfMalformed, Pending};

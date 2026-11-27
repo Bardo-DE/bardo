@@ -1,8 +1,9 @@
 //! A fake release: an archive that unpacks into a tiny engine, and the row that pins it.
 
+use engine_fs::{file_digest, seal_of};
 use engine_install::Fetcher;
+use engine_manifest::Roots;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Row};
-use engine_probe::{Roots, file_digest, seal_of};
 use model_catalog::EngineKind;
 use model_http::TlsRoots;
 use std::os::unix::fs::PermissionsExt;

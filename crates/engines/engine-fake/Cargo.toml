@@ -1,0 +1,15 @@
+[package]
+name = "engine-fake"
+description = "Scripted fakes of engine-supervisor's three seams (host, readiness probe, GPU probe), for the daemon's tests."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+engine-supervisor = {path = "../engine-supervisor"}
+
+[lints]
+workspace = true

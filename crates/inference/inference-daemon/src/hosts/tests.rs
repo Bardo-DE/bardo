@@ -443,7 +443,8 @@ async fn dropping_the_host_ends_every_group_still_running() {
 #[tokio::test(start_paused = false)]
 async fn the_supervisor_evicting_an_engine_ends_its_grandchild() {
     use crate::supervise::{Ports, Supervised};
-    use engine_supervisor::{FakeGpu, FakeReadyProbe, GpuMemory, SupervisorConfig};
+    use engine_fake::{FakeGpu, FakeReadyProbe};
+    use engine_supervisor::{GpuMemory, SupervisorConfig};
     let dir = Scratch::new("hosts-group-evict");
     let mut specs: Vec<_> = crate::testkit::models(&dir)
         .into_iter()

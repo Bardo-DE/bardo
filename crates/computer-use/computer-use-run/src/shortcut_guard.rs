@@ -7,7 +7,8 @@
 
 use crate::chord_scope::standard_actions_of;
 use computer_use_a11y_tree::{A11yNode, NodeState, Role};
-use computer_use_action::{ComputerUseAction, NodeId, WindowSpace};
+use computer_use_action::{ComputerUseAction, NodeId};
+use computer_use_geometry::WindowSpace;
 use keymap::StandardAction;
 
 /// The standard actions that make or open something in the window, which a control usually does

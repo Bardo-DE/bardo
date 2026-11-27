@@ -6,7 +6,7 @@
 //! engine (`FINDINGS.md`). [`Flavor`] names the server at run time and picks its type.
 
 use model_http::RouteRoot;
-use model_provider::{
+use model_types::{
     Charges, Constraint, EngineExtras, Knob, OutputShape, PromptCache, ShapeWithTools,
 };
 use model_wire::CodecError;

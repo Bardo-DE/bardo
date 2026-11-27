@@ -2,8 +2,8 @@
 //! reminded of it when a reply has to be repaired, and its step is worded by what the shape
 //! holds: the `<action>` sentence rather than the whole reasoning.
 
-use computer_use_action::{ActionProfile, AnswerShape};
 use computer_use_parse::answer_parts;
+use model_types::{ActionProfile, AnswerShape};
 
 use crate::TurnTranscript;
 use crate::prompt::body;

@@ -4,9 +4,8 @@ use crate::support::*;
 use action_core::*;
 use action_vocab::Depth;
 use base_ids::{Count, Tokens, TurnCount};
-use model_provider::Money;
+use model_types::Money;
 use provenance::Effect;
-use rust_decimal::Decimal;
 use std::collections::BTreeMap;
 
 fn budget() -> Budget {
@@ -15,7 +14,7 @@ fn budget() -> Budget {
 
 /// `cents` US cents.
 fn usd(cents: i64) -> Money {
-    Money::usd(Decimal::new(cents, 2))
+    Money::usd(cents, 2)
 }
 
 fn cost(effect: Effect, entities: u32, depth: u8, reviewed: bool) -> Cost {
@@ -275,8 +274,8 @@ fn turn_charge_table() {
         let after = charge_turn(&Ledger::new(at(0)), &report);
         assert_eq!(after.spent.tokens, want_tokens, "tokens: {name}");
         assert_eq!(
-            after.spent.charges.reported.amount,
-            Decimal::new(want_cents, 2),
+            after.spent.charges.reported,
+            usd(want_cents),
             "reported: {name}"
         );
         assert_eq!(

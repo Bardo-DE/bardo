@@ -13,9 +13,10 @@ use base_testkit::Scratch;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
+use engine_fake::FakeGpu;
 use engine_supervisor::{
-    EngineHost, EngineId, ExitCode, FakeGpu, GpuMemory, HostError, Probe, ReadyProbe,
-    SupervisorConfig, UnitSpec,
+    EngineHost, EngineId, ExitCode, GpuMemory, HostError, Probe, ReadyProbe, SupervisorConfig,
+    UnitSpec,
 };
 use inference_client::{DbusTransport, Inference as InferenceClient};
 use inference_core::{ModelCard, Policy, Slot, TierMap};

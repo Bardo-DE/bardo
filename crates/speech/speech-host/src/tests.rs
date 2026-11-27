@@ -7,8 +7,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
 
-use model_provider::{ModelName, ProviderError, Support};
-use speech_provider::{
+use model_types::{ModelName, ProviderError, Support};
+use speech_core::{
     AudioChunk, AudioFormat, AudioMs, HeardText, HostIn, HostOut, HostVocab, LangChoice, LangSet,
     PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechIo, SpeechModelInfo, SttEnd,
     SttMode, SttRequest, TranscriptEvent, decode_frame, encode_frame,

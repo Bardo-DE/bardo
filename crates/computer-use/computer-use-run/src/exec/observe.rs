@@ -21,12 +21,12 @@ use computer_use_a11y_tree::{
     A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget, NodeSelector, Resolution, prune,
     resolve,
 };
-use computer_use_action::{Coord, Point, Rect, Size, WindowSpace};
 use computer_use_bus::WindowRef;
 use computer_use_capture::{
     CaptureError, CaptureSession, Frame, FrameWant, MaskReason, MaskRegion, WholeMask,
 };
 use computer_use_desktop::{Desktop, LeaseControl, ToplevelInfo, ToplevelState};
+use computer_use_geometry::{Coord, Point, Rect, Size, WindowSpace};
 use inference_core::StepIndex;
 use provenance::{AgentRef, Label, Labelled, Source};
 

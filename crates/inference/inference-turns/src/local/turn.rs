@@ -11,9 +11,9 @@ use inference_core::{
 };
 use inference_router::local::LocalModel;
 use inference_settings::structured::Limits;
+use model_core::Embedder;
 use model_openai_compat::OpenAiCodec;
-use model_provider as sp;
-use model_provider::Embedder;
+use model_types as sp;
 
 /// One request on `model`, which tells `engines` it is in use while the request runs.
 #[derive(Debug)]
@@ -72,7 +72,7 @@ impl<U: EngineUse> LocalTurn<'_, U> {
     /// A turn whose reply is validated, and repaired once, before the app is told it.
     async fn checked(
         &self,
-        provider: &impl sp::Provider,
+        provider: &impl model_core::Provider,
         checked: Checked,
         turn: &sp::TurnRequest,
         sink: &mut impl ChatSink,

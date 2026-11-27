@@ -2,8 +2,8 @@
 //! and the Hermes JSON formats, a call written inside the reasoning, the bounds, and the forms
 //! that are not read.
 
-use computer_use_action::CallFormat;
 use computer_use_parse::{ActionCount, ByteLen, ParamKinds, ParseError, ParseLimits, read_calls};
+use model_types::CallFormat;
 use serde_json::{Value, json};
 
 const SCHEMA: &str = r#"{"properties":{"action":{"type":"string"},"text":{"type":"string"},"coordinate":{"type":"array"},"pixels":{"type":"integer"}}}"#;

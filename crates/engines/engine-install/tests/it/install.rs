@@ -1,8 +1,9 @@
 use crate::host::FileHost;
 use crate::support::{fetcher, fixture, roots, row};
+use engine_fs::{Finder, Verifier, read_record, seal_of};
 use engine_install::{CancelToken, InstallError, Installer, Meter};
 use engine_manifest::{Failure, Manifest};
-use engine_probe::{Finder, Origin, Record, Scope, Verdict, Verifier, seal_of};
+use engine_manifest::{Origin, Record, Scope, Verdict};
 use model_catalog::EngineKind;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
@@ -38,7 +39,7 @@ async fn an_archive_installs_into_the_persons_directory_and_is_found_and_verifie
     assert_ne!(mode & 0o111, 0, "the program runs");
     assert_eq!(meter.permille(), 1000);
     assert_eq!(
-        Record::read(&place.record()).expect("record").seal,
+        read_record(&place.record()).expect("record").seal,
         release.seal
     );
     assert!(!place.partial().exists(), "the partial directory is gone");

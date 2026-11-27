@@ -13,18 +13,19 @@ use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use base_ids::Tokens;
-use computer_use_action::{
-    ComputerUseAction, ComputerUseDialect, ModelSpace, TextDialect, ToolDialect,
-};
+use computer_use_action::ComputerUseAction;
+use computer_use_geometry::ModelSpace;
 use computer_use_session::{ComputerUseSession, StepOutcome, TranscriptSink};
+use model_core::Provider;
 use model_http::{BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
 use model_openai_compat::{Flavor, OpenAiCodec};
-use model_provider::{ModelName, Provider, ProviderError, Seed};
 use model_replay::{
     BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
     EngineStamp, RecordedAt, RecordingTransport, ReplayMode, ReplayTransport, SinkError,
     WireCassette, WireExchange, WireSink,
 };
+use model_types::{ComputerUseDialect, TextDialect, ToolDialect};
+use model_types::{ModelName, ProviderError, Seed};
 use model_wire::Driver;
 use serde_json::{Value, json};
 use support::*;
@@ -152,7 +153,7 @@ fn block_on<T>(future: impl Future<Output = T>) -> T {
 /// What one step came to, for comparing runs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Step {
-    Acted(Vec<ComputerUseAction<computer_use_action::WindowSpace>>),
+    Acted(Vec<ComputerUseAction<computer_use_geometry::WindowSpace>>),
     Repaired,
     Gave(String),
 }

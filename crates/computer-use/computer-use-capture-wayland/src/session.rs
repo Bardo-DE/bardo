@@ -5,12 +5,12 @@ use super::state::{CapState, Constraints, Failure, FrameSlot, pick_format};
 use crate::key::ObjectKey as Key;
 use crate::pump::Pump;
 use base_time::Monotonic;
-use computer_use_action::{Coord, Point, Rect, Scale120, Size, WindowSpace};
 use computer_use_capture::{
     AFTER_DAMAGE_LIMIT_MS, CaptureError, CaptureSession, DamageAt, DamageSource, Frame, FrameSeq,
     FrameWant, MaskRegion, MaskReport, PixelBuf, WholeMask, apply_masks, pixel_diff,
 };
 use computer_use_desktop::{MaskWhere, Stamp};
+use computer_use_geometry::{Coord, Point, Rect, Scale120, Size, WindowSpace};
 use std::sync::Arc;
 use std::time::Duration;
 

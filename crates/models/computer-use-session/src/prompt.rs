@@ -3,9 +3,10 @@
 
 use std::collections::VecDeque;
 
-use computer_use_action::{ActionProfile, ComputerUseDialect, ModelSpace, ResolutionWording};
+use computer_use_geometry::ModelSpace;
 use computer_use_parse::{CursorAt, DropReason, ParseError};
 use computer_use_vendors::StepResult;
+use model_types::{ActionProfile, ComputerUseDialect, ResolutionWording};
 use model_vision_prep::FrameMap;
 
 use crate::dialect;
@@ -115,7 +116,7 @@ fn result_text(result: &StepResult) -> String {
 /// Where the cursor is, in the model's own coordinates.
 pub(crate) fn cursor_in_model(
     map: &FrameMap,
-    at: computer_use_action::Point<computer_use_action::WindowSpace>,
+    at: computer_use_geometry::Point<computer_use_geometry::WindowSpace>,
 ) -> CursorAt {
     let (x, y) = match map.space {
         ModelSpace::Image => {
@@ -137,7 +138,7 @@ pub(crate) fn cursor_in_model(
 
 fn cursor_text(
     map: &FrameMap,
-    at: computer_use_action::Point<computer_use_action::WindowSpace>,
+    at: computer_use_geometry::Point<computer_use_geometry::WindowSpace>,
 ) -> String {
     let CursorAt { x, y } = cursor_in_model(map, at);
     format!("The cursor is at [{x}, {y}].")

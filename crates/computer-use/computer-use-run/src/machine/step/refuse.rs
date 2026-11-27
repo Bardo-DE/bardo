@@ -5,8 +5,9 @@ use crate::machine::ops::nodes_of;
 use crate::machine::run::Run;
 use crate::observation::Observation;
 use crate::shortcut_guard::control_for;
-use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
+use computer_use_action::{ActionClass, ComputerUseAction};
 use computer_use_bus::LocalRefusal;
+use computer_use_geometry::WindowSpace;
 
 /// Why the action must not run, if it must not: it repeats the last input on a screen that did
 /// not change, or it is a chord for a control the window shows.

@@ -5,7 +5,7 @@ use crate::attack_score::AttackMetrics;
 use crate::case::Corpus;
 use action_vocab::Millis;
 use base_ids::{Count, Permille};
-use model_provider::Money;
+use model_types::Money;
 use permission_core::Stage;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -128,10 +128,7 @@ fn rate(r: &Rate95) -> String {
 }
 
 fn charge(m: Option<Money>) -> String {
-    m.map_or_else(
-        || "none reported".to_owned(),
-        |m| format!("{} {}", m.amount.round_dp(4), m.currency.code()),
-    )
+    m.map_or_else(|| "none reported".to_owned(), |m| m.round(4).to_string())
 }
 
 impl RunReport {

@@ -1,6 +1,6 @@
 //! PCM bytes to the f32 samples sherpa-onnx takes.
 
-use speech_provider::PcmFormat;
+use speech_core::PcmFormat;
 
 /// Mono samples in [-1, 1]; a trailing partial sample is dropped.
 pub fn to_f32(format: PcmFormat, bytes: &[u8]) -> Vec<f32> {

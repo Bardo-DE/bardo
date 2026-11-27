@@ -2,9 +2,9 @@
 //! thought. Any bytes, no panic, and never more calls than the limits allow.
 #![no_main]
 
-use computer_use_action::CallFormat;
 use computer_use_parse::{ParamKinds, ParseLimits, read_calls};
 use libfuzzer_sys::fuzz_target;
+use model_types::CallFormat;
 
 const SCHEMA: &str = r#"{"properties":{"action":{"type":"string"},"text":{"type":"string"},"coordinate":{"type":"array"},"pixels":{"type":"integer"}}}"#;
 

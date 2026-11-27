@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use model_provider::{CallIndex, ToolCallId, TurnEvent};
+use model_types::{CallIndex, ToolCallId, TurnEvent};
 
 /// What is wrong with a recorded event stream (port of rig's `Transcript::push` checks).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]

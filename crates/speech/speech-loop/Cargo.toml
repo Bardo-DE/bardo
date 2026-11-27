@@ -13,7 +13,7 @@ speech-wire = {path = "../speech-wire"}
 account-core = {path = "../../accounts/account-core"}
 action-wire = {path = "../../actions/action-wire"}
 inference-core = {path = "../../inference/inference-core"}
-speech-provider = {path = "../../models/speech-provider"}
+speech-core = {path = "../../models/speech-core"}
 serde = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]

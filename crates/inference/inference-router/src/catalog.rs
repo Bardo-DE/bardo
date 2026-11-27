@@ -17,14 +17,14 @@ use account_capability::{
 };
 use account_capability::{Claim, Offer, Provenance, Subject};
 use base_ids::{Count, Px};
-use computer_use_action::ComputerUseDialect;
 use engine_spec::{SpecError, check_entry, engine};
 use model_catalog::{CatalogError, Modality as CatalogModality, ModelEntry, parse_entry};
-use model_provider::{
+use model_types::ComputerUseDialect;
+use model_types::{
     Caps, ComputerUseSupport, Constraint, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
 };
 use model_vision_prep::ResizeRule;
-use speech_provider::{LangSet, SpeechDir};
+use speech_core::{LangSet, SpeechDir};
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
@@ -177,8 +177,8 @@ fn computer_use_cap(caps: &Caps) -> Option<ComputerUseCap> {
     Some(ComputerUseCap {
         environments: BTreeSet::from([ComputerUseEnv::Desktop]),
         batching: match batching {
-            model_provider::Batching::One => ComputerUseBatching::One,
-            model_provider::Batching::Many => ComputerUseBatching::Many,
+            model_types::Batching::One => ComputerUseBatching::One,
+            model_types::Batching::Many => ComputerUseBatching::Many,
         },
         zoom: match zoom {
             Zoom::Absent => false,

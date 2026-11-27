@@ -50,7 +50,7 @@ async fn a_change_in_the_file_applies_to_the_router_without_a_restart() {
     assert_eq!(router.agent_config().rows.auto.inside, AskOrRun::Asks);
     assert_eq!(
         router.agent_config().budget.spend,
-        Some(model_provider::Money::usd(rust_decimal::Decimal::new(7, 6)))
+        Some(model_types::Money::usd(7, 6))
     );
 
     // A bad value falls back to the base for that key; the good key beside it still applies.

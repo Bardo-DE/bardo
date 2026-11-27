@@ -109,7 +109,7 @@ fn start_body(task: ComputerUseTask) -> String {
     serde_json::to_string(&ComputerUseEnvelope::current(task)).unwrap()
 }
 
-fn ask() -> ComputerUseAction<computer_use_action::WindowSpace> {
+fn ask() -> ComputerUseAction<computer_use_geometry::WindowSpace> {
     ComputerUseAction::Ask {
         question: Summary::new("Which account?").unwrap(),
         choices: vec![],

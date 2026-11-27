@@ -12,7 +12,8 @@ publish.workspace = true
 base-ids = {path = "../../base/base-ids"}
 http-core = {path = "../../network/http-core"}
 model-http = {path = "../model-http"}
-model-provider = {path = "../model-provider"}
+model-core = {path = "../model-core"}
+model-types = {path = "../model-types"}
 thiserror = { workspace = true }
 
 [lints]

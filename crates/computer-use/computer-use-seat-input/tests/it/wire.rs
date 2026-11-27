@@ -1,10 +1,8 @@
 //! Every wire type of the seat survives serde and pins the JSON other crates read.
 
-use computer_use_action::{
-    Button, ComputerUseAction, Coord, Notches, Point, ScrollDir, Size, Summary, TypedText,
-    WindowSpace,
-};
+use computer_use_action::{Button, ComputerUseAction, Notches, ScrollDir, Summary, TypedText};
 use computer_use_desktop::{Ms, SeatIsolation};
+use computer_use_geometry::{Coord, Point, Size, WindowSpace};
 use computer_use_seat_input::{
     InputOp, Keycode, Keymap, KeymapEntry, PlanError, PlannedAction, Press, Produces,
     ResolvedPoints, ScrollKind, SeatCaps, SeatError, ShiftLevel, TextPath,

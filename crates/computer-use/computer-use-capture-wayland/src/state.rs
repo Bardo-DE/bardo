@@ -2,7 +2,7 @@
 //! [`super`] turns the record into frames.
 
 use computer_use_capture::CaptureError;
-use computer_use_action::{Coord, PixelFormat, Point, Rect, Size, WindowSpace};
+use computer_use_geometry::{Coord, PixelFormat, Point, Rect, Size, WindowSpace};
 use std::collections::BTreeMap;
 use crate::key::{ObjectKey as Key, Rounds, SyncTag};
 use super::lease::LeaseRec;

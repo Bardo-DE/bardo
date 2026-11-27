@@ -10,12 +10,12 @@ use model_http::{
     BodyKind, BodySink, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb,
 };
-use model_provider::ModelName;
 use model_replay::{
     BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp,
     RecordedAt, RecordingTransport, SinkError, WireBody, WireCassette, WireEnd, WireExchange,
     WireFrame, WireSink,
 };
+use model_types::ModelName;
 use proptest::prelude::*;
 
 fn block_on<T>(future: impl Future<Output = T>) -> T {

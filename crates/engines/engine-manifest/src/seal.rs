@@ -9,7 +9,7 @@
 //! `/`. Directories are not listed. The owner and the exact mode bits are not part of it, so
 //! an extraction by any user and any umask seals the same.
 //!
-//! This module is the lines and the hash. Walking a tree to make them is `engine-probe`'s.
+//! This module is the lines and the hash. Walking a tree to make them is `engine-fs`'s.
 
 use sha2::{Digest, Sha256};
 use std::fmt::Write as _;
@@ -86,7 +86,7 @@ mod tests {
 
     /// The digest `tools/seal.py`, which pins the manifest's seals, gives the tree
     /// `a` ("hello\n"), `d/run` (executable "#!/bin/sh\n") and `d/link -> run`: the two must
-    /// agree. `engine-probe` makes the same seal from a real tree.
+    /// agree. `engine-fs` makes the same seal from a real tree.
     #[test]
     fn lines_have_the_seal_the_pinning_tool_gives_them() {
         let lines = vec![

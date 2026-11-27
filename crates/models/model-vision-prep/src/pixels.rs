@@ -1,6 +1,6 @@
 //! Raw frames in, one encoded image out.
 
-use computer_use_action::{DeviceSize, ImageSpace, PixelFormat, Size};
+use computer_use_geometry::{DeviceSize, ImageSpace, PixelFormat, Size};
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "pixels")]

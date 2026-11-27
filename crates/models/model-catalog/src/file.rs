@@ -1,9 +1,9 @@
 //! The catalog file: the entry's serde form. Read by `parse_entry`, written by `ModelEntry`'s
 //! `Serialize`.
 
-use model_provider::{ComputerUseSupport, EmbedCaps, ImageLimits};
+use model_types::{ComputerUseSupport, EmbedCaps, ImageLimits};
 use serde::{Deserialize, Serialize, Serializer};
-use speech_provider::SpeechCaps;
+use speech_core::SpeechCaps;
 
 use crate::{
     Capabilities, CatalogId, ColdStartEstimateS, EngineProfile, Family, Licence, Locality,

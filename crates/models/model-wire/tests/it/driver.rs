@@ -7,10 +7,11 @@ use std::fmt::Write as _;
 use std::ops::ControlFlow;
 
 use base_ids::{Dims, Tokens};
+use model_core::{Embedder, Provider};
 use model_http::{BodyKind, Framing, HttpError, HttpStatus};
-use model_provider::{
-    Embedder, Knob, ModelInfo, ModelName, Provider, ProviderError, RetrySeconds, StopReason,
-    TurnEnd, TurnEvent, TurnUsage,
+use model_types::{
+    Knob, ModelInfo, ModelName, ProviderError, RetrySeconds, StopReason, TurnEnd, TurnEvent,
+    TurnUsage,
 };
 use model_wire::Driver;
 use support::*;
@@ -268,7 +269,7 @@ fn transport_failures_map_to_provider_errors() {
         ),
         (
             HttpError::Status(HttpStatus(503)),
-            ProviderError::Server(model_provider::ServerStatus(503)),
+            ProviderError::Server(model_types::ServerStatus(503)),
         ),
         (
             HttpError::Status(HttpStatus(404)),
@@ -478,7 +479,7 @@ impl model_http::Transport for Probe {
 
 fn probe_turn(
     probe: Probe,
-    deadline: Option<model_provider::WaitMs>,
+    deadline: Option<model_types::WaitMs>,
 ) -> (Driver<LineCodec, Probe>, Result<TurnEnd, ProviderError>) {
     let d = Driver::new(
         LineCodec {
@@ -504,7 +505,7 @@ fn only_a_chunk_with_a_frame_in_it_is_progress_and_the_request_deadline_reaches_
         ],
         ..Probe::default()
     };
-    let (d, _) = probe_turn(probe, Some(model_provider::WaitMs(5_000)));
+    let (d, _) = probe_turn(probe, Some(model_types::WaitMs(5_000)));
     let probe = d.transport();
     assert_eq!(
         *probe.progress.lock().unwrap(),
@@ -538,7 +539,7 @@ fn a_stream_of_comments_ends_at_the_byte_cap() {
 
 #[test]
 fn every_exit_tells_the_sink_what_the_attempt_may_have_cost() {
-    use model_provider::UsageReport::{Known, Nothing, Unknown};
+    use model_types::UsageReport::{Known, Nothing, Unknown};
     let usage = |input, output| TurnUsage {
         input: Tokens(input),
         output: Tokens(output),
@@ -624,7 +625,7 @@ impl model_http::Transport for Hang {
 
 #[test]
 fn a_dropped_turn_still_tells_the_sink() {
-    use model_provider::UsageReport::Unknown;
+    use model_types::UsageReport::Unknown;
     use std::task::{Context, Poll, Waker};
     let d = Driver::new(
         LineCodec {

@@ -3,7 +3,7 @@
 use base_ids::Tokens;
 use model_http::{BodyKind, HttpStatus, ResponseHead, WaitSeconds};
 use model_openai_compat::{Flavor, OpenAiCodec};
-use model_provider::{ProviderDetail, ProviderError, RetrySeconds, ServerStatus};
+use model_types::{ProviderDetail, ProviderError, RetrySeconds, ServerStatus};
 use model_wire::ErrorWire;
 
 fn head(status: u16, body: BodyKind, retry_after: Option<u32>) -> ResponseHead {

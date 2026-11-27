@@ -16,8 +16,7 @@ use hosting::engine::Chat;
 use hosting::rig::{AgentsPlan, World};
 use inference_core::{ChargeTotal, Period, SpendScope};
 use inference_dbus::inference::AgentsProxy;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde_json::json;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
@@ -203,7 +202,7 @@ async fn an_openai_chat_with_a_tool_call_and_result_streams_through_with_the_rea
         ),
         (5, 2, TurnCount(1))
     );
-    assert_eq!(counted.charges.reported, Money::usd(Decimal::ZERO));
+    assert_eq!(counted.charges.reported, Money::usd(0, 0));
 }
 
 #[tokio::test(flavor = "multi_thread")]

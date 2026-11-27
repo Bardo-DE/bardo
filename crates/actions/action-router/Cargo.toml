@@ -35,15 +35,15 @@ tracing = { workspace = true }
 
 [dev-dependencies]
 base-path = { path = "../../base/base-path" }
-model-provider = {path = "../../models/model-provider"}
+computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-types = {path = "../../models/model-types"}
 toml = { workspace = true }
-rust_decimal = { workspace = true, features = ["std", "serde"] }
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-fake = {path = "../action-fake"}
 action-provider = {path = "../action-provider"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 proptest = { workspace = true }
-computer-use-action = {path = "../../models/computer-use-action"}
 
 [lints]
 workspace = true

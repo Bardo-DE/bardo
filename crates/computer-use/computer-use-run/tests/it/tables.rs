@@ -8,13 +8,16 @@ use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat,
-    Point, Rect, Repeat, Scale120, Size, Summary, Target, TypedText, WaitMs, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Repeat, Summary, Target,
+    TypedText, WaitMs,
 };
 use computer_use_action::{WindowClass, WindowTrust};
 use computer_use_bus::WindowRef;
 use computer_use_capture::{Frame, FrameDigest, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{Digest32, Stamp, ToplevelIdent};
+use computer_use_geometry::{
+    Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
+};
 use computer_use_run::{
     ContextObs, CursorObs, Focus, LeaseBook, Observation, Repeats, Stall, TreeObs, Visibility,
     WindowInfo, classify_effect, turn,

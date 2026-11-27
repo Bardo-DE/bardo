@@ -10,8 +10,8 @@ use computer_use_a11y_tree::{
     A11yError, A11yTarget, NodeAction, NodeBudget, NodeState, Parent, Role, TreeSource, Truncation,
     secret_rects,
 };
-use computer_use_action::{Coord, Point, Rect, Size};
 use computer_use_desktop::{Pid, WindowTitle};
+use computer_use_geometry::{Coord, Point, Rect, Size};
 use provenance::{Integrity, SpaceId};
 use std::collections::HashMap;
 
@@ -135,7 +135,7 @@ fn desktop() -> FakeTree {
         .acting(102, "click")
 }
 
-fn rect(x: u32, y: u32, w: u32, h: u32) -> Rect<computer_use_action::WindowSpace> {
+fn rect(x: u32, y: u32, w: u32, h: u32) -> Rect<computer_use_geometry::WindowSpace> {
     Rect {
         origin: Point::new(Coord(x), Coord(y)),
         size: Size::new(Coord(w), Coord(h)),

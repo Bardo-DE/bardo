@@ -13,14 +13,14 @@ fn the_wire_tables_equal_the_protocol_enums() {
         GlowState::Working.code(),
         WireCode(ProtocolGlow::Working as u32)
     );
-    let at = computer_use_action::Rect {
-        origin: computer_use_action::Point::new(
-            computer_use_action::Coord(0),
-            computer_use_action::Coord(0),
+    let at = computer_use_geometry::Rect {
+        origin: computer_use_geometry::Point::new(
+            computer_use_geometry::Coord(0),
+            computer_use_geometry::Coord(0),
         ),
-        size: computer_use_action::Size::new(
-            computer_use_action::Coord(1),
-            computer_use_action::Coord(1),
+        size: computer_use_geometry::Size::new(
+            computer_use_geometry::Coord(1),
+            computer_use_geometry::Coord(1),
         ),
     };
     assert_eq!(

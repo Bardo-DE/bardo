@@ -1,12 +1,12 @@
 //! Names and checked text on the inference wire. The tool and JSON ids are the model layer's
-//! `model-provider` ones, re-exported: one definition on both sides of the bridge.
+//! `model-types` ones, re-exported: one definition on both sides of the bridge.
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 
-pub use model_provider::{JsonText, OpaqueText, SchemaText, SignatureText, ToolCallId, ToolName};
+pub use model_types::{JsonText, OpaqueText, SchemaText, SignatureText, ToolCallId, ToolName};
 
 /// Why wire text was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

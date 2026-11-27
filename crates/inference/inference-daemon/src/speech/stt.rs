@@ -23,13 +23,13 @@ use inference_router::seams::EngineHost;
 use inference_turns::bridge;
 use inference_turns::pipeline::Transcriber;
 use model_catalog::EngineKind;
-use model_provider::{ModelName, ProviderError};
-use speech_host_client::{HostSocket, SpeechHostClient};
-use speech_provider::{
+use model_types::{ModelName, ProviderError};
+use speech_core::{
     AudioChunk, AudioFormat, AudioMs, AudioSource, Lang, LangChoice, PcmBytes, PcmFormat,
     SampleIndex, SampleRate, SpeechToText, SttEnd, SttMode, SttRequest, TranscriptEvent,
     TranscriptSink,
 };
+use speech_host_client::{HostSocket, SpeechHostClient};
 use std::ops::ControlFlow;
 use std::time::Duration;
 use tokio::sync::mpsc;

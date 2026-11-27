@@ -10,8 +10,10 @@ publish.workspace = true
 
 [dependencies]
 base-ids = {path = "../../base/base-ids"}
-model-provider = {path = "../model-provider"}
-speech-provider = {path = "../speech-provider"}
+computer-use-geometry = {path = "../computer-use-geometry"}
+model-types = {path = "../model-types"}
+model-vision-prep = {path = "../model-vision-prep"}
+speech-core = {path = "../speech-core"}
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 thiserror = { workspace = true }

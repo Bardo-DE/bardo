@@ -35,7 +35,7 @@ pub fn digest(buf: &PixelBuf) -> FrameDigest {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computer_use_action::{DeviceSize, PixelFormat};
+    use computer_use_geometry::{DeviceSize, PixelFormat};
     use std::sync::Arc;
 
     fn buf(format: PixelFormat, w: u32, h: u32, fill: u8) -> PixelBuf {

@@ -1,13 +1,13 @@
 use base_ids::Tokens;
-use model_provider::{
-    EngineExtras, ImageDetail, Knob, Limits, Milli, ModelName, OutputShape, ProviderError,
-    Reasoning, Role, Sampling, StopReason, ToolChoice, ToolParallelism, TurnEnd, TurnEvent,
-    TurnUsage,
-};
 use model_replay::{
     BuildLabel, ByteCount, Cassette, CassetteError, CassetteHeader, CassetteVersion, ContextStamp,
     EngineLabel, EngineStamp, ImageDigest, ImagePrint, Interaction, InteractionId, MessagePrint,
     PartPrint, PrintHash, RecordedAt, RequestPrint,
+};
+use model_types::{
+    EngineExtras, ImageDetail, Knob, Limits, Milli, ModelName, OutputShape, ProviderError,
+    Reasoning, Role, Sampling, StopReason, ToolChoice, ToolParallelism, TurnEnd, TurnEvent,
+    TurnUsage,
 };
 use model_vision_prep::MediaType;
 
@@ -129,13 +129,13 @@ fn bad_files_name_the_line() {
 mod speech {
     use super::stamp;
     use base_ids::Tokens;
-    use model_provider::{ModelName, ProviderError};
     use model_replay::{
         AudioDigest, AudioPrint, ByteCount, CassetteError, CassetteHeader, CassetteVersion,
         ContextStamp, RecordedAt, SpeechCassette, SpeechInteraction, SttPrint, TextDigest,
         TextPrint, TtsPrint,
     };
-    use speech_provider::{
+    use model_types::{ModelName, ProviderError};
+    use speech_core::{
         AudioFormat, AudioMs, HeardText, Lang, LangChoice, PcmFormat, SampleIndex, SampleRate,
         SttEnd, SttMode, TranscriptEvent, TtsEnd, VoiceId,
     };

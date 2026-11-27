@@ -2,9 +2,9 @@
 
 use std::io::ErrorKind;
 
-use model_provider::ProviderError;
+use model_types::ProviderError;
 use serde::Serialize;
-use speech_provider::{HostOut, encode_frame};
+use speech_core::{HostOut, encode_frame};
 use tokio::net::UnixStream;
 
 use crate::framed::FrameBuffer;

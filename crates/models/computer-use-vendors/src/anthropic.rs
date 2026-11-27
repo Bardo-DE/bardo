@@ -14,9 +14,10 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, ImageSpace, Modifier, Notches, Rect, Repeat, ScrollBy,
-    ScrollDir, Size, Target, TypedText, WaitMs,
+    Button, ClickCount, ComputerUseAction, Modifier, Notches, Repeat, ScrollBy, ScrollDir, Target,
+    TypedText, WaitMs,
 };
+use computer_use_geometry::{ImageSpace, Rect, Size};
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
 
@@ -210,7 +211,10 @@ fn zoom(args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
     Ok(ComputerUseAction::Zoom {
         region: Rect {
             origin: point((x0, y0), None)?,
-            size: Size::new(computer_use_action::Coord(w), computer_use_action::Coord(h)),
+            size: Size::new(
+                computer_use_geometry::Coord(w),
+                computer_use_geometry::Coord(h),
+            ),
         },
     })
 }

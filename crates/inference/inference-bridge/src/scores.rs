@@ -17,7 +17,7 @@
 
 use base_ids::Permille;
 use inference_core as pi;
-use model_provider::{self as sp, FirstTokenLogprobs};
+use model_types::{self as sp, FirstTokenLogprobs};
 
 /// The widest top-k an engine is asked for (the OpenAI-compatible APIs stop at 20).
 const MOST: u32 = pi::MOST_CANDIDATES;

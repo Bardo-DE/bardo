@@ -1,0 +1,26 @@
+[package]
+name = "model-types"
+description = "The data of a model turn: requests, streaming events, capabilities, errors, ids, units, reported money and the names of computer-use dialects."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-ids = { path = "../../base/base-ids" }
+computer-use-geometry = {path = "../computer-use-geometry"}
+model-genai-names = {path = "../model-genai-names"}
+model-http = {path = "../model-http"}
+model-vision-prep = {path = "../model-vision-prep"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+base64 = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

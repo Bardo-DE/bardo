@@ -262,7 +262,7 @@ fn over_budget(run: &Run, kind: RunBudgetKind) -> bool {
         RunBudgetKind::Active => run.used.active >= run.task.budget.active,
         RunBudgetKind::Spend => {
             let (spent, cap) = (run.used.spend.reported, run.task.budget.spend);
-            spent.currency == cap.currency && spent.amount > cap.amount
+            spent > cap
         }
         RunBudgetKind::Stall | RunBudgetKind::Rate => false,
     }

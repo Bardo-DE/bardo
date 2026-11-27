@@ -3,14 +3,15 @@
 use crate::support;
 
 use base_ids::Count;
+use model_core::check_sequence;
 use model_extract::{
     ExtractFailure, ExtractMode, ExtractSession, Extracted, FINAL_RESULT_TOOL, RepairBudget,
     RepairsLeft,
 };
-use model_provider::{
+use model_types::{
     CharCount, ChoiceText, Extract, Field, FieldName, JsonText, OutputShape, Part, Role,
     SchemaDialect, Shape, ShapeError, StopReason, ToolCall, ToolCallId, ToolChoice, ToolName,
-    ToolSpec, check_sequence,
+    ToolSpec,
 };
 use support::{base, end};
 
@@ -75,7 +76,7 @@ fn call(input: &str) -> ToolCall {
     }
 }
 
-fn user_texts(request: &model_provider::TurnRequest) -> Vec<String> {
+fn user_texts(request: &model_types::TurnRequest) -> Vec<String> {
     request
         .messages
         .iter()
@@ -131,7 +132,7 @@ fn a_prompted_request_puts_the_schema_in_the_system_turn() {
     let mut with_system = base();
     with_system.messages.insert(
         0,
-        model_provider::Message {
+        model_types::Message {
             role: Role::System,
             parts: vec![Part::Text("be brief".into())],
         },

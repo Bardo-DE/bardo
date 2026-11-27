@@ -1,7 +1,7 @@
 //! The pure half of the framing: bytes in any chunking in, whole host frames out.
 
-use model_provider::ProviderError;
-use speech_provider::{FrameError, HostOut, decode_frame, frame_length};
+use model_types::ProviderError;
+use speech_core::{FrameError, HostOut, decode_frame, frame_length};
 
 /// The bytes read so far and not yet a whole frame; the pure half of the reader, so any bytes in
 /// any chunking can be fed to it without a socket.

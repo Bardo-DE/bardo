@@ -2,7 +2,7 @@ use crate::host::FileHost;
 use crate::support::{fetcher, fixture, row};
 use engine_install::{EngineInstalls, HelperProgram, Parts, Standing, StartError};
 use engine_manifest::{Arch, BackendChoice, Failure, Gpus, Host, Manifest, OsRelease};
-use engine_probe::{Roots, Scope};
+use engine_manifest::{Roots, Scope};
 use model_catalog::EngineKind;
 use model_http::TlsRoots;
 use std::path::{Path, PathBuf};

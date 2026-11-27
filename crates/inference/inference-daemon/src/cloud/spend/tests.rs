@@ -6,8 +6,7 @@ use base_testkit::Scratch;
 use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TurnUsage};
 use inference_settings::Spent;
 use inference_settings::{ScopeLimits, SpendLimits, SpendLine, cents_to_limit};
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -34,14 +33,14 @@ fn used(input: u32, output: u32) -> TurnUsage {
 /// US dollar.
 fn charged(input: u32, output: u32, milli: i64) -> TurnUsage {
     TurnUsage {
-        charge: Some(Money::usd(Decimal::new(milli, 3))),
+        charge: Some(Money::usd(milli, 3)),
         ..used(input, output)
     }
 }
 
 fn milli(milli: i64) -> ChargeTotal {
     ChargeTotal {
-        reported: Money::usd(Decimal::new(milli, 3)),
+        reported: Money::usd(milli, 3),
         unpriced: TurnCount(0),
     }
 }

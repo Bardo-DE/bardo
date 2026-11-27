@@ -6,10 +6,8 @@
 use crate::budget::Budget;
 use action_vocab::{Days, Depth, Millis, Seconds};
 use base_ids::{Count, Tokens};
-use iso_currency::Currency;
-use model_provider::Money;
+use model_types::{Currency, Money};
 use permission_core::{Mode, RowSets};
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 /// When the breaker trips (`agent.breaker.*`).
@@ -72,10 +70,7 @@ pub const STANDARD_BUDGET: Budget = Budget {
     chain: Depth(4),
     wall: Seconds(1800),
     reviews: Count(300),
-    spend: Some(Money {
-        amount: Decimal::ZERO,
-        currency: Currency::USD,
-    }),
+    spend: Some(Money::zero(Currency::USD)),
 };
 
 /// How many tokens each section of the planner's working set may use (`companion.budget.*`,

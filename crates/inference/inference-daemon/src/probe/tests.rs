@@ -147,7 +147,7 @@ fn a_probed_chat_model_is_an_on_device_free_card_on_the_runtimes_account() {
     // The entry the turn code reads carries the context and tool support the probe found.
     let caps = local.caps().expect("chat caps");
     assert_eq!((caps.context.0, caps.max_output.0), (8192, 8192));
-    assert_eq!(caps.tools, model_provider::ToolSupport::ServerParsed);
+    assert_eq!(caps.tools, model_types::ToolSupport::ServerParsed);
     assert_eq!(local.entry.label, "llama3.2:3b");
 }
 
@@ -163,10 +163,10 @@ fn vision_and_reasoning_reach_the_entry_and_a_plain_model_has_no_tools() {
     let sockets = std::path::Path::new("/nonexistent");
     let made = found(Runtime::LmStudio, 1234, vec![rich, plain]).local_models(sockets);
     let caps = |index: usize| made[index].caps().expect("caps").clone();
-    assert!(caps(0).inputs.contains(&model_provider::InputKind::Image));
-    assert_eq!(caps(0).reasoning, model_provider::Support::Present);
-    assert_eq!(caps(1).tools, model_provider::ToolSupport::Absent);
-    assert!(!caps(1).inputs.contains(&model_provider::InputKind::Image));
+    assert!(caps(0).inputs.contains(&model_types::InputKind::Image));
+    assert_eq!(caps(0).reasoning, model_types::Support::Present);
+    assert_eq!(caps(1).tools, model_types::ToolSupport::Absent);
+    assert!(!caps(1).inputs.contains(&model_types::InputKind::Image));
     assert_eq!(made[1].card.account.as_str(), "lm-studio");
 }
 

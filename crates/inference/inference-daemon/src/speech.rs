@@ -1,6 +1,6 @@
 //! Speech turns: the runners that connect a turn to a speech engine.
 //!
-//! The engines are the model layer's `speech-provider` backends, closed enums in inferd: [`SttBackend`] is
+//! The engines are the model layer's `speech-core` backends, closed enums in inferd: [`SttBackend`] is
 //! built (one arm, [`speech_host_client::SpeechHostClient`] over the engine's Unix socket;
 //! `stt.rs`); no text-to-speech backend exists. The audio rules every `Transcribe` turn obeys
 //! (`check_audio`, `audio_ms`, `AudioIn`) are `inference_router::audio`'s.

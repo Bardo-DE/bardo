@@ -10,7 +10,7 @@
 
 use base_ids::Count;
 use model_extract::RepairBudget;
-use model_provider::{CharCount, SchemaLimits};
+use model_types::{CharCount, SchemaLimits};
 use serde::{Deserialize, Serialize};
 use std::ops::RangeInclusive;
 

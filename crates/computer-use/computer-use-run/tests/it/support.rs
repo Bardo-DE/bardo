@@ -11,8 +11,7 @@ use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat, Point,
-    Rect, Scale120, Size, Summary, Target, WaitMs, WindowSpace,
+    Button, ClickCount, ComputerUseAction, FinishOutcome, Summary, Target, WaitMs,
 };
 use computer_use_action::{RunMode, WindowTrust};
 use computer_use_bus::{
@@ -22,6 +21,9 @@ use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{
     BackendCaps, BackendKind, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, MaskWhere, Pid, Stamp,
     ToplevelIdent, ToplevelInfo, WindowTitle, WorkspaceRef,
+};
+use computer_use_geometry::{
+    Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
 };
 use computer_use_run::{
     ComputerUseConfig, ContextObs, CursorObs, Focus, ModelReply, Observation, Rules, Run,

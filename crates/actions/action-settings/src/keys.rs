@@ -3,8 +3,7 @@
 //! tables to each other, so a row without a reader or a reader without a row fails.
 
 use crate::AgentSettings;
-use model_provider::Money;
-use rust_decimal::Decimal;
+use model_types::Money;
 use serde::Deserialize;
 use serde::de::value::{Error as DeError, StrDeserializer};
 use serde::de::{DeserializeOwned, IntoDeserializer};
@@ -80,7 +79,7 @@ fn rest() -> Vec<RuleKey<AgentSettings>> {
         number("agent.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
             // Millionths of a US dollar in the file. 0 is a cap of nothing: the turn after any
             // reported charge stops (a free or unpriced turn reports none).
-            s.agent.budget.spend = Some(Money::usd(Decimal::new(v, 6)));
+            s.agent.budget.spend = Some(Money::usd(v, 6));
         }),
     ]
 }

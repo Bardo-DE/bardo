@@ -11,9 +11,10 @@
 //! Points are in the pixels of the resized image the model was shown.
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, CoordSpace, FinishOutcome, Notches, ScrollBy, ScrollDir,
-    Summary, Target, TypedText, WaitMs,
+    Button, ClickCount, ComputerUseAction, FinishOutcome, Notches, ScrollBy, ScrollDir, Summary,
+    Target, TypedText, WaitMs,
 };
+use computer_use_geometry::CoordSpace;
 
 use crate::common::{Batch, Collected, Ctx, Dialect, bounded, click};
 use crate::scan::{self, Call};

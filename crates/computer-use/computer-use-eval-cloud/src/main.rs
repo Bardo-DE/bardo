@@ -146,7 +146,7 @@ fn charged(totals: &Totals) -> String {
         0 => String::new(),
         n => format!(" over the turns that reported one ({n} did not)"),
     };
-    format!("{} {}{unpriced}", reported.amount, reported.currency.code())
+    format!("{reported}{unpriced}")
 }
 
 fn served() -> Result<ServedBy, RunError> {

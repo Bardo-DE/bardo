@@ -337,7 +337,7 @@ fn a_hijacked_reviewer_never_loosens_ask_or_deny() {
 
 #[test]
 fn the_schema_the_model_is_given_names_the_codes_the_parser_reads() {
-    use model_provider::Shape;
+    use model_types::Shape;
     let Shape::Record(fields) = verdict_shape(Stage::Deliberate) else {
         panic!("a record")
     };

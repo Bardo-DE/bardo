@@ -7,10 +7,8 @@
 
 use std::collections::BTreeSet;
 
-use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Coord, CoordSpace, GridMax, Length, ModelSpace, Point,
-    Target, TextError,
-};
+use computer_use_action::{Button, ClickCount, ComputerUseAction, Target, TextError};
+use computer_use_geometry::{Coord, CoordSpace, GridMax, Length, ModelSpace, Point};
 
 use crate::{DropReason, Dropped, InSpace, ParseError, ParseLimits, Parsed, VerbText};
 

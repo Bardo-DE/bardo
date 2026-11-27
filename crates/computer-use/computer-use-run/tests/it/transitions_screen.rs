@@ -7,12 +7,13 @@ use crate::support::*;
 use account_core::AppName;
 use action_gate_wire::GateAnswer;
 use computer_use_a11y_tree::Role;
-use computer_use_action::{Chord, ComputerUseAction, Modifier, Repeat, WindowSpace};
+use computer_use_action::{Chord, ComputerUseAction, Modifier, Repeat};
 use computer_use_bus::{
     ActionResult, BlockedOn, ComputerUseOutcome, ComputerUseRecord, LocalRefusal, QuestionId,
     Refusal, ScreenKind, SuccessCheck,
 };
 use computer_use_desktop::{BackendKind, Stamp};
+use computer_use_geometry::WindowSpace;
 use computer_use_run::{
     ComputerUseSignal, FORCED_NO, FORCED_YES, Held, ReaderMode, Run, RunEffect, RunInput, RunPhase,
     ScreenRead,

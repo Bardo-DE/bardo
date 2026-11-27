@@ -12,7 +12,7 @@ use action_vocab::CallerRole;
 use action_wire::SessionOpen;
 use base_testkit::PrivateBus;
 use caller_role_types::CallerRole as Role;
-use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_action::ComputerUseAction;
 use computer_use_action::{RunMode, WindowTrust};
 use computer_use_bus::{
     ActionResult, AuthorisedBy, ComputerUseOutcome, ComputerUseRecord, FrameNote, TargetedAction,
@@ -21,6 +21,7 @@ use computer_use_bus::{
 use computer_use_capture::FrameDigest;
 use computer_use_daemon::IntentsGate;
 use computer_use_desktop::Digest32;
+use computer_use_geometry::WindowSpace;
 use computer_use_run::{GateCheck, GateEvent, GateLink};
 use provenance::{
     AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, Source, SpaceId,
@@ -226,7 +227,7 @@ pub(crate) fn record_of_run(run: &RunId) -> Vec<ComputerUseRecord> {
             result: ActionResult::Done,
             frame: FrameNote::NotKept {
                 digest: FrameDigest(Digest32([2; 32])),
-                size: computer_use_action::DeviceSize { w: 10, h: 10 },
+                size: computer_use_geometry::DeviceSize { w: 10, h: 10 },
             },
             input: None,
         },

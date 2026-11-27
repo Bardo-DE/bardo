@@ -7,8 +7,9 @@ use crate::fetch::{FetchError, Fetcher};
 use crate::progress::{CancelToken, Meter};
 use crate::pyenv;
 use crate::space::require_space;
+use engine_fs::{SealError, read_record, seal_of, write_record};
 use engine_manifest::{Delivery, Failure, Row};
-use engine_probe::{InstallDir, Record, RecordError, Roots, Scope, SealError, seal_of};
+use engine_manifest::{InstallDir, Record, RecordError, Roots, Scope};
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
@@ -219,7 +220,7 @@ impl Installer {
                 seal: seal.as_hex().to_owned(),
                 ..record
             };
-            record.write(&record_at).map_err(InstallError::Record)
+            write_record(&record, &record_at).map_err(InstallError::Record)
         })
         .await?;
         publish(&partial, dir)
@@ -247,7 +248,7 @@ fn publish(partial: &Path, dir: &InstallDir) -> Result<(), InstallError> {
 
 /// Whether `dir` holds a finished install of `row`.
 fn is_installed(dir: &InstallDir, row: &Row) -> bool {
-    Record::read(&dir.record()).is_ok_and(|record| {
+    read_record(&dir.record()).is_ok_and(|record| {
         record.engine == engine_spec::engine(row.engine).disk_word()
             && record.version == row.version
             && record.backend == row.backend.slug()

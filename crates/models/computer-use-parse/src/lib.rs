@@ -5,7 +5,9 @@
 //! `u32` within bounds. An unknown verb is dropped and reported, never guessed.
 //!
 //! ```
-//! use computer_use_action::{ActionClass, ModelSpace, TextDialect};
+//! use computer_use_action::ActionClass;
+//! use computer_use_geometry::ModelSpace;
+//! use model_types::TextDialect;
 //! use computer_use_parse::{InSpace, ParseLimits, parse_text};
 //!
 //! let reply = "Thought: Open the search box.\nAction: click(start_box='(459,203)')";

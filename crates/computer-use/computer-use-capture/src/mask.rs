@@ -1,8 +1,8 @@
 //! What is hidden from the model, and what was actually hidden.
 
 use crate::pixels::{BYTES_PER_PIXEL, PixelBuf};
-use computer_use_action::{Coord, Rect, Scale120, Size, WindowSpace};
 use computer_use_desktop::MaskWhere;
+use computer_use_geometry::{Coord, Rect, Scale120, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 

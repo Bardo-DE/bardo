@@ -1,7 +1,8 @@
 //! What the seat is asked to do, one step at a time.
 
-use computer_use_action::{Button, Notches, Point, ScrollDir, TypedText, WindowSpace};
+use computer_use_action::{Button, Notches, ScrollDir, TypedText};
 use computer_use_desktop::Ms;
+use computer_use_geometry::{Point, WindowSpace};
 use serde::{Deserialize, Serialize};
 
 /// A key or button going down or up.

@@ -15,19 +15,18 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-geometry = {path = "../../models/computer-use-geometry"}
+model-types = {path = "../../models/model-types"}
 computer-use-parse = {path = "../../models/computer-use-parse"}
 computer-use-session = {path = "../../models/computer-use-session"}
 model-vision-prep = {path = "../../models/model-vision-prep"}
-model-provider = {path = "../../models/model-provider"}
 model-catalog = {path = "../../models/model-catalog"}
-rust_decimal = { workspace = true, features = ["std", "serde"] }
 base64 = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-iso_currency = { workspace = true, features = ["with-serde"] }
 # Its own fakes, for tests/it.
 inference-core = { path = ".", features = ["testing"] }
 proptest = { workspace = true }

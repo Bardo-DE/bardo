@@ -10,7 +10,7 @@
 use crate::prepared::Prepared;
 use action_core::TurnReport;
 use model_genai_names::Operation;
-use model_provider::Money;
+use model_types::Money;
 use permission_core::Ruling;
 use provenance::{SessionId, TaskId};
 use tracing::Span;
@@ -47,7 +47,7 @@ pub fn execute_tool(p: &Prepared) -> Span {
 
 /// A charge as the span writes it: the amount and the ISO code, as in `0.0042 USD`.
 fn charge_text(charge: Money) -> String {
-    format!("{} {}", charge.amount, charge.currency.code())
+    charge.to_string()
 }
 
 /// The span of one model turn of a task, written when its usage is reported: the tokens it
@@ -72,7 +72,6 @@ mod tests {
     use super::*;
     use action_core::TokenTotals;
     use base_ids::Tokens;
-    use rust_decimal::Decimal;
     use std::sync::{Arc, Mutex};
     use tracing::span::{Attributes, Id, Record};
     use tracing::{Event, Metadata, Subscriber};
@@ -99,7 +98,7 @@ mod tests {
 
     #[test]
     fn a_charge_is_written_as_an_amount_and_a_currency_code() {
-        assert_eq!(charge_text(Money::usd(Decimal::new(42, 4))), "0.0042 USD");
+        assert_eq!(charge_text(Money::usd(42, 4)), "0.0042 USD");
     }
 
     #[test]
@@ -111,7 +110,7 @@ mod tests {
                 output: Tokens(2),
                 cached: Tokens(1),
             },
-            charge: Some(Money::usd(Decimal::new(42, 4))),
+            charge: Some(Money::usd(42, 4)),
         };
         let session = SessionId::parse("s-1").expect("session");
         let task = TaskId::parse("t-1").expect("task");
