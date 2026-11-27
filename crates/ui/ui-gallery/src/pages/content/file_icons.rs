@@ -6,7 +6,6 @@
 use crate::pages::content::picture::wide_image;
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
 use ui_components::style::icon::retint::Tint;

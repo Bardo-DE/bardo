@@ -6,7 +6,6 @@ use shell_settings::DockSettings;
 use shell_ui_kit::app_icons::cache::Generation;
 use shell_ui_kit::app_icons::{IconLook, IconResolver};
 use std::path::PathBuf;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
 use ui_components::style::icon::retint::Tint;

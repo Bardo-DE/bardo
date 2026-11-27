@@ -3,7 +3,6 @@
 
 use image::{ImageFormat, Rgba, RgbaImage};
 use std::io::Cursor;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::icon::retint::retint;

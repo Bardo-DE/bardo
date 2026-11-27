@@ -11,7 +11,6 @@ use ui_components::base::press::Press;
 use ui_components::components::controls::badge::BadgeContent;
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::menus::palette::palette_group::PaletteGroups;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::plate_tint::PlateTint;

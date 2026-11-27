@@ -9,7 +9,6 @@ use dioxus::prelude::*;
 use image::{Rgba, RgbaImage};
 use probe::{keep, pixel, rect};
 use std::time::Duration;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::plate_tint::PlateTint;

@@ -179,7 +179,6 @@ mod tests {
     use super::{make, styled};
     use crate::app_icons::key::{IconKey, TintKey};
     use crate::app_icons::size::AssetPx;
-    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::Tint;
 

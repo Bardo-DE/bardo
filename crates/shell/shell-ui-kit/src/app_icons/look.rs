@@ -5,7 +5,6 @@
 //! into the UI kit's tone band, design/29 §11 F3). Pure.
 
 use appearance_settings::IconsSettings;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::retint::Tint;
 
@@ -59,7 +58,6 @@ pub fn icon_look(icons: &IconsSettings, space: &SpaceLook, scheme: Scheme) -> Ic
 mod tests {
     use super::{IconLook, icon_look};
     use appearance_settings::IconsSettings;
-    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::Tint;
     use ui_components::style::space::presets::default_look;

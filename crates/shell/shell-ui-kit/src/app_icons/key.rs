@@ -6,7 +6,6 @@
 
 use std::path::PathBuf;
 
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::retint::Tint;
 
@@ -131,7 +130,6 @@ mod tests {
     use crate::app_icons::size::AssetPx;
     use std::collections::HashSet;
     use std::path::PathBuf;
-    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::Tint;
 

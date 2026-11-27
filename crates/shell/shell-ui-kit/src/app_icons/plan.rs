@@ -61,7 +61,6 @@ mod tests {
     use crate::app_icons::look::IconLook;
     use crate::app_icons::size::AssetPx;
     use std::path::Path;
-    use ui_components::prelude::IconStyle;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::Tint;
 

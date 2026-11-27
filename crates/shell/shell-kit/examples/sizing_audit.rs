@@ -12,7 +12,6 @@ use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::button_model::{Answers, ImagePosition};
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::components::controls::slider_model::SliderLook;
-use ui_components::prelude::IconStyle;
 use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::plate_tint::PlateTint;
