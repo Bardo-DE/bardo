@@ -206,7 +206,7 @@ pub(crate) fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate
     let (sender, receiver) = channel::channel::<Input>();
     let source = system_source(home);
     let mut following = (theme == Theme::System)
-        .then(|| follow_desktop(source.clone(), sender.clone()))
+        .then(|| follow_desktop(source, sender.clone()))
         .flatten();
     let desktop_sender = sender.clone();
     let mut watch = store_for(home).watch::<AppearanceFile>(&ThreadSpawner);
@@ -229,7 +229,7 @@ pub(crate) fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate
                 // The first time the theme is `system`, ask the desktop (once, at start or after
                 // the file changes to it); the watcher stays for the run.
                 if input == Input::Theme(Theme::System) && following.is_none() {
-                    following = follow_desktop(source.clone(), desktop_sender.clone());
+                    following = follow_desktop(source, desktop_sender.clone());
                 }
                 heard = heard.after(input);
                 state.render.scheme = heard.scheme();
