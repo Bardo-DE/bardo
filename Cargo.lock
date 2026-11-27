@@ -128,6 +128,7 @@ dependencies = [
  "caller-identity-dbus",
  "caller-identity-linux",
  "caller-role-types",
+ "peers-callers",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -855,6 +856,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
+ "caller-identity-core",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -1144,6 +1146,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-xdg",
+ "caller-identity-core",
  "caller-role-types",
  "inference-client",
  "inference-core",
@@ -3620,12 +3623,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "caller-identity-dev"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "caller-identity-linux"
 version = "0.1.0"
 dependencies = [
  "base-fs",
  "caller-identity-core",
- "caller-identity-linux",
  "nix 0.31.3",
  "rustix 1.1.6",
  "thiserror 2.0.21",
@@ -3636,6 +3648,13 @@ name = "caller-role-types"
 version = "0.1.0"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "caller-roles"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
 ]
 
 [[package]]
@@ -4266,6 +4285,7 @@ name = "compositor-agent"
 version = "0.1.0"
 dependencies = [
  "caller-identity-core",
+ "caller-roles",
  "compositor-core",
  "desktop-protocols",
  "reis",
@@ -4288,6 +4308,7 @@ dependencies = [
  "base-time",
  "base-words",
  "base-xdg",
+ "caller-identity-dev",
  "calloop",
  "compositor-agent",
  "compositor-backend",
@@ -4393,6 +4414,7 @@ dependencies = [
 name = "compositor-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "zbus",
 ]
 
@@ -4427,13 +4449,16 @@ dependencies = [
  "base-ids",
  "base-spawn",
  "base-testkit",
+ "caller-identity-core",
  "caller-identity-dbus",
+ "caller-roles",
  "calloop",
  "compositor-backend",
  "compositor-core",
  "compositor-dbus",
  "dbus-kit",
  "desktop-protocols",
+ "peers-callers",
  "settings-dbus",
  "settings-portal",
  "settings-proto",
@@ -4534,6 +4559,7 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-roles",
  "compositor-app",
  "compositor-backend",
  "compositor-core",
@@ -8376,6 +8402,7 @@ name = "input-broker-wire"
 version = "0.1.0"
 dependencies = [
  "base-time",
+ "caller-identity-core",
  "thiserror 2.0.21",
 ]
 
@@ -8952,6 +8979,7 @@ dependencies = [
  "base-testkit",
  "caller-identity-core",
  "caller-identity-linux",
+ "caller-roles",
  "input-broker-client",
  "key-remap-client",
  "key-remap-core",
@@ -8961,7 +8989,7 @@ dependencies = [
  "keymap",
  "notify",
  "rustix 1.1.6",
- "service-locator",
+ "seat-guard",
  "settings-store-fs",
  "thiserror 2.0.21",
 ]
@@ -9822,6 +9850,7 @@ dependencies = [
 name = "memory-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "dbus-kit",
  "memory-core",
  "serde",
@@ -10351,6 +10380,7 @@ dependencies = [
  "base-xdg",
  "caller-identity-core",
  "caller-identity-linux",
+ "caller-roles",
  "hidraw-ioctl",
  "input-broker-client",
  "input-broker-wire",
@@ -10358,9 +10388,9 @@ dependencies = [
  "mouse-gestures-proto",
  "notify",
  "rustix 1.1.6",
+ "seat-guard",
  "serde",
  "serde_json",
- "service-locator",
  "settings-store-fs",
  "thiserror 2.0.21",
  "toml",
@@ -11829,6 +11859,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "peers-callers"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-dbus",
+ "caller-identity-linux",
+ "zbus",
+]
+
+[[package]]
 name = "pem"
 version = "3.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12241,9 +12281,12 @@ dependencies = [
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
+ "caller-identity-dev",
+ "caller-roles",
  "compositor-dbus",
  "dbus-kit",
  "image",
+ "peers-callers",
  "pipewire",
  "portal-core",
  "portal-dbus",
@@ -13439,6 +13482,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "seat-guard"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "rustix 1.1.6",
+]
+
+[[package]]
 name = "secrecy"
 version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13625,8 +13677,6 @@ version = "0.1.0"
 dependencies = [
  "base-testkit",
  "base-xdg",
- "caller-identity-core",
- "caller-identity-linux",
  "interprocess",
  "rustix 1.1.6",
  "service-locator",
@@ -13672,8 +13722,11 @@ version = "0.1.0"
 dependencies = [
  "account-wire",
  "caller-identity-dbus",
+ "caller-identity-dev",
+ "caller-roles",
  "compositor-dbus",
  "memory-dbus",
+ "peers-callers",
  "portal-dbus",
  "rustix 1.1.6",
  "settings-app-testkit",
@@ -13746,6 +13799,8 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-identity-core",
+ "caller-roles",
  "provenance",
  "serde",
  "serde_json",
@@ -14472,6 +14527,8 @@ dependencies = [
  "base-words",
  "bluez-proxy",
  "caller-identity-dbus",
+ "caller-identity-dev",
+ "caller-roles",
  "companion-model",
  "companion-wire",
  "compositor-dbus",
@@ -14500,6 +14557,7 @@ dependencies = [
  "nonstick",
  "notify",
  "outputs-dbus",
+ "peers-callers",
  "percent-encoding",
  "permission-core",
  "permission-policy",
@@ -15564,6 +15622,7 @@ version = "0.1.0"
 dependencies = [
  "account-dbus",
  "base-ids",
+ "caller-identity-core",
  "dbus-kit",
  "serde",
  "zbus",
@@ -16578,6 +16637,7 @@ dependencies = [
  "blitz-shell",
  "blitz-traits",
  "caller-identity-dbus",
+ "caller-roles",
  "dbus-kit",
  "desktop-protocols",
  "dioxus",
@@ -17080,9 +17140,11 @@ dependencies = [
  "base-url",
  "base-xdg",
  "caller-identity-dbus",
+ "caller-roles",
  "dbus-kit",
  "http-core",
  "http-reqwest",
+ "peers-callers",
  "semver",
  "serde",
  "tar",
@@ -17103,6 +17165,7 @@ dependencies = [
 name = "updater-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "zbus",
 ]
 

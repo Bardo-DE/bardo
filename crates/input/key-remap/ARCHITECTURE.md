@@ -185,7 +185,7 @@ that stay enums:** `RemapInput`, `RemapOut`, `RuleAction`, `Edge`, `Layout`, `To
 | Whole-core behaviour | scripts of `RemapInput`s through `Remapper::step`, asserting `RemapOut`s, in `tests/` |
 | Stuck keys | a property test: every emitted press has exactly one release |
 | Socket | a private socket in a temp dir and a fake seat file, in `daemon/socket/tests.rs` (the harness treats every program of the seat's user as the shell, or none of them); the keymap's serving in the pure `shelf` tests plus the same file |
-| Who is the shell | `service_locator::guard::ShellCheck` over the key remap daemon's table in `daemon/socket/shell.rs`, tested on the caller-identity library's fixture `/proc` (a held process that is only a claim), as a table of control groups and images |
+| Who is the shell | `seat_guard::ShellCheck` over the key remap daemon's table in `daemon/socket/shell.rs`, tested on the caller-identity library's fixture `/proc` (a held process that is only a claim), as a table of control groups and images |
 | Devices from the service | `daemon/source.rs`: `input-broker-client`'s `FakeSource` (handed descriptor, `recreate`, twin, refusal, absent) |
 | The user layer's limits | `key-remap-core` `config/tests/confine.rs`, `Layers::offered` in `daemon/settings.rs`, and the reader's `UserConfig` handling |
 | `KeyRemapSource` | `key-remap-client`'s own tests against a fake daemon on a private socket (`testing.rs`): with the daemon, with an old one, with the file only, with nothing; watch; register; and `crates/key_remap/tests/devices/keymap.rs` against the real binary |

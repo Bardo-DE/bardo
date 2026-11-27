@@ -8,7 +8,7 @@ use super::seat::{Peer, peer_of};
 use super::{FromSocket, ToSocket};
 use mouse_gestures_proto::{DeviceInfo, Filter, ToDaemon, ToHost};
 use rustix::io::Errno;
-use service_locator::guard::Claim;
+use seat_guard::Claim;
 use std::collections::BTreeMap;
 use std::time::Instant;
 

@@ -53,3 +53,12 @@ pub fn parse_security_label(label: &[u8]) -> Option<SandboxFacts> {
         label: name.to_owned(),
     })
 }
+
+/// The `TracerPid:` of the text of `/proc/<pid>/status`: the process that traces this one, `0` for
+/// none. `None` when there is no such line.
+pub fn parse_status_tracer(status: &str) -> Option<u32> {
+    status
+        .lines()
+        .find_map(|line| line.strip_prefix("TracerPid:"))
+        .and_then(|value| value.trim().parse().ok())
+}

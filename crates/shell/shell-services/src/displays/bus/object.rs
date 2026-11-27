@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 
-use caller_identity_dbus::caller_identity_core::roles;
+use caller_roles::SETTINGS;
 use shell_model::displays::{Displays, DisplaysCommand, wire_of};
 use shell_model::ids::OutputName;
 use shell_model::units::Percent;
@@ -42,7 +42,7 @@ impl DisplaysObject {
     ) -> fdo::Result<()> {
         let claims = [Claim {
             name: SETTINGS_BUS,
-            role: roles::SETTINGS,
+            role: SETTINGS,
             tag: (),
         }];
         admit(&self.peers, &header, &claims).await?;

@@ -24,7 +24,7 @@ use rustix::fd::OwnedFd;
 use rustix::io::Errno;
 use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
 use rustix::time::Timespec;
-use service_locator::guard::{AcceptFailure, Voice, Vouch, accept_failure};
+use seat_guard::{AcceptFailure, Voice, Vouch, accept_failure};
 use std::io;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};

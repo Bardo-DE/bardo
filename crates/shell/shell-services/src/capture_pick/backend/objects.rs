@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 
-use caller_identity_dbus::caller_identity_core::roles;
+use caller_roles::PORTAL;
 use shell_model::capture_pick::{
     Ask, ColorAsk, PermissionAsk, PermissionOutcome, Remembered, Reply, Rgb8, color_wire,
 };
@@ -69,7 +69,7 @@ impl PickerObject {
     async fn admit_portal(&self, header: &Header<'_>) -> fdo::Result<()> {
         let claims = [Claim {
             name: portal_dbus::BUS_NAME,
-            role: roles::PORTAL,
+            role: PORTAL,
             tag: (),
         }];
         admit(&self.peers, header, &claims).await.map(|_| ())

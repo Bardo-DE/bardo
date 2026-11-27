@@ -7,7 +7,7 @@
 
 use super::connect_ask::{ConnectAsk, ConnectRefusal, Proven};
 use super::intake::Intake;
-use caller_identity_dbus::caller_identity_core::roles;
+use caller_roles::{AGENT_TIER, PORTAL};
 use std::collections::BTreeMap;
 use std::future::poll_fn;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -65,7 +65,7 @@ impl PortalWatch {
     }
 
     fn table_of(&self, caller: &Proven) -> &Mutex<BTreeMap<String, Proven>> {
-        if caller.role == roles::AGENT_TIER {
+        if caller.role == AGENT_TIER {
             &self.agent
         } else {
             &self.portal
@@ -129,7 +129,7 @@ mod tests {
         let watch = PortalWatch::default();
         let agent = Proven::new(
             AppKey::new("org.bardo.ComputerUse").expect("an app"),
-            roles::AGENT_TIER,
+            AGENT_TIER,
         );
         for n in 0..MAX_WATCHED {
             assert!(watch.watch(&format!(":2.{n}"), &agent));
@@ -140,10 +140,7 @@ mod tests {
     }
 
     fn portal() -> Proven {
-        Proven::new(
-            AppKey::new("org.bardo.Portal").expect("an app"),
-            roles::PORTAL,
-        )
+        Proven::new(AppKey::new("org.bardo.Portal").expect("an app"), PORTAL)
     }
 
     #[test]

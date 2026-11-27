@@ -13,6 +13,7 @@ action-wire = {path = "../../actions/action-wire"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
 base-ids = { path = "../../base/base-ids" }
+caller-roles = {path = "../../identity/caller-roles"}
 settings-app-callers = {path = "../settings-app-callers"}
 settings-app-client = {path = "../settings-app-client"}
 settings-app-files = {path = "../settings-app-files"}
@@ -29,6 +30,8 @@ toml = { workspace = true }
 zbus = {workspace = true, features = ["default", "tokio"]}
 
 [dev-dependencies]
+# The shipped caller table is read by the activation test, so the table reader is on.
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 account-sheet = {path = "../../accounts/account-sheet"}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}

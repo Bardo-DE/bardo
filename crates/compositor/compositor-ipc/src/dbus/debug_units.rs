@@ -8,8 +8,9 @@
 
 use super::callers::{CallerCheck, WhoFuture};
 use caller_identity_dbus::caller_identity_core::{
-    AppKey, Pin as Pinning, Proof, RoleName, Standing, roles,
+    AppKey, Pin as Pinning, Proof, RoleName, Standing,
 };
+use caller_roles::{AGENT_TIER, PORTAL, SHELL};
 use std::sync::Arc;
 use zbus::Connection;
 use zbus::fdo::DBusProxy;
@@ -138,9 +139,9 @@ impl ProcComm {
 /// jailed scenario needs to be.
 fn role_of_unit(unit: &str) -> Option<RoleName> {
     match unit {
-        "bardo-shell.service" => Some(roles::SHELL),
-        "bardo-computer-use.service" => Some(roles::AGENT_TIER),
-        "bardo-portal.service" => Some(roles::PORTAL),
+        "bardo-shell.service" => Some(SHELL),
+        "bardo-computer-use.service" => Some(AGENT_TIER),
+        "bardo-portal.service" => Some(PORTAL),
         _ => None,
     }
 }
@@ -280,9 +281,9 @@ mod tests {
     #[test]
     fn a_test_unit_stands_as_the_role_of_the_desktops_own_unit_and_no_other() {
         for (unit, role) in [
-            ("bardo-shell.service", roles::SHELL),
-            ("bardo-computer-use.service", roles::AGENT_TIER),
-            ("bardo-portal.service", roles::PORTAL),
+            ("bardo-shell.service", SHELL),
+            ("bardo-computer-use.service", AGENT_TIER),
+            ("bardo-portal.service", PORTAL),
         ] {
             assert!(
                 matches!(standing_of_unit(unit), Some(Standing::Service { role: got, .. }) if got == role),

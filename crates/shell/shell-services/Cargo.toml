@@ -10,11 +10,11 @@ publish.workspace = true
 
 [features]
 # `bardo-shell run --dev-callers FILE`: callers named in a person's own rows file are let in at
-# `Proof::Dev` (the caller-identity library's `dev-rows`). Off by default; only the bardo-shell binary's `debug` feature turns
-# it on, so no shipped build has it (the desktop gate refuses `dev-rows` in any release shape).
+# `Proof::Dev` (`caller-identity-dev`). Off by default; only the bardo-shell binary's `debug` feature turns
+# it on, so no shipped build has it (the desktop gate refuses `caller-identity-dev` in any release shape).
 # It also lets `bardo-shell run --proc-root DIR` name callers by a stand-in `/proc` (the actions service's
 # `fixture-callers`), as a jail with no systemd must.
-dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
+dev-callers = ["dep:caller-identity-dev", "action-dbus/fixture-callers"]
 
 [dependencies]
 portal-dbus = { path = "../../portal/portal-dbus" }
@@ -70,7 +70,10 @@ account-dbus = {path = "../../accounts/account-dbus"}
 inference-client = {path = "../../inference/inference-client", default-features = false, features = ["dbus"]}
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
-caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dev = {optional = true, path = "../../identity/caller-identity-dev"}
+caller-roles = {path = "../../identity/caller-roles"}
+peers-callers = {path = "../../identity/peers-callers"}
 toml = { workspace = true }
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 nix = { workspace = true, features = ["user"] }
@@ -107,7 +110,7 @@ base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 account-capability = {path = "../../accounts/account-capability"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 # A caller that is only a claim (`BusPeers::introduce`): the tests name who their stand-ins are.
-caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 # actiond is named from a fixture tree (`<root>/<pid>/cgroup`) in the private-bus tests.
 action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
 shell-testkit = {path = "../shell-testkit"}

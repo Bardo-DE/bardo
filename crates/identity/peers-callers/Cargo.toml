@@ -1,0 +1,22 @@
+[package]
+name = "peers-callers"
+description = "Which program sent a bus message, for a desktop service: the bus peers over a caller table, the desktop's own table read from its files, and the check that the unit manager answering about units is the system's."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+caller-identity-core = {default-features = false, path = "../caller-identity-core"}
+caller-identity-linux = {path = "../caller-identity-linux"}
+caller-identity-dbus = {default-features = false, path = "../caller-identity-dbus"}
+zbus = {workspace = true}
+
+[dev-dependencies]
+# The shipped caller table is read by the role test, so the table reader is on.
+caller-identity-core = {path = "../caller-identity-core"}
+
+[lints]
+workspace = true

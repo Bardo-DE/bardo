@@ -2,11 +2,12 @@
 //! service its row names, at `Proof::Dev`, only in a build with the feature, and only as that role.
 //! Scratch folders and made-up process facts only; nothing reads the desktop's table or `/proc`.
 
+use account_wire::roles::ACCOUNTS;
 use caller_identity_dbus::caller_identity_core::{
     CgroupPath, Exe, ExePath, Facts, FileTrust, Pid, Pin, SandboxFacts, Standing, Table, Uid,
     Writer, judge,
 };
-use settings_app_callers::{Proof, SERVICE_PROOF, allowing, roles};
+use settings_app_callers::{Proof, SERVICE_PROOF, allowing};
 
 /// Where a checkout builds accountd's stand-in: an image the person can write.
 const STAND_IN: &str = "/home/p/proj/target/debug/accountd_standin";
@@ -30,9 +31,7 @@ fn facts(image: &str) -> Facts {
 
 /// Whether `standing` is let in as accountd, the way the owner check asks.
 fn is_accountd(standing: &Standing) -> bool {
-    standing
-        .holds(&allowing(roles::ACCOUNTS, SERVICE_PROOF))
-        .is_ok()
+    standing.holds(&allowing(ACCOUNTS, SERVICE_PROOF)).is_ok()
 }
 
 /// A stand-in with no row is no service, in every build: an image the person can write is never one.
@@ -47,10 +46,10 @@ fn a_stand_in_no_row_names_is_no_service() {
 #[test]
 fn a_build_without_the_feature_accepts_only_the_real_proof() {
     use caller_identity_dbus::caller_identity_core::AppKey;
-    assert_eq!(allowing(roles::ACCOUNTS, Proof::Full).len(), 1);
+    assert_eq!(allowing(ACCOUNTS, Proof::Full).len(), 1);
     let below = Standing::Service {
         app: AppKey::new("org.bardo.Accounts").expect("an app"),
-        role: roles::ACCOUNTS,
+        role: ACCOUNTS,
         proof: Proof::Exe,
         pin: Pin::AtConnect,
     };
@@ -61,6 +60,7 @@ fn a_build_without_the_feature_accepts_only_the_real_proof() {
 mod with_feature {
     use super::*;
 
+    use caller_identity_dev::DevRows;
     use settings_app_callers::{load_dev_rows, use_dev_rows};
     use settings_app_testkit::Scratch;
     use std::fs;
@@ -77,8 +77,8 @@ mod with_feature {
         path
     }
 
-    fn standing_with(rows: &Table, image: &str) -> Standing {
-        judge(&facts(image), &Table::empty().merge(rows.clone()))
+    fn standing_with(rows: &DevRows, image: &str) -> Standing {
+        judge(&facts(image), &rows.clone().added_to(Table::empty()))
     }
 
     /// The row names the stand-in's image: it is accountd at `Proof::Dev`, and only accountd.
@@ -102,13 +102,13 @@ mod with_feature {
         assert!(is_accountd(&named));
         // The real requirement alone (the release build's) does not take it.
         let real_only = [settings_app_callers::Requirement::new(
-            roles::ACCOUNTS,
+            ACCOUNTS,
             SERVICE_PROOF,
         )];
         named.holds(&real_only).unwrap_err();
         // Another service's name, and an image no row names, are not let in.
         named
-            .holds(&allowing(roles::SYNC, SERVICE_PROOF))
+            .holds(&allowing(sync_bus::roles::SYNC, SERVICE_PROOF))
             .unwrap_err();
         let other = standing_with(&rows, "/home/p/proj/target/debug/other");
         assert!(!is_accountd(&other), "{other:?}");

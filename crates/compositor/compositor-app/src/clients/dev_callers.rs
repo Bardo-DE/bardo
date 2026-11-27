@@ -5,15 +5,15 @@
 //! names its build-folder programs here instead. The rows are the library's developer rows
 //! (`Proof::Dev`, below every real proof): the system table still wins where both name a
 //! program, and `dbus::require` and `client_standing` let exactly that proof in. A release build
-//! compiles this file out (and the library's `dev-rows` feature with it).
+//! compiles this file out (and `caller-identity-dev` with it).
 //!
 //! The file is read only when it is the person's own: a plain file (a link is refused), owned
 //! by the person or by root, writable by nobody else. One that is not adds no row and is logged
 //! once; one that is not there is the usual case and says nothing.
 
 use crate::privacy::SystemDir;
+use caller_identity_dev::{DevFileError, DevRows};
 use compositor_ipc::dbus::peer::{Table, Uid};
-use compositor_ipc::dbus::{LoadError, RealProc, TableFiles};
 use std::io;
 use std::path::Path;
 
@@ -25,7 +25,7 @@ pub(super) const FILE: &str = "desktop-callers.toml";
 pub(super) fn merged(shipped: Table, system: &SystemDir) -> Table {
     match system {
         SystemDir::Etc => shipped,
-        SystemDir::At(dir) => shipped.merge(rows_in(&RealProc::system(), &dir.join(FILE))),
+        SystemDir::At(dir) => rows_in(&dir.join(FILE)).added_to(shipped),
     }
 }
 
@@ -36,11 +36,13 @@ fn person() -> Uid {
 
 /// The test rows in `path`; none when it is missing, and none (with one log line) when it cannot
 /// be used.
-fn rows_in(fs: &RealProc, path: &Path) -> Table {
-    match TableFiles::load_dev(fs, path, person()) {
+fn rows_in(path: &Path) -> DevRows {
+    match DevRows::load(path, person()) {
         Ok(rows) => rows,
-        Err(LoadError::Unreadable { source, .. }) if source.kind() == io::ErrorKind::NotFound => {
-            Table::empty()
+        Err(DevFileError::Unreadable { source, .. })
+            if source.kind() == io::ErrorKind::NotFound =>
+        {
+            DevRows::empty()
         }
         Err(error) => {
             tracing::warn!(
@@ -48,7 +50,7 @@ fn rows_in(fs: &RealProc, path: &Path) -> Table {
                 path = %path.display(),
                 "TEST ONLY: the test list of the desktop's programs could not be used, so it adds none"
             );
-            Table::empty()
+            DevRows::empty()
         }
     }
 }

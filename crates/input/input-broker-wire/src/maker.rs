@@ -9,10 +9,18 @@
 //! The compositor keeps its own copy of [`Maker::parse`] (it links nothing of the input broker); each repository
 //! pins the exact strings in a test, so a change here fails both.
 
+use caller_identity_core::RoleName;
 use std::fmt;
 
 /// What comes before the role in a label.
 pub const PREFIX: &str = "input-broker/";
+
+/// The touchpad daemon's role in the shipped caller table (`pad_daemon`): the mouse gestures daemon.
+/// A test in this crate checks it against the table.
+pub const PAD_DAEMON: RoleName = RoleName::from_static("pad_daemon");
+/// The keymap daemon's role in the shipped caller table (`keymap_daemon`): the key remap daemon.
+/// A test in this crate checks it against the table.
+pub const KEYMAP_DAEMON: RoleName = RoleName::from_static("keymap_daemon");
 
 /// The proven service a device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -26,10 +34,10 @@ pub enum Maker {
 impl Maker {
     /// The caller-identity role name.
     #[must_use]
-    pub const fn role(self) -> &'static str {
+    pub fn role(self) -> RoleName {
         match self {
-            Self::PadDaemon => "pad_daemon",
-            Self::KeymapDaemon => "keymap_daemon",
+            Self::PadDaemon => PAD_DAEMON,
+            Self::KeymapDaemon => KEYMAP_DAEMON,
         }
     }
 
@@ -41,7 +49,7 @@ impl Maker {
         let role = phys.trim_end_matches('\n').strip_prefix(PREFIX)?;
         [Self::PadDaemon, Self::KeymapDaemon]
             .into_iter()
-            .find(|maker| maker.role() == role)
+            .find(|maker| maker.role().as_str() == role)
     }
 }
 

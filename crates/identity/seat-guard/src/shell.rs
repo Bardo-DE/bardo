@@ -8,18 +8,16 @@
 //! control group is all there is to go on, and the process is held by its pidfd so the name cannot
 //! belong to a process that has since been replaced.
 
-use caller_identity_core::{CgroupPath, PinNeed, RoleName, Standing, Table, judge};
-use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
+use caller_identity_core::{CgroupPath, Prober, ProcFs, Requirement, Standing, Table, judge};
+use caller_identity_linux::{Alive, Pinned, RealProc};
 use rustix::fd::OwnedFd;
-
-/// How firmly a connection's process must have been held. The caller-identity library's socket pin is made after
-/// the connect (`Reopened`), so nothing firmer can be asked yet.
-const PIN_NEED: PinNeed = PinNeed::Any;
 
 /// A process we hold, running as the shell, under the manager of `user`.
 #[derive(Debug)]
 pub struct Held {
+    /// The process, held by its pidfd.
     pub process: Pinned,
+    /// The user whose manager runs it.
     pub user: u32,
 }
 
@@ -37,8 +35,10 @@ pub enum Origin {
 pub enum Claim {
     /// The shell of this user, and its process is still the one we held.
     Shell {
+        /// The user whose shell it is.
         user: u32,
     },
+    /// Anything else.
     Other,
 }
 
@@ -63,25 +63,27 @@ pub trait Vouch: Send + 'static {
 }
 
 /// The real check: hold the process, read its control group, judge it against a caller table and
-/// believe it when its role is one of `accepted`.
+/// believe it when its standing holds one of the `accepted` requirements (a role, the weakest
+/// proof and the weakest pin the daemon takes).
 #[derive(Debug)]
 pub struct ShellCheck<P: ProcFs = RealProc> {
     prober: Prober<P>,
     table: Table,
-    accepted: Vec<RoleName>,
+    accepted: Vec<Requirement>,
 }
 
 impl ShellCheck {
     /// The check of this machine against `table`. A table that nobody could parse is an empty
     /// one, which believes nobody: the safe way to fail.
     #[must_use]
-    pub fn system(table: Table, accepted: Vec<RoleName>) -> Self {
+    pub fn system(table: Table, accepted: Vec<Requirement>) -> Self {
         Self::new(Prober::new(RealProc::system()), table, accepted)
     }
 }
 
 impl<P: ProcFs> ShellCheck<P> {
-    pub fn new(prober: Prober<P>, table: Table, accepted: Vec<RoleName>) -> Self {
+    /// A check reading through `prober`, judging against `table`, accepting `accepted`.
+    pub fn new(prober: Prober<P>, table: Table, accepted: Vec<Requirement>) -> Self {
         Self {
             prober,
             table,
@@ -94,12 +96,9 @@ impl<P: ProcFs> ShellCheck<P> {
         let Ok(facts) = self.prober.probe(&process, None) else {
             return Origin::Other;
         };
-        let user = match judge(&facts, &self.table) {
-            Standing::Service { role, pin, .. }
-                if self.accepted.contains(&role) && PIN_NEED.satisfied_by(pin) =>
-            {
-                manager_user(&facts.cgroup)
-            }
+        let standing = judge(&facts, &self.table);
+        let user = match standing.holds(&self.accepted) {
+            Ok(Standing::Service { .. }) => manager_user(&facts.cgroup),
             _ => None,
         };
         user.map_or(Origin::Other, |user| Origin::Shell(Held { process, user }))

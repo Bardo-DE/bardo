@@ -1,5 +1,4 @@
 use base_time::Mono;
-use caller_identity_core::roles::{KEYMAP_DAEMON, PAD_DAEMON};
 use input_broker_daemon::backend::fake::{FakeBackend, Fate};
 use input_broker_daemon::policy::AllowKinds;
 use input_broker_daemon::session::{Handled, Outgoing, Refused, Session};
@@ -9,7 +8,8 @@ use input_broker_wire::limits::{
     MAX_DEVICES_PER_CONNECTION, MAX_HANDED_PER_CONNECTION,
 };
 use input_broker_wire::{
-    Create, Delivery, DeviceId, Event, Kind, Maker, PointerCaps, Reason, Reply, Request,
+    Create, Delivery, DeviceId, Event, KEYMAP_DAEMON, Kind, Maker, PAD_DAEMON, PointerCaps, Reason,
+    Reply, Request,
 };
 use std::time::Duration;
 

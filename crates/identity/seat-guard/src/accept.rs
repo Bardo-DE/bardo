@@ -34,6 +34,8 @@ pub fn accept_failure(e: Errno) -> AcceptFailure {
 /// Whether a refusal is written to the log.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Voice {
+    /// Write the refusal to the log.
     Speak,
+    /// Say nothing: this subscriber complained recently.
     Silent,
 }

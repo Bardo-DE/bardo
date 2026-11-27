@@ -1,0 +1,20 @@
+[package]
+name = "caller-identity-dev"
+description = "Developer rows: the rows of a file a person owns, which let a stand-in built in a checkout take a desktop service's role at the lowest proof. Never part of a shipped program."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+caller-identity-core = {path = "../caller-identity-core"}
+caller-identity-linux = {path = "../caller-identity-linux"}
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[lints]
+workspace = true

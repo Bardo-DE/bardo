@@ -5,8 +5,9 @@
 //! A test says who is calling instead of building a process
 //! table; the proof itself (the process, its image, its unit) is `compositor-ipc`'s tests.
 
+use caller_roles::{AGENT_TIER, PORTAL, SHELL};
 use compositor_ipc::dbus::Proven;
-use compositor_ipc::dbus::peer::{AppKey, RoleName, roles};
+use compositor_ipc::dbus::peer::{AppKey, RoleName};
 
 /// The caller `app` holding `role`.
 ///
@@ -28,10 +29,7 @@ pub fn proven(app: &str, role: &str) -> Proven {
 /// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn shell() -> Proven {
-    Proven::new(
-        AppKey::new("org.bardo.Shell").expect("an app key"),
-        roles::SHELL,
-    )
+    Proven::new(AppKey::new("org.bardo.Shell").expect("an app key"), SHELL)
 }
 
 /// The agent tier (the computer-use daemon).
@@ -43,7 +41,7 @@ pub fn shell() -> Proven {
 pub fn agent_tier() -> Proven {
     Proven::new(
         AppKey::new("org.bardo.Agent").expect("an app key"),
-        roles::AGENT_TIER,
+        AGENT_TIER,
     )
 }
 
@@ -54,10 +52,7 @@ pub fn agent_tier() -> Proven {
 /// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn portal() -> Proven {
-    Proven::new(
-        AppKey::new("org.bardo.Portal").expect("an app key"),
-        roles::PORTAL,
-    )
+    Proven::new(AppKey::new("org.bardo.Portal").expect("an app key"), PORTAL)
 }
 
 /// Some other desktop program (a role that is no connection's).
@@ -67,8 +62,5 @@ pub fn portal() -> Proven {
 /// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn companion() -> Proven {
-    Proven::new(
-        AppKey::new("org.bardo.Companion").expect("an app key"),
-        roles::COMPANION,
-    )
+    proven("org.bardo.Companion", "companion")
 }

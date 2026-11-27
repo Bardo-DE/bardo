@@ -138,13 +138,14 @@ impl Intake {
 mod tests {
     use super::*;
     use crate::dbus::Proven;
-    use caller_identity_dbus::caller_identity_core::{AppKey, roles};
+    use caller_identity_dbus::caller_identity_core::AppKey;
+    use caller_roles::SHELL;
     use calloop::channel::sync_channel;
     use compositor_core::policy::ConnectionRole;
 
     fn ask() -> ConnectAsk {
         let app = AppKey::new("org.bardo.Shell").expect("an app");
-        ConnectAsk::new(ConnectionRole::Shell, Proven::new(app, roles::SHELL))
+        ConnectAsk::new(ConnectionRole::Shell, Proven::new(app, SHELL))
     }
 
     #[test]

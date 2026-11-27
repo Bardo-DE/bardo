@@ -14,6 +14,6 @@ mod shell;
 mod tests;
 
 pub(crate) use handle::{SocketHandle, ToSocket};
+pub(crate) use seat_guard::{SEAT_FILE, SeatFile};
 pub(crate) use server::{bind, socket_path, spawn};
-pub(crate) use service_locator::guard::{SEAT_FILE, SeatFile};
 pub(crate) use shell::{seat_user_asked, vouch};

@@ -4,6 +4,8 @@
 //! (`updater-daemon`) serves the object behind a caller check, so it is written by hand there;
 //! its command line and Settings call it through [`UpdatesProxy`].
 
+pub mod roles;
+
 /// The well-known name the daemon owns.
 pub const BUS_NAME: &str = "org.bardo.Updates1";
 

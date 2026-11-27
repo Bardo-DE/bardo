@@ -17,9 +17,11 @@
 //! administrator's password.
 
 use crate::problem::Problem;
-use caller_identity_dbus::caller_identity_core::{NotHeldError, Proof, Requirement, Table, roles};
+use caller_identity_dbus::caller_identity_core::{NotHeldError, Proof, Requirement, Table};
 use caller_identity_dbus::caller_identity_linux::RealProc;
-use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
+use caller_identity_dbus::{BusPeers, Offload};
+use caller_roles::{SETTINGS, SHELL};
+use updater_dbus::UPDATER_CLI;
 
 /// The bus identification the service uses: the system's `/proc`, probes run off the async threads.
 pub type Peers = BusPeers<RealProc>;
@@ -28,28 +30,23 @@ pub type Peers = BusPeers<RealProc>;
 /// believed only when the manager is the system's own.
 #[must_use]
 pub fn peers_on(connection: zbus::Connection, table: Table) -> Peers {
-    BusPeers::new(
-        connection,
-        table,
-        ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe)),
-    )
-    .with_offload(Offload::Tokio)
+    peers_callers::peers_on(connection, table).with_offload(Offload::Tokio)
 }
 
 /// Who may start an update.
 fn may_install() -> [Requirement; 3] {
     [
-        Requirement::new(roles::SHELL, Proof::Full),
-        Requirement::new(roles::SETTINGS, Proof::Exe),
-        Requirement::new(roles::UPDATER_CLI, Proof::Exe),
+        Requirement::new(SHELL, Proof::Full),
+        Requirement::new(SETTINGS, Proof::Exe),
+        Requirement::new(UPDATER_CLI, Proof::Exe),
     ]
 }
 
 /// Who may ask to go back to an earlier version.
 fn may_roll_back() -> [Requirement; 2] {
     [
-        Requirement::new(roles::SHELL, Proof::Full),
-        Requirement::new(roles::SETTINGS, Proof::Exe),
+        Requirement::new(SHELL, Proof::Full),
+        Requirement::new(SETTINGS, Proof::Exe),
     ]
 }
 

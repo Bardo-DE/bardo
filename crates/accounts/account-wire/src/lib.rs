@@ -9,6 +9,7 @@ mod launcher_fault;
 pub mod names;
 mod reply;
 mod request;
+pub mod roles;
 
 pub use ask_kind::AskKind;
 pub use error::FrameError;

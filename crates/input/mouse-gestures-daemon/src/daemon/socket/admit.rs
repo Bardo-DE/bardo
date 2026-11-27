@@ -4,7 +4,7 @@ use super::limits::MAX_CLIENTS;
 use super::model::{ClientId, SocketEffect, Subscriber, Subscribers};
 use super::seat::Peer;
 use mouse_gestures_proto::{DeviceInfo, PROTOCOL_VERSION, ToHost};
-use service_locator::guard::{Claim, Voice};
+use seat_guard::{Claim, Voice};
 use std::iter::once;
 use std::time::Instant;
 

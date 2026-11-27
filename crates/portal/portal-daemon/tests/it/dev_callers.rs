@@ -8,7 +8,8 @@ use std::fs;
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::path::{Path, PathBuf};
 
-use caller_identity_dbus::caller_identity_core::{Proof, Table, roles};
+use caller_identity_dbus::caller_identity_core::{Proof, Table};
+use caller_roles::{PORTAL_FRONTEND, SHELL};
 use portal_daemon::dev_rows::with_dev_rows;
 
 use crate::guard::{
@@ -66,11 +67,8 @@ fn only_the_persons_own_plain_unshared_file_that_parses_adds_rows() {
         assert_eq!(got.is_ok(), taken, "{name}");
     }
     let table = with_dev_rows(Table::empty(), &own).expect("the good file");
-    assert!(
-        table.has_role(&roles::PORTAL_FRONTEND),
-        "the frontend is named"
-    );
-    assert!(table.has_role(&roles::SHELL), "the shell is named");
+    assert!(table.has_role(&PORTAL_FRONTEND), "the frontend is named");
+    assert!(table.has_role(&SHELL), "the shell is named");
 }
 
 #[tokio::test(flavor = "multi_thread")]

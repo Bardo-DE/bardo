@@ -1,0 +1,25 @@
+[package]
+name = "seat-guard"
+description = "The guards of a socket served to every local account: who has the seat, which connection is the desktop's shell (by the caller table), and how a failed accept is handled."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+caller-identity-core = {path = "../caller-identity-core"}
+caller-identity-linux = {path = "../caller-identity-linux"}
+rustix = {workspace = true, features = ["std"]}
+
+[dev-dependencies]
+# `fake` is the seam that pins a process that is only a claim, for the guard's tests.
+caller-identity-linux = {features = ["fake"], path = "../caller-identity-linux"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints]
+workspace = true

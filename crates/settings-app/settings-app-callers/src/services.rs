@@ -1,7 +1,8 @@
 //! The eight services Settings talks to, and the role the owner of each one's bus name must hold.
 
 use account_wire::names::{ACCOUNTS_BUS, INFERENCE_BUS};
-use caller_identity_dbus::caller_identity_core::{Proof, RoleName, roles};
+use caller_identity_dbus::caller_identity_core::{Proof, RoleName};
+use caller_roles::{PORTAL, SHELL};
 use compositor_dbus::BUS_NAME as COMPOSITOR_BUS;
 use memory_dbus::MEMORY_BUS;
 use portal_dbus::BUS_NAME as PORTAL_BUS;
@@ -20,14 +21,14 @@ pub const SERVICE_PROOF: Proof = Proof::Full;
 #[must_use]
 pub fn required_role(name: &str) -> Option<RoleName> {
     let role = match name {
-        ACCOUNTS_BUS => roles::ACCOUNTS,
-        SYNC_BUS => roles::SYNC,
-        INFERENCE_BUS => roles::INFERENCE,
-        UPDATES_BUS => roles::UPDATER,
-        MEMORY_BUS => roles::MEMORY,
-        COMPOSITOR_BUS => roles::COMPOSITOR,
-        PORTAL_BUS => roles::PORTAL,
-        DISPLAYS_BUS => roles::SHELL,
+        ACCOUNTS_BUS => account_wire::roles::ACCOUNTS,
+        SYNC_BUS => sync_bus::roles::SYNC,
+        INFERENCE_BUS => account_wire::roles::INFERENCE,
+        UPDATES_BUS => updater_dbus::roles::UPDATER,
+        MEMORY_BUS => memory_dbus::roles::MEMORY,
+        COMPOSITOR_BUS => compositor_dbus::roles::COMPOSITOR,
+        PORTAL_BUS => PORTAL,
+        DISPLAYS_BUS => SHELL,
         _ => return None,
     };
     Some(role)

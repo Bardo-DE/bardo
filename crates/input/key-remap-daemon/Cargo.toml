@@ -20,8 +20,9 @@ notify = { workspace = true }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
-service-locator = {features = ["guard"], path = "../../platform/service-locator"}
-caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
+seat-guard = {path = "../../identity/seat-guard"}
+caller-roles = {path = "../../identity/caller-roles"}
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 input-broker-client = {path = "../input-broker-client"}
 
 [dev-dependencies]

@@ -2,7 +2,7 @@
 //! `packaging/dist/desktop-callers.toml` ships (read with the real reader), the unit files of
 //! the services it names, and the portal frontend's drop-in. The files are read, nothing else.
 
-use caller_identity_core::{ExePath, LOADER_VARIABLES, Table, UnitName, roles};
+use caller_identity_core::{ExePath, LOADER_VARIABLES, Table, UnitName};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
@@ -92,21 +92,6 @@ fn missing_loader_names(text: &str) -> Vec<&'static str> {
 }
 
 #[test]
-fn every_role_has_a_row_and_every_row_is_a_role() {
-    let table = table();
-    for role in roles::ALL {
-        assert!(table.has_role(&role), "no row for the role {role}");
-    }
-    for row in table.rows() {
-        assert!(
-            roles::ALL.contains(&row.role),
-            "{} is not a role of the library's list",
-            row.role
-        );
-    }
-}
-
-#[test]
 fn only_programs_have_no_unit_and_services_have_one_row() {
     // Programs known by their image alone, as opposed to services.
     const UNITLESS: [&str; 4] = ["settings", "updater_cli", "sandbox_launcher", "manager"];
@@ -125,11 +110,11 @@ fn only_programs_have_no_unit_and_services_have_one_row() {
             .any(|r| r.role.as_str() == "settings" && r.unit.is_none()),
         "Settings started by a launcher would not be known to the update service"
     );
-    for role in roles::ALL {
+    for role in table.rows().iter().map(|r| &r.role) {
         if UNITLESS.contains(&role.as_str()) {
             continue;
         }
-        let rows = table.rows().iter().filter(|r| r.role == role).count();
+        let rows = table.rows().iter().filter(|r| r.role == *role).count();
         assert_eq!(
             rows, 1,
             "the role {role} has {rows} rows; services have one"

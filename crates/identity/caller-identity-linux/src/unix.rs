@@ -2,9 +2,7 @@
 
 use crate::error::PinError;
 use crate::pin::{Hold, Pinned, open_pidfd};
-use crate::probe::Prober;
-use crate::procfs::ProcFs;
-use caller_identity_core::{Pid, Pin, Standing, Table, Uid};
+use caller_identity_core::{Pid, Pin, Prober, ProcFs, Standing, Table, Uid};
 use nix::errno::Errno;
 use nix::sys::socket::{getsockopt, sockopt::PeerPidfd};
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
@@ -65,13 +63,11 @@ fn reopened(stream: &impl AsFd, first: &UCred, pid: Pid, uid: Uid) -> Result<Pin
     })
 }
 
-impl<P: ProcFs> Prober<P> {
-    /// The standing of the process on the other end of `stream`: held, probed and judged. A peer
-    /// that cannot be held is `Unverified`.
-    pub fn stand_stream(&self, stream: &impl AsFd, table: &Table) -> Standing {
-        match Pinned::of_stream(stream) {
-            Ok(who) => self.stand(&who, table),
-            Err(e) => Standing::unverified(e.why_not()),
-        }
+/// The standing of the process on the other end of `stream`: held, probed by `prober` and
+/// judged. A peer that cannot be held is `Unverified`.
+pub fn stand_stream<P: ProcFs>(prober: &Prober<P>, stream: &impl AsFd, table: &Table) -> Standing {
+    match Pinned::of_stream(stream) {
+        Ok(who) => prober.stand(&who, table),
+        Err(e) => Standing::unverified(e.why_not()),
     }
 }

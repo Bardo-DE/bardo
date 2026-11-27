@@ -4,7 +4,8 @@
 //! (`crate::callers`): a program that merely claimed an unowned name is a stranger.
 
 use account_wire::names::ACCOUNTS_BUS;
-use caller_identity_dbus::caller_identity_core::roles;
+use account_wire::roles::{ACCOUNTS, INFERENCE};
+use sync_bus::roles::SYNC;
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::names::OwnedUniqueName;
@@ -38,9 +39,9 @@ impl Host {
     /// The claim the service makes: its name, and the role the desktop's table gives its program.
     fn claim(self) -> Claim<Host> {
         let role = match self {
-            Host::Accounts => roles::ACCOUNTS,
-            Host::Inference => roles::INFERENCE,
-            Host::Sync => roles::SYNC,
+            Host::Accounts => ACCOUNTS,
+            Host::Inference => INFERENCE,
+            Host::Sync => SYNC,
         };
         Claim {
             name: self.bus(),

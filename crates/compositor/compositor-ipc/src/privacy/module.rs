@@ -12,7 +12,7 @@ use super::edit::applied;
 use super::keys::{changes, listed};
 use super::write::{EditFault, edit_of};
 use crate::dbus::{CallerCheck, require};
-use caller_identity_dbus::caller_identity_core::roles;
+use caller_roles::{SETTINGS, SHELL};
 use calloop::channel::SyncSender;
 use compositor_core::privilege::Edit;
 use settings_dbus::{Access, Caller, LiveError, LiveModule, Served, Verdict, serve};
@@ -68,8 +68,8 @@ fn refused(fault: EditFault) -> LiveError {
 
 impl LiveModule for PrivacyModule {
     async fn permit(&self, caller: &Caller, access: Access) -> Verdict {
-        let readers = [roles::SETTINGS, roles::SHELL];
-        let writers = [roles::SETTINGS];
+        let readers = [SETTINGS, SHELL];
+        let writers = [SETTINGS];
         let allowed = match access {
             Access::Read => &readers[..],
             Access::Write => &writers[..],

@@ -15,9 +15,8 @@
 //! need another user's `/proc/<pid>` use the one capability the unit keeps.
 
 use crate::identity::{ActiveUid, Caller, Credential, SeatSource};
-use caller_identity_core::Proof;
-use caller_identity_core::roles::{KEYMAP_DAEMON, PAD_DAEMON};
-use input_broker_wire::{Kind, Maker};
+use caller_identity_core::{Proof, Requirement};
+use input_broker_wire::{KEYMAP_DAEMON, Kind, Maker, PAD_DAEMON};
 
 /// The mouse gestures daemon's control group, which only a system service can have.
 pub const PAD_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
@@ -100,17 +99,24 @@ pub fn authorise(kind: Kind, caller: &Caller, seat: ActiveUid) -> Result<(), Con
         Maker::PadDaemon => (PAD_DAEMON, PAD_CGROUP),
         Maker::KeymapDaemon => (KEYMAP_DAEMON, KEYMAP_CGROUP),
     };
-    match &caller.credential {
-        Some(Credential { role: have, .. }) if *have != role => {
-            return Err(ControlGroupError::WrongRole {
+    let Some(Credential {
+        role: have,
+        proof,
+        pin,
+    }) = &caller.credential
+    else {
+        return Err(ControlGroupError::Unlisted);
+    };
+    let need = Requirement::new(role.clone(), Proof::Full);
+    if !need.allows(have, *proof, *pin) {
+        // The refusal names the part that failed: the role first, then the proof.
+        return Err(if *have == role {
+            ControlGroupError::TooWeak
+        } else {
+            ControlGroupError::WrongRole {
                 have: have.to_string(),
-            });
-        }
-        Some(Credential { proof, .. }) if *proof != Proof::Full => {
-            return Err(ControlGroupError::TooWeak);
-        }
-        Some(_) => {}
-        None => return Err(ControlGroupError::Unlisted),
+            }
+        });
     }
     if seat.0 == Some(caller.uid) {
         return Err(ControlGroupError::WrongUser);

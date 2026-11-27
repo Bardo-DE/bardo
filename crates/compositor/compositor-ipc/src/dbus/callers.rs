@@ -5,11 +5,11 @@
 
 use super::connect_ask::{NOT_THE_CALLER, Proven};
 use caller_identity_dbus::caller_identity_core::{
-    NotHeldError, Proof, Requirement, RoleName, Standing, roles,
+    NotHeldError, ProcFs, Proof, Requirement, RoleName, Standing,
 };
-use caller_identity_dbus::caller_identity_linux::ProcFs;
 use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerLink, UnitSource, WhoError};
+use caller_roles::{AGENT_TIER, PORTAL, SHELL};
 use compositor_core::policy::ConnectionRole;
 use std::fmt::Debug;
 use std::pin::Pin;
@@ -49,18 +49,18 @@ pub type DesktopCallers = BusPeers<RealProc, ManagerLink<RealProc>>;
 /// ```
 /// use compositor_core::policy::ConnectionRole;
 /// use compositor_ipc::dbus::role_for_connection;
-/// use caller_identity_dbus::caller_identity_core::roles;
+/// use caller_roles::{PORTAL, SHELL};
 ///
-/// assert_eq!(role_for_connection(&ConnectionRole::Shell), Some(roles::SHELL));
-/// assert_eq!(role_for_connection(&ConnectionRole::Portal), Some(roles::PORTAL));
+/// assert_eq!(role_for_connection(&ConnectionRole::Shell), Some(SHELL));
+/// assert_eq!(role_for_connection(&ConnectionRole::Portal), Some(PORTAL));
 /// assert!(role_for_connection(&ConnectionRole::Public).is_none());
 /// ```
 #[must_use]
 pub fn role_for_connection(role: &ConnectionRole) -> Option<RoleName> {
     match role {
-        ConnectionRole::Shell => Some(roles::SHELL),
-        ConnectionRole::Agent => Some(roles::AGENT_TIER),
-        ConnectionRole::Portal => Some(roles::PORTAL),
+        ConnectionRole::Shell => Some(SHELL),
+        ConnectionRole::Agent => Some(AGENT_TIER),
+        ConnectionRole::Portal => Some(PORTAL),
         _ => None,
     }
 }
@@ -102,36 +102,32 @@ pub async fn require(
 
 /// Whether `standing` holds one of `roles` all the way (`Proof::Full`) and, only in a build with
 /// feature `dev-rows`, as a developer row (`Proof::Dev`) of one of them. The developer step is
-/// exactly that proof, so a service known by its image or its control group alone is refused
-/// there as it is everywhere.
+/// exactly that proof ([`Requirement::dev`]), so a service known by its image or its control
+/// group alone is refused there as it is everywhere.
 fn admitted(standing: &Standing, roles: &[RoleName]) -> Result<(), NotHeldError> {
     let need: Vec<Requirement> = roles
         .iter()
-        .map(|role| Requirement::new(role.clone(), Proof::Full))
+        .flat_map(|role| {
+            [
+                Some(Requirement::new(role.clone(), Proof::Full)),
+                dev_way_in(role),
+            ]
+        })
+        .flatten()
         .collect();
-    let Err(refused) = standing.holds(&need) else {
-        return Ok(());
-    };
-    if dev_row_of(standing, roles) {
-        Ok(())
-    } else {
-        Err(refused)
-    }
+    standing.holds(&need).map(|_| ())
 }
 
-/// Whether `standing` is a developer row's service of one of `roles`.
+/// The developer row's way in as `role`, in a build with `dev-rows`.
 #[cfg(feature = "dev-rows")]
-fn dev_row_of(standing: &Standing, roles: &[RoleName]) -> bool {
-    matches!(
-        standing,
-        Standing::Service { role, proof: Proof::Dev, .. } if roles.contains(role)
-    )
+fn dev_way_in(role: &RoleName) -> Option<Requirement> {
+    Some(Requirement::dev(role.clone()))
 }
 
-/// No developer rows in this build: nothing is one.
+/// No developer rows in this build: no way in.
 #[cfg(not(feature = "dev-rows"))]
-fn dev_row_of(_standing: &Standing, _roles: &[RoleName]) -> bool {
-    false
+fn dev_way_in(_role: &RoleName) -> Option<Requirement> {
+    None
 }
 
 /// What the log says was found: the standing and why it did not do.
@@ -159,7 +155,7 @@ mod tests {
     fn shell_at(proof: Proof) -> Standing {
         Standing::Service {
             app: AppKey::new("org.bardo.Shell").expect("an app"),
-            role: roles::SHELL,
+            role: SHELL,
             proof,
             pin: Pinning::Reopened,
         }
@@ -167,28 +163,22 @@ mod tests {
 
     #[test]
     fn a_role_is_held_all_the_way_or_not_at_all() {
-        let asked = [roles::SHELL];
+        let asked = [SHELL];
         admitted(&shell_at(Proof::Full), &asked).unwrap();
         assert!(admitted(&shell_at(Proof::Exe), &asked).is_err());
         assert!(admitted(&shell_at(Proof::Cgroup), &asked).is_err());
-        assert!(admitted(&shell_at(Proof::Full), &[roles::PORTAL]).is_err());
+        assert!(admitted(&shell_at(Proof::Full), &[PORTAL]).is_err());
     }
 
     /// A developer row's service is let in for its own role and only that proof; the other
-    /// refusals stand. A build without `dev-rows` has no such proof to be let in.
+    /// refusals stand, and the real service is let in by its real requirement.
     #[cfg(feature = "dev-rows")]
     #[test]
     fn a_developer_row_is_let_in_for_its_own_role_only() {
-        admitted(&shell_at(Proof::Dev), &[roles::SHELL]).unwrap();
-        admitted(&shell_at(Proof::Dev), &[roles::AGENT_TIER, roles::SHELL]).unwrap();
-        assert!(admitted(&shell_at(Proof::Dev), &[roles::PORTAL]).is_err());
-        assert!(admitted(&shell_at(Proof::Exe), &[roles::SHELL]).is_err());
-        assert!(admitted(&shell_at(Proof::Cgroup), &[roles::SHELL]).is_err());
-    }
-
-    #[cfg(not(feature = "dev-rows"))]
-    #[test]
-    fn no_standing_is_a_developer_row_in_a_build_without_them() {
-        assert!(!dev_row_of(&shell_at(Proof::Full), &[roles::SHELL]));
+        admitted(&shell_at(Proof::Dev), &[SHELL]).unwrap();
+        admitted(&shell_at(Proof::Dev), &[AGENT_TIER, SHELL]).unwrap();
+        assert!(admitted(&shell_at(Proof::Dev), &[PORTAL]).is_err());
+        assert!(admitted(&shell_at(Proof::Exe), &[SHELL]).is_err());
+        assert!(admitted(&shell_at(Proof::Cgroup), &[SHELL]).is_err());
     }
 }

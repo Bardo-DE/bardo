@@ -18,13 +18,6 @@ toml = { workspace = true, optional = true }
 # only names the types (account-core re-exports `CgroupPath`) turns default features off.
 default = ["toml"]
 toml = ["dep:toml"]
-# `roles`: the role names of this desktop's own processes, so nobody types the strings twice.
-desktop = []
-# Developer rows: rows read from a file a person owns, which let that person's own programs
-# (a checkout-built stand-in) take a service's role at `Proof::Dev`, below every real proof. A
-# shipped program never enables it; the desktop gate greps `cargo tree -e features` for it. See
-# README "Developer rows".
-dev-rows = ["toml"]
 
 [lints]
 workspace = true

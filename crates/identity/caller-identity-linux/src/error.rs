@@ -40,60 +40,6 @@ impl PinError {
     }
 }
 
-/// The facts about a process that could not be read.
-#[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
-pub enum ProbeError {
-    /// The process left before or while its facts were read.
-    #[error("the process has exited")]
-    PeerGone,
-    /// A file could not be read.
-    #[error("{what} could not be read")]
-    Unreadable {
-        /// Which fact.
-        what: &'static str,
-        /// The cause.
-        #[source]
-        source: io::Error,
-    },
-    /// A file is not UTF-8 text.
-    #[error("{what} is not text")]
-    NotText {
-        /// Which fact.
-        what: &'static str,
-        /// The cause.
-        #[source]
-        source: std::string::FromUtf8Error,
-    },
-    /// A cgroup file does not name a valid cgroup.
-    #[error("{what} is not a valid cgroup")]
-    BadCgroup {
-        /// Which fact.
-        what: &'static str,
-        /// The cause.
-        #[source]
-        source: caller_identity_core::IdError,
-    },
-    /// A file does not say what a file of its kind says, or is over a limit.
-    #[error("{what} is malformed")]
-    Malformed {
-        /// Which fact.
-        what: &'static str,
-    },
-}
-
-impl ProbeError {
-    /// Why a process that could not be probed is unknown: gone, or unreadable. A new variant
-    /// fails as unreadable until it is given its own reason.
-    #[must_use]
-    pub fn why_not(&self) -> WhyNot {
-        match self {
-            ProbeError::PeerGone => WhyNot::PeerGone,
-            _ => WhyNot::Unreadable,
-        }
-    }
-}
-
 /// The caller table files that could not be loaded.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
@@ -110,21 +56,6 @@ pub enum LoadError {
     /// A file is not root-only, so nothing it says is believed.
     #[error("{path}: not owned by root alone")]
     NotRootOnly {
-        /// The file.
-        path: String,
-    },
-    /// Only with feature `dev-rows`: a developer rows file that is a link or not a plain file.
-    #[cfg(feature = "dev-rows")]
-    #[error("{path}: not a plain file")]
-    NotAFile {
-        /// The file.
-        path: String,
-    },
-    /// Only with feature `dev-rows`: a developer rows file that is not the person's own, or that
-    /// group or others can write.
-    #[cfg(feature = "dev-rows")]
-    #[error("{path}: not the person's own file, or others can write it")]
-    NotTheirs {
         /// The file.
         path: String,
     },

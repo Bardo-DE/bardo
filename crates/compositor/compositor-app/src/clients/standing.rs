@@ -4,7 +4,8 @@
 
 use account_core::{AppId, AppName, Isolation, PeerIdentity};
 use compositor_core::privilege::{ClientStanding, Engine, ProgramPath, SandboxAppId, ServiceRole};
-use compositor_ipc::dbus::peer::{self, Exe, Proof, Standing, roles};
+use compositor_ipc::dbus::peer::{self, Exe, Proof, Requirement, Standing};
+use compositor_ipc::roles::SANDBOX_LAUNCHER;
 use compositor_wayland::security_context::Maker;
 
 /// The path of the image a process runs, when it could be read.
@@ -132,6 +133,16 @@ pub fn peer_of(standing: &Standing) -> PeerIdentity {
     proven.map_or(PeerIdentity::Unproven, PeerIdentity::Proven)
 }
 
+/// What lets a program in as the sandbox launcher: its role at the proof an image gives, and in a
+/// test build also as a row of the test caller file.
+fn launcher_needs() -> Vec<Requirement> {
+    let mut need = vec![Requirement::new(SANDBOX_LAUNCHER, Proof::Exe)];
+    if cfg!(any(feature = "testing", feature = "debug-inject")) {
+        need.push(Requirement::dev(SANDBOX_LAUNCHER));
+    }
+    need
+}
+
 /// Whether the program is the desktop's sandbox launcher, the one program whose security contexts
 /// give their clients an app (CASW-04).
 ///
@@ -141,13 +152,10 @@ pub fn peer_of(standing: &Standing) -> PeerIdentity {
 /// proof.
 #[must_use]
 pub fn maker_of(standing: &Standing) -> Maker {
-    match standing {
-        Standing::Service { role, proof, .. }
-            if *role == roles::SANDBOX_LAUNCHER && (image_shown(*proof) || is_test_row(*proof)) =>
-        {
-            Maker::SandboxLauncher
-        }
-        _ => Maker::Other,
+    if standing.holds(&launcher_needs()).is_ok() {
+        Maker::SandboxLauncher
+    } else {
+        Maker::Other
     }
 }
 
@@ -338,7 +346,7 @@ mod tests {
     fn only_the_launcher_row_makes_contexts_that_carry_an_app() {
         let launcher = |proof: Proof| Standing::Service {
             app: AppKey::new("org.bardo.Flatpak").expect("an app"),
-            role: roles::SANDBOX_LAUNCHER,
+            role: SANDBOX_LAUNCHER,
             proof,
             pin: peer::Pin::Reopened,
         };
@@ -389,7 +397,7 @@ mod tests {
         let flatpak = exe("/usr/bin/flatpak");
         let standing = Standing::Service {
             app: AppKey::new("org.bardo.Flatpak").expect("an app"),
-            role: roles::SANDBOX_LAUNCHER,
+            role: SANDBOX_LAUNCHER,
             proof: Proof::Exe,
             pin: peer::Pin::Reopened,
         };

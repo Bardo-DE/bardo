@@ -17,9 +17,9 @@ path = "src/main.rs"
 
 [features]
 # `BARDO_PORTAL_DEV_CALLERS=FILE`: callers named in a person's own rows file are let in as the portal
-# frontend or the shell at `Proof::Dev` (the caller-identity library's `dev-rows`). Off by default; the desktop's test
-# jail and the dev scripts build with it. A release build has neither the variable nor `dev-rows`.
-debug = ["caller-identity-dbus/dev-rows"]
+# frontend or the shell at `Proof::Dev` (`caller-identity-dev`). Off by default; the desktop's test
+# jail and the dev scripts build with it. A release build has neither the variable nor `caller-identity-dev`.
+debug = ["dep:caller-identity-dev"]
 
 [dependencies]
 shell-dbus = { path = "../../shell/shell-dbus" }
@@ -34,7 +34,10 @@ base-xdg = { path = "../../base/base-xdg" }
 portal-core = {path = "../portal-core"}
 thiserror = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
-caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dev = {optional = true, path = "../../identity/caller-identity-dev"}
+caller-roles = {path = "../../identity/caller-roles"}
+peers-callers = {path = "../../identity/peers-callers"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
@@ -48,7 +51,7 @@ image = { workspace = true, features = ["png"] }
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 # `introduce` makes a test's connection stand as the frontend or the shell without looking at it.
-caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 tempfile = { workspace = true }
 
 [lints]

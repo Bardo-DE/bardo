@@ -27,12 +27,10 @@ pub use intake::{
 /// library's, for the same reason): hold the peer, read its facts, judge them against the table.
 pub mod peer {
     pub use caller_identity_dbus::caller_identity_core::{
-        AppKey, Engine, Exe, ExePath, Facts, FileTrust, Pin, Proof, RoleName, Standing, Table, Uid,
-        WhyNot, judge, roles,
+        AppKey, Engine, Exe, ExePath, Facts, FileTrust, Pin, ProbeError, Prober, Proof,
+        Requirement, RoleName, Standing, Table, Uid, WhyNot, judge,
     };
-    pub use caller_identity_dbus::caller_identity_linux::{
-        Alive, PinError, Pinned, ProbeError, Prober,
-    };
+    pub use caller_identity_dbus::caller_identity_linux::{Alive, PinError, Pinned};
 }
 
 #[cfg(feature = "debug-inject")]

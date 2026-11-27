@@ -96,19 +96,15 @@ async fn only_settings_lists_and_takes_back_what_is_remembered() {
         &stranger,
         introduced_program("/usr/bin/other"),
     );
-    #[cfg_attr(feature = "debug", allow(unused_mut))] // only a release build adds the weak proof
-    let mut refused = vec![
+    // A build with `debug` lists exactly `Proof::Dev` as a second way in, so a weak proof is
+    // refused there as well.
+    let weak = client(&portal.bus).await;
+    as_settings_at(&portal, &weak, Proof::Exe);
+    let refused = [
         (&frontend, "the portal frontend"),
         (&stranger, "a stranger"),
+        (&weak, "settings proved by its image only"),
     ];
-    // A build with `debug` lists `Proof::Dev` as a way in, which every proof meets.
-    #[cfg(not(feature = "debug"))]
-    let weak = client(&portal.bus).await;
-    #[cfg(not(feature = "debug"))]
-    {
-        as_settings_at(&portal, &weak, Proof::Exe);
-        refused.push((&weak, "settings proved by its image only"));
-    };
     for (who, label) in refused {
         assert!(
             is_refused(&call(who, GRANTS, "ListGrants", &()).await),

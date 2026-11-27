@@ -2,7 +2,8 @@
 
 use super::permit::{Caller, MenuPermit, Verdict};
 use caller_identity_dbus::BusPeers;
-use caller_identity_dbus::caller_identity_core::{Proof, Requirement, roles};
+use caller_identity_dbus::caller_identity_core::{Proof, Requirement};
+use caller_roles::SHELL;
 use std::sync::Arc;
 
 /// Lets the shell press items and no one else: the caller must stand as the `shell` role of the
@@ -25,7 +26,7 @@ impl ShellOnly {
 
 impl MenuPermit for ShellOnly {
     async fn permit(&self, caller: &Caller) -> Verdict {
-        let need = [Requirement::new(roles::SHELL, Proof::Full)];
+        let need = [Requirement::new(SHELL, Proof::Full)];
         match self
             .peers
             .require(Some(caller.sender.0.as_str()), &need)

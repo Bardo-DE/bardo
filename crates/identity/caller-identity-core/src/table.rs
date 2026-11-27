@@ -28,27 +28,22 @@ pub struct Row {
     pub role: RoleName,
     /// A label for logs.
     pub name: Option<String>,
-    /// Where the row came from. Only with feature `dev-rows`; without it every row is shipped.
-    #[cfg(feature = "dev-rows")]
-    pub origin: crate::dev::RowOrigin,
+    /// Whether the row is a developer row ([`Table::with_dev_rows`]).
+    dev: bool,
 }
 
 impl Row {
-    /// Whether this row can give a real proof (`Cgroup`, `Exe` or `Full`): always, except that a
-    /// developer row (feature `dev-rows`) never can.
-    #[cfg(feature = "dev-rows")]
-    pub(crate) fn proves(&self) -> bool {
-        self.origin == crate::dev::RowOrigin::Shipped
+    /// Whether this row came from a developer's own file ([`Table::with_dev_rows`]). Such a row
+    /// gives `Proof::Dev` at best and never a real proof.
+    #[must_use]
+    pub fn is_dev(&self) -> bool {
+        self.dev
     }
 
-    /// Whether this row can give a real proof: every row of a build without `dev-rows`.
-    #[cfg(not(feature = "dev-rows"))]
-    #[expect(
-        clippy::unused_self,
-        reason = "the same method as the `dev-rows` build, where the answer reads the row"
-    )]
+    /// Whether this row can give a real proof (`Cgroup`, `Exe`, `Unit` or `Full`): every row
+    /// but a developer row.
     pub(crate) fn proves(&self) -> bool {
-        true
+        !self.dev
     }
 
     /// Whether the image `path` is one of this row's.
@@ -102,8 +97,7 @@ impl RawRow {
             exe,
             role: RoleName::new(&self.role)?,
             name: self.name.clone(),
-            #[cfg(feature = "dev-rows")]
-            origin: crate::dev::RowOrigin::Shipped,
+            dev: false,
         })
     }
 }
@@ -162,32 +156,20 @@ impl Table {
         Ok(Table { rows })
     }
 
-    /// Only with feature `dev-rows`: the table written as `text`, every row marked
-    /// [`RowOrigin::Dev`](crate::RowOrigin::Dev). Same format and same refusals as
-    /// [`Table::from_toml`]. Merge it after the shipped table ([`Table::merge`]).
-    ///
-    /// # Errors
-    ///
-    /// Returns the same [`TableError`]s as [`Table::from_toml`].
-    #[cfg(feature = "dev-rows")]
-    pub fn from_toml_dev(text: &str) -> Result<Table, TableError> {
-        let mut table = Table::from_toml(text)?;
-        for row in &mut table.rows {
-            row.origin = crate::dev::RowOrigin::Dev;
-        }
-        Ok(table)
-    }
-
     /// This table's rows, then the rows of `other` whose unit this table does not already name.
     /// Load the shipped file first and the administrator's files after it: a later file adds
-    /// programs and units, and cannot take over a unit the shipped table names. With feature
-    /// `dev-rows`, developer rows always end up after the shipped ones, whatever the order of
-    /// the merge, and a shipped row displaces a developer row that names its unit.
+    /// programs and units, and cannot take over a unit the shipped table names. Developer rows
+    /// ([`Table::with_dev_rows`]) always end up after the shipped ones, whatever the order of the
+    /// merge, and a shipped row displaces a developer row that names its unit.
     #[must_use]
     pub fn merge(mut self, other: Table) -> Table {
         for row in other.rows {
-            #[cfg(feature = "dev-rows")]
-            crate::dev::make_room(&mut self.rows, &row);
+            if !row.dev
+                && let Some(unit) = &row.unit
+            {
+                self.rows
+                    .retain(|r| !(r.dev && r.unit.as_ref() == Some(unit)));
+            }
             let taken = row
                 .unit
                 .as_ref()
@@ -196,9 +178,24 @@ impl Table {
                 self.rows.push(row);
             }
         }
-        #[cfg(feature = "dev-rows")]
-        crate::dev::shipped_first(&mut self.rows);
+        self.rows.sort_by_key(|row| row.dev);
         self
+    }
+
+    /// This table with the rows of `dev` added as developer rows: rows of a developer's own file,
+    /// which let a stand-in the person built take a service's role at `Proof::Dev` and nothing
+    /// above it. They come after every shipped row, never displace one, and never name a unit a
+    /// shipped row names ([`Table::merge`]). Only `caller-identity-dev`, which reads such a file
+    /// and is never part of a shipped program, calls this.
+    #[must_use]
+    pub fn with_dev_rows(self, dev: Table) -> Table {
+        let marked = dev.rows.into_iter().map(|mut row| {
+            row.dev = true;
+            row
+        });
+        self.merge(Table {
+            rows: marked.collect(),
+        })
     }
 
     /// The rows, in order.

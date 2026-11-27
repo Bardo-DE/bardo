@@ -2,9 +2,8 @@
 //! turn it is to complain and how long a listener pauses.
 //!
 //! Policy-free mechanics: the table of callers, the caps and the messages stay with the daemon that
-//! serves the socket.
-//!
-//! Unix only, behind the `guard` feature, because the caller check is the caller-identity library's.
+//! serves the socket. The shell check asks the caller-identity library for a standing and holds it
+//! to the daemon's [`caller_identity_core::Requirement`]s, like every other role check.
 
 mod accept;
 mod seat;

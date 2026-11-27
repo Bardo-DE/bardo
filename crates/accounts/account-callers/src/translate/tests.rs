@@ -128,6 +128,6 @@ fn the_first_row_for_a_unit_wins() {
 #[test]
 fn the_table_always_holds_the_unit_managers_row() {
     let table = table_of(Vec::new());
-    assert!(table.has_role(&RoleName::from_static(MANAGER_ROLE)));
+    assert!(table.has_role(&peers_callers::MANAGER));
     assert_eq!(table.rows().len(), 1);
 }

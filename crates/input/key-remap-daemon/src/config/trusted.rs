@@ -3,14 +3,13 @@
 //!
 //! Both are trusted like an administrator's word: they may hold the rules that only an
 //! administrator can set, such as one on a key pressed alone. So each is read only when it is
-//! root-only (see [`caller_identity_linux::dirs_trust`]): the file and every folder above it are root's and
+//! root-only (see [`caller_identity_core::dirs_trust`]): the file and every folder above it are root's and
 //! not writable by anyone else, and the file is not a link. Anything less is not a layer.
 
 use std::io::{self, ErrorKind};
 use std::path::Path;
 
-use caller_identity_core::FileTrust;
-use caller_identity_linux::{ProcFs, path_trust};
+use caller_identity_core::{FileTrust, ProcFs, path_trust};
 use key_remap_core::{ConfigLayer, ConfigSource};
 use key_remap_proto::Warning;
 

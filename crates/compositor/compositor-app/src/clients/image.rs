@@ -50,7 +50,7 @@ mod tests {
     fn a_process_that_runs_another_image_than_it_was_vouched_for_is_unverified() {
         let (ours, _theirs) = UnixStream::pair().expect("a socket pair");
         let pinned = Pinned::of_stream(&ours).expect("this process is held");
-        let prober = Prober::system();
+        let prober = Prober::new(RealProc::system());
         let actual = prober
             .probe(&pinned, None)
             .expect("this process is read")

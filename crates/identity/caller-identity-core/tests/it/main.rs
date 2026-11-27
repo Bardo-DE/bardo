@@ -2,13 +2,11 @@
 
 mod cgroup;
 mod common;
-#[cfg(feature = "desktop")]
 mod desktop_files;
 mod dev;
 mod ids;
 mod judge;
 mod procinfo;
 mod requirement;
-#[cfg(feature = "desktop")]
-mod roles;
+mod shipped_table;
 mod table;

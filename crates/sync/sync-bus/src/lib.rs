@@ -12,6 +12,7 @@ mod interface;
 mod names;
 #[cfg(feature = "photos-picker")]
 mod photos_picker;
+pub mod roles;
 mod storage;
 
 use dbus_kit::{Document, Unserved};

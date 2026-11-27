@@ -17,11 +17,11 @@ use super::standing::caller_of;
 use super::translate::caller_identity_table;
 use super::{Caller, CallerTable, ProcCallers};
 use caller_identity_core::{
-    CgroupPath, DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Pin, Transient, Uid, UnitFacts,
-    UnitName, judge,
+    CgroupPath, DropIns, ExePath, FileTrust, Follow, Fragment, Loader, Pid, Pin, Prober, ProcFs,
+    Transient, Uid, UnitFacts, UnitName, judge,
 };
 use caller_identity_dbus::{BusPeers, ManagerCheck, UnitError, UnitSource};
-use caller_identity_linux::{Follow, Pinned, Prober, ProcFs};
+use caller_identity_linux::Pinned;
 use std::io;
 use std::path::{Path, PathBuf};
 use zbus::Connection as BusConnection;

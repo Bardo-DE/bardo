@@ -12,7 +12,7 @@
 //! Any step that fails is a refusal ([`ShellError::is_refusal`]), never a yes.
 
 use caller_identity_dbus::OwnerWatch;
-use caller_identity_dbus::caller_identity_core::roles;
+use caller_roles::SHELL;
 
 use crate::chooser::{ShellError, call_failed, nobody_answers};
 use crate::link::BusLink;
@@ -43,7 +43,7 @@ impl Door {
             ShellError::NotTheShell
         })?;
         let owner = peers
-            .owner_of(SHELL_BUS, &need(roles::SHELL))
+            .owner_of(SHELL_BUS, &need(SHELL))
             .await
             .map_err(|refused| {
                 tracing::warn!(%refused, "the shell could not be confirmed, so it is not asked");

@@ -1,6 +1,6 @@
-//! The shipped sample table and the role constants agree.
+//! The shipped sample table reads, and its units and programs are as expected.
 
-use caller_identity_core::{Table, roles};
+use caller_identity_core::Table;
 
 const SHIPPED: &str = include_str!("../../../dist/desktop-callers.toml");
 
@@ -8,24 +8,6 @@ const SHIPPED: &str = include_str!("../../../dist/desktop-callers.toml");
 fn the_shipped_table_reads() {
     let table = Table::from_toml(SHIPPED).expect("dist/desktop-callers.toml reads");
     assert!(!table.rows().is_empty());
-}
-
-#[test]
-fn every_role_constant_is_in_the_table_and_every_table_role_is_a_constant() {
-    let table = Table::from_toml(SHIPPED).expect("the shipped table reads");
-    for role in roles::ALL {
-        assert!(
-            table.has_role(&role),
-            "the shipped table has no row for {role}"
-        );
-    }
-    for row in table.rows() {
-        assert!(
-            roles::ALL.contains(&row.role),
-            "{} is not a role constant",
-            row.role
-        );
-    }
 }
 
 #[test]

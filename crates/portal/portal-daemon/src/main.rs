@@ -8,7 +8,6 @@ use base_clock::SystemClock;
 use base_time::Clock;
 use base_xdg::Xdg;
 use caller_identity_dbus::caller_identity_core::Table;
-use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use portal_daemon::access::ShellAsker;
 use portal_daemon::capture::DisplayName;
 use portal_daemon::link::BusLink;
@@ -58,12 +57,10 @@ async fn main() -> ExitCode {
 /// it cannot be loaded (missing, or writable by someone other than root) the table is empty: nobody
 /// is recognised, every call is refused and the shell is never asked.
 fn caller_table() -> Table {
-    TableFiles::desktop()
-        .load(&RealProc::system())
-        .unwrap_or_else(|error| {
-            tracing::error!(%error, "the table of the desktop's own programs could not be loaded, so every call is refused");
-            Table::empty()
-        })
+    peers_callers::desktop_table().unwrap_or_else(|error| {
+        tracing::error!(%error, "the table of the desktop's own programs could not be loaded, so every call is refused");
+        Table::empty()
+    })
 }
 
 /// The variable that names the person's own rows file, in a build with the `debug` feature.

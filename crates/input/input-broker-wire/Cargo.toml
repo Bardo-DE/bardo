@@ -10,7 +10,12 @@ publish.workspace = true
 
 [dependencies]
 base-time = { path = "../../base/base-time" }
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 thiserror = { workspace = true }
+
+[dev-dependencies]
+# The shipped caller table is read by the role test, so the table reader is on.
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 
 [lints]
 workspace = true

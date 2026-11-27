@@ -14,6 +14,7 @@ mod invoke;
 mod memory_recall;
 mod names;
 mod record;
+pub mod roles;
 mod serve;
 mod skeleton;
 

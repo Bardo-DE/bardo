@@ -2,7 +2,7 @@
 //! Every bound is against a subscriber that is broken or hostile: it is refused or cut, and
 //! never allowed to wedge the thread that serves layer-shell-host.
 
-use service_locator::guard::{COMPLAINT_INTERVAL, Voice};
+use seat_guard::{COMPLAINT_INTERVAL, Voice};
 use std::time::{Duration, Instant};
 
 /// Subscribers connected at once. layer-shell-host is the only one in practice; a few more cover a

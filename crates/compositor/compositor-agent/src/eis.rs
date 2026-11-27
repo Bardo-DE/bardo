@@ -15,7 +15,8 @@
 
 use crate::eis_keymap::{KeymapFile, KeymapText};
 use crate::remote::{Fit, Held, RemoteFor, RemoteHandle, RemoteSlot, releases, tagged};
-use caller_identity_core::{RoleName, roles};
+use caller_identity_core::{Proof, Requirement, RoleName};
+use caller_roles::{AGENT_TIER, PORTAL};
 use compositor_core::DeviceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
 use compositor_core::input::{
@@ -40,7 +41,7 @@ use std::os::unix::net::UnixStream;
 /// loop with another role is refused there too.
 #[must_use]
 pub fn portal_may_connect(held: &RoleName) -> bool {
-    *held == roles::PORTAL
+    Requirement::new(PORTAL, Proof::Full).is_for(held)
 }
 
 /// Whether `held`, the role the caller proved, is the agent tier.
@@ -49,7 +50,7 @@ pub fn portal_may_connect(held: &RoleName) -> bool {
 /// bus thread proves the role; this is the second line.
 #[must_use]
 pub fn agent_may_lease(held: &RoleName) -> bool {
-    *held == roles::AGENT_TIER
+    Requirement::new(AGENT_TIER, Proof::Full).is_for(held)
 }
 
 /// A kind of device a remote session may offer.
@@ -667,6 +668,7 @@ fn touch_kind(which: TouchWhere, extent: LogicalRect, slot: u32, x: f32, y: f32)
 #[cfg(test)]
 mod tests {
     use super::*;
+    use caller_roles::{PORTAL_FRONTEND, SETTINGS, SHELL};
     use compositor_core::geometry::LogicalSize;
     use compositor_core::input::PortalSessionId;
 
@@ -683,26 +685,16 @@ mod tests {
 
     #[test]
     fn only_the_portal_may_ask() {
-        assert!(portal_may_connect(&roles::PORTAL));
-        for other in [
-            roles::SHELL,
-            roles::AGENT_TIER,
-            roles::PORTAL_FRONTEND,
-            roles::SETTINGS,
-        ] {
+        assert!(portal_may_connect(&PORTAL));
+        for other in [SHELL, AGENT_TIER, PORTAL_FRONTEND, SETTINGS] {
             assert!(!portal_may_connect(&other), "{other}");
         }
     }
 
     #[test]
     fn only_the_agent_tier_may_lease() {
-        assert!(agent_may_lease(&roles::AGENT_TIER));
-        for other in [
-            roles::SHELL,
-            roles::PORTAL,
-            roles::PORTAL_FRONTEND,
-            roles::SETTINGS,
-        ] {
+        assert!(agent_may_lease(&AGENT_TIER));
+        for other in [SHELL, PORTAL, PORTAL_FRONTEND, SETTINGS] {
             assert!(!agent_may_lease(&other), "{other}");
         }
     }

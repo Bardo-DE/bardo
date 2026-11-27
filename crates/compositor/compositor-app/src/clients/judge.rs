@@ -93,7 +93,7 @@ impl Judge {
     #[must_use]
     pub fn new(table: Table, system: SystemDir) -> Judge {
         Judge {
-            prober: Prober::system(),
+            prober: Prober::new(RealProc::system()),
             table,
             system,
         }

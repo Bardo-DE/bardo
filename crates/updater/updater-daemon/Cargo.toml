@@ -28,7 +28,9 @@ base-clock = { path = "../../base/base-clock" }
 http-core = { path = "../../network/http-core" }
 http-reqwest = { path = "../../network/http-reqwest" }
 zbus = {workspace = true, features = ["tokio"]}
-caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+caller-roles = {path = "../../identity/caller-roles"}
+peers-callers = {path = "../../identity/peers-callers"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
@@ -36,7 +38,7 @@ dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
-caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 tempfile = { workspace = true }
 tar = {workspace = true, features = ["default"]}
 zstd = { workspace = true }

@@ -91,7 +91,7 @@ fn a_program_with_another_services_role_is_not_accountd_either() {
     let bus = PrivateBus::start();
     let other = Accountd::new(Verdict::Allow, identities());
     let daemon = rt.block_on(other.serve_on(&bus));
-    let vouch = vouching(&rt, &bus, &daemon, Owner::Holding(roles::SYNC));
+    let vouch = vouching(&rt, &bus, &daemon, Owner::Holding(sync_bus::roles::SYNC));
     let mut harness = Sandbox::new("accounts-wrong-role")
         .on_bus_vouched(bus.address(), vouch)
         .harness(accounts());
@@ -107,7 +107,12 @@ fn the_program_that_holds_accountds_role_is_read() {
     let bus = PrivateBus::start();
     let accountd = Accountd::new(Verdict::Allow, identities());
     let daemon = rt.block_on(accountd.serve_on(&bus));
-    let vouch = vouching(&rt, &bus, &daemon, Owner::Holding(roles::ACCOUNTS));
+    let vouch = vouching(
+        &rt,
+        &bus,
+        &daemon,
+        Owner::Holding(account_wire::roles::ACCOUNTS),
+    );
     let mut harness = Sandbox::new("accounts-owner-vouched")
         .on_bus_vouched(bus.address(), vouch)
         .harness(accounts());

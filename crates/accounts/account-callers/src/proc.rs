@@ -1,10 +1,10 @@
 //! [`ProcCallers`]: the callers of a bus connection, by the process behind each sender.
 
 use super::standing::caller_of;
-use super::translate::{caller_identity_table, manager_need};
+use super::translate::caller_identity_table;
 use super::{Caller, CallerTable, Callers};
 use caller_identity_core::Standing;
-use caller_identity_dbus::{BusPeers, ManagerCheck};
+use caller_identity_dbus::BusPeers;
 use zbus::Connection as BusConnection;
 
 /// Callers by process.
@@ -50,7 +50,7 @@ impl ProcCallers {
     #[must_use]
     pub fn new(connection: BusConnection, table: CallerTable) -> Self {
         let rows = caller_identity_table(&table);
-        let peers = BusPeers::new(connection, rows, ManagerCheck::Verified(manager_need()));
+        let peers = peers_callers::peers_on(connection, rows);
         Self {
             table,
             peers: Peers::System(peers),

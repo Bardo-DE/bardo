@@ -17,9 +17,7 @@ mod services;
 mod testing;
 
 pub use allow::allowing;
-pub use caller_identity_dbus::caller_identity_core::{
-    NotHeldError, Proof, Requirement, RoleName, roles,
-};
+pub use caller_identity_dbus::caller_identity_core::{NotHeldError, Proof, Requirement, RoleName};
 pub use caller_identity_dbus::{BusPeers, access_denied};
 pub use check::RoleCheck;
 #[cfg(feature = "dev-callers")]

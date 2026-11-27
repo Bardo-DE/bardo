@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 account-dbus = {path = "../../accounts/account-dbus"}
 dbus-kit = { path = "../../bus/dbus-kit" }
 base-ids = { path = "../../base/base-ids" }
@@ -20,6 +21,10 @@ zbus = {workspace = true, features = ["tokio"]}
 # app ships in v1, so the default bus surface does not declare it. syncd's feature of the same
 # name turns it on for the object it serves.
 photos-picker = []
+
+[dev-dependencies]
+# The shipped caller table is read by the role test, so the table reader is on.
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 
 [lints]
 workspace = true

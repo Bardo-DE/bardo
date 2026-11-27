@@ -69,6 +69,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
+ "caller-identity-core",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -522,6 +523,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "caller-identity-dev"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "caller-identity-linux"
 version = "0.1.0"
 dependencies = [
@@ -530,6 +540,13 @@ dependencies = [
  "nix 0.31.3",
  "rustix 1.1.5",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "caller-roles"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
 ]
 
 [[package]]
@@ -615,6 +632,7 @@ name = "compositor-agent"
 version = "0.1.0"
 dependencies = [
  "caller-identity-core",
+ "caller-roles",
  "compositor-core",
  "desktop-protocols",
  "reis",
@@ -636,6 +654,7 @@ dependencies = [
  "base-time",
  "base-words",
  "base-xdg",
+ "caller-identity-dev",
  "calloop",
  "compositor-agent",
  "compositor-backend",
@@ -721,6 +740,7 @@ dependencies = [
 name = "compositor-dbus"
 version = "0.1.0"
 dependencies = [
+ "caller-identity-core",
  "zbus",
 ]
 
@@ -752,12 +772,15 @@ dependencies = [
  "account-dbus",
  "base-ids",
  "base-spawn",
+ "caller-identity-core",
  "caller-identity-dbus",
+ "caller-roles",
  "calloop",
  "compositor-core",
  "compositor-dbus",
  "dbus-kit",
  "desktop-protocols",
+ "peers-callers",
  "settings-dbus",
  "settings-portal",
  "settings-proto",
@@ -851,6 +874,7 @@ dependencies = [
  "account-core",
  "base-testkit",
  "base-time",
+ "caller-roles",
  "compositor-app",
  "compositor-backend",
  "compositor-core",
@@ -2395,6 +2419,16 @@ name = "paste"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
+
+[[package]]
+name = "peers-callers"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-dbus",
+ "caller-identity-linux",
+ "zbus",
+]
 
 [[package]]
 name = "peniko"

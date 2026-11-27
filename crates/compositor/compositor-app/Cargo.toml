@@ -36,6 +36,7 @@ compositor-wayland = {path = "../compositor-wayland", features = ["shell-protoco
 compositor-backend = {path = "../compositor-backend"}
 compositor-agent = {path = "../compositor-agent"}
 compositor-ipc = {path = "../compositor-ipc"}
+caller-identity-dev = {optional = true, path = "../../identity/caller-identity-dev"}
 compositor-privacy = {path = "../compositor-privacy"}
 desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["server"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
@@ -76,10 +77,10 @@ tty = ["compositor-backend/tty"]
 libinput = ["compositor-backend/libinput"]
 # Headless tests only (B10): the test kit builds the compositor with it. A binary with it refuses
 # every backend but headless and refuses to start outside the jail (jail_check.rs). It also reads
-# test caller rows from the injected folder (`clients/dev_callers.rs`), hence `dev-rows`.
-testing = ["compositor-render/testing", "compositor-backend/testing", "compositor-ipc/dev-rows"]
+# test caller rows from the injected folder (`clients/dev_callers.rs`), hence `dev-rows` and `caller-identity-dev`.
+testing = ["compositor-render/testing", "compositor-backend/testing", "compositor-ipc/dev-rows", "dep:caller-identity-dev"]
 # bardo-compositorctl's Debug1 on the private bus (B10); the same refusals as `testing`.
-debug-inject = ["compositor-ipc/debug-inject", "compositor-backend/debug-inject", "compositor-ipc/dev-rows"]
+debug-inject = ["compositor-ipc/debug-inject", "compositor-backend/debug-inject", "compositor-ipc/dev-rows", "dep:caller-identity-dev"]
 
 [lints]
 workspace = true

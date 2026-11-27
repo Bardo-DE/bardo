@@ -8,7 +8,8 @@
 //! only it can build a client's data (its key, its gone queue). Frozen at P2-Z; filled by
 //! P2-Q2.
 
-use caller_identity_core::{RoleName, roles};
+use caller_identity_core::{Proof, Requirement, RoleName};
+use caller_roles::{AGENT_TIER, PORTAL, SHELL};
 use compositor_core::policy::ConnectionRole;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
@@ -74,12 +75,14 @@ pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, Refu
 /// unit name.
 #[must_use]
 pub fn connection_role(held: &RoleName) -> Option<ConnectionRole> {
-    match held {
-        held if *held == roles::SHELL => Some(ConnectionRole::Shell),
-        held if *held == roles::AGENT_TIER => Some(ConnectionRole::Agent),
-        held if *held == roles::PORTAL => Some(ConnectionRole::Portal),
-        _ => None,
-    }
+    [
+        (SHELL, ConnectionRole::Shell),
+        (AGENT_TIER, ConnectionRole::Agent),
+        (PORTAL, ConnectionRole::Portal),
+    ]
+    .into_iter()
+    .find(|(role, _)| Requirement::new(role.clone(), Proof::Full).is_for(held))
+    .map(|(_, connection)| connection)
 }
 
 #[cfg(test)]
@@ -92,15 +95,9 @@ mod tests {
 
     #[test]
     fn only_the_shell_the_agent_tier_and_the_portal_stand_for_privileged_roles() {
-        assert_eq!(connection_role(&roles::SHELL), Some(ConnectionRole::Shell));
-        assert_eq!(
-            connection_role(&roles::AGENT_TIER),
-            Some(ConnectionRole::Agent)
-        );
-        assert_eq!(
-            connection_role(&roles::PORTAL),
-            Some(ConnectionRole::Portal)
-        );
+        assert_eq!(connection_role(&SHELL), Some(ConnectionRole::Shell));
+        assert_eq!(connection_role(&AGENT_TIER), Some(ConnectionRole::Agent));
+        assert_eq!(connection_role(&PORTAL), Some(ConnectionRole::Portal));
         for other in ["settings", "compositor", "companion", "shell_helper"] {
             assert_eq!(connection_role(&role(other)), None, "{other}");
         }
@@ -112,43 +109,43 @@ mod tests {
         let cases = [
             (
                 "the shell asks for the shell",
-                roles::SHELL,
+                SHELL,
                 ConnectionRole::Shell,
                 None,
             ),
             (
                 "the agent tier asks for the agent tier",
-                roles::AGENT_TIER,
+                AGENT_TIER,
                 ConnectionRole::Agent,
                 None,
             ),
             (
                 "the shell asks for the agent tier",
-                roles::SHELL,
+                SHELL,
                 ConnectionRole::Agent,
                 Some(RefuseWhy::RoleNotAllowed),
             ),
             (
                 "the agent tier asks for the shell",
-                roles::AGENT_TIER,
+                AGENT_TIER,
                 ConnectionRole::Shell,
                 Some(RefuseWhy::RoleNotAllowed),
             ),
             (
                 "the portal asks for the portal",
-                roles::PORTAL,
+                PORTAL,
                 ConnectionRole::Portal,
                 None,
             ),
             (
                 "the portal asks for the shell",
-                roles::PORTAL,
+                PORTAL,
                 ConnectionRole::Shell,
                 Some(RefuseWhy::RoleNotAllowed),
             ),
             (
                 "the shell asks for the portal",
-                roles::SHELL,
+                SHELL,
                 ConnectionRole::Portal,
                 Some(RefuseWhy::RoleNotAllowed),
             ),

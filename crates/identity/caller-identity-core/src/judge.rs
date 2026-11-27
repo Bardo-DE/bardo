@@ -8,7 +8,7 @@
 //!    names the unit its cgroup leaf spells (at `Unit` when the manager's facts all agree and
 //!    the unit's `ExecStart` program is root-only), and `Unverified` otherwise.
 //!
-//!    Rule 2b, only with feature `dev-rows`: a native process whose image matches a developer row
+//!    Rule 2b: a native process whose image matches a developer row
 //!    (and whose cgroup leaf is the row's unit, when it names one), and that no shipped row claims
 //!    by image, is that service at `Proof::Dev`. Checked before rule 3, so an image the person
 //!    wrote can have it.
@@ -24,7 +24,7 @@ use crate::cgroup::{flatpak_scope_in, scope_app};
 use crate::facts::{
     DropIns, Engine, Exe, Facts, FileTrust, Fragment, Loader, SandboxFacts, Transient, UnitFacts,
 };
-use crate::ids::AppKey;
+use crate::ids::{AppKey, ExePath};
 use crate::standing::{Proof, Standing, WhyNot};
 use crate::table::{Row, Table};
 
@@ -78,6 +78,28 @@ fn service(row: &Row, proof: Proof, facts: &Facts) -> Standing {
     }
 }
 
+/// The developer row that makes the process with `facts` and image `image` a service at
+/// `Proof::Dev`: its image matches, its unit (when it names one) is the cgroup's leaf, and no
+/// shipped row claims the image, so a developer row never outranks a shipped one.
+fn dev_row<'t>(facts: &Facts, table: &'t Table, image: &ExePath) -> Option<&'t Row> {
+    let claimed = table
+        .rows()
+        .iter()
+        .any(|row| row.proves() && row.matches_image(image));
+    if claimed {
+        return None;
+    }
+    let leaf = facts.cgroup.unit_leaf();
+    table.rows().iter().find(|row| {
+        row.is_dev()
+            && row.matches_image(image)
+            && row
+                .unit
+                .as_ref()
+                .is_none_or(|unit| leaf.as_ref() == Some(unit))
+    })
+}
+
 fn judge_native(facts: &Facts, table: &Table) -> Standing {
     let leaf_row = facts
         .cgroup
@@ -99,11 +121,8 @@ fn judge_native(facts: &Facts, table: &Table) -> Standing {
             };
         }
     };
-    #[cfg(feature = "dev-rows")]
-    {
-        if let Some(row) = crate::dev::dev_row(facts, table, path) {
-            return service(row, Proof::Dev, facts);
-        }
+    if let Some(row) = dev_row(facts, table, path) {
+        return service(row, Proof::Dev, facts);
     }
     if let FileTrust::Writable(_) = trust {
         let exe_name = path.file_name().map(str::to_owned);

@@ -14,6 +14,7 @@ account-core = {path = "../account-core"}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 caller-identity-core = {default-features = false, features = ["toml"], path = "../../identity/caller-identity-core"}
 caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+peers-callers = {path = "../../identity/peers-callers"}
 zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

@@ -26,10 +26,11 @@ impl Proven {
     ///
     /// ```
     /// use compositor_ipc::dbus::Proven;
-    /// use caller_identity_dbus::caller_identity_core::{AppKey, roles};
+    /// use caller_identity_dbus::caller_identity_core::AppKey;
+    /// use caller_roles::SHELL;
     ///
-    /// let shell = Proven::new(AppKey::new("org.bardo.Shell").expect("an app"), roles::SHELL);
-    /// assert_eq!(shell.role, roles::SHELL);
+    /// let shell = Proven::new(AppKey::new("org.bardo.Shell").expect("an app"), SHELL);
+    /// assert_eq!(shell.role, SHELL);
     /// ```
     #[must_use]
     pub fn new(app: AppKey, role: RoleName) -> Proven {
@@ -135,9 +136,10 @@ impl ConnectAsk {
     /// ```
     /// use compositor_core::policy::ConnectionRole;
     /// use compositor_ipc::dbus::{ConnectAsk, Proven};
-    /// use caller_identity_dbus::caller_identity_core::{AppKey, roles};
+    /// use caller_identity_dbus::caller_identity_core::AppKey;
+    /// use caller_roles::SHELL;
     ///
-    /// let caller = Proven::new(AppKey::new("org.bardo.Shell").expect("an app"), roles::SHELL);
+    /// let caller = Proven::new(AppKey::new("org.bardo.Shell").expect("an app"), SHELL);
     /// let ask = ConnectAsk::new(ConnectionRole::Shell, caller);
     /// assert_eq!(ask.role, ConnectionRole::Shell);
     /// ```
@@ -190,9 +192,10 @@ impl ConnectAsk {
     ///
     /// ```
     /// use compositor_ipc::dbus::{ConnectAsk, Proven};
-    /// use caller_identity_dbus::caller_identity_core::{AppKey, roles};
+    /// use caller_identity_dbus::caller_identity_core::AppKey;
+    /// use caller_roles::PORTAL;
     ///
-    /// let caller = Proven::new(AppKey::new("org.bardo.Portal").expect("an app"), roles::PORTAL);
+    /// let caller = Proven::new(AppKey::new("org.bardo.Portal").expect("an app"), PORTAL);
     /// let ask = ConnectAsk::remote_eis(7, 3, caller);
     /// assert_eq!(ask.remote.map(|remote| remote.session), Some(7));
     /// ```
@@ -216,9 +219,10 @@ impl ConnectAsk {
     ///
     /// ```
     /// use compositor_ipc::dbus::{ConnectAsk, Proven};
-    /// use caller_identity_dbus::caller_identity_core::{AppKey, roles};
+    /// use caller_identity_dbus::caller_identity_core::AppKey;
+    /// use caller_roles::PORTAL;
     ///
-    /// let caller = Proven::new(AppKey::new("org.bardo.Portal").expect("an app"), roles::PORTAL);
+    /// let caller = Proven::new(AppKey::new("org.bardo.Portal").expect("an app"), PORTAL);
     /// let ask = ConnectAsk::end_eis(7, caller);
     /// assert_eq!(ask.end.map(|end| end.session), Some(7));
     /// ```
@@ -245,9 +249,10 @@ impl ConnectAsk {
     ///
     /// ```
     /// use compositor_ipc::dbus::{ConnectAsk, Proven};
-    /// use caller_identity_dbus::caller_identity_core::{AppKey, roles};
+    /// use caller_identity_dbus::caller_identity_core::AppKey;
+    /// use caller_roles::AGENT_TIER;
     ///
-    /// let caller = Proven::new(AppKey::new("org.bardo.ComputerUse").expect("an app"), roles::AGENT_TIER);
+    /// let caller = Proven::new(AppKey::new("org.bardo.ComputerUse").expect("an app"), AGENT_TIER);
     /// let ask = ConnectAsk::lease_window("w7", 7, caller);
     /// assert_eq!(ask.lease.map(|lease| lease.window), Some("w7".to_owned()));
     /// ```

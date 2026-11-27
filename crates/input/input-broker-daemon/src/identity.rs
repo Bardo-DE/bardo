@@ -9,10 +9,9 @@ pub mod caller_identity_authority;
 #[cfg(any(test, feature = "fake"))]
 pub mod fake;
 pub mod seat;
-pub mod unit_files;
 
-use caller_identity_core::{CgroupPath, ExePath, Pid, Proof, RoleName, Uid};
-use caller_identity_linux::{LoadError, PinError, ProbeError};
+use caller_identity_core::{CgroupPath, ExePath, Pid, Pin, ProbeError, Proof, RoleName, Uid};
+use caller_identity_linux::{LoadError, PinError};
 use rustix::io::Errno;
 use rustix::net::sockopt::socket_peercred;
 use std::os::fd::OwnedFd;
@@ -25,6 +24,8 @@ pub struct Credential {
     /// How well it was proven (`Full` is the unit: its files are root-owned, it unsets the
     /// loader variables, and the process shows none of them).
     pub proof: Proof,
+    /// How firmly the process was held.
+    pub pin: Pin,
 }
 
 /// The facts about the process behind a connection.

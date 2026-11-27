@@ -1,0 +1,23 @@
+[package]
+name = "caller-roles"
+description = "The role names of the desktop programs that services of every layer name when they say who may call them: the shell, the portal, its frontend, the agent tier and the Settings app."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+caller-identity-core = {default-features = false, path = "../caller-identity-core"}
+
+[dev-dependencies]
+# The shipped caller table is read by the role test, so the table reader is on.
+caller-identity-core = {path = "../caller-identity-core"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints]
+workspace = true

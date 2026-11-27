@@ -1,8 +1,8 @@
 //! Which program is calling, over a bus: the adapter half of the caller-identity library.
 //!
-//! [`BusPeers`] turns a message's sender into a [`caller_identity_linux::Standing`]: it asks the bus for the
+//! [`BusPeers`] turns a message's sender into a [`caller_identity_core::Standing`]: it asks the bus for the
 //! sender's process (the bus daemon's pidfd when it offers one), holds it, reads `/proc`
-//! through [`caller_identity_linux::Prober`], asks the systemd manager about the unit when the table names
+//! through [`caller_identity_core::Prober`], asks the systemd manager about the unit when the table names
 //! one, and judges. A method then calls [`BusPeers::require`] with the roles it accepts.
 //!
 //! Every call to the bus has a two-second bound ([`BUS_TIMEOUT`]) and fails closed. zbus runs on

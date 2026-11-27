@@ -7,18 +7,18 @@ use crate::ids::{AppKey, ExePath, RoleName};
 ///
 /// Ordered by strength: `Full` includes everything below it, and `Unit` ranks above `Exe` because
 /// the manager's word on a unit (its definition, its loader variables, a root-only program) shows
-/// more than an image read alone, though `Unit` lacks the image read itself. With feature `dev-
-/// rows` the ladder has one more step at the bottom, `Dev`; a build without the feature has exactly
-/// `Cgroup < Exe < Unit < Full`.
+/// more than an image read alone, though `Unit` lacks the image read itself. The ladder has one more step at the bottom,
+/// `Dev`, which only a developer row ([`Table::with_dev_rows`](crate::Table::with_dev_rows)) gives; a
+/// table without such rows never yields it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[non_exhaustive]
 pub enum Proof {
-    /// Only with feature `dev-rows`: the image matched a row from a developer's own file. The
-    /// image may be one the person wrote, so this shows nothing about the program; it is the
-    /// lowest proof, below [`Proof::Cgroup`], and no requirement of `Cgroup`, `Exe` or `Full` is
-    /// met by it. A consumer accepts it only by asking for it ([`crate::Requirement::dev`]),
-    /// and only in its own debug builds.
-    #[cfg(feature = "dev-rows")]
+    /// The image matched a developer row, a row from a developer's own file. The image may be
+    /// one the person wrote, so this shows nothing about the program; it is the lowest proof,
+    /// below [`Proof::Cgroup`], and no requirement of `Cgroup`, `Exe` or `Full` is met by it. A
+    /// consumer accepts it only by asking for it ([`crate::Requirement::dev`]), and only in its
+    /// own debug builds. The variant is always present because the judgement grants it to a
+    /// developer row; only `caller-identity-dev`, never part of a shipped program, makes such rows.
     Dev,
     /// Pinned, uid known, the cgroup names the unit. A same-user process can move itself into a
     /// delegated cgroup, so this is a speed bump, never a boundary. It is all that can be had

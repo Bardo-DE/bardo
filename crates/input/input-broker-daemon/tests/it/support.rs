@@ -1,7 +1,7 @@
 //! Callers, seats and contexts the tests share.
 
 use base_time::ManualMonotonic;
-use caller_identity_core::{CgroupPath, ExePath, Pid, Proof, RoleName, Uid};
+use caller_identity_core::{CgroupPath, ExePath, Pid, Pin, Proof, RoleName, Uid};
 use input_broker_daemon::backend::fake::FakeBackend;
 use input_broker_daemon::clock::Uptime;
 use input_broker_daemon::identity::fake::FixedAuthority;
@@ -26,7 +26,11 @@ pub(crate) fn listed(role: &str, proof: Proof, uid: Uid, cgroup: &str) -> Caller
         uid,
         cgroup: CgroupPath::new(cgroup).expect("a cgroup path"),
         image: Some(ExePath::new("/usr/local/bin/x").expect("an image path")),
-        credential: Some(Credential { role, proof }),
+        credential: Some(Credential {
+            role,
+            proof,
+            pin: Pin::AtConnect,
+        }),
     }
 }
 

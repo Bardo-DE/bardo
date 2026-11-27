@@ -10,16 +10,13 @@
 //! - a row with no unit is not translated: it names an app by the scope or sandbox it runs in,
 //!   and [`CallerTable::role_of`] gives its role;
 //! - one row is added for the unit manager itself (`systemd`'s image), the role the bus crate
-//!   demands of whoever answers questions about units ([`manager_need`]);
+//!   demands of whoever answers questions about units ([`peers_callers::manager_need`]);
 //! - the role is the accounts service's own spelling (`account_daemon`, `sheet_host`) so that nothing is
 //!   renamed in either direction;
 //! - the first row for a unit wins, as in [`CallerTable::resolve_unit`].
 
 use super::{CallerRole, CallerRow, CallerTable};
-use caller_identity_core::{Proof, Requirement, RoleName, Table};
-
-/// The role of the unit manager's row. No accounts role has this name.
-const MANAGER_ROLE: &str = "manager";
+use caller_identity_core::{RoleName, Table};
 
 /// The row for the unit manager: `systemd --user` runs the system's `systemd`.
 const MANAGER_ROW: &str = r#"
@@ -28,12 +25,6 @@ app  = "org.freedesktop.systemd1"
 exe  = ["/usr/lib/systemd/systemd", "/lib/systemd/systemd"]
 role = "manager"
 "#;
-
-/// What the owner of the unit manager's bus name must be before its answers about units are
-/// believed: the manager row, at the proof an image alone gives.
-pub(super) fn manager_need() -> Requirement {
-    Requirement::new(RoleName::from_static(MANAGER_ROLE), Proof::Exe)
-}
 
 /// The role `role` as the caller-identity library spells it.
 pub(super) fn role_name(role: CallerRole) -> Option<RoleName> {

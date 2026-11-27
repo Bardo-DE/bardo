@@ -452,6 +452,14 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.caller-role-types]
 kind = "unclassified"
+[crate.caller-identity-dev]
+kind = "unclassified"
+[crate.caller-roles]
+kind = "unclassified"
+[crate.peers-callers]
+kind = "unclassified"
+[crate.seat-guard]
+kind = "unclassified"
 
 # inference
 [crate.inference-agent-proto]
@@ -1351,7 +1359,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-wire"
 features = "all"
-exactly = ["account-core", "account-match", "account-capability"]
+exactly = ["account-capability", "account-core", "account-match", "caller-identity-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1441,7 +1449,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-callers"
 features = "all"
-exactly = ["account-core", "base-fs", "caller-identity-core", "caller-identity-dbus", "caller-identity-linux", "caller-role-types"]
+exactly = ["account-core", "base-fs", "caller-identity-core", "caller-identity-dbus", "caller-identity-linux", "caller-role-types", "peers-callers"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -4160,8 +4168,8 @@ why = "inferd's default build has no test-only features: no test-proc-root, no p
 [[reach]]
 crate = "input-broker-wire"
 build = false
-forbid = ["zbus", "tokio", "async-std", "smol", "caller_identity*", "caller-identity-*", "rustix", "libc", "input-linux*", "listenfd", "nix"]
-why = "stays pure: no bus, async runtime, caller identity, socket or device library"
+forbid = ["zbus", "tokio", "async-std", "smol", "caller-identity-dbus", "caller-identity-dev", "caller-identity-linux", "rustix", "libc", "input-linux*", "listenfd", "nix"]
+why = "stays pure: no bus, async runtime, process reading, socket or device library (the caller-identity vocabulary of the two daemons' role names is the one thing it takes)"
 
 [[reach]]
 crate = "input-broker-client"
@@ -4871,8 +4879,9 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "settings-app-callers"
 features = "all"
-exactly = ["account-wire", "caller-identity-dbus", "compositor-dbus", "memory-dbus", "portal-dbus",
-  "settings-dbus", "shell-dbus", "sync-bus", "updater-dbus"]
+exactly = ["account-wire", "caller-identity-dbus", "caller-identity-dev", "caller-roles",
+  "compositor-dbus", "memory-dbus", "peers-callers", "portal-dbus", "settings-dbus", "shell-dbus",
+  "sync-bus", "updater-dbus"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -4910,8 +4919,9 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "settings-app-intents"
 features = "all"
 exactly = ["account-core", "action-core", "action-dbus", "action-manifest", "action-provider",
-  "action-vocab", "action-wire", "base-ids", "base-time", "provenance", "settings-app-callers",
-  "settings-app-client", "settings-app-files", "settings-app-model", "settings-types"]
+  "action-vocab", "action-wire", "base-ids", "base-time", "caller-roles", "provenance",
+  "settings-app-callers", "settings-app-client", "settings-app-files", "settings-app-model",
+  "settings-types"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5157,66 +5167,18 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-services"
 features = "all"
-exactly = [
-    "account-client",
-    "account-client-dbus",
-    "account-core",
-    "account-dbus",
-    "account-sheet",
-    "account-tailscale",
-    "account-wire",
-    "action-client",
-    "action-core",
-    "action-dbus",
-    "action-manifest",
-    "action-provider",
-    "action-vocab",
-    "action-wire",
-    "anyview-core",
-    "anyview-platform",
-    "base-fs",
-    "base-ids",
-    "base-machine", "base-secret",
-    "base-time",
-    "base-words",
-    "bluez-proxy",
-    "caller-identity-dbus",
-    "companion-model",
-    "companion-wire",
-    "compositor-dbus",
-    "computer-use-action",
-    "computer-use-bus",
-    "computer-use-dbus",
-    "dbus-kit",
-    "desktop-client",
-    "desktop-protocols",
-    "http-core",
-    "http-reqwest",
-    "inference-client",
-    "inference-core",
-    "inference-tailnet",
-    "key-remap-proto",
-    "memory-core",
-    "memory-dbus",
-    "networkmanager-proxy",
-    "outputs-dbus",
-    "permission-core",
-    "portal-dbus",
-    "provenance",
-    "settings-store",
-    "settings-store-fs",
-    "settings-types",
-    "shell-dbus",
-    "shell-desktop-fs",
-    "shell-launcher",
-    "shell-model",
-    "speech-dbus",
-    "speech-wire",
-    "sync-bus",
-    "ui-core",
-    "ui-helpers",
-    "base-clock",
-]
+exactly = ["account-client", "account-client-dbus", "account-core", "account-dbus",
+  "account-sheet", "account-tailscale", "account-wire", "action-client", "action-core",
+  "action-dbus", "action-manifest", "action-provider", "action-vocab", "action-wire",
+  "anyview-core", "anyview-platform", "base-clock", "base-fs", "base-ids", "base-machine",
+  "base-secret", "base-time", "base-words", "bluez-proxy", "caller-identity-dbus",
+  "caller-identity-dev", "caller-roles", "companion-model", "companion-wire", "compositor-dbus",
+  "computer-use-action", "computer-use-bus", "computer-use-dbus", "dbus-kit", "desktop-client",
+  "desktop-protocols", "http-core", "http-reqwest", "inference-client", "inference-core",
+  "inference-tailnet", "key-remap-proto", "memory-core", "memory-dbus", "networkmanager-proxy",
+  "outputs-dbus", "peers-callers", "permission-core", "portal-dbus", "provenance",
+  "settings-store", "settings-store-fs", "settings-types", "shell-dbus", "shell-desktop-fs",
+  "shell-launcher", "shell-model", "speech-dbus", "speech-wire", "sync-bus", "ui-core", "ui-helpers"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5627,7 +5589,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-bus"
 features = "all"
-exactly = ["account-dbus", "base-ids", "dbus-kit"]
+exactly = ["account-dbus", "base-ids", "caller-identity-core", "dbus-kit"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -6061,8 +6023,8 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 crate = "ui-blitz"
 features = "all"
 exactly = ["base-fs", "base-machine", "base-time", "base-xdg", "blitz-embed", "blitz-embed-types", "caller-identity-dbus",
-  "dbus-kit", "desktop-protocols", "keymap", "keymap-gnome", "keymap-kde", "ui-components", "ui-desktop", "ui-emoji",
-  "ui-host-hooks", "wayland-raw-handle"]
+  "caller-roles", "dbus-kit", "desktop-protocols", "keymap", "keymap-gnome", "keymap-kde", "ui-components", "ui-desktop",
+  "ui-emoji", "ui-host-hooks", "wayland-raw-handle"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -6526,146 +6488,146 @@ why = "a release build never writes every control's text to files (the debug pro
 
 [[reach]]
 crate = "compositor-app"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "compositor-ctl"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "shell-app"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "account-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "inference-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "sync-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "drive-mount-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "engine-install"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "memory-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "action-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "companion-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "agent-reader-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "action-mcp"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "action-cli"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "agent-acp-bin"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "computer-use-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "settings-app"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "files"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "portal-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "input-broker-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "key-remap-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "mouse-gestures-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "updater-daemon"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 [[reach]]
 crate = "updater-root"
-forbid = []
-forbid-features = ["caller-identity-core/dev-rows", "caller-identity-dbus/fake", "caller-identity-dbus/dev-rows", "caller-identity-linux/fake", "caller-identity-linux/dev-rows", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
+forbid = ["caller-identity-dev"]
+forbid-features = ["caller-identity-dbus/fake", "caller-identity-linux/fake", "compositor-ipc/dev-rows", "desktop-client/fake", "input-broker-client/fake", "input-broker-daemon/fake"]
 why = "a shipped program never turns on a stand-in (a fake kernel, a made-up caller identity, a person's own rows file): it would let anything pass as anyone"
 
 # The scripts that build or install the desktop never switch a stand-in on or ask for every feature. A line

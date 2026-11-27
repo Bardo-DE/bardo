@@ -2,9 +2,7 @@
 //! nothing a person's file says makes a process more trusted.
 
 use crate::error::LoadError;
-use crate::procfs::ProcFs;
-use crate::walk::path_trust;
-use caller_identity_core::{FileTrust, Table};
+use caller_identity_core::{FileTrust, ProcFs, Table, path_trust};
 use std::io;
 use std::path::{Path, PathBuf};
 

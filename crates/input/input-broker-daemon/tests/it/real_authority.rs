@@ -2,11 +2,13 @@
 //! the `/proc` and the table are a tree in memory.
 
 use crate::support::{MOUSE_GESTURES_UID, USER};
-use caller_identity_core::{FileTrust, LOADER_VARIABLES, Pid, Proof, RoleName, Uid, Writer};
-use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Prober, TableFiles};
+use caller_identity_core::{
+    FileTrust, LOADER_VARIABLES, Pid, Prober, Proof, RoleName, Uid, Writer,
+};
+use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, TableFiles};
 use input_broker_daemon::identity::caller_identity_authority::CallerIdentityAuthority;
 use input_broker_daemon::identity::fake::FixedAuthority;
-use input_broker_daemon::identity::{ActiveUid, Authority, Credential, IdentifyError};
+use input_broker_daemon::identity::{ActiveUid, Authority, IdentifyError};
 use input_broker_daemon::policy::{ControlGroupError, authorise};
 use input_broker_wire::Kind;
 use rustix::net::sockopt::socket_peercred;
@@ -135,11 +137,8 @@ fn key_remap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_lis
         Uid::new(socket_peercred(&conn).expect("credentials").uid.as_raw())
     );
     assert_eq!(
-        caller.credential,
-        Some(Credential {
-            role: role("keymap_daemon"),
-            proof: Proof::Full
-        })
+        caller.credential.map(|c| (c.role, c.proof)),
+        Some((role("keymap_daemon"), Proof::Full))
     );
 }
 
@@ -232,10 +231,10 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
         let caller = authority(tree, KEY_REMAP_CGROUP, image)
             .identify(&socket())
             .expect("identified");
-        let proof = match caller.credential {
-            Some(Credential { proof, .. }) => proof,
-            None => panic!("{name}: unlisted"),
+        let Some(credential) = caller.credential else {
+            panic!("{name}: unlisted");
         };
+        let proof = credential.proof;
         assert_eq!(proof, want, "{name}");
     }
 }
@@ -294,11 +293,8 @@ fn a_hidden_image_is_only_the_cgroup_strength_and_the_policy_refuses_it() {
         .identify(&conn)
         .expect("identified");
     assert_eq!(
-        caller.credential,
-        Some(Credential {
-            role: role("pad_daemon"),
-            proof: Proof::Cgroup
-        })
+        caller.credential.map(|c| (c.role, c.proof)),
+        Some((role("pad_daemon"), Proof::Cgroup))
     );
     // Even in the right place and as the right user, a caller whose image was not read gets nothing.
     let caller = input_broker_daemon::identity::Caller {

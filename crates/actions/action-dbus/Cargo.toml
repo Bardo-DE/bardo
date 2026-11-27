@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 base-xdg = { path = "../../base/base-xdg" }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
@@ -39,6 +40,8 @@ inferd = ["dep:inference-client", "dep:inference-core"]
 fixture-callers = ["account-callers/test-proc-root"]
 
 [dev-dependencies]
+# The shipped caller table is read by the role test, so the table reader is on.
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 action-dbus = { path = ".", features = ["fixture-callers"] }
 tempfile = { workspace = true }
 

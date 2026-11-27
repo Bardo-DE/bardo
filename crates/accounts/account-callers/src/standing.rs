@@ -4,7 +4,7 @@
 use super::translate::role_of_name;
 use super::{Caller, CallerRole, CallerTable};
 use account_core::{AppId, AppName, Isolation, PeerIdentity};
-use caller_identity_core::{AppKey, Engine, Proof, Standing};
+use caller_identity_core::{AppKey, Engine, Proof, Requirement, RoleName, Standing};
 
 /// The app `standing` shows, if any.
 ///
@@ -56,9 +56,10 @@ const fn proof_needed(role: CallerRole) -> Proof {
 
 /// The role a service standing reaches: the row's role when the proof is enough for it, else a
 /// plain app. A role the table does not know (the manager's) is nobody's.
-fn service_role(role: &caller_identity_core::RoleName, proof: Proof) -> Option<CallerRole> {
+fn service_role(standing: &Standing, role: &RoleName) -> Option<CallerRole> {
     let row = role_of_name(role)?;
-    Some(if proof >= proof_needed(row) {
+    let need = [Requirement::new(role.clone(), proof_needed(row))];
+    Some(if standing.holds(&need).is_ok() {
         row
     } else {
         CallerRole::App
@@ -77,7 +78,7 @@ pub(super) fn caller_of(standing: &Standing, table: &CallerTable) -> Option<Call
         return None;
     };
     let role = match standing {
-        Standing::Service { role, proof, .. } => service_role(role, *proof)?,
+        Standing::Service { role, .. } => service_role(standing, role)?,
         Standing::Unverified { .. } => match table.role_of(&app.name) {
             role if role.is_fixed() => CallerRole::App,
             role => role,

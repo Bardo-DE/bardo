@@ -26,6 +26,7 @@ compositor-render = {path = "../compositor-render", features = ["testing"]}
 compositor-backend = {path = "../compositor-backend", features = ["testing"]}
 compositor-wayland = {path = "../compositor-wayland"}
 compositor-ipc = {path = "../compositor-ipc"}
+caller-roles = {path = "../../identity/caller-roles"}
 compositor-testclient = {path = "../compositor-testclient"}
 desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["client"]}
 account-core = {path = "../../accounts/account-core"}

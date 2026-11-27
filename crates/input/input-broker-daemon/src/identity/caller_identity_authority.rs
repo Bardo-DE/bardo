@@ -6,13 +6,13 @@
 //! The service holds `CAP_SYS_PTRACE` so that the probe can read `/proc/<pid>/exe` and `status` of
 //! another user's process. It never asks a unit manager (that would mean connecting to a socket the
 //! user controls from a root process), so the unit's facts come from the unit files and the
-//! process itself ([`super::unit_files`]). A listed program whose image checks out but whose unit
+//! process itself ([`caller_identity_linux::unit_facts`]). A listed program whose image checks out but whose unit
 //! does not stays at `Proof::Exe`, and the policy refuses it.
 
-use super::{Authority, Caller, Credential, IdentifyError, unit_files};
+use super::{Authority, Caller, Credential, IdentifyError};
 use crate::journal::{self, kv};
-use caller_identity_core::{Exe, Facts, Proof, Standing, Table, judge};
-use caller_identity_linux::{Pinned, Prober, ProcFs, RealProc, TableFiles};
+use caller_identity_core::{Exe, Facts, Prober, ProcFs, Standing, Table, judge};
+use caller_identity_linux::{Pinned, RealProc, TableFiles, unit_facts};
 use std::os::fd::OwnedFd;
 
 /// Judges callers against the table on disk, through a view of `/proc` and the file system.
@@ -26,7 +26,7 @@ impl CallerIdentityAuthority<RealProc> {
     /// The authority of this machine: the real `/proc` and the shipped table.
     #[must_use]
     pub fn system() -> Self {
-        Self::new(Prober::system(), TableFiles::desktop())
+        Self::new(Prober::new(RealProc::system()), TableFiles::desktop())
     }
 }
 
@@ -71,13 +71,12 @@ impl<P: ProcFs> CallerIdentityAuthority<P> {
     /// judgement stands (the policy refuses it) and the reason goes to the journal.
     fn prove_unit(&self, pinned: &Pinned, facts: Facts, table: &Table) -> (Facts, Standing) {
         let standing = judge(&facts, table);
-        let Standing::Service {
-            proof: Proof::Exe, ..
-        } = standing
-        else {
+        // Without the unit's facts the judgement reaches `Exe` at most, so a service here is one
+        // whose image checked out and whose unit is still to be shown.
+        let Standing::Service { .. } = standing else {
             return (facts, standing);
         };
-        match unit_files::facts(self.prober.fs(), facts.pid, &facts.cgroup) {
+        match unit_facts(self.prober.fs(), facts.pid, &facts.cgroup) {
             Ok(unit) => match self.prober.probe(pinned, Some(unit)) {
                 Ok(again) => {
                     let judged = judge(&again, table);
@@ -112,9 +111,12 @@ fn note_unproven(facts: &Facts, why: &dyn std::fmt::Display) {
 /// What a standing means to the service: a listed program with a role and a proof, or nothing.
 fn credential(standing: &Standing) -> Option<Credential> {
     match standing {
-        Standing::Service { role, proof, .. } => Some(Credential {
+        Standing::Service {
+            role, proof, pin, ..
+        } => Some(Credential {
             role: role.clone(),
             proof: *proof,
+            pin: *pin,
         }),
         _ => None,
     }

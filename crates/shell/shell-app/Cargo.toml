@@ -67,7 +67,7 @@ keyboard-types = {workspace = true}
 # A Space's id in the full-screen rows (edge_reveal.rs tests).
 account-core = {path = "../../accounts/account-core"}
 # The voice bench shared with shell-services' tests names who its stand-in voiced is.
-caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 
 [features]
 default = ["media"]

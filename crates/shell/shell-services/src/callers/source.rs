@@ -4,9 +4,9 @@
 use std::fmt::Debug;
 use std::sync::Arc;
 
-use caller_identity_dbus::caller_identity_core::{Proof, Requirement, Table, roles};
-use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
-use caller_identity_dbus::{BusPeers, ManagerCheck, ManagerLink, Offload};
+use caller_identity_dbus::caller_identity_core::Table;
+use caller_identity_dbus::caller_identity_linux::RealProc;
+use caller_identity_dbus::{BusPeers, ManagerLink, Offload};
 use zbus::Connection;
 
 /// How callers on a bus are told apart: their process, held by a pidfd, judged against the caller
@@ -42,23 +42,20 @@ impl DesktopCallers {
     /// root) the table is empty: nobody is a service, and every call is refused.
     #[must_use]
     pub fn from_system() -> DesktopCallers {
-        let table = TableFiles::desktop()
-            .load(&RealProc::system())
-            .unwrap_or_else(|error| {
-                eprintln!(
-                    "bardo-shell: callers: the table of the desktop's own programs could not be loaded ({error}), so every call to the shell's bus objects is refused"
-                );
-                Table::empty()
-            });
+        let table = peers_callers::desktop_table().unwrap_or_else(|error| {
+            eprintln!(
+                "bardo-shell: callers: the table of the desktop's own programs could not be loaded ({error}), so every call to the shell's bus objects is refused"
+            );
+            Table::empty()
+        });
         DesktopCallers::new(table)
     }
 }
 
 impl CallerSource for DesktopCallers {
     fn peers_on(&self, connection: Connection) -> Arc<Peers> {
-        let manager = ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe));
         Arc::new(
-            BusPeers::new(connection, self.table.clone(), manager).with_offload(Offload::Tokio),
+            peers_callers::peers_on(connection, self.table.clone()).with_offload(Offload::Tokio),
         )
     }
 }

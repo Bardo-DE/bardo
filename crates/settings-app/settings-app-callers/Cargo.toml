@@ -18,7 +18,10 @@ compositor-dbus = { path = "../../compositor/compositor-dbus" }
 account-wire = { path = "../../accounts/account-wire" }
 # `OwnerCheck`, `SenderName` and `Verdict`: the check this crate answers.
 settings-dbus = { path = "../../settings/settings-dbus" }
-caller-identity-dbus = {default-features = false, features = ["desktop", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+caller-roles = { path = "../../identity/caller-roles" }
+peers-callers = { path = "../../identity/peers-callers" }
+caller-identity-dev = { optional = true, path = "../../identity/caller-identity-dev" }
 rustix = {workspace = true, features = ["std", "process"], optional = true}
 thiserror = { workspace = true, optional = true }
 zbus = {workspace = true, features = ["default", "tokio"]}
@@ -31,9 +34,9 @@ settings-app-testkit = {path = "../settings-app-testkit"}
 # binary never enables it; a dev-dependency does.
 testing = ["caller-identity-dbus/fake"]
 # `bardo-settings --dev-callers FILE`: callers named in a person's own rows file are let in at `Proof::Dev`
-# (the caller-identity library's `dev-rows`). Off by default; only the `bardo-settings` binary's feature of the same name turns it
+# (`caller-identity-dev`). Off by default; only the `bardo-settings` binary's feature of the same name turns it
 # on, so no shipped build has it.
-dev-callers = ["caller-identity-dbus/dev-rows", "dep:rustix", "dep:thiserror"]
+dev-callers = ["dep:caller-identity-dev", "dep:rustix", "dep:thiserror"]
 
 [lints]
 workspace = true

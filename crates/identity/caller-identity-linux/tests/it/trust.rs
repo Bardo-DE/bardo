@@ -1,7 +1,6 @@
 //! The mode bits that make a file root-only.
 
-use caller_identity_core::{FileTrust, Uid, Writer};
-use caller_identity_linux::trust_of_mode;
+use caller_identity_core::{FileTrust, Uid, Writer, trust_of_mode};
 
 #[test]
 fn only_root_owned_files_nobody_else_can_write_are_root_only() {

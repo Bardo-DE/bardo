@@ -1,7 +1,7 @@
 //! The ownership walk: a path is only as trustworthy as the least-trusted directory above it.
 
+use crate::FileTrust;
 use crate::procfs::{Follow, ProcFs};
-use caller_identity_core::FileTrust;
 use std::io;
 use std::path::Path;
 

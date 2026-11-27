@@ -37,7 +37,7 @@ uinput-ioctl = {path = "../uinput-ioctl"}
 listenfd = { workspace = true }
 libc = { workspace = true }
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
-caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}

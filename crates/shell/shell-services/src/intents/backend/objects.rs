@@ -7,7 +7,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use action_core::{ConfirmId, ConfirmRequest};
 use action_dbus::INTENTS_BUS;
-use caller_identity_dbus::caller_identity_core::roles;
+use action_dbus::roles::ROUTER;
 use shell_model::intents::sheet::Serial;
 use tokio::sync::mpsc::UnboundedSender;
 use zbus::Connection;
@@ -67,7 +67,7 @@ impl ConfirmObject {
     async fn admit_actiond(&self, header: &Header<'_>) -> fdo::Result<OwnedUniqueName> {
         let claims = [Claim {
             name: INTENTS_BUS,
-            role: roles::ROUTER,
+            role: ROUTER,
             tag: (),
         }];
         admit(&self.peers, header, &claims)

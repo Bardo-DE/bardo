@@ -1,7 +1,8 @@
 //! `org.freedesktop.Application` on `org.bardo.Settings`, called the way bardo-shell calls it.
 
 use crate::support::{World, peers_knowing};
-use settings_app_callers::roles;
+use caller_identity_core::Table;
+use caller_roles::{AGENT_TIER, SETTINGS, SHELL};
 use settings_app_intents::{APPLICATION_INTERFACE, APPLICATION_PATH, HandOverError, hand_over};
 use settings_app_model::{
     ASSISTANT_MODEL_SLUG, ASSISTANT_SETUP_SLUG, AccountSegment, AccountTarget, Notice, PageSlug,
@@ -135,8 +136,8 @@ async fn open_page_shows_the_page_its_slug_names_and_raises() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_second_settings_app_hands_over_the_page_it_was_asked_for() {
     let world = World::start("app-hand-over", &[]).await;
-    let second = world.caller(roles::SETTINGS).await;
-    let knows = peers_knowing(&second, &world.owner(), &roles::SETTINGS);
+    let second = world.caller(SETTINGS).await;
+    let knows = peers_knowing(&second, &world.owner(), &SETTINGS);
     hand_over(
         &second,
         &knows,
@@ -244,8 +245,18 @@ enum Door {
 
 /// Every role of the desktop's table, with what the activation object does for it.
 fn activation_table() -> Vec<(settings_app_callers::RoleName, Door)> {
-    let admitted = [roles::SHELL, roles::SETTINGS, roles::AGENT_TIER];
-    roles::ALL
+    let admitted = [SHELL, SETTINGS, AGENT_TIER];
+    let table = Table::from_toml(include_str!(
+        "../../../../identity/dist/desktop-callers.toml"
+    ))
+    .expect("the shipped table reads");
+    let mut every: Vec<settings_app_callers::RoleName> = Vec::new();
+    for row in table.rows() {
+        if !every.contains(&row.role) {
+            every.push(row.role.clone());
+        }
+    }
+    every
         .into_iter()
         .map(|role| {
             let door = if admitted.contains(&role) {
@@ -321,9 +332,9 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_second_settings_app_sends_nothing_to_an_owner_that_is_not_settings() {
     let world = World::start("app-hand-over-squatter", &[]).await;
-    let second = world.caller(roles::SETTINGS).await;
+    let second = world.caller(SETTINGS).await;
     // The second bardo-settings's peers know the owner of the name as the shell, not as Settings.
-    let knows = peers_knowing(&second, &world.owner(), &roles::SHELL);
+    let knows = peers_knowing(&second, &world.owner(), &SHELL);
     let handed = hand_over(&second, &knows, Some("tok-3".to_owned()), None).await;
     assert!(
         matches!(handed, Err(HandOverError::NotSettings(_))),

@@ -9,10 +9,10 @@ use crate::offload::Offload;
 use base_time::timeout::{TimeoutError, within};
 use caller_identity_core::procinfo::parse_security_label;
 use caller_identity_core::{
-    Facts, NotHeldError, Pid, Proof, Requirement, SandboxFacts, Standing, Table, Uid, UnitFacts,
-    UnitName, WhyNot, judge,
+    Facts, NotHeldError, Pid, Prober, ProcFs, Proof, Requirement, SandboxFacts, Standing, Table,
+    Uid, UnitFacts, UnitName, WhyNot, judge,
 };
-use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
+use caller_identity_linux::{Alive, Pinned, RealProc};
 use std::os::fd::AsFd;
 use std::sync::Arc;
 use zbus::Connection;
@@ -268,7 +268,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         let (prober, who) = (Arc::clone(&self.prober), Arc::clone(&held));
         let outcome = self
             .offload
-            .run(move || prober.probe(&who, None))
+            .run(move || prober.probe(&*who, None))
             .await
             .map_err(WhoError::Offload)?;
         let facts = match outcome {

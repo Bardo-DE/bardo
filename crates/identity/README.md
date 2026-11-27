@@ -10,13 +10,17 @@ Licensed under either of MIT or Apache-2.0, at your option.
 
 | Crate | Layer | Contents |
 |---|---|---|
-| `caller-identity-core` | pure, no I/O | ids, the caller table (TOML), the facts read about a process, `judge`, `Requirement`, `Standing` |
-| `caller_identity` | sync I/O | `Pinned` (pidfd), `Prober` over a `ProcFs` (real `/proc`, or a fixture tree under feature `fake`), the ownership walk, the table loader |
+| `caller-identity-core` | pure, no I/O | ids, the caller table (TOML), the facts read about a process, `judge`, `Requirement`, `Standing`, and the seam over `/proc`: `ProcFs`, `Prober` over a `Held` process, the ownership walk |
+| `caller-identity-linux` | sync I/O | `Pinned` (pidfd), `RealProc` (the real `/proc`; a fixture tree under feature `fake`), the table loader, the unit files a service without a manager reads |
 | `caller-identity-dbus` | async adapter | `BusPeers` over zbus: the sender's process, the unit manager's facts, `require`, `owner_of`, `watch_owner` |
+| `peers-callers` | adapter | the desktop's table from its files, the unit manager's requirement and `peers_on` for every service that asks over a bus |
+| `seat-guard` | sync I/O | the guards of a socket every local account reaches (the seat's user, the shell check) |
+| `caller-roles` | pure | the role names that services of every layer name (shell, portal, portal frontend, agent tier, Settings); the other roles are constants in the crate of the service that owns them |
+| `caller-identity-dev` | dev only | developer rows (see below); never in a shipped program |
 
 ```rust
 // In a bus method: who may call this?
-let need = [Requirement::new(roles::SHELL, Proof::Full)];
+let need = [Requirement::new(caller_roles::SHELL, Proof::Full)];
 let caller = peers.require(header.sender().map(|s| s.as_str()), &need).await
     .map_err(caller_identity_dbus::access_denied)?;
 ```
@@ -44,22 +48,18 @@ Other limits, stated rather than hidden:
 
 ## The table
 
-`dist/desktop-callers.toml` is a sample of the format and of this desktop's own table. A row has `app`, `exe` (a non-empty list of absolute patterns; one `*` per segment, never `**`), `role`, and optionally `unit` and `name`. A row with a `unit` is a service; a row without is a program matched by its image alone, whose ceiling is `Exe`. The loader refuses a file that is not owned by root alone, or whose directory anyone else can write. The caller-identity library reads no user file: nothing a person's file says makes a process more trusted. (The one exception is the opt-in `dev-rows` feature below, whose rows reach `Proof::Dev` and no higher.)
+`dist/desktop-callers.toml` is a sample of the format and of this desktop's own table. A row has `app`, `exe` (a non-empty list of absolute patterns; one `*` per segment, never `**`), `role`, and optionally `unit` and `name`. A row with a `unit` is a service; a row without is a program matched by its image alone, whose ceiling is `Exe`. The loader refuses a file that is not owned by root alone, or whose directory anyone else can write. The caller-identity library reads no user file: nothing a person's file says makes a process more trusted. (The one exception is the crate `caller-identity-dev` below, whose rows reach `Proof::Dev` and no higher.)
 
 ## Developer rows
 
-Scripts that run a checkout-built stand-in (an accounts stand-in, a router stand-in, an app built in the working tree) cannot be a service in the table: the image is one the person can write and there is no real unit, so `judge` calls it `Unverified` before it looks at any row. Every privileged call to it from such a script is refused. Feature `dev-rows` gives those scripts a seam that cannot exist in a shipped build.
+Scripts that run a checkout-built stand-in (an accounts stand-in, a router stand-in, an app built in the working tree) cannot be a service in the table: the image is one the person can write and there is no real unit, so `judge` calls it `Unverified` before it looks at any row. Every privileged call to it from such a script is refused. The crate `caller-identity-dev` gives those scripts a seam that cannot exist in a shipped build.
 
-**The risk, plainly: rows read from a file a person owns let that person's programs take a service's role. No shipped program may turn `dev-rows` on.** It is off by default in `caller-identity-core`, `caller_identity` and `caller-identity-dbus` (each forwards it to the one below), and the desktop's gate greps `cargo tree -e features` for it in every release shape, as it does for `fake`.
+**The risk, plainly: rows read from a file a person owns let that person's programs take a service's role. No shipped program may depend on `caller-identity-dev`.** The consumers reach it only through a feature of their own that is off by default, and the desktop's gate refuses the crate in every release shape, as it does for `fake`.
 
-With the feature:
-
-- `Table::from_toml_dev(text)` reads the same format and gives rows whose `origin` is `RowOrigin::Dev`. `TableFiles::load_dev(&fs, path, person)` reads such a file: a plain file (a link is refused), owned by `person` or root, not writable by group or others, within the table file's size cap.
-- `Table::merge` puts developer rows after the shipped ones. A developer row never replaces a shipped row and never holds a unit the shipped table names, whichever table is merged into which.
-- `judge` gives a native (never a sandboxed) process the standing `Service` with the new `Proof::Dev` when its image matches a developer row (and its cgroup leaf is the row's unit, when the row names one), checked before the user-writable rule. A process whose image a shipped row claims is judged by the shipped rows alone. A developer row never gives `Cgroup`, `Exe` or `Full`.
-- `Proof::Dev` sorts below `Proof::Cgroup`, so no requirement of `Cgroup`, `Exe` or `Full` is met by it. A consumer accepts it only by asking: `Requirement::dev(role)` (or `Requirement::new(role, Proof::Dev)`), listed next to its real requirement in its own debug builds (`#[cfg(debug_assertions)]`) and never in a release build. Such a requirement also lets in the real service at any proof, which is what a debug build wants.
-
-Without the feature nothing changes: `Proof` has `Cgroup`, `Exe` and `Full` only, `Row` has no `origin`, and none of the above exists.
+- `DevRows::load(path, person)` reads such a file: a plain file (a link is refused), owned by `person` or root, not writable by group or others, within the table file's size cap, that parses as a table. `DevRows::added_to(table)` adds the rows through `Table::with_dev_rows`.
+- `Table::with_dev_rows` puts developer rows after the shipped ones. A developer row never replaces a shipped row and never holds a unit the shipped table names, whichever table is merged into which.
+- `judge` gives a native (never a sandboxed) process the standing `Service` with `Proof::Dev` when its image matches a developer row (and its cgroup leaf is the row's unit, when the row names one), checked before the user-writable rule. A process whose image a shipped row claims is judged by the shipped rows alone. A developer row never gives `Cgroup`, `Exe`, `Unit` or `Full`. The `Dev` variant is always part of `Proof` because `judge` grants it; a table without developer rows never yields it.
+- `Proof::Dev` sorts below `Proof::Cgroup`, so no requirement of `Cgroup`, `Exe` or `Full` is met by it. A consumer accepts it only by asking: `Requirement::dev(role)`, which is exactly `Proof::Dev` for the role, listed next to its real requirement in its own debug builds and never in a release build. The real service meets the real requirement beside it; no proof between the two is let in.
 
 ## Building
 
@@ -69,7 +69,5 @@ Without the feature nothing changes: `Proof` has `Cgroup`, `Exe` and `Full` only
 
 | Feature | Crate | What it does | Shipped? |
 |---|---|---|---|
-| `fake` | `caller_identity`, `caller-identity-dbus` | `Pinned::introduced`, the fixture tree, `BusPeers::introduce` | never |
-| `desktop` | `caller-identity-core` | the `roles` module of this desktop's own roles | by the desktop |
-| `dev-rows` | all three | developer rows, `Proof::Dev`, `TableFiles::load_dev` (see Developer rows) | never |
+| `fake` | `caller-identity-linux`, `caller-identity-dbus` | `Pinned::introduced`, the fixture tree, `BusPeers::introduce` | never |
 | `tokio` | `caller-identity-dbus` | `Offload::Tokio` and zbus on tokio | optional |

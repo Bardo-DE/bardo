@@ -15,18 +15,10 @@ nix = { workspace = true, features = ["socket"] }
 rustix = {workspace = true, features = ["std", "event", "net", "process"]}
 thiserror = { workspace = true }
 
-[dev-dependencies]
-# The crate's own tests need its test-only features.
-caller-identity-linux = {path = ".", features = ["dev-rows"]}
-
 [features]
 # Test seams: a pinned process that is only a claim (`Pinned::introduced`) and ready-made
 # standings. A shipped binary never enables it; the desktop gate greps `cargo tree -e features`.
 fake = []
-# Forwarded to caller-identity-core.
-desktop = ["caller-identity-core/desktop"]
-# Forwarded to caller-identity-core (developer rows) and adds `TableFiles::load_dev`. Never shipped.
-dev-rows = ["caller-identity-core/dev-rows"]
 
 [[test]]
 name = "it"

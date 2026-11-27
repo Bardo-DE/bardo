@@ -47,7 +47,8 @@ use super::connect_ask::{ConnectAsk, ConnectRefusal, ConnectReply, Proven};
 use super::intake::{ANSWER_WAIT, Intake};
 use super::portal_watch::PortalWatch;
 use crate::IpcError;
-use caller_identity_dbus::caller_identity_core::{RoleName, roles};
+use caller_identity_dbus::caller_identity_core::RoleName;
+use caller_roles::{AGENT_TIER, PORTAL};
 use compositor_core::policy::ConnectionRole;
 use std::sync::Arc;
 use zbus::fdo;
@@ -128,7 +129,7 @@ impl Compositor1 {
         devices: u32,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<zbus::zvariant::OwnedFd> {
-        let caller = self.proven(&header, &roles::PORTAL).await?;
+        let caller = self.proven(&header, &PORTAL).await?;
         // The socket belongs to the portal's connection to the bus, not to the portal as a
         // program: when that connection goes (a restart, a crash), so do its sockets.
         let owner = self.watched_owner(&header, &caller)?;
@@ -140,7 +141,7 @@ impl Compositor1 {
     /// stops and the compositor's end of each is closed. Only the portal may ask, as for
     /// `ConnectEis`.
     async fn end_eis(&self, session: u64, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
-        let caller = self.proven(&header, &roles::PORTAL).await?;
+        let caller = self.proven(&header, &PORTAL).await?;
         match self.answer(ConnectAsk::end_eis(session, caller)).await? {
             ConnectReply::Ended => Ok(()),
             ConnectReply::Refused(why) => Err(why.to_error()),
@@ -159,7 +160,7 @@ impl Compositor1 {
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> fdo::Result<(u64, zbus::zvariant::OwnedFd)> {
-        let caller = self.proven(&header, &roles::AGENT_TIER).await?;
+        let caller = self.proven(&header, &AGENT_TIER).await?;
         let owner = sender_of(&header)?;
         let ask = ConnectAsk::lease_window(&window, devices, caller.clone()).from_owner(&owner);
         let (lease, socket) = match self.answer(ask).await? {
@@ -190,7 +191,7 @@ impl Compositor1 {
     /// `FocusLease(lease: t)`: the window `lease` holds takes the key. Only the agent tier may
     /// ask, and only for a lease that connection holds.
     async fn focus_lease(&self, lease: u64, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
-        let caller = self.proven(&header, &roles::AGENT_TIER).await?;
+        let caller = self.proven(&header, &AGENT_TIER).await?;
         let owner = sender_of(&header)?;
         match self
             .answer(ConnectAsk::focus_lease(lease, caller).from_owner(&owner))
@@ -205,7 +206,7 @@ impl Compositor1 {
     /// `EndLease(lease: t)`: the lease's input stops and its socket closes. Only the agent tier
     /// may ask, as for `LeaseWindow`.
     async fn end_lease(&self, lease: u64, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
-        let caller = self.proven(&header, &roles::AGENT_TIER).await?;
+        let caller = self.proven(&header, &AGENT_TIER).await?;
         let owner = sender_of(&header)?;
         match self
             .answer(ConnectAsk::end_lease(lease, caller).from_owner(&owner))

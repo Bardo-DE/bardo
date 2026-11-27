@@ -1,7 +1,7 @@
 //! The input broker wire: what a client may ask for, what the service answers, and the fixed list of
 //! devices it will make with the per-event ceilings on each.
 //!
-//! This crate is pure. It reads no file, clock or socket and links nothing but `thiserror`; the
+//! This crate is pure. It reads no file, clock or socket and links nothing but `thiserror` and the pure caller-identity vocabulary (the role names of the two daemons it names); the
 //! daemon and the client both build on it, so a ceiling is written down once. A message is one
 //! `SOCK_SEQPACKET` datagram: [`codec`] turns it into a [`message::Request`] or a
 //! [`message::Reply`] and back, and [`ceiling::plan`] turns a [`message::Create`] into the device
@@ -25,6 +25,6 @@ pub use codec::{WireError, decode_reply, decode_request, encode_reply, encode_re
 pub use event::Event;
 pub use kind::{Delivery, Kind};
 pub use limiter::{Admit, Limiter, millis_since};
-pub use maker::Maker;
+pub use maker::{KEYMAP_DAEMON, Maker, PAD_DAEMON};
 pub use message::{Create, DeviceId, PointerCaps, Reason, Reply, Request};
 pub use spec::{AbsAxis, DeviceSpec};

@@ -8,7 +8,7 @@ use mouse_gestures_proto::{
     DeviceInfo, Filter, HostAction, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
 };
 use rustix::io::Errno;
-use service_locator::guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL};
+use seat_guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL};
 use std::time::{Duration, Instant};
 
 fn nobody() -> DeviceInfo {

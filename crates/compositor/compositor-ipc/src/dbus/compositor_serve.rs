@@ -10,8 +10,8 @@ use super::intake::{CONNECT_QUEUE, Intake, RATE_WINDOW};
 use super::portal_watch::{self, PortalWatch};
 use crate::IpcError;
 use crate::privacy::{PrivacyLink, serve_privacy};
-use caller_identity_dbus::caller_identity_core::{Proof, Requirement, Table, roles};
-use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
+use caller_identity_dbus::Offload;
+use caller_identity_dbus::caller_identity_core::Table;
 use calloop::channel::{Channel, SyncSender, sync_channel};
 use compositor_dbus::{BUS_NAME, OBJECT_PATH};
 use std::sync::{Arc, mpsc};
@@ -45,9 +45,8 @@ impl CallerSetup {
     #[must_use]
     pub fn desktop(table: Table) -> CallerSetup {
         CallerSetup::with(move |connection| {
-            let manager = ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe));
             let peers: DesktopCallers =
-                BusPeers::new(connection.clone(), table, manager).with_offload(Offload::Tokio);
+                peers_callers::peers_on(connection.clone(), table).with_offload(Offload::Tokio);
             Arc::new(peers)
         })
     }

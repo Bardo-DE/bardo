@@ -13,7 +13,7 @@ use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::fd::OwnedFd;
 use rustix::io::Errno;
 use rustix::net::SocketFlags;
-use service_locator::guard::{AcceptFailure, SeatFile, Vouch, accept_failure};
+use seat_guard::{AcceptFailure, SeatFile, Vouch, accept_failure};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::mpsc::{Receiver, Sender, TryRecvError};

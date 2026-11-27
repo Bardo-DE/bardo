@@ -27,8 +27,8 @@
 use std::fmt;
 use std::path::Path;
 
-use caller_identity_dbus::caller_identity_core::{ExePath, FileTrust, Standing};
-use caller_identity_dbus::caller_identity_linux::{RealProc, path_trust};
+use caller_identity_dbus::caller_identity_core::{ExePath, FileTrust, Standing, path_trust};
+use caller_identity_dbus::caller_identity_linux::RealProc;
 
 use crate::BoxFuture;
 use crate::link::BusLink;

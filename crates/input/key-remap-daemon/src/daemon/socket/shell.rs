@@ -7,11 +7,11 @@
 //! The key remap daemon is a dynamic user without privileges, so it cannot read another user's image path;
 //! the unit name in the control group is all there is to go on, and the process is held by its
 //! pidfd so the name cannot belong to a process that has since been replaced. The check itself is
-//! `service_locator::guard`; this file is the key remap daemon's table and its choice of who is believed.
+//! `seat_guard`; this file is the key remap daemon's table and its choice of who is believed.
 
-use caller_identity_core::roles::SHELL;
-use caller_identity_core::{RoleName, Table};
-use service_locator::guard::{SeatUser, ShellCheck, Vouch};
+use caller_identity_core::{Proof, Requirement, RoleName, Table};
+use caller_roles::SHELL;
+use seat_guard::{SeatUser, ShellCheck, Vouch};
 
 /// The programs allowed to steer, as the rows of a caller table: the shell, and the Plasma focus
 /// feed that the standalone install can run instead. The paths only matter when the image can
@@ -41,6 +41,12 @@ role = "focus_feed"
 /// The role of the Plasma focus feed.
 const FOCUS_FEED: RoleName = RoleName::from_static("focus_feed");
 
+/// What lets a program steer as `role`: the role at the cgroup's proof, the most a dynamic user
+/// without privileges can read of another user's process.
+fn steering(role: RoleName) -> Requirement {
+    Requirement::new(role, Proof::Cgroup)
+}
+
 /// Whether `BARDO_KEY_REMAP_STEERING` asks to trust every program of the seat's user, as before the
 /// shell was told apart (for tests whose client is not in a unit): only the exact word
 /// `seat-user` does; otherwise only the shell's unit steers.
@@ -65,15 +71,15 @@ fn steering_check() -> ShellCheck {
         eprintln!("bardo-key-remap: nobody may steer: the steering table is unusable: {e}");
         Table::empty()
     });
-    ShellCheck::system(table, vec![SHELL, FOCUS_FEED])
+    ShellCheck::system(table, vec![steering(SHELL), steering(FOCUS_FEED)])
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use caller_identity_core::{FileTrust, Pid, Pin, Uid, Writer};
-    use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned, Prober};
-    use service_locator::guard::Claim;
+    use caller_identity_core::{FileTrust, Pid, Pin, Prober, Uid, Writer};
+    use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned};
+    use seat_guard::Claim;
 
     const PID: u32 = 4242;
     const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";
@@ -89,7 +95,7 @@ mod tests {
         ShellCheck::new(
             Prober::new(proc),
             Table::from_toml(STEERING_TABLE).unwrap(),
-            vec![SHELL, FOCUS_FEED],
+            vec![steering(SHELL), steering(FOCUS_FEED)],
         )
     }
 

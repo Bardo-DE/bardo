@@ -4,7 +4,7 @@
 
 use crate::error::PinError;
 use caller_identity_core::procinfo::{parse_fdinfo_pid, parse_status_euid};
-use caller_identity_core::{Pid, Pin, Uid};
+use caller_identity_core::{Held, Pid, Pin, Uid};
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::io::Errno;
 use rustix::process::{PidfdFlags, pidfd_open};
@@ -170,5 +170,23 @@ impl Pinned {
             #[cfg(feature = "fake")]
             Hold::Fixed(alive) => *alive,
         }
+    }
+}
+
+impl Held for Pinned {
+    fn pid(&self) -> Pid {
+        self.pid
+    }
+
+    fn uid(&self) -> Uid {
+        self.uid
+    }
+
+    fn pin(&self) -> Pin {
+        self.pin
+    }
+
+    fn is_alive(&self) -> bool {
+        self.alive() == Alive::Yes
     }
 }

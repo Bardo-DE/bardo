@@ -23,8 +23,9 @@ input-linux = { workspace = true }
 hidraw-ioctl = {path = "../hidraw-ioctl"}
 input-broker-client = {path = "../input-broker-client"}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
-service-locator = {features = ["guard"], path = "../../platform/service-locator"}
-caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
+seat-guard = {path = "../../identity/seat-guard"}
+caller-roles = {path = "../../identity/caller-roles"}
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 
 [dev-dependencies]
 input-broker-client = {features = ["fake"], path = "../input-broker-client"}

@@ -9,8 +9,9 @@ use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, Und
 use action_dbus::callers::{ACTIOND, Identity, actiond_only};
 use action_dbus::{Details, INTENTS_BUS, IntentProviderProxy};
 use action_vocab::{Args, CallId, EntityRef, Origin, ParamName, UndoToken, Value};
+use caller_roles::SHELL;
 use provenance::{Actor, EntityId, Label, Labelled, Source, SpaceId};
-use settings_app_callers::{BusPeers, RoleName, introduce_service, private_peers, roles};
+use settings_app_callers::{BusPeers, RoleName, introduce_service, private_peers};
 use settings_app_files::{ConfigHome, discover_under};
 use settings_app_intents::{AccountsRead, AccountsSource, SettingsProvider, serve_with};
 use settings_app_model::{Absence, AccountsPane, Catalogue, Notice, OriginRule, Receiver, inbox};
@@ -179,7 +180,7 @@ impl World {
 
     /// A connection to the bus, as the launcher (bardo-shell) has: the shell, which calls the app by name.
     pub async fn launcher(&self) -> zbus::Connection {
-        self.caller(roles::SHELL).await
+        self.caller(SHELL).await
     }
 
     /// A connection to the bus that the desktop's caller table would know as `role`.

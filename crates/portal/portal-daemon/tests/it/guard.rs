@@ -298,17 +298,15 @@ async fn only_the_portal_frontend_may_call_any_method() {
     );
     let shell = portal.client().await;
     as_shell(&portal.peers, &shell);
-    #[cfg_attr(feature = "debug", allow(unused_mut))] // only a release build adds the weak proof
-    let mut refused = vec![("a stranger", &stranger), ("the shell", &shell)];
-    // A build with `debug` lists `Proof::Dev` as a way in, and every proof is at least that, so
-    // a frontend proved by its image alone is let in there; `dev_callers.rs` covers that build.
-    #[cfg(not(feature = "debug"))]
+    // A build with `debug` lists exactly `Proof::Dev` as a second way in, so a frontend proved by
+    // its image alone is refused there as well; `dev_callers.rs` covers the stand-in.
     let weak = portal.client().await;
-    #[cfg(not(feature = "debug"))]
-    {
-        as_frontend_at(&portal.peers, &weak, Proof::Exe);
-        refused.push(("a weak proof", &weak));
-    };
+    as_frontend_at(&portal.peers, &weak, Proof::Exe);
+    let refused = [
+        ("a stranger", &stranger),
+        ("the shell", &shell),
+        ("a weak proof", &weak),
+    ];
     for (who, caller) in refused {
         for (label, result) in every_method(caller).await {
             assert!(is_refused(&result), "{who} calling {label}: {result:?}");

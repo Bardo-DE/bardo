@@ -2,12 +2,11 @@
 //! it, and its sandbox's metadata. A handful of small reads, bounded.
 
 use crate::error::ProbeError;
-use crate::pin::{Alive, Pinned};
-use crate::procfs::{Follow, ProcFs, RealProc};
+use crate::procfs::{Follow, ProcFs};
+use crate::procinfo::parse_flatpak_info;
 use crate::walk::dirs_trust;
-use caller_identity_core::procinfo::parse_flatpak_info;
-use caller_identity_core::{
-    CgroupPath, Exe, ExePath, Facts, SandboxFacts, Standing, Table, UnitFacts, judge,
+use crate::{
+    CgroupPath, Exe, ExePath, Facts, Pid, Pin, SandboxFacts, Standing, Table, Uid, UnitFacts, judge,
 };
 use std::io;
 use std::path::Path;
@@ -18,18 +17,24 @@ pub const PROBE_MAX_READS: usize = 6;
 /// The largest file read for one process (the real ones are a few hundred bytes).
 pub const PROBE_READ_CAP: u64 = 64 * 1024;
 
-/// Reads the facts of held processes through a [`ProcFs`].
-#[derive(Debug, Clone)]
-pub struct Prober<P = RealProc> {
-    fs: P,
+/// A process someone holds: the number and user it was held as, how firmly, and whether it is
+/// still the same live process. The I/O crate implements it for a pidfd; the prober needs nothing
+/// more of a process.
+pub trait Held {
+    /// The process number.
+    fn pid(&self) -> Pid;
+    /// The user the process runs as.
+    fn uid(&self) -> Uid;
+    /// How firmly the process was held.
+    fn pin(&self) -> Pin;
+    /// Whether the held process is still running.
+    fn is_alive(&self) -> bool;
 }
 
-impl Prober<RealProc> {
-    /// A prober of the machine's own `/proc`.
-    #[must_use]
-    pub fn system() -> Prober<RealProc> {
-        Prober::new(RealProc::system())
-    }
+/// Reads the facts of held processes through a [`ProcFs`].
+#[derive(Debug, Clone)]
+pub struct Prober<P> {
+    fs: P,
 }
 
 /// Counts reads against [`PROBE_MAX_READS`].
@@ -83,7 +88,7 @@ impl<P: ProcFs> Prober<P> {
     ///
     /// Returns a [`ProbeError`] when a file of the process cannot be read, the read budget runs
     /// out, or the process left meanwhile.
-    pub fn probe(&self, who: &Pinned, unit: Option<UnitFacts>) -> Result<Facts, ProbeError> {
+    pub fn probe(&self, who: &impl Held, unit: Option<UnitFacts>) -> Result<Facts, ProbeError> {
         let mut budget = Budget(PROBE_MAX_READS);
         let dir = self.fs.proc_root().join(who.pid().get().to_string());
         let cgroup = self.cgroup(&mut budget, &dir)?;
@@ -94,8 +99,8 @@ impl<P: ProcFs> Prober<P> {
             SandboxFacts::Native => self.exe(&dir)?,
             _ => Exe::Hidden,
         };
-        match who.alive() {
-            Alive::Yes => Ok(Facts {
+        if who.is_alive() {
+            Ok(Facts {
                 pid: who.pid(),
                 uid: who.uid(),
                 cgroup,
@@ -103,14 +108,15 @@ impl<P: ProcFs> Prober<P> {
                 sandbox,
                 unit,
                 pin: who.pin(),
-            }),
-            Alive::Gone => Err(ProbeError::PeerGone),
+            })
+        } else {
+            Err(ProbeError::PeerGone)
         }
     }
 
     /// The standing of `who` from its cgroup and image alone (no unit manager): at most `Exe`
     /// proof. A process that cannot be probed is `Unverified`.
-    pub fn stand(&self, who: &Pinned, table: &Table) -> Standing {
+    pub fn stand(&self, who: &impl Held, table: &Table) -> Standing {
         match self.probe(who, None) {
             Ok(facts) => judge(&facts, table),
             Err(e) => Standing::unverified(e.why_not()),

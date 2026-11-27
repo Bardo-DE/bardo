@@ -75,7 +75,7 @@ socket unit (systemd) --accept--> Daemon --thread--> admit(conn)
 A caller is admitted only at the caller-identity library's `Full` proof (NEW-PI-4); the control group, or the group and
 the image, are refused and logged (`unproven` with the reason, then `refused ... its unit was not
 checked`). The service has no unit manager to ask (it would be a socket the user controls, and it
-links no bus), so `identity/unit_files` builds the unit's facts from what a root service can read
+links no bus), so `caller_identity_linux::unit_facts` builds the unit's facts from what a root service can read
 with its one capability:
 
 - the unit's fragment is in a root-owned unit folder and every drop-in is root-owned; the unit is not

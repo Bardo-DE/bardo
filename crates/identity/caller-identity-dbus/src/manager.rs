@@ -6,9 +6,9 @@ use crate::BUS_TIMEOUT;
 use crate::error::UnitError;
 use base_time::timeout::{TimeoutError, within};
 use caller_identity_core::{
-    DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
+    DropIns, ExePath, FileTrust, Fragment, Loader, Pid, ProcFs, Transient, UnitFacts, UnitName,
+    path_trust,
 };
-use caller_identity_linux::{ProcFs, path_trust};
 use std::collections::HashMap;
 use std::path::Path;
 use zbus::Connection;

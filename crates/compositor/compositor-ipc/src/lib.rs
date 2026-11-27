@@ -10,6 +10,7 @@
 mod error;
 mod handles;
 mod inject;
+pub mod roles;
 mod shot;
 mod stop_on_drop;
 mod wait;

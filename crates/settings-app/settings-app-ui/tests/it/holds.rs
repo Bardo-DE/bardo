@@ -7,8 +7,9 @@ use crate::support::drive::click;
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use crate::support::handover::HandsOver;
 use crate::support::syncd::Syncd;
+use account_wire::roles::ACCOUNTS;
 use base_testkit::PrivateBus;
-use settings_app_callers::{RoleCheck, introduce_service, private_peers, roles};
+use settings_app_callers::{RoleCheck, introduce_service, private_peers};
 use settings_app_link::bus::Vouch;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
@@ -91,7 +92,7 @@ fn world_trusting(name: &str, before: &[(&str, u64, u64)], trust: &Trust) -> Wor
             let watcher = rt.block_on(bus.connect());
             let peers = private_peers(&watcher);
             let unique = accounts.unique_name().expect("a unique name").to_string();
-            introduce_service(&peers, &unique, &roles::ACCOUNTS);
+            introduce_service(&peers, &unique, &ACCOUNTS);
             Vouch::of(RoleCheck::new(peers))
         }
     };

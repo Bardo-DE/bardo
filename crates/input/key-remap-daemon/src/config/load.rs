@@ -2,7 +2,8 @@
 
 use std::path::Path;
 
-use caller_identity_linux::{ProcFs, RealProc};
+use caller_identity_core::ProcFs;
+use caller_identity_linux::RealProc;
 use key_remap_core::{ConfigLayer, ConfigSource};
 use key_remap_proto::Warning;
 

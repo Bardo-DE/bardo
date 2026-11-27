@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 base-ids = { path = "../../base/base-ids" }
 base-spawn = { path = "../../base/base-spawn" }
 compositor-core = {path = "../compositor-core"}
@@ -32,7 +33,9 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 thiserror = { workspace = true }
 toml = { workspace = true }
 # Which program is calling: every Compositor1 call and every Privacy call is checked with it.
-caller-identity-dbus = {default-features = false, features = ["desktop", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+caller-roles = {path = "../../identity/caller-roles"}
+peers-callers = {path = "../../identity/peers-callers"}
 # `WireCode::ALL` and `Power`: the section list of the Privacy module (the vocabulary's one home).
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 # The refusal of a call is logged once, with the role asked and the standing found.
@@ -42,19 +45,21 @@ xkbcommon = {workspace = true, features = ["wayland"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
+# The shipped caller table is read by the role test, so the table reader is on.
+caller-identity-core = {path = "../../identity/caller-identity-core"}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 # `BusPeers::introduce`, `FixtureProc`: the tests make a sender stand as a chosen caller on a
 # private bus and never read the real `/proc` for it.
-caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
+caller-identity-dbus = {default-features = false, features = ["fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 
 [features]
 # org.bardo.Compositor.Debug1 on the private bus (B10): never in a release build.
 debug-inject = ["dep:compositor-backend", "compositor-backend/debug-inject"]
-# Developer rows (the caller-identity library's `dev-rows`): a program named in a file the person owns is a desktop
-# service at `Proof::Dev`, and `dbus::require` lets exactly that proof in. Only the compositor's
-# `testing` and `debug-inject` turn it on; a shipped build never has it (the desktop gate greps
-# `cargo tree -e features` for `dev-rows`).
-dev-rows = ["caller-identity-dbus/dev-rows"]
+# Developer rows: a program named in a file the person owns is a desktop service at `Proof::Dev`
+# (`caller-identity-dev`, which the compositor's app reads the file with), and `dbus::require` lets
+# exactly that proof in. Only the compositor's `testing` and `debug-inject` turn it on; a shipped
+# build never has it (the desktop gate greps `cargo tree -e features` for `dev-rows`).
+dev-rows = []
 
 [lints]
 workspace = true

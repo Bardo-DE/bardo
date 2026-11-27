@@ -10,7 +10,6 @@ use crate::layout::Layout;
 use crate::service::{Anchor, Context};
 use crate::state::StateStore;
 use caller_identity_dbus::caller_identity_core::Table;
-use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use std::sync::Arc;
 use updater_core::Authenticator;
 
@@ -20,12 +19,10 @@ const MACHINE_ID: &str = "/etc/machine-id";
 /// be trusted (not root-only, not a table) is an empty one: no caller then counts as the shell, Settings
 /// or the `bardo-updater` program, and the service says why in its log.
 fn desktop_table() -> Table {
-    TableFiles::desktop()
-        .load(&RealProc::system())
-        .unwrap_or_else(|why| {
-            tracing::warn!("the table of the desktop's own programs was not used: {why}");
-            Table::empty()
-        })
+    peers_callers::desktop_table().unwrap_or_else(|why| {
+        tracing::warn!("the table of the desktop's own programs was not used: {why}");
+        Table::empty()
+    })
 }
 
 /// The context for the real system: the configured root, the real key, its HTTP client, pkexec.

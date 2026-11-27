@@ -17,10 +17,11 @@ use std::pin::pin;
 use std::time::Duration;
 
 use caller_identity_dbus::caller_identity_core::{
-    NotHeldError, Proof, Requirement, RoleName, Table, roles,
+    NotHeldError, Proof, Requirement, RoleName, Table,
 };
 use caller_identity_dbus::caller_identity_linux::RealProc;
-use caller_identity_dbus::{BusPeers, ManagerCheck, ManagerLink, Offload, access_denied};
+use caller_identity_dbus::{BusPeers, ManagerLink, Offload, access_denied};
+use caller_roles::{PORTAL_FRONTEND, SETTINGS};
 use zbus::export::futures_core::Stream;
 use zbus::message::Header;
 use zbus::names::BusName;
@@ -41,15 +42,13 @@ pub type Peers = BusPeers<RealProc, ManagerLink<RealProc>>;
 /// only when the manager's own image is the system's (role `manager`, proved by its image).
 #[must_use]
 pub fn peers_on(connection: Connection, table: Table) -> Peers {
-    let manager = ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe));
-    BusPeers::new(connection, table, manager).with_offload(Offload::Tokio)
+    peers_callers::peers_on(connection, table).with_offload(Offload::Tokio)
 }
 
 /// What lets a caller in as `role`: the role proved `Full` (its image and its unit, as the unit
-/// manager states it). In a build with the `debug` feature the role at `Proof::Dev` is accepted as
-/// well, which only a stand-in named in the person's own rows file (`BARDO_PORTAL_DEV_CALLERS`) has at
-/// that standing; that also lets in the real program at any proof, which a debug build wants. A
-/// release build lists only the first.
+/// manager states it). In a build with the `debug` feature the role at exactly `Proof::Dev` is
+/// accepted as well, which only a stand-in named in the person's own rows file
+/// (`BARDO_PORTAL_DEV_CALLERS`) has at that standing. A release build lists only the first.
 #[cfg_attr(
     not(feature = "debug"),
     expect(
@@ -204,7 +203,7 @@ impl RoleGuard {
     pub fn frontend(link: BusLink) -> Self {
         Self {
             link,
-            role: roles::PORTAL_FRONTEND,
+            role: PORTAL_FRONTEND,
         }
     }
 
@@ -213,7 +212,7 @@ impl RoleGuard {
     pub fn settings(link: BusLink) -> Self {
         Self {
             link,
-            role: roles::SETTINGS,
+            role: SETTINGS,
         }
     }
 

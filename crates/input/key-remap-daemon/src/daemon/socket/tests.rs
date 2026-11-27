@@ -6,15 +6,15 @@ use super::client::{connect, recv, send};
 use super::*;
 use crate::daemon::inbox::{Mailbox, Message, Request, mailbox};
 use base_testkit::Scratch;
-use caller_identity_core::Table;
-use caller_identity_linux::{FixtureProc, Prober};
+use caller_identity_core::{Prober, Table};
+use caller_identity_linux::FixtureProc;
 use key_remap_client::FileText;
 use key_remap_proto::{
     self as protocol, KeymapCall, KeymapState, PROTOCOL_VERSION, ProfileName, RegisteredAction,
     Registration, Status, Steer, ToClient, ToDaemon, Warning,
 };
 use rustix::net::SendFlags;
-use service_locator::guard::{ShellCheck, Vouch};
+use seat_guard::{ShellCheck, Vouch};
 use std::path::{Path, PathBuf};
 
 fn own_uid() -> u32 {

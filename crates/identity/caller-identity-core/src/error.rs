@@ -1,6 +1,8 @@
 //! The errors of the pure crate: a malformed id, a refused table and a refused caller.
 
 use crate::ids::UnitName;
+use crate::standing::WhyNot;
+use std::io;
 
 /// A text that is not the id it was offered as.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -84,4 +86,58 @@ pub enum NotHeldError {
     /// The caller is known and is not one this method answers.
     #[error("not the caller this method answers")]
     NotAllowed,
+}
+
+/// The facts about a process that could not be read.
+#[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
+pub enum ProbeError {
+    /// The process left before or while its facts were read.
+    #[error("the process has exited")]
+    PeerGone,
+    /// A file could not be read.
+    #[error("{what} could not be read")]
+    Unreadable {
+        /// Which fact.
+        what: &'static str,
+        /// The cause.
+        #[source]
+        source: io::Error,
+    },
+    /// A file is not UTF-8 text.
+    #[error("{what} is not text")]
+    NotText {
+        /// Which fact.
+        what: &'static str,
+        /// The cause.
+        #[source]
+        source: std::string::FromUtf8Error,
+    },
+    /// A cgroup file does not name a valid cgroup.
+    #[error("{what} is not a valid cgroup")]
+    BadCgroup {
+        /// Which fact.
+        what: &'static str,
+        /// The cause.
+        #[source]
+        source: IdError,
+    },
+    /// A file does not say what a file of its kind says, or is over a limit.
+    #[error("{what} is malformed")]
+    Malformed {
+        /// Which fact.
+        what: &'static str,
+    },
+}
+
+impl ProbeError {
+    /// Why a process that could not be probed is unknown: gone, or unreadable. A new variant
+    /// fails as unreadable until it is given its own reason.
+    #[must_use]
+    pub fn why_not(&self) -> WhyNot {
+        match self {
+            ProbeError::PeerGone => WhyNot::PeerGone,
+            _ => WhyNot::Unreadable,
+        }
+    }
 }

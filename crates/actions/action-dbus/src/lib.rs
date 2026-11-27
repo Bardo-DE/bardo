@@ -34,6 +34,7 @@ mod reach;
 mod reader;
 mod registry;
 mod request;
+pub mod roles;
 mod run;
 mod search;
 mod session;

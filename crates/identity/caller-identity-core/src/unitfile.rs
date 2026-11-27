@@ -1,5 +1,6 @@
-//! The two settings of a unit file that decide whether a unit is the real one: what it unsets from
-//! the environment and what it runs. Pure text in, values out.
+//! The two settings of a systemd unit file that decide whether a unit is the real one: what it
+//! unsets from the environment and what it runs. Pure text in, values out; the I/O crate finds and
+//! reads the files.
 
 /// What the `[Service]` sections of a unit file and its drop-ins say, folded in order.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]

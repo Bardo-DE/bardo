@@ -10,7 +10,7 @@ use crate::support::drive::settle_on_threads;
 use crate::support::syncd::{Standing, Syncd};
 use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH};
 use base_testkit::PrivateBus;
-use settings_app_callers::{RoleCheck, RoleName, introduce_service, private_peers, roles};
+use settings_app_callers::{RoleCheck, RoleName, introduce_service, private_peers};
 use settings_app_link::bus::Vouch;
 use settings_app_model::{ModuleId, PageSlug};
 use settings_app_system::modules::FakeModules;

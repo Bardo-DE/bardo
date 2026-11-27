@@ -1,12 +1,12 @@
 //! A person's own rows (feature `dev-callers`, which only the bardo-shell binary's `debug` feature turns
 //! on): the stand-ins a checkout builds, named in a file the person owns, are let in as the
 //! services they stand for, at `Proof::Dev`, below every real proof. A release build has none of
-//! this: the feature, the flag and the caller-identity library's `dev-rows` are all absent.
+//! this: the feature, the flag and `caller-identity-dev` are all absent.
 
 use std::path::Path;
 
 use caller_identity_dbus::caller_identity_core::{Table, Uid};
-use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
+use caller_identity_dev::{DevFileError, DevRows};
 
 use super::DesktopCallers;
 
@@ -19,15 +19,15 @@ impl DesktopCallers {
     /// # Errors
     ///
     /// Returns an error, and adds nothing, if the file is not such a file or cannot be loaded.
-    pub fn with_dev_rows(self, path: &Path) -> Result<DesktopCallers, LoadError> {
+    pub fn with_dev_rows(self, path: &Path) -> Result<DesktopCallers, DevFileError> {
         let person = Uid::new(rustix::process::getuid().as_raw());
-        let rows = TableFiles::load_dev(&RealProc::system(), path, person)?;
+        let rows = DevRows::load(path, person)?;
         Ok(self.with_rows(rows))
     }
 
-    /// These callers, with `rows` merged after the shipped ones.
+    /// These callers, with `rows` added after the shipped ones.
     #[must_use]
-    pub fn with_rows(self, rows: Table) -> DesktopCallers {
-        DesktopCallers::new(self.table.merge(rows))
+    pub fn with_rows(self, rows: DevRows) -> DesktopCallers {
+        DesktopCallers::new(rows.added_to(self.table))
     }
 }

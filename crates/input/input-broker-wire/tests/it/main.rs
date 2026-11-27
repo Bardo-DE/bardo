@@ -8,6 +8,7 @@ mod key_table;
 mod kinds;
 mod limiter;
 mod maker;
+mod roles;
 
 use input_broker_wire::Event;
 use input_broker_wire::codes::{EV_ABS, EV_KEY, EV_REL, EV_SYN};

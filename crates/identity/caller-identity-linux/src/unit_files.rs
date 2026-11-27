@@ -1,5 +1,6 @@
 //! The facts of a caller's unit, read from the unit files the way the unit manager would find
-//! them, for a service that has no manager to ask.
+//! them, for a service that has no manager to ask. The text of the files is read by
+//! [`caller_identity_core::ServiceDirectives`]; this finds them and judges who can write them.
 //!
 //! A root service cannot ask a user's manager (that is a socket the user controls) and links no
 //! bus, so `caller_identity`'s `Full` proof cannot come from a manager call here. It comes from what a
@@ -14,21 +15,19 @@
 //!
 //! What is not shown is the manager's `MainPID`: for a system unit the control group can only be
 //! filled by the manager, for a user unit it can be filled by the user, which the documentation
-//! names as the residual of a root service without a manager (see ARCHITECTURE.md).
+//! names as the residual of a root service without a manager (see the input broker's ARCHITECTURE.md).
 //!
 //! The folders read are the root-owned ones only. A user's own unit folders sit under a home the
 //! service cannot read (it holds `CAP_SYS_PTRACE` and no file-reading capability), so a user's
 //! override of the unit is not seen. The policy serves only system units, which a person cannot
 //! override.
 
-mod directives;
 mod process;
 
 use caller_identity_core::{
-    CgroupPath, DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
+    CgroupPath, DropIns, ExePath, FileTrust, Fragment, Loader, Pid, ProcFs, ServiceDirectives,
+    Transient, UnitFacts, UnitName, path_trust,
 };
-use caller_identity_linux::{ProcFs, path_trust};
-use directives::ServiceDirectives;
 pub use process::ProcessError;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -156,7 +155,11 @@ fn resolved<P: ProcFs>(fs: &P, dir: &Path) -> Option<PathBuf> {
 ///
 /// Returns [`NotUnitError::NoUnit`] when the process is not in a service unit, and another [`NotUnitError`]
 /// when its unit file cannot be read.
-pub fn facts<P: ProcFs>(fs: &P, pid: Pid, cgroup: &CgroupPath) -> Result<UnitFacts, NotUnitError> {
+pub fn unit_facts<P: ProcFs>(
+    fs: &P,
+    pid: Pid,
+    cgroup: &CgroupPath,
+) -> Result<UnitFacts, NotUnitError> {
     let name = cgroup.unit_leaf().ok_or(NotUnitError::NoUnit)?;
     if !name.as_str().ends_with(".service") {
         return Err(NotUnitError::NoUnit);

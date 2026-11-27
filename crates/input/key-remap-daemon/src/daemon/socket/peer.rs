@@ -8,7 +8,7 @@ use key_remap_proto::{self as protocol, KeymapState, MAX_PACKET, Status, ToClien
 use rustix::fd::{AsFd, OwnedFd};
 use rustix::io::Errno;
 use rustix::net::SendFlags;
-use service_locator::guard::Origin;
+use seat_guard::Origin;
 use std::collections::BTreeSet;
 
 /// What a connection has shown itself to be. The shell's connections steer the key remap daemon; a

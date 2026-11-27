@@ -6,6 +6,8 @@
 //! which. Each caller holds the role its method answers: a call from a program without it gets an
 //! access-denied error.
 
+pub mod roles;
+
 use zbus::zvariant::OwnedFd;
 
 /// The well-known name the compositor owns on the session bus.

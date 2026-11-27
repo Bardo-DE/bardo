@@ -12,7 +12,7 @@ mod wiring;
 use super::FromSocket;
 use super::model::{ClientId, SocketEffect, SocketEvent, Subscribers};
 use mouse_gestures_proto::ToHost;
-use service_locator::guard::Claim;
+use seat_guard::Claim;
 use std::time::Instant;
 
 /// The person at the seat in the pure tests.

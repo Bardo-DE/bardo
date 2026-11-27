@@ -93,8 +93,6 @@
 
 pub mod address;
 pub mod find;
-#[cfg(all(unix, feature = "guard"))]
-pub mod guard;
 pub mod lock;
 pub mod serve;
 
