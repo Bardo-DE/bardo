@@ -236,7 +236,7 @@ fn the_generic_files_make_generic_rows_and_every_other_file_a_provider_row() {
         .filter(|r| r.kind == RowKind::Generic)
         .map(|r| r.id.as_str().to_owned())
         .collect();
-    assert_ne!(generic, [] as [std::string::String; 0]);
+    assert!(!generic.is_empty());
     assert!(generic.iter().all(|id| id.starts_with("generic-")));
     assert!(
         rows.iter()
@@ -349,8 +349,8 @@ fn a_key_provider_names_the_agent_programs_that_may_use_its_key() {
     assert_eq!(named("anthropic"), ["claude-code"]);
     assert_eq!(named("openai"), ["codex"]);
     assert_eq!(named("google-ai"), ["gemini-cli"]);
-    assert_eq!(named("openrouter"), [] as [std::string::String; 0]);
-    assert_eq!(named("moonshot"), [] as [std::string::String; 0]);
+    assert!(named("openrouter").is_empty());
+    assert!(named("moonshot").is_empty());
     // The model row is still the first row of a key provider.
     for id in ["anthropic", "openai", "google-ai"] {
         assert_eq!(shipped_spec(id).capabilities[0].capability.kind(), K::Llm);

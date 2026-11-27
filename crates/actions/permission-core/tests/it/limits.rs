@@ -227,7 +227,7 @@ fn what_the_assistant_adds_is_theirs_to_remove_by_id_only() {
         note.why
     );
     let (rest, done) = limits_without(vec![made.clone()], &made.id);
-    assert_eq!(rest, [] as [permission_core::Limit; 0]);
+    assert!(rest.is_empty());
     assert!(done);
     let (_, removed) = limits_without(
         vec![made],

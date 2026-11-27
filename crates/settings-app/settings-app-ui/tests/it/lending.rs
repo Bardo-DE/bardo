@@ -83,7 +83,7 @@ fn cancel_writes_nothing() {
     });
     assert_eq!(sandbox.drop_in(), None);
     assert_eq!(serve_setting(&sandbox), None);
-    assert_eq!(sandbox.units().calls(), [] as [std::string::String; 0]);
+    assert!(sandbox.units().calls().is_empty());
     assert_eq!(checked(&harness).as_deref(), Some("false"));
 }
 

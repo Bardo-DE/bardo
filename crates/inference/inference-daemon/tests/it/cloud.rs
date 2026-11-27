@@ -457,7 +457,7 @@ async fn an_app_without_a_grant_is_never_served_a_cloud_model_even_with_the_floo
         vec![(READER.to_owned(), "prompt".to_owned())]
     );
     assert_eq!(calls.resolved, Vec::<String>::new(), "no key was fetched");
-    assert_eq!(world.audit.entries(), [] as [inference_core::AuditEntry; 0]);
+    assert!(world.audit.entries().is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -21,7 +21,7 @@ async fn an_offered_action_is_a_call_of_the_agents_program_in_its_session() {
     let done = w.call(&session, read_thread()).await;
     // A read runs for every caller under Auto: connecting the program is the permission.
     assert!(done.is_ok(), "{done:?}");
-    assert_eq!(w.sheets(), [] as [action_core::ConfirmRequest; 0]);
+    assert!(w.sheets().is_empty());
     let program = provenance::AgentProgram::parse(CLAUDE).expect("program");
     let actors: Vec<Actor> = w
         .records()
@@ -53,7 +53,7 @@ async fn an_action_nobody_offered_is_not_the_hosts_to_call() {
         .call(&session, call("mail.thread.open", &["t2"], vec![]))
         .await;
     assert_eq!(done, Err(CallRefusal::Denied(DenyCode::NotAllowed)));
-    assert_eq!(w.sheets(), [] as [action_core::ConfirmRequest; 0]);
+    assert!(w.sheets().is_empty());
 }
 
 #[tokio::test]
@@ -73,7 +73,7 @@ async fn another_host_cannot_make_tool_calls_in_this_hosts_session() {
     )
     .await;
     assert_eq!(reply, IntentsReply::Refused(WireRefusal::NotAllowed));
-    assert_eq!(w.sheets(), [] as [action_core::ConfirmRequest; 0]);
+    assert!(w.sheets().is_empty());
     let _ = host();
 }
 

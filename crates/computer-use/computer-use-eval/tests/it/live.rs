@@ -104,7 +104,7 @@ fn only_the_tasks_a_model_can_play_are_played() {
     let plan = Plan::of(ENTRY, "holo", Thinking::Off).unwrap();
     let only = ["limits-spend-cap".to_owned()];
     let runs = block_on(run_live(&corpus(), provider, &plan, "test", 1, &only)).unwrap();
-    assert_eq!(runs, [] as [computer_use_eval::run::RunRecord; 0]);
+    assert!(runs.is_empty());
 }
 
 /// The text of everything the model is sent on its first step of the pad task, on `platform`.

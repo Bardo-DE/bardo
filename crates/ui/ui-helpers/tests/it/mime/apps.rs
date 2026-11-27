@@ -107,10 +107,7 @@ fn a_removal_only_reaches_downward_and_a_default_only_its_own_file() {
         ids(&["x.desktop"])
     );
     let above = assoc(&[removed, added], &[], &[]);
-    assert_eq!(
-        above.apps_for(&mt("text/plain"), &db()),
-        [] as [ui_helpers::DesktopId; 0]
-    );
+    assert!(above.apps_for(&mt("text/plain"), &db()).is_empty());
 
     let own = "[Default Applications]\ntext/plain=a.desktop\n[Removed Associations]\ntext/plain=a.desktop\n";
     let next = "[Default Applications]\ntext/plain=b.desktop\n";

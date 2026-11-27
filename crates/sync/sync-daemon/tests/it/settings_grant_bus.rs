@@ -250,7 +250,7 @@ async fn switching_files_on_in_settings_starts_the_mirror_and_off_drops_it_but_k
 
     // Without the switch syncd finds no grant and mirrors nothing.
     rig.supervisor.tick().await;
-    assert_eq!(names(&rig, FILES_APP).await, [] as [std::string::String; 0]);
+    assert!(names(&rig, FILES_APP).await.is_empty());
 
     rig.settings
         .set(&row(FILES_ROW), &word(true))
@@ -293,16 +293,13 @@ async fn switching_files_on_in_settings_starts_the_mirror_and_off_drops_it_but_k
         rig.settings.get(&row(FILES_ROW)).await.expect("get"),
         word(false)
     );
-    assert_eq!(grants(&rig), [] as [account_core::consent::Grant; 0]);
+    assert!(grants(&rig).is_empty());
     rig.supervisor.tick().await;
     assert!(
         names(&rig, FILES_APP).await.is_empty(),
         "the dataset dropped"
     );
-    assert_eq!(
-        rig.supervisor.datasets(),
-        [] as [sync_driver::hub::DatasetName; 0]
-    );
+    assert!(rig.supervisor.datasets().is_empty());
     assert!(
         local(&rig, "note.txt").exists(),
         "the files are the person's"
@@ -351,10 +348,7 @@ async fn the_photos_row_alone_turns_the_photos_datasets_on_and_off_and_keeps_the
         .await
         .expect("photos off");
     rig.supervisor.tick().await;
-    assert_eq!(
-        names(&rig, PHOTOS_APP).await,
-        [] as [std::string::String; 0]
-    );
+    assert!(names(&rig, PHOTOS_APP).await.is_empty());
     assert!(rig.supervisor.photos_library(&rig.account).is_none());
     assert!(
         rig.paths.photos_dir(&rig.account).is_dir(),
@@ -405,8 +399,5 @@ async fn removing_the_account_in_the_rows_deletes_its_files_and_its_sign_in_here
     // The account stays in accountd; syncd's permission for it is taken back.
     let service: &Service = &rig.hosted.service;
     assert_eq!(service.registry().accounts.len(), 1);
-    assert_eq!(
-        service.registry().grants,
-        [] as [account_core::consent::Grant; 0]
-    );
+    assert!(service.registry().grants.is_empty());
 }

@@ -246,11 +246,8 @@ async fn deleting_instead_moves_nothing() {
     );
     for name in ["org.bardo.Mail", FILES, SHELL] {
         let home = store(&service, &home_of(name));
-        assert_eq!(home.topics().expect("t"), [] as [memory_core::TopicPath; 0]);
-        assert_eq!(
-            home.pending().expect("p"),
-            [] as [(memory_core::TopicPath, memory_core::Fact); 0]
-        );
+        assert!(home.topics().expect("t").is_empty());
+        assert!(home.pending().expect("p").is_empty());
     }
     assert_eq!(service.backend().removed_spaces(), vec![work()]);
 }
@@ -404,7 +401,7 @@ async fn deleted_history_leaves_no_event_and_no_link() {
             "{name}"
         );
     }
-    assert_eq!(cited_link(&service), [] as [memory_core::Link; 0]);
+    assert!(cited_link(&service).is_empty());
 }
 
 #[tokio::test]

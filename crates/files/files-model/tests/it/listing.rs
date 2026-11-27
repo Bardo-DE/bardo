@@ -11,7 +11,7 @@ fn an_answer_for_a_place_already_left_is_ignored() {
         .clone()
         .step(Input::Listed(home(), Ok(vec![file("old")])), at(0));
     assert_eq!(after, browser);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(after.listing(), &Listing::Loading);
 }
 

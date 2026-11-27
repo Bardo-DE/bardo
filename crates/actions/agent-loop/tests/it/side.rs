@@ -34,7 +34,7 @@ fn a_side_conversation_ends_on_row_close_or_after_two_idle_minutes() {
         "119 s is not yet idle"
     );
     let (gone, effects) = side_step(table.clone(), SideInput::Tick(at(150 + 120)), &rules());
-    assert_eq!(gone.open, [] as [agent_loop::SideConv; 0]);
+    assert!(gone.open.is_empty());
     assert!(
         matches!(effects.as_slice(), [SideEffect::WriteEpisode { end: SideEnd::Idle, conv }] if conv.turns.len() == 2)
     );

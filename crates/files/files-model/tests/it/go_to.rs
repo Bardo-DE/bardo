@@ -83,7 +83,7 @@ fn a_typed_path_means_a_folder() {
 fn the_sheet_opens_on_the_folder_shown() {
     let (browser, effects) = knowing_home().step(Input::GoToFolder, at(0));
     assert_eq!(browser.go_to(), &asking("/home/p", None, None));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 
     // In the Trash there is no folder: home is offered.
     let (trash, _) = Browser::new(Location::Trash);
@@ -125,7 +125,7 @@ fn a_path_that_is_no_path_stays_open_with_the_words() {
         knowing_home(),
         vec![Input::GoToFolder, typed("Projects"), Input::GoToSubmit],
     );
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(
         browser.go_to(),
         &asking("Projects", Some(GoToError::NotFound), None)
@@ -186,14 +186,14 @@ fn an_answer_nobody_waits_for_is_ignored() {
         .clone()
         .step(Input::FolderChecked(path("/var"), Ok(())), at(0));
     assert_eq!(same, browser);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     // The sheet was put away meanwhile.
     let (gone, _) = browser.step(Input::GoToCancel, at(0));
     let (still, effects) = gone
         .clone()
         .step(Input::FolderChecked(path("/tmp"), Ok(())), at(0));
     assert_eq!(still, gone);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -210,7 +210,7 @@ fn the_sheet_answers_nothing_while_it_is_away() {
         vec![typed("/tmp"), Input::GoToSubmit, Input::GoToCancel],
     );
     assert_eq!(browser.go_to(), &GoTo::Closed);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]

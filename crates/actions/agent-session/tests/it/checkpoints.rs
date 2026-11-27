@@ -79,7 +79,7 @@ fn a_resume_ignores_notes_and_unknown_lines() {
     let plain = resume_plan(&all[..2]).expect("plan");
     let noted = resume_plan(&all).expect("plan");
     assert_eq!(noted.standing, Standing::Open);
-    assert_eq!(noted.faults, [] as [agent_session::ResumeFault; 0]);
+    assert!(noted.faults.is_empty());
     assert_eq!(noted, plain);
 }
 
@@ -130,5 +130,5 @@ fn the_list_folds_taken_skipped_and_restored_notes_in_log_order() {
             },
         ]
     );
-    assert_eq!(checkpoint_rows(&[]), [] as [action_core::CheckpointRow; 0]);
+    assert!(checkpoint_rows(&[]).is_empty());
 }

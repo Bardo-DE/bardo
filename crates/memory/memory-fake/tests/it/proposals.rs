@@ -247,7 +247,7 @@ async fn a_restart_applies_the_hunks_only_if_they_still_stand() {
     let MemoryReply::Consolidation(done) = reply else {
         panic!("apply answers: {reply:?}");
     };
-    assert_eq!(done.hunks, [] as [memory_core::Hunk; 0]);
+    assert!(done.hunks.is_empty());
     assert_eq!(
         done.skipped,
         vec![SkippedHunk {

@@ -146,7 +146,7 @@ fn a_new_folder_that_failed_does_not_start_a_rename_later() {
 #[test]
 fn a_new_folder_is_made_only_in_a_folder() {
     let (_, effects) = trash_browser().step(Input::NewFolder, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -165,10 +165,10 @@ fn move_to_trash_takes_the_selection_in_row_order() {
 #[test]
 fn move_to_trash_needs_a_selection_in_a_folder() {
     let (_, nothing) = loaded(vec![file("a")]).step(Input::MoveToTrash, at(0));
-    assert_eq!(nothing, [] as [files_model::Effect; 0]);
+    assert!(nothing.is_empty());
     let (selected_in_trash, _) = trash_browser().step(click("a.txt"), at(0));
     let (_, none) = selected_in_trash.step(Input::MoveToTrash, at(0));
-    assert_eq!(none, [] as [files_model::Effect; 0]);
+    assert!(none.is_empty());
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn put_back_gives_the_trashed_items_of_the_selected_rows() {
 fn put_back_does_nothing_in_a_folder() {
     let (browser, _) = loaded(vec![file("a")]).step(click("a"), at(0));
     let (_, effects) = browser.step(Input::PutBack, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -195,7 +195,7 @@ fn deleting_immediately_asks_first_and_then_erases_those_items() {
     let (browser, _) = trash_browser().step(click("a.txt"), at(0));
     let a = trashed(&browser, "a.txt");
     let (browser, effects) = browser.step(Input::DeleteImmediately, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(
         browser.question(),
         &Question::DeleteForGood(vec![a.clone()])
@@ -212,7 +212,7 @@ fn deleting_immediately_asks_first_and_then_erases_those_items() {
 #[test]
 fn emptying_the_trash_asks_first_and_can_be_put_away() {
     let (asked, effects) = trash_browser().step(Input::EmptyTrash, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(asked.question(), &Question::EmptyTrash);
 
     let (said_no, effects) = asked.clone().step(Input::Dismiss, at(0));
@@ -266,7 +266,7 @@ fn copying_needs_a_selection_and_pasting_needs_a_folder() {
     let (copied, _) = run(loaded(vec![file("a")]), vec![click("a"), Input::Copy]);
     let (in_trash, _) = copied.step(Input::Go(Location::Trash), at(0));
     let (_, effects) = in_trash.step(Input::Paste, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 /// Why, onto, how, the sources, and the plan wanted.

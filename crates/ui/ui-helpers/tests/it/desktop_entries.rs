@@ -304,7 +304,7 @@ fn an_identity_reads_x_keys_and_falls_back_to_the_entry() {
         "[Desktop Entry]\nName=Foo\nX-Bardo-IntentsApp= \n",
     );
     assert_eq!(bare.window_id, "kde-foo");
-    assert_eq!(bare.bus_names, [] as [std::string::String; 0]);
+    assert!(bare.bus_names.is_empty());
     assert_eq!(bare.intents_app, None);
 }
 

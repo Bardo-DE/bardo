@@ -189,7 +189,7 @@ fn a_damaged_today_file_is_kept_by_the_first_save() {
     let path = state_dir(&scratch).join("today.json");
     std::fs::write(&path, "{ half").expect("write");
     let booted: Today<u32, NoPark> = disk.boot_today(Epoch(0));
-    assert_eq!(booted.entries, [] as [ui_style::space::list::Entry<u32>; 0]);
+    assert!(booted.entries.is_empty());
     assert_eq!(std::fs::read(&path).expect("untouched"), b"{ half");
     let saved = disk.save_today(&booted).expect("saves");
     let aside = saved.kept_at.expect("the old file was kept");
@@ -274,7 +274,7 @@ fn a_settings_file_with_a_hostile_number_of_keys_is_refused_whole() {
     let loaded = scratch.store().load::<AppearanceFile>();
     assert_eq!(loaded.value, AppearanceFile::default());
     assert_eq!(loaded.invalid.len(), 1, "{:?}", loaded.invalid);
-    assert_eq!(loaded.unknown, [] as [settings_store::UnknownKey; 0]);
+    assert!(loaded.unknown.is_empty());
 }
 
 #[test]

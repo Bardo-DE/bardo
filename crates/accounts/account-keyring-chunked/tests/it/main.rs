@@ -318,7 +318,7 @@ fn bytes_are_cut_at_two_to_a_unit_and_read_back_whole() {
     let part = mock.build(SERVICE, "key#1", None).expect("entry");
     assert_eq!(part.get_secret().expect("part").len(), 8);
     entry(&store, "key").delete_credential().expect("delete");
-    assert_eq!(names(&mock), [] as [std::string::String; 0]);
+    assert!(names(&mock).is_empty());
 }
 
 #[test]
@@ -329,7 +329,7 @@ fn a_value_needing_more_than_the_most_parts_is_refused_and_nothing_is_written() 
         .set_password(&"x".repeat(2 * MOST_PARTS + 1))
         .expect_err("too long");
     assert!(matches!(error, Error::TooLong(..)), "{error:?}");
-    assert_eq!(names(&mock), [] as [std::string::String; 0]);
+    assert!(names(&mock).is_empty());
 }
 
 #[test]

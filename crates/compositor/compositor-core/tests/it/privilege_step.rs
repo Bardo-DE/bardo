@@ -276,15 +276,7 @@ fn the_portal_is_trusted_for_the_screen_and_windows_and_asked_for_the_rest() {
     for power in [Power::Screen, Power::Windows] {
         let effects = desk.uses(1, power);
         assert_eq!(outcome(&effects, 1, power), Some(PowerOutcome::Allowed));
-        assert_eq!(
-            questions(&effects),
-            [] as [(
-                desktop_protocols::vocab::AskId,
-                compositor_core::policy::Power,
-                compositor_core::privilege::AskSubject,
-                desktop_protocols::vocab::Memory
-            ); 0]
-        );
+        assert!(questions(&effects).is_empty());
     }
     let effects = desk.uses(1, Power::Keys);
     assert_eq!(outcome(&effects, 1, Power::Keys), None);
@@ -366,15 +358,7 @@ fn a_program_is_asked_once_and_the_answer_is_kept() {
         outcome(&effects, 2, Power::Screen),
         Some(PowerOutcome::Allowed)
     );
-    assert_eq!(
-        questions(&effects),
-        [] as [(
-            desktop_protocols::vocab::AskId,
-            compositor_core::policy::Power,
-            compositor_core::privilege::AskSubject,
-            desktop_protocols::vocab::Memory
-        ); 0]
-    );
+    assert!(questions(&effects).is_empty());
 }
 
 #[test]
@@ -396,10 +380,7 @@ fn clients_of_one_program_share_one_question() {
             Some(PowerOutcome::Allowed)
         );
     }
-    assert_eq!(
-        desk.model.privilege().asks(),
-        [] as [compositor_core::privilege::AskView; 0]
-    );
+    assert!(desk.model.privilege().asks().is_empty());
 }
 
 #[test]
@@ -418,15 +399,7 @@ fn a_refusal_is_kept_too() {
         outcome(&effects, 1, Power::Clipboard),
         Some(PowerOutcome::Denied)
     );
-    assert_eq!(
-        questions(&effects),
-        [] as [(
-            desktop_protocols::vocab::AskId,
-            compositor_core::policy::Power,
-            compositor_core::privilege::AskSubject,
-            desktop_protocols::vocab::Memory
-        ); 0]
-    );
+    assert!(questions(&effects).is_empty());
 }
 
 #[test]
@@ -592,10 +565,7 @@ fn a_question_nobody_answers_times_out_and_a_late_answer_changes_nothing() {
         outcome(&effects, 1, Power::Screen),
         Some(PowerOutcome::Denied)
     );
-    assert_eq!(
-        desk.model.privilege().asks(),
-        [] as [compositor_core::privilege::AskView; 0]
-    );
+    assert!(desk.model.privilege().asks().is_empty());
     assert!(!desk.model.timers().is_armed(&TimerKey::AskDeadline));
 
     let late = desk.answers(ask, Answer::Allow);
@@ -653,10 +623,7 @@ fn nothing_is_asked_until_a_shell_can_ask_and_not_after_the_wait() {
         outcome(&effects, 1, Power::Screen),
         Some(PowerOutcome::Denied)
     );
-    assert_eq!(
-        late.model.privilege().asks(),
-        [] as [compositor_core::privilege::AskView; 0]
-    );
+    assert!(late.model.privilege().asks().is_empty());
 }
 
 #[test]
@@ -670,10 +637,7 @@ fn a_held_question_is_dropped_when_the_shell_never_comes() {
         outcome(&effects, 1, Power::Screen),
         Some(PowerOutcome::Denied)
     );
-    assert_eq!(
-        desk.model.privilege().asks(),
-        [] as [compositor_core::privilege::AskView; 0]
-    );
+    assert!(desk.model.privilege().asks().is_empty());
 }
 
 #[test]
@@ -704,19 +668,8 @@ fn the_lock_screen_is_not_a_place_to_ask() {
         outcome(&effects, 1, Power::Screen),
         Some(PowerOutcome::Denied)
     );
-    assert_eq!(
-        questions(&effects),
-        [] as [(
-            desktop_protocols::vocab::AskId,
-            compositor_core::policy::Power,
-            compositor_core::privilege::AskSubject,
-            desktop_protocols::vocab::Memory
-        ); 0]
-    );
-    assert_eq!(
-        desk.model.privilege().asks(),
-        [] as [compositor_core::privilege::AskView; 0]
-    );
+    assert!(questions(&effects).is_empty());
+    assert!(desk.model.privilege().asks().is_empty());
 }
 
 #[test]
@@ -853,10 +806,7 @@ fn switching_a_program_on_lets_it_in_and_forgetting_asks_again() {
         Some(PowerOutcome::Allowed)
     );
     assert_eq!(withdrawn(&effects).len(), 1);
-    assert_eq!(
-        desk.model.privilege().asks(),
-        [] as [compositor_core::privilege::AskView; 0]
-    );
+    assert!(desk.model.privilege().asks().is_empty());
 
     let effects = desk.send(Event::PrivilegeEdited {
         edit: Edit::Forget(program("/usr/bin/grim"), Power::Keys),
@@ -936,15 +886,7 @@ fn the_administrators_refusal_wins_and_hides_the_global() {
         outcome(&effects, 1, Power::Screen),
         Some(PowerOutcome::Denied)
     );
-    assert_eq!(
-        questions(&effects),
-        [] as [(
-            desktop_protocols::vocab::AskId,
-            compositor_core::policy::Power,
-            compositor_core::privilege::AskSubject,
-            desktop_protocols::vocab::Memory
-        ); 0]
-    );
+    assert!(questions(&effects).is_empty());
 
     let hidden = desk
         .model

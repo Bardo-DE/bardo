@@ -28,7 +28,7 @@ fn ui_tars_examples_parse() {
         Some("Click on the search bar at the top of the page.")
     );
     assert_eq!(image_actions(&p), [left_click(at(459, 203))]);
-    assert_eq!(p.dropped, [] as [computer_use_parse::Dropped; 0]);
+    assert!(p.dropped.is_empty());
 
     let p = ui_tars(&fixture("hotkey.txt")).unwrap();
     let chord = Chord::new(BTreeSet::from([Modifier::Ctrl]), Key::Character("c".into())).unwrap();

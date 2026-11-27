@@ -119,7 +119,7 @@ async fn a_refused_speech_request_is_the_error_and_plays_nothing() {
             .await
             .unwrap_err();
         assert_eq!(got, want);
-        assert_eq!(speaker.chunks, [] as [speech_provider::AudioChunk; 0]);
+        assert!(speaker.chunks.is_empty());
         assert!(!format!("{got:?}").contains("SECRET"));
     }
 }

@@ -138,9 +138,10 @@ fn erasing_bodies_keeps_chain_intact() {
     assert_eq!(all[0].body, BodyState::Erased);
     assert!(matches!(all[2].body, BodyState::Present(_)));
     let thing = view("7f3a").thing;
-    assert_eq!(
-        log.touching(&thing, RoleFilter::Either).expect("touching"),
-        [] as [memory_core::Seq; 0]
+    assert!(
+        log.touching(&thing, RoleFilter::Either)
+            .expect("touching")
+            .is_empty()
     );
 }
 

@@ -135,7 +135,7 @@ fn text_in_comments_and_strings_is_not_a_reference() {
         "/* url(https://example.org/x) */ a::after { content: \"url(https://example.org/x)\" }";
     let (out, cuts) = within(css, Some(Path::new(HOME)));
     assert_eq!(out, css);
-    assert_eq!(cuts, [] as [ui_style::kit::reach::Cut; 0]);
+    assert!(cuts.is_empty());
 }
 
 #[test]
@@ -176,16 +176,13 @@ fn the_sheets_are_drawn_look_then_desktop_then_app_with_the_look_in_its_layer() 
 
 #[test]
 fn off_draws_nothing_and_a_blank_sheet_draws_no_element() {
-    assert_eq!(styles().drawn(false), [] as [ui_style::kit::Drawn; 0]);
+    assert!(styles().drawn(false).is_empty());
     let only_app = Styles {
         app: UserStyle(".a{}".to_owned()),
         ..Styles::default()
     };
     assert_eq!(only_app.drawn(true).len(), 1);
-    assert_eq!(
-        Styles::default().drawn(true),
-        [] as [ui_style::kit::Drawn; 0]
-    );
+    assert!(Styles::default().drawn(true).is_empty());
 }
 
 #[test]

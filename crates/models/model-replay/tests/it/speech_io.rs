@@ -320,7 +320,7 @@ fn speak_handles_odd_durations_barge_in_and_recorded_errors() {
     let r = replay(vec![tts_line("hi", 0, tts_end(0))], ReplayMode::InOrder);
     let mut sink = Chunks(vec![], usize::MAX);
     block_on(r.speak(&tts_request("hi"), &mut sink)).unwrap();
-    assert_eq!(sink.0, [] as [speech_provider::AudioChunk; 0]);
+    assert!(sink.0.is_empty());
 }
 
 #[test]
@@ -374,14 +374,8 @@ fn describe_reports_what_the_calls_show() {
         }
     );
     let none = replay(vec![], ReplayMode::InOrder);
-    assert_eq!(
-        block_on(SpeechToText::describe(&none)).unwrap(),
-        [] as [speech_provider::SpeechModelInfo; 0]
-    );
-    assert_eq!(
-        block_on(TextToSpeech::describe(&none)).unwrap(),
-        [] as [speech_provider::SpeechModelInfo; 0]
-    );
+    assert!(block_on(SpeechToText::describe(&none)).unwrap().is_empty());
+    assert!(block_on(TextToSpeech::describe(&none)).unwrap().is_empty());
 }
 
 #[test]

@@ -54,7 +54,7 @@ fn nothing_the_helper_makes_is_writable_by_anyone_else_whatever_the_umask() {
 
         let mut all = Vec::new();
         walk(&sandbox.layout.root, &mut all);
-        assert_ne!(all, [] as [(std::path::PathBuf, bool, u32); 0]);
+        assert!(!all.is_empty());
         for (path, is_dir, mode) in &all {
             if std::fs::symlink_metadata(path)
                 .expect("metadata")

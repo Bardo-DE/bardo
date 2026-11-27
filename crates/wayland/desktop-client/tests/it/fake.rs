@@ -41,10 +41,7 @@ fn drain_events_returns_what_was_applied_once() {
     let drained = desktop.drain_events();
     assert_eq!(drained.len(), 2);
     assert!(matches!(drained[0], DesktopEvent::Toplevel(_)));
-    assert_eq!(
-        desktop.drain_events(),
-        [] as [desktop_client::DesktopEvent; 0]
-    );
+    assert!(desktop.drain_events().is_empty());
 }
 
 #[test]

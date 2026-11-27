@@ -112,7 +112,7 @@ async fn the_list_says_it_is_private_and_never_fresh() {
     let listed = client.list_tools(None).await.expect("tools");
     assert_eq!(listed.ttl_ms, Some(0));
     assert_eq!(listed.cache_scope, Some(rmcp::model::CacheScope::Private));
-    assert_ne!(listed.tools, [] as [rmcp::model::Tool; 0]);
+    assert!(!listed.tools.is_empty());
 }
 
 #[tokio::test]
@@ -174,10 +174,7 @@ async fn a_refused_line_or_a_gone_host_is_a_tool_error_and_never_a_success() {
         client.call_tool(call()).await.expect("answer").is_error,
         Some(true)
     );
-    assert_eq!(
-        client.list_all_tools().await.expect("tools"),
-        [] as [rmcp::model::Tool; 0]
-    );
+    assert!(client.list_all_tools().await.expect("tools").is_empty());
     std::fs::remove_file(&socket).expect("socket gone");
     assert_eq!(
         client.call_tool(call()).await.expect("answer").is_error,

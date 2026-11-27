@@ -265,7 +265,7 @@ fn a_private_window_shows_the_app_and_nothing_else() {
     let view = context_view(&ctx, &mut table);
     assert_eq!(view.here, HereView::Nowhere);
     assert_eq!(view.window, Reveal::Plain(String::new()));
-    assert_eq!(table.cards(), [] as [action_core::HandleCard; 0]);
+    assert!(table.cards().is_empty());
 }
 
 #[test]

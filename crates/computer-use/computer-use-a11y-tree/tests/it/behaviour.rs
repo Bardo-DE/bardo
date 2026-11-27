@@ -37,10 +37,7 @@ fn secret_rects_cover_password_text() {
         .find(|n| n.role == Role::PasswordText)
         .expect("password");
     assert_eq!(secret_rects(&form), vec![password.bounds]);
-    assert_eq!(
-        secret_rects(&crate::support::gtk4_dialog()),
-        [] as [computer_use_action::Rect<computer_use_action::WindowSpace>; 0]
-    );
+    assert!(secret_rects(&crate::support::gtk4_dialog()).is_empty());
 }
 
 #[test]
@@ -54,7 +51,7 @@ fn diff_reports_added_removed_changed() {
     let d = diff(&before, &after);
     assert_eq!(d.removed, vec![removed.id]);
     assert_eq!(d.changed, vec![NodeId(2)]);
-    assert_eq!(d.added, [] as [computer_use_action::NodeId; 0]);
+    assert!(d.added.is_empty());
     assert_eq!(
         diff(&before, &before),
         computer_use_a11y_tree::TreeDiff::default()

@@ -148,10 +148,7 @@ async fn an_outbound_call_asks_and_its_untrusted_recipient_keeps_the_grant_off_t
         ConfirmOffer::OnceOnly,
         "a recipient typed in a terminal is untrusted: no standing grant can cover it"
     );
-    assert_eq!(
-        router.seams.link.mail.sent(),
-        [] as [action_fake::SentMail; 0]
-    );
+    assert!(router.seams.link.mail.sent().is_empty());
 }
 
 #[tokio::test]
@@ -190,7 +187,7 @@ async fn allowing_once_runs_it_and_the_next_call_asks_again() {
         .await
         .unwrap();
     assert_eq!(shown(&router).len(), 2);
-    assert_eq!(router.terminal_grants(), [] as [action_vocab::ActionRef; 0]);
+    assert!(router.terminal_grants().is_empty());
 }
 
 #[tokio::test]
@@ -213,7 +210,7 @@ async fn a_hidden_action_is_refused_without_asking() {
         run(&router, forget).await,
         Err(CallRefusal::Denied(DenyCode::NotAllowed))
     );
-    assert_eq!(shown(&router), [] as [action_core::ConfirmRequest; 0]);
+    assert!(shown(&router).is_empty());
 }
 
 #[tokio::test]
@@ -227,10 +224,7 @@ async fn a_standing_grant_skips_the_ask_until_it_is_revoked() {
         .await
         .unwrap();
     assert_eq!(shown(&router).len(), 1, "the grant skipped the ask");
-    assert_eq!(
-        router.seams.reviewer.calls(),
-        [] as [(permission_core::Stage, action_review::ReviewRequest); 0]
-    );
+    assert!(router.seams.reviewer.calls().is_empty());
     // Another action is not covered.
     run(
         &router,
@@ -246,7 +240,7 @@ async fn a_standing_grant_skips_the_ask_until_it_is_revoked() {
     // Revoked: asks again.
     assert!(router.revoke_terminal_grant(&action("mail.thread.archive")));
     assert!(!router.revoke_terminal_grant(&action("mail.thread.archive")));
-    assert_eq!(router.terminal_grants(), [] as [action_vocab::ActionRef; 0]);
+    assert!(router.terminal_grants().is_empty());
     let after = run(&router, from_cli("mail.thread.archive", &["t2"], vec![])).await;
     assert_eq!(after, Err(CallRefusal::Unconfirmed(ConfirmEnd::Dismissed)));
     assert_eq!(shown(&router).len(), 3);
@@ -341,7 +335,7 @@ async fn only_the_terminal_may_hold_the_grant() {
         )],
     );
     let _ = perform(&router, planned).await;
-    assert_eq!(router.terminal_grants(), [] as [action_vocab::ActionRef; 0]);
+    assert!(router.terminal_grants().is_empty());
 }
 
 fn forget(key: &str) -> CallRequest {

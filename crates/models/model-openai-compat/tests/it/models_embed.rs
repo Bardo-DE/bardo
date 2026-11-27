@@ -236,10 +236,7 @@ fn a_hole_a_repeat_or_a_non_number_is_unreadable() {
 
 #[test]
 fn an_empty_data_array_is_no_vectors() {
-    assert_eq!(
-        decode(json!({"data": []})).unwrap().vectors,
-        [] as [model_provider::EmbedVector; 0]
-    );
+    assert!(decode(json!({"data": []})).unwrap().vectors.is_empty());
 }
 
 #[test]

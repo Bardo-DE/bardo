@@ -348,7 +348,7 @@ async fn a_folder_syncs_against_graph_through_the_relay_and_status_shows_the_quo
         rig.graph.link_hits()
     );
     let api: Vec<_> = rig.graph.hits();
-    assert_ne!(api, [] as [account_fake_servers::Hit; 0]);
+    assert!(!api.is_empty());
     let want = format!("Bearer {BEARER}");
     assert!(
         api.iter()

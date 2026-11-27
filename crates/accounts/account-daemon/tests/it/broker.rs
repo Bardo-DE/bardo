@@ -196,13 +196,7 @@ async fn a_runtime_is_reported_as_an_account_and_the_broker_is_told_of_changes()
     .expect("open");
     let accounts = broker.accounts().await.expect("accounts");
     assert_eq!(accounts.len(), 3);
-    assert_eq!(
-        broker.servers().await.expect("servers"),
-        [] as [(
-            std::string::String,
-            std::collections::HashMap<std::string::String, zbus::zvariant::OwnedValue>
-        ); 0]
-    );
+    assert!(broker.servers().await.expect("servers").is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread")]

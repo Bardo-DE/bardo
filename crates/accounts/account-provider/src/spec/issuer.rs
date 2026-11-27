@@ -393,13 +393,13 @@ mod tests {
             data.grant_scopes(K::Storage, Family::Graph, Ask::OnUse),
             [WHOLE]
         );
-        assert_eq!(
-            data.grant_scopes(K::Calendar, Family::Graph, Ask::OnUse),
-            [] as [&str; 0]
+        assert!(
+            data.grant_scopes(K::Calendar, Family::Graph, Ask::OnUse)
+                .is_empty()
         );
-        assert_eq!(
-            data.grant_scopes(K::Mail, Family::Imap, Ask::OnUse),
-            [] as [&str; 0]
+        assert!(
+            data.grant_scopes(K::Mail, Family::Imap, Ask::OnUse)
+                .is_empty()
         );
         let google = Issuer::Google.data();
         assert_eq!(

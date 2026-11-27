@@ -167,7 +167,7 @@ fn an_edited_auto_or_manual_folder_is_not_read_and_is_named_as_unused() {
     put(&folder("manual"), "grid.cedar", NO_READS);
     let loaded = load_policies(&dirs).expect("loads");
     assert_eq!(loaded.preset, PresetOrigin::BuiltIn);
-    assert_eq!(loaded.skipped, [] as [permission_policy::Rejected; 0]);
+    assert!(loaded.skipped.is_empty());
     assert_eq!(loaded.unused, [folder("auto"), folder("manual")]);
     assert!(
         !loaded

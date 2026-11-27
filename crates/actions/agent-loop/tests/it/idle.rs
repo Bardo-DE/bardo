@@ -16,9 +16,9 @@ fn the_idle_pass_waits_for_quiet_runs_one_narrative_and_yields_to_the_person() {
     let rules = rules();
     let state = IdleState::quiet_since(at(0));
     let (state, effects) = idle_step(state, IdleInput::EpisodeClosed(job("t-1", true)), &rules);
-    assert_eq!(effects, [] as [agent_loop::IdleEffect; 0]);
+    assert!(effects.is_empty());
     let (state, effects) = idle_step(state, IdleInput::EpisodeClosed(job("t-2", false)), &rules);
-    assert_eq!(effects, [] as [agent_loop::IdleEffect; 0]);
+    assert!(effects.is_empty());
     let (state, effects) = idle_step(state, IdleInput::Tick(at(29)), &rules);
     assert!(effects.is_empty(), "29 s of quiet is not 30");
     let (state, effects) = idle_step(state, IdleInput::Tick(at(30)), &rules);
@@ -70,7 +70,7 @@ fn a_failed_narrative_waits_for_the_person_to_come_and_go() {
         IdleInput::NarrativeFailed(EpisodeId::parse("t-1").expect("id")),
         &rules,
     );
-    assert_eq!(effects, [] as [agent_loop::IdleEffect; 0]);
+    assert!(effects.is_empty());
     let (_, effects) = idle_step(state.clone(), IdleInput::Tick(at(500)), &rules);
     assert!(effects.is_empty(), "no retry loop");
     assert_eq!(state.queue.len(), 1);

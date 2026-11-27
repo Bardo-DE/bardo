@@ -144,7 +144,7 @@ async fn an_episode_is_kept_only_for_the_space_of_the_session_that_hands_it_over
         IntentsReply::Refused(WireRefusal::NotAllowed),
         "a skeleton is the router's kind of words: trusted"
     );
-    assert_eq!(episodes(&router), [] as [memory_core::Episode; 0]);
+    assert!(episodes(&router).is_empty());
     let kept = ask(
         &router,
         &companion(),

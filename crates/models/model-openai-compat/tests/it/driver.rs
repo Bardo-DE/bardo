@@ -216,10 +216,7 @@ fn an_exchange_recorded_through_the_driver_replays_through_the_driver() {
     let (result, events) = turn(&replaying);
     assert_eq!(result, Ok(want_end()));
     assert_eq!(events, expected_events());
-    assert_eq!(
-        replaying.transport().misses(),
-        [] as [model_replay::WireMissError; 0]
-    );
+    assert!(replaying.transport().misses().is_empty());
 }
 
 #[derive(Default)]
@@ -252,7 +249,7 @@ fn a_request_that_differs_from_the_recorded_one_is_a_miss_in_strict_mode() {
         result,
         Err(ProviderError::BadRequest("no recorded exchange".into()))
     );
-    assert_eq!(events, [] as [model_provider::TurnEvent; 0]);
+    assert!(events.is_empty());
     assert_eq!(driver.transport().misses().len(), 1);
 }
 

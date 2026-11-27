@@ -214,5 +214,5 @@ fn coordinates_decode() {
     }
     bytes.push(1);
     assert_eq!(coordinates_from_array(&bytes), vec![3, 4]);
-    assert_eq!(coordinates_from_array(&[]), [] as [u32; 0]);
+    assert!(coordinates_from_array(&[]).is_empty());
 }

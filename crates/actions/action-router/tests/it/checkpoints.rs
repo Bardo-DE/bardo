@@ -169,10 +169,7 @@ async fn no_workspace_writes_no_entry_and_an_agent_that_keeps_its_own_history_sa
     let router = router();
     let plain = open_in(&router, &companion(), None, None).await;
     say(&router, &plain, "hello").await;
-    assert_eq!(
-        listed(&router, &plain).await.rows,
-        [] as [action_core::CheckpointRow; 0]
-    );
+    assert!(listed(&router, &plain).await.rows.is_empty());
 
     let external = ExternalAgent {
         program: program("claude-code"),
@@ -757,10 +754,7 @@ async fn nothing_runs_in_a_watch_session() {
         );
     }
     // It has no turns of the person's, and no point was taken by any of that.
-    assert_eq!(
-        listed(&router, &session).await.rows,
-        [] as [action_core::CheckpointRow; 0]
-    );
+    assert!(listed(&router, &session).await.rows.is_empty());
 }
 
 #[tokio::test]
@@ -789,10 +783,7 @@ async fn an_agent_cannot_watch_mark_or_close_a_watch_session() {
         }
     }
     // The refused calls took no point and left the session open for its opener.
-    assert_eq!(
-        listed(&router, &session).await.rows,
-        [] as [action_core::CheckpointRow; 0]
-    );
+    assert!(listed(&router, &session).await.rows.is_empty());
     marked(&router, &terminal(), &session).await;
 }
 

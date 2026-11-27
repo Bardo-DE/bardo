@@ -129,10 +129,7 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
         hub.propose_routine(nobody).await,
         HelperReply::Refused(_)
     ));
-    assert_eq!(
-        proposals(helpers.routine_proposals().await.expect("none")),
-        [] as [companion_wire::RoutineProposal; 0]
-    );
+    assert!(proposals(helpers.routine_proposals().await.expect("none")).is_empty());
 
     // Two proposals are listed, and nothing is made before the shell answers.
     for when in ["daily 08:00", "every 2 hours"] {
@@ -179,10 +176,7 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
         .decline_routine_proposal("p-2")
         .await
         .expect("decline");
-    assert_eq!(
-        proposals(helpers.routine_proposals().await.expect("list")),
-        [] as [companion_wire::RoutineProposal; 0]
-    );
+    assert!(proposals(helpers.routine_proposals().await.expect("list")).is_empty());
     assert_eq!(routines.made.lock().expect("made").len(), 1);
     let gone: RoutineReply = serde_json::from_str(
         &helpers

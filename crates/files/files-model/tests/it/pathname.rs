@@ -36,7 +36,7 @@ fn the_full_paths_of_the_selection_go_to_the_clipboard_one_per_line() {
 fn the_trash_has_no_paths_to_copy() {
     let (browser, _) = files_model::Browser::new(files_core::Location::Trash);
     let (_, effects) = browser.step(Input::CopyAsPathname, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]

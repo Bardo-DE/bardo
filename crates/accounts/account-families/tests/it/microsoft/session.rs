@@ -287,10 +287,7 @@ async fn revoking_sends_the_person_to_their_microsoft_account_page() {
         panic!("expected a page")
     };
     assert_eq!(page.origin().host, "account.microsoft.com");
-    assert_eq!(
-        rig.issuer.events(),
-        [] as [account_fake_servers::IssuerEvent; 0]
-    );
+    assert!(rig.issuer.events().is_empty());
 }
 
 mod service {
@@ -370,7 +367,7 @@ mod service {
         );
 
         let claims = service.rediscover(&account()).await.expect("claims");
-        assert_ne!(claims, [] as [account_capability::Claim; 0]);
+        assert!(!claims.is_empty());
         assert!(claims.iter().all(|c| matches!(c.offer, Offer::Present(_))));
         assert_eq!(
             service.registry().accounts[0].capabilities.len(),

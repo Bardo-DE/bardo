@@ -337,7 +337,7 @@ fn escape_leaves_and_closes_running_nothing() {
     let link = running.link.clone();
     settle(&mut running.harness, |_| !is_open(&link));
     assert!(!is_open(&running.link));
-    assert_eq!(ran(&mut running), [] as [shell_launcher::SessionAction; 0]);
+    assert!(ran(&mut running).is_empty());
 }
 
 #[test]
@@ -373,7 +373,7 @@ fn opened_again_while_leaving_it_enters_again_and_stays() {
     running.harness.advance(Duration::from_millis(600));
     assert!(is_open(&running.link), "the exit's settle never closed it");
     assert_eq!(running.harness.count(".ds-sheet"), 1);
-    assert_eq!(ran(&mut running), [] as [shell_launcher::SessionAction; 0]);
+    assert!(ran(&mut running).is_empty());
 }
 
 #[test]
@@ -392,7 +392,7 @@ fn a_press_outside_the_sheet_leaves_and_closes() {
     let link = running.link.clone();
     settle(&mut running.harness, |_| !is_open(&link));
     assert!(!is_open(&running.link));
-    assert_eq!(ran(&mut running), [] as [shell_launcher::SessionAction; 0]);
+    assert!(ran(&mut running).is_empty());
 }
 
 #[test]
@@ -426,7 +426,7 @@ fn cancel_leaves_and_closes_running_nothing() {
         .send(Input::click(cancel.expect("the Cancel button is laid out"))); // test-only
     let link = running.link.clone();
     settle(&mut running.harness, |_| !is_open(&link));
-    assert_eq!(ran(&mut running), [] as [shell_launcher::SessionAction; 0]);
+    assert!(ran(&mut running).is_empty());
 }
 
 #[test]
@@ -454,5 +454,5 @@ fn with_nothing_offered_the_alert_only_cancels() {
     running.harness.send(Input::key(ShortcutKey::Enter));
     let link = running.link.clone();
     settle(&mut running.harness, |_| !is_open(&link));
-    assert_eq!(ran(&mut running), [] as [shell_launcher::SessionAction; 0]);
+    assert!(ran(&mut running).is_empty());
 }

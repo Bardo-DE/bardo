@@ -96,7 +96,7 @@ async fn the_shell_makes_changes_pauses_and_removes_a_helper_and_reads_it_in_pla
     };
     assert_eq!(hub.card(&research).expect("card").model, model());
     hub.remove(research.clone()).await;
-    assert_eq!(hub.view(0).helpers, [] as [companion_wire::HelperLine; 0]);
+    assert!(hub.view(0).helpers.is_empty());
     assert!(hub.card(&research).is_none());
 }
 
@@ -323,7 +323,7 @@ async fn the_person_speaks_in_a_helpers_conversation_and_the_turn_runs_under_the
         .with_asker(Asker::Helper(research.clone()))
         .with_model(chosen_ref());
     let opened = research_model.opened();
-    assert_ne!(opened, [] as [inference_core::OpenOptions; 0]);
+    assert!(!opened.is_empty());
     assert!(opened.iter().all(|o| *o == expected), "{opened:?}");
     assert!(
         research_model
@@ -359,9 +359,6 @@ async fn only_a_helpers_conversation_is_spoken_in_and_the_front_conversation_is_
         refused,
         SayReply::Refused("That is not a conversation with a helper.".to_owned())
     );
-    assert_eq!(w.infer.asked(), [] as [inference_core::ChatRequest; 0]);
-    assert_eq!(
-        research_model.asked(),
-        [] as [inference_core::ChatRequest; 0]
-    );
+    assert!(w.infer.asked().is_empty());
+    assert!(research_model.asked().is_empty());
 }

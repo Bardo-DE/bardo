@@ -71,7 +71,7 @@ fn open_sheet(w: &mut World) {
 #[test]
 fn the_sheet_opens_on_the_keeping_choices_and_says_its_words() {
     let mut w = world("spaces-sheet");
-    assert_eq!(asked(&w), [] as [std::string::String; 0]);
+    assert!(asked(&w).is_empty());
     open_sheet(&mut w);
     let html = w.harness.html();
     for text in [

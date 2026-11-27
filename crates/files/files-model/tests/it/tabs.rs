@@ -76,7 +76,7 @@ fn a_listing_for_a_background_tab_lands_in_that_tab() {
     assert_eq!(tabs.front_id(), third);
     let listed = Input::Listed(dir("/a"), Ok(vec![file("a.txt")]));
     let (tabs, effects) = tabs.heard(first, listed, at(0));
-    assert_eq!(effects, [] as [files_model::Tabbed; 0]);
+    assert!(effects.is_empty());
     let rows = |id: TabId| tabs.get(id).unwrap().browser().rows().len();
     assert_eq!(rows(first), 1);
     assert_eq!(rows(third), 0, "the front tab is untouched");
@@ -112,7 +112,7 @@ fn an_answer_for_a_closed_tab_is_dropped() {
     let before = tabs.clone();
     let (after, effects) = tabs.heard(first, Input::Reload, at(0));
     assert_eq!(after, before);
-    assert_eq!(effects, [] as [files_model::Tabbed; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -175,7 +175,7 @@ fn showing_a_tab_keeps_the_order_whichever_way_it_jumps() {
     }
     let (same, effects) = tabs.clone().step(Input::ShowTab(TabId::FIRST), at(0));
     assert_eq!(ids(&same), vec![first, second, third]);
-    assert_eq!(effects, [] as [files_model::Tabbed; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -188,7 +188,7 @@ fn a_single_tab_does_not_switch() {
     ] {
         let (after, effects) = tabs.clone().step(input, at(0));
         assert_eq!(after, tabs);
-        assert_eq!(effects, [] as [files_model::Tabbed; 0]);
+        assert!(effects.is_empty());
     }
 }
 
@@ -204,7 +204,7 @@ fn open_in_new_tab_opens_the_selected_folder_and_only_a_folder() {
     );
     let (tabs, effects) = tabs.step(Input::OpenInNewTab, at(0));
     assert_eq!(tabs.len(), 1);
-    assert_eq!(effects, [] as [files_model::Tabbed; 0]);
+    assert!(effects.is_empty());
     // A folder: a tab on it, in front, and the first tab stays where it is.
     let (tabs, _) = tabs.step(
         Input::Click(name("Projects"), files_model::Modifier::None),
@@ -244,7 +244,7 @@ fn the_clipboard_and_undo_belong_to_the_window_not_one_tab() {
 fn the_disks_changing_is_heard_by_every_tab() {
     let (tabs, _) = three();
     let (tabs, effects) = tabs.broadcast(&Input::Volumes(Vec::new()), at(0));
-    assert_eq!(effects, [] as [files_model::Tabbed; 0]);
+    assert!(effects.is_empty());
     assert_eq!(tabs.len(), 3);
 }
 

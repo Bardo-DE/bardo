@@ -135,7 +135,7 @@ async fn a_socket_is_handed_out_only_after_the_person_allowed_it() {
         service.connect(&key(1)).await,
         Err(ConnectError::NotAllowed)
     ));
-    assert_eq!(eis.asked(), [] as [(u64, portal_core::DeviceKinds); 0]);
+    assert!(eis.asked().is_empty());
     service.begin(&key(1)).await;
     let fd = service.connect(&key(1)).await.expect("a socket");
     let asked = eis.asked();
@@ -226,7 +226,7 @@ async fn asking_for_no_device_at_all_asks_nothing() {
     open_session(&service, key(1), "a");
     service.select(&key(1), &types(0));
     assert_eq!(service.begin(&key(1)).await.0, 2);
-    assert_eq!(consent.asked(), [] as [portal_daemon::access::Question; 0]);
+    assert!(consent.asked().is_empty());
 }
 
 /// An asker that holds the question open until the test lets it go.
@@ -292,7 +292,7 @@ async fn a_session_has_one_socket_and_closing_it_takes_the_socket_back() {
     assert_eq!(eis.asked().len(), 1, "no second socket was asked for");
 
     let mut client = UnixStream::from(fd);
-    assert_eq!(eis.ended(), [] as [u64; 0]);
+    assert!(eis.ended().is_empty());
     service.close(&key(1)).await;
     let handed = eis.asked()[0].0;
     assert_eq!(eis.ended(), vec![handed], "the compositor was told to stop");
@@ -311,7 +311,7 @@ async fn a_session_that_never_took_a_socket_has_nothing_to_take_back() {
     service.begin(&key(1)).await;
     service.close(&key(1)).await;
     service.close(&key(2)).await;
-    assert_eq!(eis.ended(), [] as [u64; 0]);
+    assert!(eis.ended().is_empty());
 }
 
 #[tokio::test]
@@ -521,10 +521,7 @@ async fn what_the_person_let_an_app_do_for_good_needs_no_token_and_no_ask_to_be_
     // Taken back: asked again, and it is listed until then.
     assert_eq!(keeper.remembered().await.len(), 1);
     assert_eq!(keeper.revoke(REMOTE_ID).await, Some(1));
-    assert_eq!(
-        keeper.remembered().await,
-        [] as [portal_core::Remembered; 0]
-    );
+    assert!(keeper.remembered().await.is_empty());
 }
 
 #[tokio::test]

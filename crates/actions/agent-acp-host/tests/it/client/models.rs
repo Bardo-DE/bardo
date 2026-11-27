@@ -71,10 +71,7 @@ async fn a_model_that_is_not_offered_is_refused_with_the_ones_that_are() {
 async fn the_model_already_in_use_is_not_switched_to() {
     let (opened, agent) = Box::pin(open_with(Offer::Option, Some(model("flash")))).await;
     assert_eq!(opened, Ok(()));
-    assert_eq!(
-        agent.switches(),
-        [] as [(std::string::String, serde_json::Value); 0]
-    );
+    assert!(agent.switches().is_empty());
 }
 
 #[tokio::test]
@@ -112,10 +109,7 @@ async fn no_model_configured_leaves_the_agents_own_and_lists_what_it_offers() {
         wired.terminal_fallback,
     );
     Box::pin(host.open(opening(CWD))).await.expect("open");
-    assert_eq!(
-        wired.agent.switches(),
-        [] as [(std::string::String, serde_json::Value); 0]
-    );
+    assert!(wired.agent.switches().is_empty());
     let models = host.backend().models().expect("offered");
     assert_eq!(models.current.as_deref(), Some("flash"));
     assert_eq!(models.available.len(), 2);

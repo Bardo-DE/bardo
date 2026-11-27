@@ -45,14 +45,8 @@ fn a_post_goes_to_the_helper_it_is_for_once_and_never_back_to_its_sender() {
         other => panic!("a saved post, not {other:?}"),
     };
     assert_eq!(board.pending_posts(&inbox).len(), 1);
-    assert_eq!(
-        board.pending_posts(&research),
-        [] as [&companion_model::helper::Post; 0]
-    );
-    assert_eq!(
-        board.pending_posts(&third),
-        [] as [&companion_model::helper::Post; 0]
-    );
+    assert!(board.pending_posts(&research).is_empty());
+    assert!(board.pending_posts(&third).is_empty());
     let (board, _) = step(
         board,
         BoardEvent::Delivered {
@@ -60,10 +54,7 @@ fn a_post_goes_to_the_helper_it_is_for_once_and_never_back_to_its_sender() {
             helper: inbox.clone(),
         },
     );
-    assert_eq!(
-        board.pending_posts(&inbox),
-        [] as [&companion_model::helper::Post; 0]
-    );
+    assert!(board.pending_posts(&inbox).is_empty());
 
     // To the group: every helper but the sender, each once.
     let (board, _) = step(
@@ -77,10 +68,7 @@ fn a_post_goes_to_the_helper_it_is_for_once_and_never_back_to_its_sender() {
     );
     assert_eq!(board.pending_posts(&inbox).len(), 1);
     assert_eq!(board.pending_posts(&third).len(), 1);
-    assert_eq!(
-        board.pending_posts(&research),
-        [] as [&companion_model::helper::Post; 0]
-    );
+    assert!(board.pending_posts(&research).is_empty());
 }
 
 #[test]

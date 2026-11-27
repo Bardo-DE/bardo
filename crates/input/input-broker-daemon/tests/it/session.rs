@@ -150,10 +150,7 @@ fn a_kind_the_caller_may_not_have_is_refused_and_nothing_is_made() {
     };
     assert_eq!(reason, Reason::NotAllowed);
     assert_eq!(note.kind, Some(Kind::KeyRemapKeyboard));
-    assert_eq!(
-        backend.log().specs,
-        [] as [input_broker_wire::DeviceSpec; 0]
-    );
+    assert!(backend.log().specs.is_empty());
 }
 
 #[test]
@@ -286,10 +283,7 @@ fn devices_of_one_connection_are_independent() {
     // A wheel event sent to the touchpad is outside the touchpad's ceiling.
     let wrong = s.handle(T0, events(0, vec![wheel(1)]));
     wrong.unwrap();
-    assert_eq!(
-        backend.log().writes,
-        [] as [(usize, std::vec::Vec<input_broker_client::Event>); 0]
-    );
+    assert!(backend.log().writes.is_empty());
     s.handle(T0, events(1, vec![wheel(1)]))
         .expect("the set-up step is accepted");
     assert_eq!(backend.log().writes, [(1, vec![wheel(1)])]);

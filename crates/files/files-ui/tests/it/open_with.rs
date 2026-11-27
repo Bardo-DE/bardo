@@ -117,10 +117,7 @@ fn escape_puts_the_sheet_of_apps_away_and_opens_nothing() {
     settle_until(&mut rig.harness, |h| {
         !h.html().contains("Choose Application")
     });
-    assert_eq!(
-        rig.opener.calls(),
-        [] as [(std::vec::Vec<std::path::PathBuf>, files_ui::OpenAs); 0]
-    );
+    assert!(rig.opener.calls().is_empty());
 }
 
 #[test]

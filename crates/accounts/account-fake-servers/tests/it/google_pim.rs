@@ -107,7 +107,7 @@ async fn a_sync_token_returns_what_changed_with_cancelled_stubs_and_goes_stale_w
     };
 
     let (_, none) = get(&rig, &incremental(&token)).await;
-    assert_eq!(ids(&none, "items"), [] as [std::string::String; 0]);
+    assert!(ids(&none, "items").is_empty());
     rig.google.put_event(
         "cal-work",
         "ev-new",
@@ -251,7 +251,7 @@ async fn task_lists_list_and_tasks_filter_by_updated_min_and_show_deleted() {
     let (_, hidden) = get(&rig, "/tasks/v1/lists/list-work/tasks?showHidden=true").await;
     assert_eq!(ids(&hidden, "items"), ["t-report", "t-old"]);
     let (_, open) = get(&rig, "/tasks/v1/lists/list-work/tasks?showCompleted=false").await;
-    assert_eq!(ids(&open, "items"), [] as [std::string::String; 0]);
+    assert!(ids(&open, "items").is_empty());
     let (page, _) = get(&rig, "/tasks/v1/lists/nope/tasks").await;
     assert_eq!(page, 404);
 }

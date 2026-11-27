@@ -52,7 +52,7 @@ fn beginning_a_rename_needs_exactly_one_selected_entry() {
     for inputs in [vec![Input::BeginRename], two] {
         let (browser, effects) = run(loaded(vec![file("a.txt"), file("b.txt")]), inputs);
         assert_eq!(browser.rename(), &Rename::Idle);
-        assert_eq!(effects, [] as [files_model::Effect; 0]);
+        assert!(effects.is_empty());
     }
 }
 
@@ -129,7 +129,7 @@ fn typing_in_the_field_clears_the_complaint() {
 fn cancelling_closes_the_field_and_asks_for_nothing() {
     let (browser, effects) = editing("zzz").step(Input::CancelRename, at(0));
     assert_eq!(browser.rename(), &Rename::Idle);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -137,7 +137,7 @@ fn committing_with_nothing_open_does_nothing() {
     let browser = loaded(vec![file("a.txt")]);
     let (after, effects) = browser.clone().step(Input::CommitRename, at(0));
     assert_eq!(after, browser);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]

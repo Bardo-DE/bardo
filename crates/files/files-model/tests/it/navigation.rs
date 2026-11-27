@@ -68,7 +68,7 @@ fn going_somewhere_new_forgets_what_lay_ahead() {
     assert!(!browser.can_go_forward());
     let (browser, effects) = browser.step(Input::Forward, at(0));
     assert_eq!(path_of(browser.location()), "/b");
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -80,7 +80,7 @@ fn back_and_enclosing_stop_at_their_ends() {
     assert!(!browser.can_go_enclosing());
     let (after, effects) = browser.clone().step(Input::Enclosing, at(0));
     assert_eq!(after, browser);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     let (browser, _) = Browser::new(home());
     assert!(browser.can_go_enclosing());
 }

@@ -31,7 +31,7 @@ fn quick_asks_its_own_model_for_one_token() {
     );
     assert_eq!(sent.tier, Tier::Fast);
     assert_eq!(sent.usage, Usage::Interactive);
-    assert_eq!(sent.tools, [] as [inference_core::ToolDecl; 0]);
+    assert!(sent.tools.is_empty());
     assert_eq!(sent.control.tool_choice, ToolChoice::Never);
     assert!(matches!(sent.control.max_output, Knob::Set(Tokens(n)) if n <= 8));
     assert_eq!(sent.class, REVIEW_CLASS);

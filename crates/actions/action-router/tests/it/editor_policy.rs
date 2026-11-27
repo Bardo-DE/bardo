@@ -185,8 +185,5 @@ async fn untrusted_content_in_an_editor_session_still_blocks_an_outbound_grant()
     let asked = router.seams.confirmer.requests();
     assert_eq!(asked.len(), 1);
     assert!(matches!(asked[0].always, AlwaysOffer::Withheld(_)));
-    assert_eq!(
-        router.standing_grants(),
-        [] as [permission_core::StandingGrant; 0]
-    );
+    assert!(router.standing_grants().is_empty());
 }

@@ -201,7 +201,7 @@ fn a_withheld_sandbox_is_not_advertised_and_runs_nothing() {
             .expect("message")
             .contains("cannot sandbox")
     );
-    assert_eq!(b.seen.started(), [] as [sandbox::RunSpec; 0]);
+    assert!(b.seen.started().is_empty());
 }
 
 #[test]

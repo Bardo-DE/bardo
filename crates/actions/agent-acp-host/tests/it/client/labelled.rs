@@ -36,7 +36,7 @@ async fn acted(label: Option<String>) -> Vec<Actor> {
 async fn the_hosts_label_is_on_the_audited_actor() {
     let label = "Claude Code".to_owned();
     let seen = Box::pin(acted(Some(label.clone()))).await;
-    assert_ne!(seen, [] as [provenance::Actor; 0]);
+    assert!(!seen.is_empty());
     for actor in seen {
         assert!(matches!(actor, Actor::Acp { label: Some(l), .. } if l == label));
     }
@@ -46,7 +46,7 @@ async fn the_hosts_label_is_on_the_audited_actor() {
 async fn no_label_configured_is_none_whatever_the_agent_calls_itself() {
     // The fake agent's `initialize` answers with a title of its own.
     let seen = Box::pin(acted(None)).await;
-    assert_ne!(seen, [] as [provenance::Actor; 0]);
+    assert!(!seen.is_empty());
     for actor in seen {
         assert!(matches!(actor, Actor::Acp { label: None, .. }));
     }

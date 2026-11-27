@@ -224,7 +224,7 @@ fn gamma_for_a_plugged_output_becomes_an_effect_and_for_a_gone_one_nothing() {
     let gone = headless("HEADLESS-9").key;
     let at = model.now().after(std::time::Duration::from_millis(1));
     let (_, effects) = model.step(Event::GammaSet { output: gone, ramp }, at);
-    assert_eq!(effects, [] as [compositor_core::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 /// Night light all day (no fade) leaving `skipping` alone.

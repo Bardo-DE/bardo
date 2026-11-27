@@ -113,10 +113,7 @@ async fn a_daemon_that_died_mid_move_finishes_on_the_next_start() {
         })
     );
     assert!(!dirs.space(&space("old")).exists(), "the Space is gone");
-    assert_eq!(
-        notes_in(&dirs).open(),
-        [] as [(memory_core::SpaceId, memory_core::Removal); 0]
-    );
+    assert!(notes_in(&dirs).open().is_empty());
     assert_eq!(
         pending_in(&second, files_home()).await,
         1,
@@ -127,10 +124,7 @@ async fn a_daemon_that_died_mid_move_finishes_on_the_next_start() {
         "the shell's fact went to the shell's Space"
     );
     // Nothing is left to do on the start after that.
-    assert_eq!(
-        second.resume_removals().await,
-        [] as [(memory_core::SpaceId, memory_core::MemoryReply); 0]
-    );
+    assert!(second.resume_removals().await.is_empty());
 }
 
 #[tokio::test]

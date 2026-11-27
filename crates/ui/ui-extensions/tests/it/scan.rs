@@ -138,7 +138,7 @@ fn another_owners_word_is_kept_raw_and_skipped_not_refused() {
     assert!(found.rejected.is_empty(), "{:?}", found.rejected);
     // Our words see only the Extension that has one, and the other owner's entry does not fail it.
     let resolved = found.resolve(Capability::Look);
-    assert_eq!(resolved.problems(), [] as [ui_extensions::Problem; 0]);
+    assert!(resolved.problems().is_empty());
     let usable: Vec<&str> = resolved
         .registry
         .installed()
@@ -168,10 +168,7 @@ fn a_folder_not_named_for_its_id_is_rejected_not_scanned() {
 
     let found = Search::new(&person, &[]).scan(&[]);
 
-    assert_eq!(
-        found.candidates,
-        [] as [plugin_host::registry::Candidate<plugin_host::manifest::Raw>; 0]
-    );
+    assert!(found.candidates.is_empty());
     assert_eq!(found.rejected.len(), 1);
 }
 
@@ -210,8 +207,5 @@ fn the_roots_follow_the_xdg_rules() {
     // Nowhere to put a personal root: the system's alone, and nothing is read from the
     // working directory.
     let homeless = Search::from_dirs(None, os("/nonexistent-ds-extensions-root"), None);
-    assert_eq!(
-        homeless.scan(&[]).candidates,
-        [] as [plugin_host::registry::Candidate<plugin_host::manifest::Raw>; 0]
-    );
+    assert!(homeless.scan(&[]).candidates.is_empty());
 }

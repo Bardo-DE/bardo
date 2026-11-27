@@ -109,14 +109,7 @@ async fn an_app_cannot_sign_an_account_in_again() {
         .await
         .expect_err("an app does not see the account");
     assert_eq!(error_name(&error), UNKNOWN_OBJECT);
-    assert_eq!(
-        rig.host_log.calls().opened,
-        [] as [(
-            std::string::String,
-            std::string::String,
-            std::string::String
-        ); 0]
-    );
+    assert!(rig.host_log.calls().opened.is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread")]

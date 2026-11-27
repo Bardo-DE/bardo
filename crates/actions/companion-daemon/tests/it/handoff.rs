@@ -137,7 +137,7 @@ async fn a_model_the_person_chose_is_planned_with_and_the_host_is_never_asked() 
     w.companion.set_handoff(Arc::<Host>::clone(&host));
     let opened = w.open("work").await;
     Box::pin(w.say(&opened.session, "hello")).await;
-    assert_eq!(host.asked(), [] as [action_core::HandOver; 0]);
+    assert!(host.asked().is_empty());
     let answer: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(answer.phase, AnswerPhase::Done);
 }

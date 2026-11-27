@@ -294,10 +294,7 @@ async fn a_call_outside_the_task_is_never_offered() {
             .all(|r| matches!(r.always, AlwaysOffer::Withheld(_))),
         "an out-of-task call is refused or asked with no always"
     );
-    assert_eq!(
-        router.standing_grants(),
-        [] as [permission_core::StandingGrant; 0]
-    );
+    assert!(router.standing_grants().is_empty());
 }
 
 fn helper_id(n: u64) -> provenance::HelperId {

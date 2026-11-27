@@ -91,7 +91,7 @@ fn no_file_is_the_proposed_settings() {
     let resolved = resolve(&AiSettings::default());
     assert_eq!(resolved.settings.policy, Policy::proposed());
     assert_eq!(resolved.settings.spend.warn_at, Permille(800));
-    assert_eq!(resolved.rejected, [] as [std::string::String; 0]);
+    assert!(resolved.rejected.is_empty());
 }
 
 #[test]
@@ -289,9 +289,9 @@ fn the_warn_line_is_the_rows_permille() {
         assert_eq!(resolved.rejected, vec![SPEND_WARN.to_owned()], "{bad}");
     }
     for edge in ["1", "1000"] {
-        assert_eq!(
-            resolve(&config(&format!("[ai.spend]\nwarn_permille = {edge}\n"))).rejected,
-            [] as [std::string::String; 0]
+        assert!(
+            (resolve(&config(&format!("[ai.spend]\nwarn_permille = {edge}\n"))).rejected)
+                .is_empty()
         );
     }
 }

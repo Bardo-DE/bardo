@@ -155,10 +155,7 @@ fn performs(rig: &Rig) -> Vec<CallRequest> {
 #[tokio::test]
 async fn an_edge_nobody_switched_on_lists_nothing_and_refuses_every_call() {
     let rig = rig(false).await;
-    assert_eq!(
-        rig.client.list_all_tools().await.expect("list"),
-        [] as [rmcp::model::Tool; 0]
-    );
+    assert!(rig.client.list_all_tools().await.expect("list").is_empty());
     let result = call(
         &rig,
         "mail__mail_thread_read",
@@ -296,7 +293,7 @@ async fn bad_arguments_and_unknown_tools_never_reach_the_router() {
         assert_eq!(result.is_error, Some(true), "{tool}");
         assert_eq!(text_of(&result), why, "{tool}");
     }
-    assert_eq!(performs(&rig), [] as [action_vocab::CallRequest; 0]);
+    assert!(performs(&rig).is_empty());
 }
 
 #[tokio::test]
@@ -360,20 +357,14 @@ async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
         std::fs::rename(&temp, home.path().join("bardo/actions/settings.toml")).expect("rename");
     };
     // No file: off.
-    assert_eq!(
-        rig.client.list_all_tools().await.expect("list"),
-        [] as [rmcp::model::Tool; 0]
-    );
+    assert!(rig.client.list_all_tools().await.expect("list").is_empty());
     // The person switches it on in the Settings app: the next request sees the tools.
     write("[agent.mcp]\nexpose = true\n");
     let tools = rig.client.list_all_tools().await.expect("list");
-    assert_ne!(tools, [] as [rmcp::model::Tool; 0]);
+    assert!(!tools.is_empty());
     // And off again: no tools, and a call is refused before the router is asked.
     write("[agent.mcp]\nexpose = false\n");
-    assert_eq!(
-        rig.client.list_all_tools().await.expect("list"),
-        [] as [rmcp::model::Tool; 0]
-    );
+    assert!(rig.client.list_all_tools().await.expect("list").is_empty());
     let result = call(
         &rig,
         "mail__mail_thread_read",
@@ -381,5 +372,5 @@ async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
     )
     .await;
     assert_eq!(text_of(&result), ToolError::Off.to_string());
-    assert_eq!(performs(&rig), [] as [action_vocab::CallRequest; 0]);
+    assert!(performs(&rig).is_empty());
 }

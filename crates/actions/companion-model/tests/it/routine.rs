@@ -180,7 +180,7 @@ fn a_due_time_fires_one_job_with_the_persons_words() {
 
     // The same time does not fire twice.
     let (_, fx) = tick(book, 8 * H + 30);
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
 }
 
 #[test]
@@ -194,7 +194,7 @@ fn a_time_missed_while_asleep_is_skipped_and_recorded() {
     );
     // The computer woke at ten.
     let (book, fx) = tick(book, 10 * H);
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
     let routine = book.routine(id).expect("routine");
     assert_eq!(outcomes(&book, id), [RunOutcome::Skipped]);
     assert_eq!(routine.runs[0].at, at(8 * H));
@@ -230,7 +230,7 @@ fn a_restart_after_the_time_skips_it_too() {
     let records = book.records();
     let back = RoutineBook::restore(records);
     let (back, fx) = tick(back, 9 * H);
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
     assert_eq!(outcomes(&back, id), [RunOutcome::Skipped]);
 }
 
@@ -273,12 +273,9 @@ fn three_runs_that_do_not_finish_pause_the_routine_and_say_so_once() {
         RoutineState::Paused(PauseWhy::Failed3)
     );
     // A paused routine does not run, and a timer for it is not wanted.
-    assert_eq!(
-        book.timers(),
-        [] as [companion_model::routine::TimerEntry; 0]
-    );
+    assert!(book.timers().is_empty());
     let (_, fx) = tick(book, 5 * DAY + 8 * H);
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
 }
 
 #[test]
@@ -337,7 +334,7 @@ fn an_event_starts_a_job_whose_goal_is_the_persons_words_and_whose_event_is_a_ha
 
     // Another kind of event does not start it.
     let (_, fx) = saw(book, "file.changed", 8, "work");
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
 }
 
 #[test]
@@ -346,7 +343,7 @@ fn a_job_ending_done_starts_what_waits_for_it_and_a_failure_does_not() {
     let (book, id) = made(RoutineBook::default(), &hid(2), after, Missed::Skip, 0);
 
     let (book, fx) = ended(book, 5, JobEnd::Failed(JobFault::OutOfSteps), 10);
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
     let (book, fx) = ended(book, 6, JobEnd::Done, 11);
     assert!(runs(&fx).is_empty(), "another job");
     let (book, fx) = ended(book, 5, JobEnd::Done, 12);
@@ -357,7 +354,7 @@ fn a_job_ending_done_starts_what_waits_for_it_and_a_failure_does_not() {
     assert!(book.awaited_jobs().is_empty(), "it has had its job's end");
     // The same end told again starts nothing more.
     let (_, fx) = ended(book, 5, JobEnd::Done, 13);
-    assert_eq!(runs(&fx), [] as [&companion_model::routine::RunRequest; 0]);
+    assert!(runs(&fx).is_empty());
 }
 
 #[test]
@@ -393,10 +390,7 @@ fn pause_resume_and_remove_move_the_book_and_its_records() {
     let (book, id) = made(RoutineBook::default(), &hid(1), eight(), Missed::Skip, 0);
     let (book, fx) = step(book, RoutineEvent::Pause(id));
     assert_eq!(fx.len(), 1);
-    assert_eq!(
-        book.timers(),
-        [] as [companion_model::routine::TimerEntry; 0]
-    );
+    assert!(book.timers().is_empty());
     // Resumed at nine, its next time is tomorrow's: the eight o'clock in between is not run.
     let (book, _) = step(
         book,

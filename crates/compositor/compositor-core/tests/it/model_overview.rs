@@ -167,12 +167,12 @@ fn a_pick_while_closed_or_leaving_does_nothing() {
     let (same, effects) = closed.clone().close_overview(Some(pick), at);
     assert_eq!(same.overview(), Overview::Closed);
     assert_eq!(same.focus(), closed.focus());
-    assert_eq!(effects, [] as [compositor_core::Effect; 0]);
+    assert!(effects.is_empty());
     let leaving = run_from(closed, vec![COMMAND, COMMAND]).model;
     let (again, effects) = leaving.clone().close_overview(Some(pick), at);
     assert_eq!(again.overview(), Overview::Leaving);
     assert_eq!(again.focus(), leaving.focus());
-    assert_eq!(effects, [] as [compositor_core::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 /// Window 1 on the desktop, window 2 full screen on a Space of its own; the desktop is shown.

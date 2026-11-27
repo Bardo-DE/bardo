@@ -140,7 +140,7 @@ async fn an_anchor_resumes_in_a_new_replica_and_an_expired_one_lists_again() {
     );
     let (relisted, _, _) = drain(&replica, Cursor::Start).await;
     assert_eq!(items(&relisted).len(), 9);
-    assert_eq!(tombstones(&relisted), [] as [sync_core::RemoteId; 0]);
+    assert!(tombstones(&relisted).is_empty());
 }
 
 #[tokio::test]
@@ -157,7 +157,7 @@ async fn a_move_is_the_same_item_at_a_new_path() {
     );
     let (changes, _, _) = drain(&replica, Cursor::At(anchor)).await;
     assert_eq!(id_at(&changes, "Archive/2026/a.txt"), a);
-    assert_eq!(tombstones(&changes), [] as [sync_core::RemoteId; 0]);
+    assert!(tombstones(&changes).is_empty());
     assert!(items(&changes).contains(&("Archive/2026".to_owned(), true)));
 }
 

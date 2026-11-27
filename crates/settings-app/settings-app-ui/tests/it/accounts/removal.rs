@@ -22,10 +22,7 @@ fn removing_an_account_asks_first_and_keeping_it_does_nothing() {
     settle_on_threads(&mut w.harness, "the question to go", |h| {
         !h.html().contains("Remove account Home cloud?")
     });
-    assert_eq!(
-        w.accountd.sets(),
-        [] as [(std::string::String, toml::Value); 0]
-    );
+    assert!(w.accountd.sets().is_empty());
     assert_eq!(w.accountd.accounts.lock().expect("accounts").len(), held);
 }
 

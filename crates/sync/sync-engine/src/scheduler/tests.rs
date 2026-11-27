@@ -246,10 +246,7 @@ fn wake_ups_within_the_window_are_batched_and_fire_at_the_latest() {
             (at(500), vec!["e"]),
         ]
     );
-    assert_eq!(
-        coalesce::<&str>(&[], 30),
-        [] as [(base_time::UnixSeconds, std::vec::Vec<&str>); 0]
-    );
+    assert!((coalesce::<&str>(&[], 30)).is_empty());
     // A zero window batches only identical times.
     let same = coalesce(&[("x", at(5)), ("y", at(5)), ("z", at(6))], 0);
     assert_eq!(same, vec![(at(5), vec!["x", "y"]), (at(6), vec!["z"])]);

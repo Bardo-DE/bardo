@@ -189,12 +189,9 @@ async fn a_time_that_came_while_asleep_is_skipped_and_recorded() {
     // The computer slept through eight o'clock and woke at ten.
     set(&hand, 10 * H);
     routines.tick().await;
-    assert_eq!(
-        host.log().posted,
-        [] as [companion_model::routine::RunRequest; 0]
-    );
+    assert!(host.log().posted.is_empty());
     assert_eq!(outcomes(&routines, id), [RunOutcome::Skipped]);
-    assert_eq!(host.log().awake, [] as [bool; 0]);
+    assert!(host.log().awake.is_empty());
 }
 
 #[tokio::test]
@@ -221,10 +218,7 @@ async fn a_time_that_passed_while_the_assistant_was_down_is_skipped_on_start() {
         .restore(&[SpaceId::parse("work").expect("space")])
         .await;
     again.tick().await;
-    assert_eq!(
-        host2.log().posted,
-        [] as [companion_model::routine::RunRequest; 0]
-    );
+    assert!(host2.log().posted.is_empty());
     assert_eq!(outcomes(&again, id), [RunOutcome::Skipped]);
 }
 
@@ -297,10 +291,7 @@ async fn a_routine_after_a_job_starts_when_that_job_is_done_and_not_when_it_fail
         .ends
         .insert(JobId(9), JobEnd::Failed(JobFault::Crashed));
     routines.tick().await;
-    assert_eq!(
-        host.log().posted,
-        [] as [companion_model::routine::RunRequest; 0]
-    );
+    assert!(host.log().posted.is_empty());
 
     host.log().ends.insert(JobId(9), JobEnd::Done);
     set(&hand, 20);
@@ -362,10 +353,7 @@ fn the_unit_directory_is_made_to_hold_exactly_the_wanted_units() {
     ]);
     assert_eq!(dir.install(&both).expect("install").len(), 4);
     // Nothing changed: nothing written.
-    assert_eq!(
-        dir.install(&both).expect("install"),
-        [] as [std::string::String; 0]
-    );
+    assert!(dir.install(&both).expect("install").is_empty());
     std::fs::write(dir.path().join("other.service"), "not ours").expect("other file");
     let one = units_of(&[TimerEntry {
         routine: RoutineId(1),

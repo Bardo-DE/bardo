@@ -216,7 +216,7 @@ fn a_server_that_lists_its_files_again_ends_the_hold_by_itself() {
     settle_on_threads(&mut w.harness, "the banner", |h| h.count(BANNER) == 1);
     w.rt.block_on(w.sync.heal(&w.sync_bus, "home/files"));
     settle_on_threads(&mut w.harness, "the banner to go", |h| h.count(BANNER) == 0);
-    assert_eq!(w.sync.confirmed(), [] as [std::string::String; 0]);
+    assert!(w.sync.confirmed().is_empty());
 }
 
 #[test]

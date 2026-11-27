@@ -299,7 +299,7 @@ async fn a_files_grant_on_a_graph_account_mirrors_the_app_folder_both_ways_throu
     // The relay authenticated every request; the credential accountd holds is nowhere.
     let want = format!("Bearer {BEARER}");
     let hits = rig.graph.hits();
-    assert_ne!(hits, [] as [account_fake_servers::Hit; 0]);
+    assert!(!hits.is_empty());
     assert!(
         hits.iter()
             .all(|h| h.authorization.as_deref() == Some(want.as_str()))
@@ -391,10 +391,7 @@ async fn a_revoked_grant_drops_the_dataset_keeps_the_files_and_a_removed_account
         Vec::<String>::new(),
         "the grant is gone"
     );
-    assert_eq!(
-        rig.supervisor.datasets(),
-        [] as [sync_driver::hub::DatasetName; 0]
-    );
+    assert!(rig.supervisor.datasets().is_empty());
     assert!(
         local(&rig, "keep.txt").exists(),
         "the files are the person's"

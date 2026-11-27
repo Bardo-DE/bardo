@@ -76,7 +76,7 @@ fn a_folder_outside_every_drive_asks_nothing() {
     let (browser, _) = Browser::new(home());
     let (browser, _) = browser.step(Input::Clouds(vec![drive(DriveState::Ready)]), at(0));
     let (_, effects) = browser.step(Input::Listed(home(), Ok(vec![file("a")])), at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -152,7 +152,7 @@ fn an_online_document_opens_its_address_and_is_never_downloaded() {
     let (browser, effects) = open(browser, "Plan.gdoc");
     assert_eq!(effects, vec![Effect::OpenUrl(url)]);
     let (_, effects) = browser.step(Input::DownloadNow, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -325,7 +325,7 @@ fn save_a_copy_asks_for_the_online_documents_of_the_selection_only() {
 
     let (browser, _) = open(with_documents(), "Notes.txt");
     let (_, effects) = browser.step(Input::SaveCopy, at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]

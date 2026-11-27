@@ -91,7 +91,7 @@ async fn an_always_from_the_sheet_is_a_grant_in_actions_service_store_used_audit
     )
     .await;
     assert_eq!(gone, IntentsReply::Done);
-    assert_eq!(rig.grants(), [] as [permission_core::StandingGrant; 0]);
+    assert!(rig.grants().is_empty());
 }
 
 #[tokio::test]

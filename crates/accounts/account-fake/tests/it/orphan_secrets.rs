@@ -63,10 +63,7 @@ async fn an_empty_registry_sweeps_nothing() {
     let audit = RecordingAudit::default();
     let clock = FixedClock::new(UnixSeconds(7));
     let swept = sweep_orphan_secrets(&secrets, &Registry::default(), &audit, &clock).await;
-    assert_eq!(swept, [] as [account_core::AccountId; 0]);
+    assert!(swept.is_empty());
     secrets.get(&key(&id)).await.unwrap();
-    assert_eq!(
-        audit.entries(),
-        [] as [account_service_core::audit::AuditEntry; 0]
-    );
+    assert!(audit.entries().is_empty());
 }

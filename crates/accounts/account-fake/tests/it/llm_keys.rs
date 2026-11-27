@@ -349,10 +349,7 @@ async fn a_permit_that_does_not_open_a_key_is_refused() {
 #[tokio::test]
 async fn an_account_that_is_not_an_own_server_has_no_server_key_and_lists_no_server() {
     let rig = rig(0).await;
-    assert_eq!(
-        rig.service.own_servers(),
-        [] as [account_core::OwnServerRow; 0]
-    );
+    assert!(rig.service.own_servers().is_empty());
     assert_eq!(
         rig.service
             .own_server_key(&llm_account().id)

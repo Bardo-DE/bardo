@@ -241,7 +241,7 @@ async fn a_folder_syncs_against_nextcloud_through_the_relay_and_status_shows_the
         .into_iter()
         .filter(|h| h.target.starts_with("/remote.php/dav"))
         .collect();
-    assert_ne!(dav, [] as [account_fake_servers::Hit; 0]);
+    assert!(!dav.is_empty());
     assert!(
         dav.iter()
             .all(|h| h.authorization.as_deref() == Some(want.as_str()))

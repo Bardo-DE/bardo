@@ -351,10 +351,7 @@ fn menu_track_steps() {
     let track: MenuTrack<u32> = MenuTrack::closed();
     let timing = MenuTiming::default();
     let (track, effects) = track.step(MenuTrackEvent::PressTitle(1), Stamp(0), &timing, &());
-    assert_ne!(
-        effects,
-        [] as [ui_components::stack::menu_track::types::MenuTrackEffect<u32>; 0]
-    );
+    assert!(!effects.is_empty());
 }
 
 /// Section 10, "Curves".

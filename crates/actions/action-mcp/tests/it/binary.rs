@@ -188,10 +188,7 @@ async fn with_no_configuration_the_edge_is_off_and_lists_nothing() {
     let (dir, bus, _actiond) = desk().await;
     let mut edge = spawn_as_the_unit(dir.path(), bus.address(), &[]);
     let client = client_over_stdio(&mut edge).await;
-    assert_eq!(
-        client.list_all_tools().await.expect("list"),
-        [] as [rmcp::model::Tool; 0]
-    );
+    assert!(client.list_all_tools().await.expect("list").is_empty());
     let result = read_thread(&client).await;
     assert_eq!(result.is_error, Some(true));
 }

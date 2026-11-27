@@ -68,7 +68,7 @@ async fn what_an_app_pushed_is_found_again_by_a_fresh_router() {
     assert_eq!(mode & 0o777, 0o600, "private to the person");
 
     let fresh = self::router();
-    assert_eq!(found(&fresh, "invoice"), [] as [std::string::String; 0]);
+    assert!(found(&fresh, "invoice").is_empty());
     store.restore(&fresh);
     assert_eq!(found(&fresh, "invoice"), ["t1"]);
 }
@@ -113,6 +113,6 @@ fn shipped_files_are_read_for_installed_apps_and_an_earlier_directory_wins() {
     );
     assert_eq!(found(&router, "mine"), ["p1"]);
     assert_eq!(found(&router, "wireless"), ["p1"]);
-    assert_eq!(found(&router, "system"), [] as [std::string::String; 0]);
-    assert_eq!(found(&router, "gone"), [] as [std::string::String; 0]);
+    assert!(found(&router, "system").is_empty());
+    assert!(found(&router, "gone").is_empty());
 }

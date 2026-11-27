@@ -83,6 +83,6 @@ fn naming_a_page_keeps_only_that_pages_keys() {
     };
     assert_eq!(titles(Some(&Page::Dock)), ["Magnification"]);
     assert_eq!(titles(Some(&Page::Appearance)), ["First"]);
-    assert_eq!(titles(Some(&Page::Power)), [] as [std::string::String; 0]);
+    assert!(titles(Some(&Page::Power)).is_empty());
     assert_eq!(titles(None), ["First", "Magnification"]);
 }

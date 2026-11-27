@@ -97,7 +97,7 @@ fn a_manifest_without_relations_does_not_write_the_field() {
     let json = serde_json::to_string(&thread_kind(false)).expect("json");
     assert!(!json.contains("relations"), "{json}");
     let back: EntityDecl = serde_json::from_str(&json).expect("an older file parses");
-    assert_eq!(back.relations, [] as [action_manifest::RelationDecl; 0]);
+    assert!(back.relations.is_empty());
 }
 
 #[test]

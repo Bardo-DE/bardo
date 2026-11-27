@@ -83,7 +83,7 @@ async fn an_external_agents_reads_run_unasked_in_every_app_and_leave_no_grant() 
         .await
         .expect("another program's read runs too");
     assert!(w.sheets().is_empty(), "{:?}", w.sheets());
-    assert_eq!(grants_of(&w), [] as [permission_core::StandingGrant; 0]);
+    assert!(grants_of(&w).is_empty());
     assert_eq!(w.used(), 0);
 }
 
@@ -107,7 +107,7 @@ async fn an_agent_is_offered_no_read_grant_on_a_write_or_a_destructive_action() 
             sheet.always
         );
     }
-    assert_eq!(grants_of(&w), [] as [permission_core::StandingGrant; 0]);
+    assert!(grants_of(&w).is_empty());
 }
 
 #[tokio::test]
@@ -118,7 +118,7 @@ async fn the_agent_cannot_create_a_grant_only_the_persons_answer_does() {
     w.call(&claude, call("mail.thread.archive", &["t2"], vec![]))
         .await
         .expect_err("dismissed");
-    assert_eq!(grants_of(&w), [] as [permission_core::StandingGrant; 0]);
+    assert!(grants_of(&w).is_empty());
     // The host's role cannot reach the Control surface that lists and revokes grants.
     let reply = ask(&w.router, &host(), IntentsRequest::ControlStandingGrants).await;
     assert_eq!(reply, IntentsReply::Refused(WireRefusal::NotAllowed));

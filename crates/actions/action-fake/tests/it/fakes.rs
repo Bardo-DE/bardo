@@ -89,10 +89,7 @@ fn fake_router_installs_the_fixture_and_the_shipped_manifests() {
     let router = fake_router(AgentConfig::default()).expect("router");
     let state = router.state.lock().expect("lock");
     assert_eq!(state.registry.all().count(), 5);
-    assert_eq!(
-        state.registry.unresolved(),
-        [] as [action_manifest::ManifestError; 0]
-    );
+    assert!(state.registry.unresolved().is_empty());
 }
 
 #[tokio::test]
@@ -158,7 +155,7 @@ async fn a_missing_thread_is_not_found_and_delete_is_not_undoable() {
 async fn search_finds_subjects_and_suggest_finds_contacts() {
     let app = mail();
     assert_eq!(app.search("Receipts").await.len(), 1);
-    assert_eq!(app.search("zzz").await, [] as [action_core::Hit; 0]);
+    assert!(app.search("zzz").await.is_empty());
     let ask = SuggestAsk {
         action: ActionRef {
             app: AppName::parse("org.bardo.Mail").expect("app"),
@@ -573,7 +570,7 @@ fn clearing_the_grants_drops_the_standing_ones_too() {
     ));
     assert_eq!(grants.standing().len(), 1);
     grants.clear();
-    assert_eq!(grants.standing(), [] as [permission_core::StandingGrant; 0]);
+    assert!(grants.standing().is_empty());
 }
 
 #[test]

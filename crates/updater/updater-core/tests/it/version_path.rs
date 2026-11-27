@@ -89,8 +89,5 @@ fn bundle_paths_table() {
 fn ancestors_are_listed_shortest_first() {
     let path = BundlePath::parse("a/b/c").expect("path");
     assert_eq!(path.ancestors(), vec!["a", "a/b"]);
-    assert_eq!(
-        BundlePath::parse("a").expect("path").ancestors(),
-        [] as [&str; 0]
-    );
+    assert!(BundlePath::parse("a").expect("path").ancestors().is_empty());
 }

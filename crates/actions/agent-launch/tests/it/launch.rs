@@ -299,8 +299,8 @@ async fn a_program_that_is_not_listed_starts_nothing_and_asks_nothing() {
         .await
         .expect_err("not listed");
     assert!(matches!(err, SpawnError::NotAllowed), "{err}");
-    assert_eq!(rig.accounts.calls(), [] as [agent_launch::fake::Call; 0]);
-    assert_eq!(rig.procs.runs(), [] as [sandbox::AgentRun; 0]);
+    assert!(rig.accounts.calls().is_empty());
+    assert!(rig.procs.runs().is_empty());
 }
 
 #[tokio::test]
@@ -321,7 +321,7 @@ async fn a_failure_part_way_undoes_what_was_done() {
             Call::End("acp-s-1".into())
         ]
     );
-    assert_eq!(rig.procs.runs(), [] as [sandbox::AgentRun; 0]);
+    assert!(rig.procs.runs().is_empty());
 
     // accountd is not there: no process, and the failed begin is all that was tried.
     let mut rig = rig_down();

@@ -256,14 +256,11 @@ fn every_warning_rule_has_both_cases() {
 #[test]
 fn a_warning_does_not_fail() {
     let css = ".row { cursor: pointer; font-size: var(--fs-pico); }";
-    assert_eq!(stylesheet(css, &strict()), [] as [ui_lint::Offence; 0]);
+    assert!(stylesheet(css, &strict()).is_empty());
     assert_eq!(warnings(css, &strict()).len(), 2);
     assert_clean(css, &strict());
     let html = "<button class=\"ds-button\"></button>";
-    assert_eq!(
-        markup(html, ".ds-button{}", &strict()),
-        [] as [ui_lint::Offence; 0]
-    );
+    assert!(markup(html, ".ds-button{}", &strict()).is_empty());
     assert_eq!(markup_warnings(html, &strict()).len(), 1);
 }
 
@@ -279,10 +276,7 @@ fn an_exception_covers_a_warning() {
         exceptions: EXCEPTIONS,
         ..strict()
     };
-    assert_eq!(
-        warnings(".row { cursor: pointer; }", &config),
-        [] as [ui_lint::Offence; 0]
-    );
+    assert!(warnings(".row { cursor: pointer; }", &config).is_empty());
     assert_clean(".row { cursor: pointer; }", &config);
 }
 

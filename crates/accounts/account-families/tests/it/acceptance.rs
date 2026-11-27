@@ -344,10 +344,7 @@ async fn add_and_allow_grants_nothing_when_the_new_account_does_not_meet_the_nee
         )
         .await;
     added(reply);
-    assert_eq!(
-        service.registry().grants,
-        [] as [account_core::consent::Grant; 0]
-    );
+    assert!(service.registry().grants.is_empty());
 }
 
 #[tokio::test]
@@ -368,10 +365,7 @@ async fn removing_a_nextcloud_account_deletes_its_app_password_at_the_server_the
         !nextcloud.app_passwords().contains(&password),
         "the server no longer honours the app password"
     );
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     assert_eq!(kept.secrets.password(&id).await, None);
 }
 

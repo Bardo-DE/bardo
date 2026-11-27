@@ -80,7 +80,7 @@ async fn search_degrades_to_lexical() {
         .search(&query("receipts"), &FakeEmbedder::unavailable())
         .await
         .expect("search never fails for a busy embedder");
-    assert_ne!(hits, [] as [memory_store::Fused; 0]);
+    assert!(!hits.is_empty());
     assert!(
         hits.iter()
             .all(|h| matches!(h.why, RecallWhy::Lexical { .. }))
@@ -103,10 +103,10 @@ async fn remove_drops_from_both_indexes() {
         .expect("search");
     assert!(hits.iter().all(|h| h.id != id("f:2")));
     let (fts, vectors) = index.parts();
-    assert_eq!(
+    assert!(
         fts.search("receipts", TopK(5), &Allow::Everything)
-            .expect("fts"),
-        [] as [memory_recall::Ranked; 0]
+            .expect("fts")
+            .is_empty()
     );
     assert!(
         vectors

@@ -602,10 +602,7 @@ async fn the_reach_the_person_set_on_the_card_is_its_consent_and_nothing_beyond_
     )
     .await
     .expect("a look inside the reach runs");
-    assert_eq!(
-        router.seams.confirmer.requests(),
-        [] as [action_core::ConfirmRequest; 0]
-    );
+    assert!(router.seams.confirmer.requests().is_empty());
     // Beyond the reach it asks as it always did.
     let beyond = perform_in(&router, &job.session, archive("t2"))
         .await
@@ -645,10 +642,7 @@ async fn words_a_helper_writes_inside_its_reach_ask_nothing() {
     perform_in(&router, &job.session, draft)
         .await
         .expect("a draft inside the reach runs");
-    assert_eq!(
-        router.seams.confirmer.requests(),
-        [] as [action_core::ConfirmRequest; 0]
-    );
+    assert!(router.seams.confirmer.requests().is_empty());
 }
 
 #[tokio::test]
@@ -689,10 +683,7 @@ async fn handing_a_job_on_is_inside_every_helpers_reach() {
         !matches!(result, Err(CallRefusal::Unconfirmed(_))),
         "{result:?}"
     );
-    assert_eq!(
-        router.seams.confirmer.requests(),
-        [] as [action_core::ConfirmRequest; 0]
-    );
+    assert!(router.seams.confirmer.requests().is_empty());
 }
 
 #[tokio::test]

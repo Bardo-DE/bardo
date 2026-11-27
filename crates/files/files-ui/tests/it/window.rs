@@ -343,7 +343,7 @@ fn emptying_the_trash_asks_first_and_cancel_keeps_everything() {
     settle_until(&mut harness, |h| h.html().contains("permanently erase"));
     press_at(&mut harness, FIRST_BUTTON);
     settle_until(&mut harness, |h| h.html().contains("Trash is empty"));
-    assert_eq!(trash.list().unwrap(), [] as [files_core::TrashedItem; 0]);
+    assert!(trash.list().unwrap().is_empty());
 }
 
 #[test]

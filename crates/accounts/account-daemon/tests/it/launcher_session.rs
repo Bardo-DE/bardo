@@ -185,8 +185,5 @@ async fn a_key_asked_for_an_unregistered_program_is_refused_before_a_sheet() {
         ),
         fault(LauncherWireError::NotRegistered)
     );
-    assert_eq!(
-        rig.sheets.asked(),
-        [] as [account_core::consent::ConsentAsk; 0]
-    );
+    assert!(rig.sheets.asked().is_empty());
 }

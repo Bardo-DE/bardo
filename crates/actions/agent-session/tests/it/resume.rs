@@ -140,7 +140,7 @@ fn an_untrusted_handle_with_no_taint_before_it_is_a_fault_and_tainted() {
 fn a_trusted_handle_needs_no_taint() {
     let p = plan(&[SessionEntry::Opened(opening()), trusted_handle(1)]);
     assert!(!p.taint);
-    assert_eq!(p.faults, [] as [agent_session::ResumeFault; 0]);
+    assert!(p.faults.is_empty());
 }
 
 #[test]
@@ -211,7 +211,7 @@ fn a_summary_is_a_note_on_top_of_a_whole_history() {
     assert_eq!(p.live_history(), &p.history[1..]);
     let summary = p.summary.expect("summary");
     assert_eq!(summary.integrity, provenance::Integrity::Trusted);
-    assert_eq!(p.faults, [] as [agent_session::ResumeFault; 0]);
+    assert!(p.faults.is_empty());
 }
 
 #[test]

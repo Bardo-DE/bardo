@@ -174,10 +174,7 @@ async fn a_session_scope_the_ask_did_not_offer_makes_no_grant() {
             .await,
         AccountsReply::Refused(Refusal::Dismissed)
     );
-    assert_eq!(
-        scopes(&service),
-        [] as [account_core::consent::GrantScope; 0]
-    );
+    assert!(scopes(&service).is_empty());
 }
 
 #[tokio::test]
@@ -225,10 +222,7 @@ async fn ending_a_session_removes_its_grants_alone_and_audits_each() {
     assert_eq!(audited, [(before[0].id.clone(), one, Some(agent()))]);
 
     // Ending a session nobody holds ends nothing; no session names every one of them.
-    assert_eq!(
-        service.end_session_grants(Some(&session("sess-9"))).await,
-        [] as [account_core::GrantId; 0]
-    );
+    assert!((service.end_session_grants(Some(&session("sess-9"))).await).is_empty());
     assert_eq!(service.end_session_grants(None).await.len(), 1);
     assert_eq!(scopes(&service), [GrantScope::Always]);
 }
@@ -241,10 +235,7 @@ async fn add_account_in_a_session_ask_is_dismissed_not_granted_for_good() {
         ask_for_agent(&service, Some(&sess)).await,
         AccountsReply::Refused(Refusal::Dismissed)
     );
-    assert_eq!(
-        scopes(&service),
-        [] as [account_core::consent::GrantScope; 0]
-    );
+    assert!(scopes(&service).is_empty());
 }
 
 #[test]
@@ -283,10 +274,7 @@ fn a_session_owns_exactly_the_grants_scoped_to_it() {
     assert_eq!(ids(Some(&one)), ["g1"]);
     assert_eq!(ids(Some(&two)), ["g2"]);
     assert_eq!(ids(None), ["g1", "g2"]);
-    assert_eq!(
-        ids(Some(&session("sess-3"))),
-        [] as [std::string::String; 0]
-    );
+    assert!((ids(Some(&session("sess-3")))).is_empty());
 }
 
 #[test]

@@ -1317,7 +1317,7 @@ mod routed {
             .await
             .unwrap_or_else(|e| panic!("{e:?}"));
         assert_eq!(asks(&router), 0);
-        assert_eq!(done(&router), [] as [std::string::String; 0]);
+        assert!(done(&router).is_empty());
 
         // A verified, declared, undoable command: delegated, gated as the app's own action.
         run(&router, call("21"))

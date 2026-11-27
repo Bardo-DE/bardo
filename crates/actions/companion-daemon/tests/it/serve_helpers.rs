@@ -61,7 +61,7 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
     let mut changed = helpers.receive_changed().await.expect("signal");
     let none: HelpersView =
         serde_json::from_str(&helpers.list(0).await.expect("list")).expect("view");
-    assert_eq!(none.helpers, [] as [companion_wire::HelperLine; 0]);
+    assert!(none.helpers.is_empty());
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),
         role: Role::parse("Looks things up.").expect("role"),
@@ -177,7 +177,7 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
     let helpers = CompanionHelpers2Proxy::new(&shell).await.expect("proxy");
     let none: HelpersView =
         serde_json::from_str(&helpers.list(0).await.expect("list")).expect("view");
-    assert_eq!(none.helpers, [] as [companion_wire::HelperLine; 0]);
+    assert!(none.helpers.is_empty());
 
     // A helper that runs no app has nothing to sign in to or out of, and says so in words.
     let form = HelperForm {
@@ -221,7 +221,7 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
     let terminals = CompanionTerminalsProxy::new(&shell).await.expect("proxy");
     let listed: Vec<TerminalSession> =
         serde_json::from_str(&terminals.sessions().await.expect("sessions")).expect("list");
-    assert_eq!(listed, [] as [companion_wire::TerminalSession; 0]);
+    assert!(listed.is_empty());
     let gone: BroughtBack =
         serde_json::from_str(&terminals.bring_back("s-404").await.expect("bring back"))
             .expect("reply");
@@ -236,7 +236,7 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
     // The routines reach their desk; one that is not there is an error, not a guess.
     let listed: RoutinesView =
         serde_json::from_str(&helpers.routines().await.expect("routines")).expect("view");
-    assert_eq!(listed.routines, [] as [companion_wire::RoutineLine; 0]);
+    assert!(listed.routines.is_empty());
     helpers.routine_card("r-1").await.unwrap_err();
     helpers.routine_card("not a routine").await.unwrap_err();
     helpers.pause_routine("r-1").await.expect("pause");

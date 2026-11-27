@@ -139,9 +139,6 @@ fn reset_forgets_standing_grants_and_link_state() {
         .expect("lock")
         .insert(mail, Answering::Absent);
     harness.reset();
-    assert_eq!(
-        seams.grants.standing(),
-        [] as [permission_core::StandingGrant; 0]
-    );
+    assert!(seams.grants.standing().is_empty());
     assert!(seams.link.answering.lock().expect("lock").is_empty());
 }

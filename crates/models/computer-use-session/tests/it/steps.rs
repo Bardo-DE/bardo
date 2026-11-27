@@ -147,7 +147,7 @@ fn holo_declares_ask_and_qwen_does_not_and_every_action_is_described() {
 fn the_text_dialect_has_no_tools_and_the_goal_in_its_system_prompt() {
     let s = session(UI_TARS, ModelSpace::Image, 3, 1);
     let request = s.request(&obs(0), &map(ModelSpace::Image), frame("now"));
-    assert_eq!(request.tools, [] as [model_provider::ToolSpec; 0]);
+    assert!(request.tools.is_empty());
     let Part::Text(system) = &request.messages[0].parts[0] else {
         panic!("system text")
     };
@@ -221,7 +221,7 @@ fn a_click_maps_from_the_grid_into_the_window() {
     let mut s = s;
     let outcome = s.absorb_for(&sent, calls(&[&click_at(500, 250)]), &map(grid()));
     let (actions, dropped) = actions(outcome);
-    assert_eq!(dropped, [] as [computer_use_parse::Dropped; 0]);
+    assert!(dropped.is_empty());
     let [
         ComputerUseAction::Click {
             at, button, count, ..
@@ -260,10 +260,7 @@ fn a_point_outside_the_frame_becomes_dropped_never_clamped() {
         .clone()
         .absorb_for(&sent, calls(&[&click_at(1000, 10)]), &m);
     let (kept, dropped) = actions(outcome);
-    assert_eq!(
-        kept,
-        [] as [computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>; 0]
-    );
+    assert!(kept.is_empty());
     assert_eq!(dropped[0].reason, DropReason::OutOfFrame);
 
     // With a repair left the model is told, in words that name the reason, to try again.
@@ -505,7 +502,7 @@ fn absorb_without_the_request_parses_maps_and_repairs_without_a_frame() {
     let StepOutcome::Repair(repair) = outcome else {
         panic!("a repair")
     };
-    assert_eq!(images(&repair), [] as [model_provider::Part; 0]);
+    assert!(images(&repair).is_empty());
     let outcome = s.absorb(calls(&[&click_at(500, 250)]), &m);
     assert_eq!(actions(outcome).0.len(), 1);
     // The step was remembered, without a frame.

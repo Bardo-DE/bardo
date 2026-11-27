@@ -132,8 +132,5 @@ fn a_resumed_session_starts_clean() {
     ]);
     assert_ne!(tripped, Breaker::new());
     assert_eq!(Breaker::new().consecutive, Count(0));
-    assert_eq!(
-        Breaker::default().recent,
-        [] as [action_review::DecisionMark; 0]
-    );
+    assert!(Breaker::default().recent.is_empty());
 }

@@ -99,7 +99,7 @@ fn a_caller_asking_for_another_programs_device_is_refused_and_cut() {
         "{err:?}"
     );
     thread.join().expect("the service closed the connection");
-    assert_eq!(kernel.log().specs, [] as [input_broker_wire::DeviceSpec; 0]);
+    assert!(kernel.log().specs.is_empty());
 }
 
 #[test]
@@ -156,7 +156,7 @@ fn a_peer_that_cannot_be_identified_is_refused_before_anything_else() {
         "{err:?}"
     );
     thread.join().expect("ended");
-    assert_eq!(kernel.log().specs, [] as [input_broker_wire::DeviceSpec; 0]);
+    assert!(kernel.log().specs.is_empty());
 }
 
 /// A raw socket pair for the tests that send what the client never would.

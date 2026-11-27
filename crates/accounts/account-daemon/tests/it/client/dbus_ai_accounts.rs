@@ -168,10 +168,7 @@ async fn the_broker_reads_verdicts_accounts_and_a_key_once_where_the_permit_is_o
     let listed = accounts.accounts().await.expect("accounts");
     assert_eq!(listed.len(), 1);
     assert_eq!(listed[0].account, llm_account().id);
-    assert_eq!(
-        accounts.servers().await.expect("servers"),
-        [] as [account_core::OwnServerRow; 0]
-    );
+    assert!(accounts.servers().await.expect("servers").is_empty());
     assert_eq!(
         accounts
             .server_key(&AccountId::parse("nobody").expect("id"))

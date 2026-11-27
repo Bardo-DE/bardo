@@ -369,7 +369,7 @@ async fn the_bearer_is_sent_from_the_key_file_and_without_it_the_engine_says_401
         turn(&without, DataClass::Mail, "hi").await,
         refused(InferRefusedError::Unavailable)
     );
-    assert_eq!(lab.chats(), [] as [serde_json::Value; 0]);
+    assert!(lab.chats().is_empty());
 
     // The key file, mode 0600: the probe and the chat both carry it.
     let key_file = dir.key_file(&format!("{KEY}\n"), 0o600);
@@ -468,10 +468,7 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
 
     // It never counts as cloud: local-only stays on throughout, and no cloud spend is recorded.
     assert!(world.served.settings().policy.local_only);
-    assert_eq!(
-        world.served.usage_of(&hosting::rig::test_app()),
-        [] as [(std::string::String, inference_settings::UsageValue); 0]
-    );
+    assert!(world.served.usage_of(&hosting::rig::test_app()).is_empty());
 }
 
 #[tokio::test]

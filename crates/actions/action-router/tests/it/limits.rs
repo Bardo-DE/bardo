@@ -38,10 +38,7 @@ async fn always_ask_beats_the_persons_always_allow_and_says_why() {
     let router = router();
     ready(&router).await;
     perform(&router, archive()).await.expect("allowed outright");
-    assert_eq!(
-        router.seams.confirmer.requests(),
-        [] as [action_core::ConfirmRequest; 0]
-    );
+    assert!(router.seams.confirmer.requests().is_empty());
     let ask = on_mail(LimitLevel::AlwaysAsk, LimitMaker::Person);
     router.seams.grants.add_limit(ask.clone());
     perform(&router, archive())
@@ -91,10 +88,7 @@ async fn a_never_answer_refuses_and_is_kept() {
     let other = call("mail.thread.archive", &["t2"], vec![]);
     let again = perform(&router, other).await.expect_err("refused");
     assert_eq!(again, CallRefusal::Denied(DenyCode::Never));
-    assert_eq!(
-        router.seams.confirmer.requests(),
-        [] as [action_core::ConfirmRequest; 0]
-    );
+    assert!(router.seams.confirmer.requests().is_empty());
 }
 
 #[tokio::test]
@@ -180,10 +174,7 @@ async fn the_assistant_can_tighten_but_never_loosen() {
     // "allow" is not a level the action reads.
     let loosened = tighten(&router, &opened.session, &[("level", choice("allow"))]);
     assert!(loosened.is_err(), "{loosened:?}");
-    assert_eq!(
-        router.seams.grants.limits(),
-        [] as [permission_core::Limit; 0]
-    );
+    assert!(router.seams.grants.limits().is_empty());
     assert_eq!(router.seams.grants.rule_texts().assistant, "");
     // A quote the person did not say is dropped; one they said is kept.
     tighten(
@@ -260,10 +251,7 @@ async fn an_ask_first_rule_makes_the_next_call_ask_and_removing_it_by_id_restore
     assert!(matches!(shown[0].always, AlwaysOffer::Withheld(_)));
     // Undo is the one revoke path: the rule leaves the file and the next call runs unasked.
     assert!(router.revoke_standing(&ids[0]));
-    assert_eq!(
-        rule_ids(&router.seams.grants.rule_texts().assistant),
-        [] as [permission_core::StandingGrantId; 0]
-    );
+    assert!(rule_ids(&router.seams.grants.rule_texts().assistant).is_empty());
     perform(&router, call("mail.thread.archive", &["t2"], vec![]))
         .await
         .expect("allowed again");

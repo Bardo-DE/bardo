@@ -218,14 +218,8 @@ fn every_step_of_a_job_runs_on_the_one_connection_the_line_hands_out() {
     let (line, display) = display_behind_a_line();
     let job = Job::new(&display);
     assert_eq!(line.asked(), 0, "nothing is asked before the first step");
-    assert_eq!(
-        job.output_facts().expect("the outputs"),
-        [] as [portal_core::OutputFacts; 0]
-    );
-    assert_eq!(
-        job.live_sources().expect("the sources"),
-        [] as [portal_core::CastSource; 0]
-    );
+    assert!(job.output_facts().expect("the outputs").is_empty());
+    assert!(job.live_sources().expect("the sources").is_empty());
     for name in ["A", "B", "C"] {
         let source = CastSource::Output(name.to_owned());
         assert!(matches!(
@@ -245,10 +239,7 @@ fn a_share_of_two_streams_asks_the_line_once() {
 
     let (line, display) = display_behind_a_line();
     let job = Job::new(&display);
-    assert_eq!(
-        job.live_sources().expect("the sources"),
-        [] as [portal_core::CastSource; 0]
-    );
+    assert!(job.live_sources().expect("the sources").is_empty());
     let sources = [
         CastSource::Output("A".to_owned()),
         CastSource::Window("w".to_owned()),

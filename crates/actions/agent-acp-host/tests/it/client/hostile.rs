@@ -237,7 +237,7 @@ async fn tool_results_the_agent_claims_are_recorded_and_trusted_for_nothing() {
         .collect();
     assert_eq!(names, ["acpagent.reported.execute"]);
     assert!(rig.sandbox.started().is_empty(), "nothing ran");
-    assert_eq!(rig.sheets(), [] as [action_core::ConfirmRequest; 0]);
+    assert!(rig.sheets().is_empty());
     assert!(
         rig.host.backend().tainted(),
         "what its own tool brought in is untrusted"

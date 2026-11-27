@@ -110,7 +110,7 @@ async fn end_to_end_scripted_run_done() {
             status: ReportStatus::Done
         }
     );
-    assert_eq!(sup.runs(), [] as [provenance::RunId; 0]);
+    assert!(sup.runs().is_empty());
     assert_eq!(sup.lease_book(), computer_use_run::LeaseBook::default());
     assert_eq!(sup.started(), 1);
 }
@@ -409,7 +409,7 @@ async fn kill_chord_finishes_all_runs() {
             "{id}"
         );
     }
-    assert_eq!(sup.runs(), [] as [provenance::RunId; 0]);
+    assert!(sup.runs().is_empty());
     assert_eq!(sup.lease_book(), computer_use_run::LeaseBook::default());
 }
 
@@ -595,6 +595,6 @@ async fn a_consent_nobody_answers_ends_the_run_blocked_and_frees_the_window() {
         ComputerUseOutcome::Blocked(computer_use_bus::BlockedOn::ConsentDenied)
     );
     assert!(matches!(end.report, ReportDelivery::Sent(_)));
-    assert_eq!(sup.runs(), [] as [provenance::RunId; 0]);
+    assert!(sup.runs().is_empty());
     assert_eq!(sup.lease_book(), computer_use_run::LeaseBook::default());
 }

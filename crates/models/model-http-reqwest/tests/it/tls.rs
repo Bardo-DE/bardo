@@ -252,7 +252,7 @@ async fn a_server_signed_by_another_ca_is_a_tls_error() {
     let mut seen = Seen::default();
     let result = run(endpoint("localhost", server.port), other.roots(), &mut seen).await;
     assert_eq!(result, Err(HttpError::Tls));
-    assert_eq!(seen.chunks, [] as [std::vec::Vec<u8>; 0]);
+    assert!(seen.chunks.is_empty());
     assert_eq!(server.seen.lock().unwrap().request, "");
 }
 

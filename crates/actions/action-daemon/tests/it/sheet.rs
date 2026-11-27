@@ -160,7 +160,7 @@ async fn a_name_nobody_trusted_is_never_asked_and_never_allows() {
     desk.sheet
         .cancel(&ConfirmId::parse("c-1").expect("id"))
         .await;
-    assert_eq!(impostor.cancelled(), [] as [std::string::String; 0]);
+    assert!(impostor.cancelled().is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -281,7 +281,7 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
         off.sheet.confirm(hosted("c-1")).await,
         ConfirmAnswer::Ended(ConfirmEnd::Expired)
     );
-    assert_eq!(host.shown(), [] as [action_core::ConfirmRequest; 0]);
+    assert!(host.shown().is_empty());
     // The setting is on and nobody owns the name.
     let on = gated_desk(true).await;
     let connection = on.bus.connect().await;

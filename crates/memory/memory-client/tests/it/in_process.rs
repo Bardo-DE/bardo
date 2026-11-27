@@ -83,9 +83,12 @@ async fn a_space_is_written_recalled_and_forgotten_in_process() {
         .expect("plan");
     let report = shell.forget(plan.token.clone()).await.expect("forget");
     assert_eq!(report.counts.index_docs, plan.index_docs);
-    assert_eq!(
-        reader.search(query("budget")).await.expect("search"),
-        [] as [memory_core::RecallHit; 0]
+    assert!(
+        reader
+            .search(query("budget"))
+            .await
+            .expect("search")
+            .is_empty()
     );
 }
 

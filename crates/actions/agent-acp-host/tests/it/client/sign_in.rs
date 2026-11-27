@@ -95,7 +95,7 @@ async fn an_agent_that_advertises_nothing_refuses_a_configured_method() {
 #[tokio::test]
 async fn an_agent_that_needs_no_sign_in_is_not_sent_one() {
     let (rig, _files) = Box::pin(started(Setup::default())).await;
-    assert_eq!(rig.agent.authenticated(), [] as [serde_json::Value; 0]);
+    assert!(rig.agent.authenticated().is_empty());
 }
 
 #[test]

@@ -213,7 +213,7 @@ mod tests {
     fn a_fixed_file_replaces_the_kept_copy_and_clears_the_problems() {
         let before = good();
         let broken = settle(&before, text("???\n"));
-        assert_ne!(broken.problems, [] as [key_remap_proto::KeymapProblem; 0]);
+        assert!(!broken.problems.is_empty());
         let fixed = settle(&broken, text("paste = Primary+Alt+V\n"));
         assert_eq!(fixed.problems, []);
         assert_ne!(fixed.overrides, before.overrides);

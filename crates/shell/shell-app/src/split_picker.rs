@@ -95,7 +95,7 @@ mod tests {
             (offer.first.as_str(), offer.side, offer.output.as_str()),
             ("w1", SplitSide::Right, "")
         );
-        assert_eq!(offer.cards, [] as [shell_model::desktop::SplitCard; 0]);
+        assert!(offer.cards.is_empty());
         apply(&link, &view, ShellNote::SplitChoiceEnd("w1".to_owned()));
         assert_eq!(link.latest(), None);
     }

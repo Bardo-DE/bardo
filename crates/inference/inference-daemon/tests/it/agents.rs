@@ -153,14 +153,8 @@ async fn an_anthropic_chat_with_a_tool_call_and_result_streams_through_with_the_
         !lines.contains(KEY_ANTHROPIC) && !lines.contains(&endpoint.token),
         "{lines}"
     );
-    assert_eq!(
-        files_holding(&world.scratch, KEY_ANTHROPIC),
-        [] as [std::path::PathBuf; 0]
-    );
-    assert_eq!(
-        files_holding(&world.scratch, &endpoint.token),
-        [] as [std::path::PathBuf; 0]
-    );
+    assert!(files_holding(&world.scratch, KEY_ANTHROPIC).is_empty());
+    assert!(files_holding(&world.scratch, &endpoint.token).is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -283,7 +277,7 @@ async fn a_wrong_or_missing_token_is_401_in_the_protocols_own_error_shape() {
         provider_requests(&world).is_empty(),
         "nothing reached the provider"
     );
-    assert_eq!(world.audit.entries(), [] as [inference_core::AuditEntry; 0]);
+    assert!(world.audit.entries().is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -46,6 +46,6 @@ fn it_refuses_to_serve_while_the_setting_is_off_or_missing() {
 fn switched_on_it_serves_through_the_bus_and_stops_when_there_is_none() {
     let out = run(Some("[agent.acp]\nexpose = true\n"));
     assert_eq!(out.status.code(), Some(1));
-    assert_eq!(out.stdout, [] as [u8; 0]);
+    assert!(out.stdout.is_empty());
     assert!(String::from_utf8_lossy(&out.stderr).contains("bus"));
 }

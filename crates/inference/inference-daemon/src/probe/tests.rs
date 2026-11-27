@@ -51,7 +51,7 @@ fn the_probe_table_names_ports_and_a_runtime_with_none_is_not_probed() {
     let config: ProbeConfig =
         toml::from_str("ollama = [31000]\nllama_cpp = []\nevery_s = 3\n").expect("parses");
     assert_eq!(config.ports(Runtime::Ollama), [31_000]);
-    assert_eq!(config.ports(Runtime::LlamaCpp), [] as [u16; 0]);
+    assert!(config.ports(Runtime::LlamaCpp).is_empty());
     // What the table does not say is the default.
     assert_eq!(config.ports(Runtime::LmStudio), [1234]);
     assert_eq!(config.base(), Duration::from_secs(3));

@@ -72,7 +72,7 @@ fn the_preview_follows_the_arrow_keys_and_is_asked_for_once_per_item() {
     // At the last row the cursor stays, and nothing new is asked for.
     let (browser, effects) = run(browser, vec![down]);
     assert_eq!(shown(&browser), Some("b".to_owned()));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(browser.quick_item(), Some(item("b")));
 }
 
@@ -93,11 +93,11 @@ fn quick_look_and_get_info_do_not_open_in_the_trash() {
     let (browser, _) = browser.step(Input::Listed(Location::Trash, Ok(vec![file("a")])), at(0));
     let (browser, effects) = run(browser, vec![click("a"), Input::QuickLook]);
     assert_eq!(browser.quick_look(), None);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     let (fresh, _) = Browser::new(Location::Trash);
     let (fresh, effects) = fresh.step(Input::GetInfo, at(0));
     assert_eq!(fresh.info(), &InfoView::Closed);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]
@@ -123,7 +123,7 @@ fn get_info_shows_what_was_read_and_ignores_a_stale_answer() {
         .step(Input::InfoRead(item("b"), Ok(info_of("b"))), at(0));
     assert_eq!(stale.info(), &InfoView::Loading(item("a")));
     let (browser, effects) = browser.step(Input::InfoRead(item("a"), Ok(info_of("a"))), at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(browser.info(), &InfoView::Shown(info_of("a")));
     let (browser, _) = browser.step(Input::CloseInfo, at(0));
     assert_eq!(browser.info(), &InfoView::Closed);

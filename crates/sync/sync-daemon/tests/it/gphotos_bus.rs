@@ -386,10 +386,7 @@ async fn picked_bytes_on_an_origin_the_provider_file_does_not_list_are_refused_a
     let refused = picker.import(&session.id).await.expect_err("refused");
     assert!(matches!(refused, PickerError::Unreached(_)), "{refused:?}");
     // Nothing reached the unlisted origin; nothing of the person's library was written.
-    assert_eq!(
-        rig.media.as_ref().expect("media origin").hits(),
-        [] as [account_fake_servers::Hit; 0]
-    );
+    assert!(rig.media.as_ref().expect("media origin").hits().is_empty());
     let dir = rig
         .paths
         .photos_picked_dir(&rig.account)

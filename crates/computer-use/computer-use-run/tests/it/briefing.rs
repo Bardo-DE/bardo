@@ -35,10 +35,7 @@ fn the_plan_comes_first_then_the_shared_hints() {
 fn the_same_words_add_no_plan_hint() {
     let mut t = task(SuccessCheck::ModelSays);
     t.asked = Some(asked("download the March invoice"));
-    assert_eq!(
-        briefing_hints(&t, &run_id(), &[]),
-        [] as [std::string::String; 0]
-    );
+    assert!(briefing_hints(&t, &run_id(), &[]).is_empty());
 }
 
 #[test]
@@ -48,10 +45,7 @@ fn no_earlier_runs_add_no_heading() {
         Vec::<ComputerUseRecord>::new(),
         user_goal().label,
     ));
-    assert_eq!(
-        briefing_hints(&t, &run_id(), &[]),
-        [] as [std::string::String; 0]
-    );
+    assert!(briefing_hints(&t, &run_id(), &[]).is_empty());
 }
 
 #[test]

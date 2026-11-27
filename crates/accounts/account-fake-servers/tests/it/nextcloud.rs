@@ -111,7 +111,7 @@ async fn login_flow_v2_hands_out_an_app_password_that_the_ocs_delete_revokes() {
         deleted.json_body().expect("json")["ocs"]["meta"]["statuscode"],
         200
     );
-    assert_eq!(running.app_passwords(), [] as [std::string::String; 0]);
+    assert!(running.app_passwords().is_empty());
     assert_eq!(
         call(
             &address,

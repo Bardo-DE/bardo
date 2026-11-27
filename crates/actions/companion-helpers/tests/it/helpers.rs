@@ -126,7 +126,7 @@ async fn two_helpers_work_at_the_same_time_and_stopping_one_ends_only_its_job() 
         .map(|t| t.name.as_str().to_owned())
         .filter(|name| name.starts_with("org_bardo_"))
         .collect();
-    assert_ne!(offered, [] as [std::string::String; 0]);
+    assert!(!offered.is_empty());
     for name in &offered {
         assert!(
             name.starts_with("org_bardo_Mail-")
@@ -281,10 +281,7 @@ async fn a_helper_with_no_model_waits_to_be_given_one_and_nothing_stands_in() {
         w.infer.asked().is_empty(),
         "the assistant's model was not borrowed"
     );
-    assert_eq!(
-        research_model.opened(),
-        [] as [inference_core::OpenOptions; 0]
-    );
+    assert!(research_model.opened().is_empty());
 
     // The person chooses; the job runs on that model.
     hub.apply(BoardEvent::Edit {

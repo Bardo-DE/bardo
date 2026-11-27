@@ -23,7 +23,7 @@ title = "About"
     assert_eq!(entries.len(), 2);
     assert_eq!(entries[0].keywords, ["wireless"]);
     assert_eq!(entries[1].subtitle, "");
-    assert_eq!(entries[1].keywords, [] as [std::string::String; 0]);
+    assert!(entries[1].keywords.is_empty());
     assert_eq!(entries[1].updated, UnixSeconds(0));
     assert_eq!(entries[1].space, SpaceScope::Any);
 }

@@ -136,10 +136,10 @@ fn header_only_entries_are_erased_and_have_no_things() {
         .append(NewHeader::of(&rec, NOW, &digest_key()), None)
         .expect("append");
     assert_eq!(entry.body, BodyState::Erased);
-    assert_eq!(
+    assert!(
         log.touching(&view("7f3a").thing, RoleFilter::Either)
-            .expect("touching"),
-        [] as [memory_core::Seq; 0]
+            .expect("touching")
+            .is_empty()
     );
     assert_eq!(
         audit(&log),
@@ -164,10 +164,10 @@ fn erasing_bodies_keeps_the_chain_intact_and_drops_things() {
     let scanned = log.scan(Seq(1)).expect("scan");
     assert_eq!(scanned[0].body, BodyState::Erased);
     assert!(matches!(scanned[2].body, BodyState::Present(_)));
-    assert_eq!(
+    assert!(
         log.touching(&view("7f3a").thing, RoleFilter::Either)
-            .expect("touching"),
-        [] as [memory_core::Seq; 0]
+            .expect("touching")
+            .is_empty()
     );
     assert_eq!(
         log.touching(&view("8b21").thing, RoleFilter::Subject)

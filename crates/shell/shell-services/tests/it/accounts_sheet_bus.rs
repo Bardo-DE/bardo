@@ -444,10 +444,7 @@ async fn a_bad_call_is_refused_and_accountd_leaving_takes_the_sheets_down() {
     assert!(sheet.open("a", "", "{not json").await.is_err());
     assert!(sheet.open("a", "", &"x".repeat(70_000)).await.is_err());
     assert!(sheet.update("never-opened", &form()).await.is_err());
-    assert_eq!(
-        shell.sheet.state.borrow().open,
-        [] as [shell_model::accounts::sheet::OpenSheet; 0]
-    );
+    assert!(shell.sheet.state.borrow().open.is_empty());
     sheet
         .open("a", "", &providers())
         .await

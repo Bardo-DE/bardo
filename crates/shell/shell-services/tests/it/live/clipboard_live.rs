@@ -94,7 +94,7 @@ fn without_a_compositor_history_is_on_but_not_connected() {
     std::thread::sleep(Duration::from_millis(300));
     let shown = history.borrow().clone();
     assert_eq!(shown.status.protocol, ClipProtocol::NotConnected);
-    assert_eq!(shown.entries, [] as [shell_model::clipboard::ClipEntry; 0]);
+    assert!(shown.entries.is_empty());
 }
 
 #[test]

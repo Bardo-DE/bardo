@@ -45,10 +45,7 @@ fn a_trashed_file_leaves_and_comes_back_whole() {
 
     rig.trash.put_back(&thrown).unwrap();
     assert_eq!(fs::read_to_string(item.path()).unwrap(), "hello");
-    assert_eq!(
-        rig.trash.list().unwrap(),
-        [] as [files_core::TrashedItem; 0]
-    );
+    assert!(rig.trash.list().unwrap().is_empty());
 }
 
 #[test]
@@ -112,10 +109,7 @@ fn erasing_for_good_and_emptying_leave_nothing_to_put_back() {
     assert_eq!(rig.trash.put_back(&thrown[..1]), Err(TrashError::NotFound));
 
     rig.trash.empty().unwrap();
-    assert_eq!(
-        rig.trash.list().unwrap(),
-        [] as [files_core::TrashedItem; 0]
-    );
+    assert!(rig.trash.list().unwrap().is_empty());
     assert!(
         fs::read_dir(rig.dir.path().join("bin").join("files"))
             .unwrap()

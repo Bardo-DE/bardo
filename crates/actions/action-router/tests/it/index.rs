@@ -213,7 +213,7 @@ async fn a_search_answers_from_the_index_and_asks_no_app() {
         .answer_from(&app("org.bardo.Files"), Answering::Stopped);
     push(&router, 1, vec![entry("mail.thread", "t1", "Invoice")]).await;
     assert_eq!(found(&router, "invoice").await, ["t1"]);
-    assert_eq!(found(&router, "zzz").await, [] as [std::string::String; 0]);
+    assert!(found(&router, "zzz").await.is_empty());
     assert!(
         router.seams.link.performed.lock().expect("lock").is_empty(),
         "a search performs nothing"
@@ -315,10 +315,7 @@ async fn shipped_entries_of_a_kind_that_is_not_indexed_are_dropped() {
         &app("com.evil.Tool"),
         vec![entry("mail.thread", "e1", "Lisbon")],
     );
-    assert_eq!(
-        found(&router, "lisbon").await,
-        [] as [std::string::String; 0]
-    );
+    assert!(found(&router, "lisbon").await.is_empty());
 }
 
 #[tokio::test]

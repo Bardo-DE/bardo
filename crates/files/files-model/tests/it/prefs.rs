@@ -22,7 +22,7 @@ fn loaded_prefs_for_this_folder_change_the_view_and_the_order() {
         Input::FolderSettingsLoaded(home(), descending_icons()),
         at(0),
     );
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(browser.prefs(), descending_icons());
     assert_eq!(shown(&browser), vec!["b", "a"]);
 }

@@ -131,10 +131,7 @@ async fn an_offer_that_names_an_account_asks_about_that_account_alone() {
             .await,
         Err(GrantsError::Refused(Refusal::NoFittingAccount))
     );
-    assert_eq!(
-        grants.grants().await.expect("grants"),
-        [] as [account_core::consent::Grant; 0]
-    );
+    assert!(grants.grants().await.expect("grants").is_empty());
 
     let named = ConsentOffer {
         account: Some(AccountId::parse("fake-storage").expect("id")),

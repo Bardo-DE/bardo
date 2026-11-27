@@ -201,10 +201,7 @@ async fn servers_that_do_not_let_the_account_in_are_not_handed_back() {
         .edit_servers(request(&stored_before()), &ParentWindow::Unparented)
         .await;
     assert_eq!(got.err(), Some(EditError::Refused(Refusal::Dismissed)));
-    assert_eq!(
-        world.smtp.attempts(),
-        [] as [account_fake_servers::Attempt; 0]
-    );
+    assert!(world.smtp.attempts().is_empty());
 }
 
 #[tokio::test]

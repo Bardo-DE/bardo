@@ -196,5 +196,5 @@ async fn nobody_but_the_router_is_answered() {
     )
     .await;
     refused.unwrap_err();
-    assert_eq!(s.window.asked(), [] as [files_desktop::Ask; 0]);
+    assert!(s.window.asked().is_empty());
 }

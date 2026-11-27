@@ -209,7 +209,7 @@ async fn a_restart_fetches_again_exactly_the_items_whose_files_were_damaged() {
     assert_eq!(reopened.healed(), 2);
     let report = second.sync_once().await.expect("sync");
     assert_eq!((report.fetched, report.uploaded, report.removed), (2, 0, 0));
-    assert_eq!(report.conflicts, [] as [sync_core::StoredConflict; 0]);
+    assert!(report.conflicts.is_empty());
     assert_eq!(
         server.fetches(),
         fetched + 2,

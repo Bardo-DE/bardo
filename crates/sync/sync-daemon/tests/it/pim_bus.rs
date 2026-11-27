@@ -676,7 +676,7 @@ async fn removing_the_account_in_syncd_removes_the_mirror_and_it_does_not_come_b
     // The supervisor sees no grant any more and starts nothing again.
     rig.after_two_looks().await;
     assert!(!rig.account_dir().exists());
-    assert_eq!(names(&rig), [] as [std::string::String; 0]);
+    assert!(names(&rig).is_empty());
     let journals = rig
         .bus
         .scratch()
@@ -727,7 +727,7 @@ async fn with_no_grant_nothing_is_mirrored_and_the_server_is_not_even_asked() {
     let rig = rig(false).await;
     rig.after_two_looks().await;
     assert!(!rig.account_dir().exists());
-    assert_eq!(names(&rig), [] as [std::string::String; 0]);
+    assert!(names(&rig).is_empty());
     assert_eq!(rig.requests("REPORT") + rig.requests("PROPFIND"), 0);
 }
 
@@ -747,14 +747,8 @@ async fn a_calendar_and_an_address_book_of_one_name_keep_apart_and_retiring_one_
             && items_in(&book, PimKind::Contacts) == ["p1.vcf"]
     })
     .await;
-    assert_eq!(
-        items_in(&calendar, PimKind::Contacts),
-        [] as [std::string::String; 0]
-    );
-    assert_eq!(
-        items_in(&book, PimKind::Calendar),
-        [] as [std::string::String; 0]
-    );
+    assert!(items_in(&calendar, PimKind::Contacts).is_empty());
+    assert!(items_in(&book, PimKind::Calendar).is_empty());
 
     // The Contacts grant is withdrawn: the address book goes, the calendar of that name stays.
     rig.service

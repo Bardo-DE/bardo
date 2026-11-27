@@ -119,7 +119,7 @@ fn assert_one_llm_claim(signed: &Signed) {
     assert_eq!(claim.provenance, Provenance::Probed);
     assert!(matches!(&claim.offer, Offer::Present(Capability::Llm(_))));
     assert_eq!(claim.offer.kind(), CapabilityKind::Llm);
-    assert_eq!(signed.endpoints, [] as [account_core::ServiceEndpoint; 0]);
+    assert!(signed.endpoints.is_empty());
 }
 
 /// The one check a key got, and that it was presented as `auth` wants and in no other header.

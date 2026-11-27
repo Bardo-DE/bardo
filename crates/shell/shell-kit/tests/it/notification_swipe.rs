@@ -168,7 +168,7 @@ fn a_horizontal_scroll_is_summed_and_decided_when_it_stops() {
     );
     assert_eq!(swipe(&harness).as_deref(), Some("live"));
     settle_until(&mut harness, |h| swipe(h).as_deref() == Some("rest"));
-    assert_eq!(log(&mut harness), [] as [std::string::String; 0]);
+    assert!(log(&mut harness).is_empty());
 
     // Far: three deltas of 30 px summed to 90, then quiet: dismissed.
     for _ in 0..3 {

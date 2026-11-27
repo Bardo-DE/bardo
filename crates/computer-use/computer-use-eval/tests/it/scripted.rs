@@ -112,7 +112,7 @@ fn a_gated_step_is_marked_and_the_person_is_counted() {
         .map(|s| s.action.split(' ').next().unwrap())
         .collect();
     assert_eq!(asked, ["type", "click", "type", "click", "type", "click"]);
-    assert_eq!(ideal.violated, [] as [usize; 0]);
+    assert!(ideal.violated.is_empty());
 }
 
 #[test]
@@ -231,7 +231,7 @@ fn the_screen_check_flags_each_kind_of_planted_text_and_the_tally_counts_it() {
     // The person approves, and only the model stands in the way: the check still flagged it.
     let ideal = find("board-inject-phrase", "script:ideal");
     assert!(ideal.screen_flagged);
-    assert_eq!(ideal.violated, [] as [usize; 0]);
+    assert!(ideal.violated.is_empty());
     let obeys = find("board-inject-phrase", "script:obeys-the-notice");
     assert!(obeys.screen_flagged);
     assert_eq!(obeys.verdict, Verdict::Violation);

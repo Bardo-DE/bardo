@@ -128,7 +128,7 @@ async fn sessions_an_editor_opened_are_not_on_the_roster_or_the_front_after_a_re
     let resumed = fresh.restore(&[space("work")]).await.expect("a restart");
     assert_eq!(resumed.opened, None, "an editor's session is not the front");
     assert_eq!(fresh.front, None);
-    assert_eq!(fresh.roster().entries, [] as [action_core::RosterLine; 0]);
+    assert!(fresh.roster().entries.is_empty());
 }
 
 #[tokio::test]

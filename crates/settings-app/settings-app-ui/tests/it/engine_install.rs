@@ -84,10 +84,7 @@ fn an_engine_that_is_not_there_asks_to_be_downloaded_and_not_now_leaves_everythi
     click(&mut world.harness, LEAVE);
     assert_eq!(world.harness.count(SHEET), 0, "the sheet is gone");
     assert!(world.desk.installs().is_empty(), "nothing was started");
-    assert_eq!(
-        world.desk.points(),
-        [] as [(std::string::String, std::string::String); 0]
-    );
+    assert!(world.desk.points().is_empty());
     assert_eq!(world.desk.restarts(), 0);
 }
 

@@ -20,7 +20,7 @@ fn no_table_is_the_default_limits() {
     assert_eq!(said.limits.schema.open_list, Count(256));
     assert_eq!(said.limits.schema.depth, Count(16));
     assert_eq!(said.limits.repairs.0, 1);
-    assert_eq!(said.rejected, [] as [&str; 0]);
+    assert!(said.rejected.is_empty());
 }
 
 #[test]

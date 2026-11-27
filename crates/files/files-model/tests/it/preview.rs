@@ -40,7 +40,7 @@ fn the_pane_is_away_until_asked_for_and_toggles() {
 
     let (browser, effects) = run(browser, vec![Input::TogglePreview]);
     assert_eq!(browser.preview(), Preview::Hidden);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(browser.details(), None);
 }
 
@@ -123,7 +123,7 @@ fn facts_for_another_item_or_a_failed_read_are_ignored() {
     assert_eq!(failed.details(), None);
 
     let (read, effects) = browser.step(Input::DetailsRead(item("b"), Ok(info_of("b"))), at(0));
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
     assert_eq!(read.details(), Some(&info_of("b")));
     // Moving on drops the facts of the item left.
     let (moved, _) = run(read, vec![click("a")]);
@@ -136,7 +136,7 @@ fn the_pane_is_nothing_in_the_trash() {
     let (browser, _) = browser.step(Input::Listed(Location::Trash, Ok(vec![file("a")])), at(0));
     let (browser, effects) = run(browser, vec![Input::TogglePreview, click("a")]);
     assert_eq!(browser.preview(), Preview::Nothing);
-    assert_eq!(effects, [] as [files_model::Effect; 0]);
+    assert!(effects.is_empty());
 }
 
 #[test]

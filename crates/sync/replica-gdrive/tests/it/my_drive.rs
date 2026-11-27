@@ -149,7 +149,7 @@ async fn my_drive_is_listed_in_pages_with_folders_documents_and_shortcuts_as_ite
         .map(|h| h.target)
         .filter(|t| t.starts_with("/drive/v3/files?"))
         .collect();
-    assert_ne!(listings, [] as [std::string::String; 0]);
+    assert!(!listings.is_empty());
     for target in &listings {
         assert!(target.contains("spaces=drive&"), "{target}");
         assert!(target.contains("corpora=user"), "{target}");
@@ -184,7 +184,7 @@ async fn an_anchor_resumes_in_a_new_replica_and_an_expired_one_lists_again() {
     );
     let (relisted, _, _) = drain(&replica, Cursor::Start).await;
     assert_eq!(items(&relisted).len(), items(&listed).len() + 1);
-    assert_eq!(tombstones(&relisted), [] as [sync_core::RemoteId; 0]);
+    assert!(tombstones(&relisted).is_empty());
 }
 
 #[tokio::test]
@@ -197,7 +197,7 @@ async fn a_move_is_the_same_item_at_a_new_path() {
     server.google.my_drive_move("Docs/a.txt", "Archive/a.txt");
     let (changes, _, _) = drain(&replica, Cursor::At(anchor)).await;
     assert_eq!(id_at(&changes, "Archive/a.txt"), a);
-    assert_eq!(tombstones(&changes), [] as [sync_core::RemoteId; 0]);
+    assert!(tombstones(&changes).is_empty());
     assert_eq!(
         items(&changes),
         [

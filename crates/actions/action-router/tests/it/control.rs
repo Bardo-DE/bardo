@@ -119,10 +119,7 @@ async fn a_pixel_step_that_changes_needs_the_persons_consent_for_the_app_and_the
     )
     .await;
     assert_eq!(granted, IntentsReply::Granted(GrantAnswer::Granted));
-    assert_ne!(
-        router.seams.grants.grants(),
-        [] as [account_core::consent::Grant<permission_core::ActionGrantKey>; 0]
-    );
+    assert!(!router.seams.grants.grants().is_empty());
     let second = ask(
         &router,
         &computer_use_daemon(),
@@ -163,10 +160,7 @@ async fn a_dismissed_grant_request_records_nothing() {
         reply,
         IntentsReply::Granted(GrantAnswer::Refused(ConfirmEnd::Dismissed))
     );
-    assert_eq!(
-        router.seams.grants.grants(),
-        [] as [account_core::consent::Grant<permission_core::ActionGrantKey>; 0]
-    );
+    assert!(router.seams.grants.grants().is_empty());
 }
 
 #[tokio::test]

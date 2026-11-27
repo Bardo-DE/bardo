@@ -121,6 +121,6 @@ fn gemini_needs_a_grid_map_and_decodes_into_it() {
     else {
         panic!("actions")
     };
-    assert_eq!(dropped, [] as [computer_use_parse::Dropped; 0]);
+    assert!(dropped.is_empty());
     assert!(matches!(&*actions, [ComputerUseAction::Click { .. }]));
 }

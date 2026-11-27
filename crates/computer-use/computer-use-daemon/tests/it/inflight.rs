@@ -100,7 +100,7 @@ async fn cancel_drops_the_model_call_and_the_run_ends_cancelled() {
         end.outcome,
         ComputerUseOutcome::Cancelled(CancelledBy::User)
     );
-    assert_eq!(sup.runs(), [] as [provenance::RunId; 0]);
+    assert!(sup.runs().is_empty());
     // The lease went back and the window is free for another run, whose model call can begin
     // at once because the first let go of the model.
     let again = sup.start(ComputerUseCaller::Router, task()).await.unwrap();

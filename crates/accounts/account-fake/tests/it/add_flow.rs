@@ -673,10 +673,7 @@ async fn a_failed_sign_in_ends_with_the_refusal_the_fault_means() {
             AccountsReply::Refused(refusal),
             "{fault:?}"
         );
-        assert_eq!(
-            service.registry().accounts,
-            [] as [account_core::Account; 0]
-        );
+        assert!(service.registry().accounts.is_empty());
         assert_eq!(kept.audit.entries(), vec![]);
     }
 }
@@ -874,10 +871,7 @@ async fn adding_an_agent_whose_launcher_left_ends_no_launcher_and_stores_nothing
         added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::NoLauncher)
     );
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     assert_eq!(script.told(), Vec::<&str>::new(), "the sign-in never began");
     assert_eq!(kept.audit.entries(), vec![]);
     assert_eq!(kinds(&kept.shown), ["providers", "working", "failed"]);
@@ -999,10 +993,7 @@ async fn closing_the_sheet_cancels_the_sign_in_and_stores_nothing() {
         AccountsReply::Refused(Refusal::Dismissed)
     );
     assert_eq!(script.told(), ["start", "fields", "cancel"]);
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     assert_eq!(kept.store.saves(), 0);
 }
 
@@ -1144,10 +1135,7 @@ async fn an_endpoint_accounts_service_would_not_use_is_not_stored() {
         added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     assert_eq!(kept.audit.entries(), vec![]);
     assert!(kinds(&kept.shown).contains(&"failed"));
 }
@@ -1167,10 +1155,7 @@ async fn a_secret_that_cannot_be_filed_takes_back_the_ones_that_were() {
         service.handle(&app("org.bardo.Mail"), add_request()).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     let id = AccountId::parse("scripted-ada-example.org").expect("id");
     let key = SecretKey {
         account: id,
@@ -1189,10 +1174,7 @@ async fn a_registry_that_cannot_be_saved_takes_back_the_account() {
         added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     let key = SecretKey {
         account: AccountId::parse("scripted-ada-example.org").expect("id"),
         purpose: SecretPurpose::OutgoingPassword,
@@ -1544,10 +1526,7 @@ async fn removing_an_account_asks_the_provider_to_revoke_it_with_the_stored_acco
     service.remove_account(&key.account).await.expect("removed");
     let revoked = script.revoked.lock().expect("revoked").clone();
     assert_eq!(revoked, vec![held_account("ada", AccountState::Ok)]);
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     assert_eq!(kept.secrets.get(&key).await, Err(SecretsError::Missing));
 }
 
@@ -1571,10 +1550,7 @@ async fn a_provider_that_cannot_revoke_never_stops_the_removal() {
         .expect("removed");
     assert_eq!(report, None);
     assert_eq!(script.revoked.lock().expect("revoked").len(), 1);
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
     assert_eq!(kept.secrets.get(&key).await, Err(SecretsError::Missing));
     // No credential filed: the provider is not asked, and the removal goes through.
     let (service, _kept) = reauth_service(&script, AccountState::Ok, vec![], &mail);
@@ -1651,14 +1627,8 @@ async fn an_add_dropped_while_filing_secrets_leaves_no_row_and_no_save() {
     let dropped =
         tokio::time::timeout(PATIENCE, added_over(&service, &app("org.bardo.Mail"))).await;
     assert!(dropped.is_err(), "the add was still waiting for its secret");
-    assert_eq!(
-        service.registry().accounts,
-        [] as [account_core::Account; 0]
-    );
-    assert_eq!(
-        service.registry().toggles,
-        [] as [account_core::store::AccountToggle; 0]
-    );
+    assert!(service.registry().accounts.is_empty());
+    assert!(service.registry().toggles.is_empty());
     assert_eq!(kept.store.saves(), 0);
     assert_eq!(kept.audit.entries(), vec![]);
 }
@@ -1689,7 +1659,7 @@ async fn a_wipe_dropped_while_deleting_secrets_leaves_no_account_without_credent
     assert!(dropped.is_err(), "the wipe was still waiting");
     let left = service.registry();
     assert!(left.accounts.is_empty(), "{:?}", left.accounts);
-    assert_eq!(left.grants, [] as [account_core::consent::Grant; 0]);
+    assert!(left.grants.is_empty());
 }
 
 /// The old promise kept: secrets that cannot be deleted leave the account exactly as it was.

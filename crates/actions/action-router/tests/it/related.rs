@@ -223,10 +223,7 @@ async fn a_recipient_chosen_through_a_relation_asks_like_any_untrusted_recipient
         .await
         .expect_err("asked, then dismissed");
     assert_eq!(refused, CallRefusal::Unconfirmed(ConfirmEnd::Dismissed));
-    assert_eq!(
-        router.seams.link.mail.sent(),
-        [] as [action_fake::SentMail; 0]
-    );
+    assert!(router.seams.link.mail.sent().is_empty());
     let requests = router.seams.confirmer.requests();
     assert_eq!(requests.len(), 1);
     assert!(
@@ -306,10 +303,7 @@ fn a_manifest_file_declares_a_relation_and_the_registry_checks_the_kind_it_names
     // A relation to a kind no installed app declares is the registry's to refuse.
     let mut registry = action_context::registry::Registry::new();
     registry.insert(mail.clone());
-    assert_eq!(
-        registry.unresolved(),
-        [] as [action_manifest::ManifestError; 0]
-    );
+    assert!(registry.unresolved().is_empty());
     let dangling = text.replace("to = \"mail.contact\"", "to = \"mail.nobody\"");
     let mut registry = action_context::registry::Registry::new();
     registry.insert(action_manifest::parse(&dangling).expect("valid on its own"));

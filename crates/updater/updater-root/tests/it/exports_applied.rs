@@ -71,7 +71,7 @@ fn a_link_to_somewhere_else_is_left_alone_but_one_into_the_root_is_replaced() {
     let applied = sandbox
         .install(&build(&Recipe::new("0.2.0")))
         .expect("install");
-    assert_eq!(applied.conflicts, [] as [std::string::String; 0]);
+    assert!(applied.conflicts.is_empty());
     assert_eq!(read(&place), "[Desktop Entry]");
 }
 
