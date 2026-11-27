@@ -1,4 +1,6 @@
-//! A person's own rows (feature `debug`, which turns on `caller-identity-dev`): the stand-ins a
+//! A person's own rows.
+//!
+//! They come with the feature `debug`, which turns on `caller-identity-dev`: the stand-ins a
 //! checkout builds (a fake portal frontend, a fake shell), named in a file the person owns, are let
 //! in as the programs they stand for, at `Proof::Dev`, below every real proof. A release build has
 //! none of this: the feature, the environment variable and `caller-identity-dev` are all absent.

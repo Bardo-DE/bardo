@@ -6,7 +6,9 @@ use caller_identity_dbus::caller_identity_core::{Proof, Requirement};
 use caller_roles::SHELL;
 use std::sync::Arc;
 
-/// Lets the shell press items and no one else: the caller must stand as the `shell` role of the
+/// Lets the shell press items and no one else.
+///
+/// The caller must stand as the `shell` role of the
 /// desktop's caller table at the full proof (its image is root-owned and its unit is the real
 /// one), as the caller-identity library judges it. Any caller the caller-identity library cannot identify is refused.
 ///

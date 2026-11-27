@@ -7,7 +7,7 @@
 
 use super::connect_ask::{ConnectAsk, ConnectRefusal, Proven};
 use super::intake::Intake;
-use caller_roles::{AGENT_TIER, PORTAL};
+use caller_roles::AGENT_TIER;
 use std::collections::BTreeMap;
 use std::future::poll_fn;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -122,6 +122,7 @@ async fn tell_the_loop(intake: &Intake, ask: ConnectAsk) {
 mod tests {
     use super::*;
     use caller_identity_dbus::caller_identity_core::AppKey;
+    use caller_roles::PORTAL;
 
     /// The agent tier filling its table leaves the portal's room alone.
     #[test]

@@ -14,6 +14,7 @@ pub struct ServiceDirectives {
 impl ServiceDirectives {
     /// These settings after reading `text`, the next file in precedence order. An empty
     /// assignment starts the list over, as systemd does.
+    #[must_use]
     pub fn fold(mut self, text: &str) -> Self {
         let mut in_service = false;
         for line in logical_lines(text) {

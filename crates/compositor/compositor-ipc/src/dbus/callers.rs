@@ -110,24 +110,13 @@ fn admitted(standing: &Standing, roles: &[RoleName]) -> Result<(), NotHeldError>
         .flat_map(|role| {
             [
                 Some(Requirement::new(role.clone(), Proof::Full)),
-                dev_way_in(role),
+                // The developer row's way in, in a build with `dev-rows` only.
+                cfg!(feature = "dev-rows").then(|| Requirement::dev(role.clone())),
             ]
         })
         .flatten()
         .collect();
     standing.holds(&need).map(|_| ())
-}
-
-/// The developer row's way in as `role`, in a build with `dev-rows`.
-#[cfg(feature = "dev-rows")]
-fn dev_way_in(role: &RoleName) -> Option<Requirement> {
-    Some(Requirement::dev(role.clone()))
-}
-
-/// No developer rows in this build: no way in.
-#[cfg(not(feature = "dev-rows"))]
-fn dev_way_in(_role: &RoleName) -> Option<Requirement> {
-    None
 }
 
 /// What the log says was found: the standing and why it did not do.

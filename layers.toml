@@ -4174,8 +4174,8 @@ why = "stays pure: no bus, async runtime, process reading, socket or device libr
 [[reach]]
 crate = "input-broker-client"
 build = false
-forbid = ["zbus", "tokio", "async-std", "smol", "caller_identity*", "caller-identity-*", "input-linux*", "listenfd", "nix"]
-why = "linked by the mouse gestures and key remap programs, so no bus, async runtime, caller-identity crates or daemon libraries"
+forbid = ["zbus", "tokio", "async-std", "smol", "caller-identity-dbus", "caller-identity-dev", "caller-identity-linux", "input-linux*", "listenfd", "nix"]
+why = "linked by the mouse gestures and key remap programs, so no bus, async runtime, caller-identity process reading or daemon libraries (the pure caller-identity vocabulary comes in through input-broker-wire for the role names, as that crate's row says)"
 
 [[reach]]
 crate = "input-broker-daemon"
@@ -4222,7 +4222,7 @@ why = "direct normal and build dependencies (ours and third-party, all features)
 scope = "all"
 crate = "key-remap-daemon"
 features = "all"
-exactly = ["keymap", "key-remap-client", "key-remap-core", "key-remap-proto", "key-remap-evdev", "service-locator", "notify", "caller-identity-linux", "caller-identity-core", "rustix", "thiserror", "input-broker-client", "settings-store-fs"]
+exactly = ["keymap", "key-remap-client", "key-remap-core", "key-remap-proto", "key-remap-evdev", "notify", "caller-identity-linux", "caller-identity-core", "caller-roles", "seat-guard", "rustix", "thiserror", "input-broker-client", "settings-store-fs"]
 why = "also links caller-identity (who the socket's peer is) and input-broker-client (makes its virtual devices); neither brings a bus or an async runtime; settings-store-fs is the shared settings file watch the daemon follows"
 
 [[edges]]

@@ -17,9 +17,10 @@ pub const PROBE_MAX_READS: usize = 6;
 /// The largest file read for one process (the real ones are a few hundred bytes).
 pub const PROBE_READ_CAP: u64 = 64 * 1024;
 
-/// A process someone holds: the number and user it was held as, how firmly, and whether it is
-/// still the same live process. The I/O crate implements it for a pidfd; the prober needs nothing
-/// more of a process.
+/// A process someone holds.
+///
+/// It has the number and user it was held as, how firmly, and whether it is still the same live
+/// process. The I/O crate implements it for a pidfd; the prober needs nothing more of a process.
 pub trait Held {
     /// The process number.
     fn pid(&self) -> Pid;

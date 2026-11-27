@@ -15,11 +15,9 @@ mod tests {
     #[test]
     fn the_shipped_table_has_a_row_for_each_role_here() {
         let table = Table::from_toml(SHIPPED).expect("the shipped table reads");
-        for role in [ROUTER] {
-            assert!(
-                table.has_role(&role),
-                "the shipped table has no row for {role}"
-            );
-        }
+        assert!(
+            table.has_role(&ROUTER),
+            "the shipped table has no row for {ROUTER}"
+        );
     }
 }

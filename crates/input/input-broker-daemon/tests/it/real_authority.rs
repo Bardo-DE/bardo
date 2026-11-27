@@ -137,7 +137,7 @@ fn key_remap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_lis
         Uid::new(socket_peercred(&conn).expect("credentials").uid.as_raw())
     );
     assert_eq!(
-        caller.credential.map(|c| (c.role, c.proof)),
+        caller.credential.clone().map(|c| (c.role, c.proof)),
         Some((role("keymap_daemon"), Proof::Full))
     );
 }
@@ -293,7 +293,7 @@ fn a_hidden_image_is_only_the_cgroup_strength_and_the_policy_refuses_it() {
         .identify(&conn)
         .expect("identified");
     assert_eq!(
-        caller.credential.map(|c| (c.role, c.proof)),
+        caller.credential.clone().map(|c| (c.role, c.proof)),
         Some((role("pad_daemon"), Proof::Cgroup))
     );
     // Even in the right place and as the right user, a caller whose image was not read gets nothing.

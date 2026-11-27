@@ -62,9 +62,11 @@ pub trait Vouch: Send + 'static {
     fn origin(&self, stream: &OwnedFd) -> Origin;
 }
 
-/// The real check: hold the process, read its control group, judge it against a caller table and
-/// believe it when its standing holds one of the `accepted` requirements (a role, the weakest
-/// proof and the weakest pin the daemon takes).
+/// The real check.
+///
+/// It holds the process, reads its control group, judges it against a caller table and believes
+/// it when its standing holds one of the `accepted` requirements (a role, the weakest proof and
+/// the weakest pin the daemon takes).
 #[derive(Debug)]
 pub struct ShellCheck<P: ProcFs = RealProc> {
     prober: Prober<P>,

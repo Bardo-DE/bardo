@@ -21,7 +21,7 @@ use caller_identity_dbus::caller_identity_core::{NotHeldError, Proof, Requiremen
 use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, Offload};
 use caller_roles::{SETTINGS, SHELL};
-use updater_dbus::UPDATER_CLI;
+use updater_dbus::roles::UPDATER_CLI;
 
 /// The bus identification the service uses: the system's `/proc`, probes run off the async threads.
 pub type Peers = BusPeers<RealProc>;

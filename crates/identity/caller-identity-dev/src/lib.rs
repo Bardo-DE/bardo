@@ -199,7 +199,11 @@ mod tests {
         let rows = DevRows::load(&file, me).expect("loads");
         assert_eq!(rows.len(), 1);
         let merged = rows.added_to(Table::from_toml(SHIPPED).expect("shipped"));
-        let dev: Vec<bool> = merged.rows().iter().map(|r| r.is_dev()).collect();
+        let dev: Vec<bool> = merged
+            .rows()
+            .iter()
+            .map(caller_identity_core::Row::is_dev)
+            .collect();
         assert_eq!(dev, [false, true]);
     }
 

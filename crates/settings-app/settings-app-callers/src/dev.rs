@@ -42,7 +42,7 @@ pub fn load_dev_rows(path: &Path) -> Result<DevRows, DevFileError> {
 /// Returns a [`DevRowsError`] when the file is not taken or rows were already taken up.
 pub fn use_dev_rows(path: &Path) -> Result<(), DevRowsError> {
     let rows = load_dev_rows(path)?;
-    ROWS.set(rows).map_err(|_| DevRowsError::Twice)
+    ROWS.set(rows).map_err(|_rows| DevRowsError::Twice)
 }
 
 /// The shipped table with the person's rows after it (a row never takes a unit the shipped table

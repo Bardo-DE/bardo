@@ -5,7 +5,7 @@
 
 use std::path::Path;
 
-use caller_identity_dbus::caller_identity_core::{Table, Uid};
+use caller_identity_dbus::caller_identity_core::Uid;
 use caller_identity_dev::{DevFileError, DevRows};
 
 use super::DesktopCallers;
