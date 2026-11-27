@@ -3,7 +3,7 @@
 // types (account-dbus ProcCallers) take its layout past the default depth of 128.
 #![recursion_limit = "256"]
 
-mod binary;
+mod accept;
 mod common;
 mod confirm_bus;
 mod daemon;
@@ -16,7 +16,6 @@ mod googlerig;
 mod gphotos_bus;
 mod graph_bus;
 mod graph_calendar_bus;
-mod install;
 #[cfg(feature = "photos-picker")]
 mod photos_picker_bus;
 mod pim_bus;

@@ -1,5 +1,6 @@
 //! Tasks: the shell of xtask. Everything here runs commands or touches files.
 
+pub mod accept;
 pub mod deny;
 pub mod error_names;
 pub mod features;

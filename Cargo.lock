@@ -19,6 +19,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "366ffbaa4442f4684d91e2cd7c5ea7c4ed8add41959a31447066e279e432b618"
 
 [[package]]
+name = "accept-kit"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+]
+
+[[package]]
 name = "accesskit"
 version = "0.25.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -855,6 +862,7 @@ dependencies = [
 name = "action-accept"
 version = "0.1.0"
 dependencies = [
+ "accept-kit",
  "account-callers",
  "account-core",
  "action-cli",
@@ -879,7 +887,6 @@ dependencies = [
  "companion-daemon",
  "companion-wire",
  "dbus-kit",
- "fnv",
  "futures-util",
  "inference-core",
  "memory-client",
@@ -917,10 +924,10 @@ dependencies = [
  "action-core",
  "base-ids",
  "base-path",
+ "base-testkit",
  "base-time",
  "percent-encoding",
  "provenance",
- "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "tracing",
@@ -1284,6 +1291,7 @@ dependencies = [
 name = "action-live"
 version = "0.1.0"
 dependencies = [
+ "accept-kit",
  "account-capability",
  "account-core",
  "account-match",
@@ -9839,7 +9847,6 @@ dependencies = [
  "rusqlite",
  "serde_json",
  "tar",
- "tempfile",
  "tokio",
  "toml",
 ]
@@ -13635,7 +13642,6 @@ dependencies = [
  "settings-app-link",
  "settings-app-model",
  "settings-app-system",
- "settings-app-testkit",
  "settings-app-ui",
  "settings-store-fs",
  "tokio",
@@ -16746,6 +16752,7 @@ dependencies = [
 name = "ui-icon-tool"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "clap",
  "image",
  "serde",

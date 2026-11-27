@@ -8,13 +8,15 @@ demo's private bus), so the companion pane answers. It is the acceptance `World`
 ## Build and find it
 
 ```sh
-cd ~/actions && cargo build -p action-accept -p action-live --bins   # the daemons must sit beside agent-bringup
-~/actions/target/debug/agent-bringup ...                            # or: cargo run -p action-live --bin agent-bringup -- ...
+cd crates/actions && cargo build -p action-accept -p action-live --bins   # the daemons must sit beside agent-bringup
+. dev/live/daemons.sh                                                     # builds accountd, inferd, memoryd; fills daemon_env
+env "${daemon_env[@]}" ../../target/debug/agent-bringup ...               # or: env "${daemon_env[@]}" cargo run -p action-live --bin agent-bringup -- ...
 ```
 
 `cargo run --bin agent-bringup` alone does not build the sibling daemons (`accept-actiond`, `accept-companiond`);
-`up` says so if they are missing. accountd and memoryd are the test-keys builds, and inferd a test-proc-root build, that `build.rs` puts under
-`target/<profile>/accept-siblings/`.
+`up` says so if they are missing. accountd and memoryd are the test-keys builds, and inferd a test-proc-root build
+(the features of `[suite.agent]` in `suites.toml`); `dev/live/daemons.sh` builds them under `target/accept/` and
+names them for `agent-bringup` in `BARDO_ACCEPT_BIN_BARDO_ACCOUNTD`, `..._BARDO_INFERD` and `..._BARDO_MEMORYD`.
 
 ## Commands
 

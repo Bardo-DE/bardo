@@ -1,5 +1,5 @@
 //! Integration tests of `memory-daemon`.
-mod binary;
+mod accept;
 mod bus;
 mod bus_members;
 mod desktop;

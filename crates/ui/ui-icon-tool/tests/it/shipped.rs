@@ -6,6 +6,7 @@ use std::path::PathBuf;
 
 use image::Rgba32FImage;
 use ui_icon_tool::{PlateGrid, Template, oklab, plate_mask};
+use ui_settings::icon_assets::APP_ICON_PX;
 
 const APPS: [&str; 6] = ["mail", "files", "terminal", "notes", "photos", "viewer"];
 
@@ -150,4 +151,11 @@ fn monochrome_is_exported_neutral() {
             .fold(0.0_f32, f32::max);
         assert!(max < 0.02, "{app}: chroma {max}");
     }
+}
+
+/// The tool ships the sizes the lookup expects.
+#[test]
+fn the_shipped_sizes_are_the_lookups() {
+    let lookup: Vec<u32> = APP_ICON_PX.into_iter().map(u32::from).collect();
+    assert_eq!(lookup, ui_icon_tool::SHIP_PX);
 }

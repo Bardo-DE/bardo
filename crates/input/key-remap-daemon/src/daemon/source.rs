@@ -132,9 +132,9 @@ mod tests {
     use crate::daemon::pointer::AbsAxis as TwinAxis;
     use crate::daemon::twin::PointerTwin;
     use crate::daemon::uinput::{Device, Emitter, PointerSink};
+    use base_testkit::Scratch;
     use input_broker_client::Reason;
     use input_broker_client::fake::{FakeSource, OpenMode};
-    use key_remap_devtest::Scratch;
     use key_remap_evdev::AbsInfo;
     use rustix::net::{AddressFamily, RecvFlags, SocketFlags, SocketType, socketpair};
 

@@ -22,7 +22,7 @@ tracing = { workspace = true }
 
 [dev-dependencies]
 action-checkpoint = {path = "../action-checkpoint", features = ["testing"]}
-tempfile = { workspace = true }
+base-testkit = {path = "../../base/base-testkit"}
 
 [lints]
 workspace = true

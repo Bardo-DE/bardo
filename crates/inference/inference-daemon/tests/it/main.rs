@@ -1,10 +1,10 @@
 //! The crate's integration tests: one executable, one module per topic.
-//! `attached`, `engine_start` and `shutdown` start this test executable again as
-//! a fake child, by test path (`shutdown::fake_inferd`).
+//! `accept::attached`, `engine_start` and `accept::shutdown` start this test executable again as
+//! a fake child, by test path (`accept::shutdown::fake_inferd`).
 
+mod accept;
 mod agents;
 mod agents_local;
-mod attached;
 mod broker;
 mod cloud;
 mod daemon;
@@ -17,13 +17,10 @@ mod local_engines;
 mod own_server;
 mod places;
 mod probed;
-#[cfg(feature = "test-proc-root")]
-mod proc_root;
 mod replayed;
 mod scores;
 mod serve;
 mod settings_module;
-mod shutdown;
 mod speech;
 mod start;
 mod support;

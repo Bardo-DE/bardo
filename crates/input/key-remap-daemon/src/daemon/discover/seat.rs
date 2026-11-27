@@ -40,7 +40,7 @@ pub(super) fn on_our_seat(class_dir: &Path, udev_data: &Path) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use key_remap_devtest::Scratch;
+    use base_testkit::Scratch;
 
     #[test]
     fn a_device_is_ours_unless_udev_names_another_seat() {

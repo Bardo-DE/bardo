@@ -5,10 +5,10 @@
 use super::client::{connect, recv, send};
 use super::*;
 use crate::daemon::inbox::{Mailbox, Message, Request, mailbox};
+use base_testkit::Scratch;
 use caller_identity_core::Table;
 use caller_identity_linux::{FixtureProc, Prober};
 use key_remap_client::FileText;
-use key_remap_devtest::Scratch;
 use key_remap_proto::{
     self as protocol, KeymapCall, KeymapState, PROTOCOL_VERSION, ProfileName, RegisteredAction,
     Registration, Status, Steer, ToClient, ToDaemon, Warning,

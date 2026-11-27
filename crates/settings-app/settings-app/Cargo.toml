@@ -33,7 +33,6 @@ dev-callers = ["dep:settings-app-callers", "settings-app-callers/dev-callers"]
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
-settings-app-testkit = {path = "../settings-app-testkit"}
 toml = { workspace = true }
 
 [lints]

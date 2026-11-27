@@ -82,7 +82,7 @@ pub(crate) fn name_registered(name: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::scratch::Scratch;
+    use base_testkit::Scratch;
 
     fn node(sys: &Path, entry: &str, name: &str) {
         let dir = sys.join(entry).join("device");

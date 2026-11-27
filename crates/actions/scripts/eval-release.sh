@@ -13,7 +13,7 @@
 # (docs/live-eval.md says how it gets there). The script reads no key, from no variable and no file.
 #
 # What it does, and what it never does:
-#   1. builds agent-live (and the siblings it runs: inferd, memoryd) from this checkout;
+#   1. builds agent-live and the daemons it runs (accountd, inferd, memoryd: dev/live/daemons.sh);
 #   2. runs it under `env -i`, with a scratch HOME and XDG directories and no session bus
 #      address, so nothing touches ~/.config, the real bus, the real mail or memory; agent-live
 #      starts its own private dbus-daemon and inferd;
@@ -56,8 +56,10 @@ case "$engine" in
   *) echo "eval-release: --engine takes scripted, local or cloud" >&2; exit 2 ;;
 esac
 
-export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$(dirname "$root")/accept-target}
+export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$(cd "$root/../.." && pwd)/target}
 cargo build -p action-accept -p action-live --bins
+# shellcheck source=dev/live/daemons.sh
+. "$root/dev/live/daemons.sh"
 bin=$CARGO_TARGET_DIR/debug/agent-live
 
 scratch=${LIVE_SCRATCH:-$(mktemp -d "${TMPDIR:-/tmp}/agent-live.XXXXXX")}
@@ -72,6 +74,7 @@ echo "eval-release: scratch $scratch; report $report" >&2
 
 set +e
 env -i PATH="$PATH" HOME="$scratch/home" TMPDIR="$scratch/tmp" XDG_RUNTIME_DIR="$scratch/run" \
+  "${daemon_env[@]}" \
   BARDO_ACTIONS_LIVE_ENGINE_CACHE="$engine_cache" \
   XDG_CONFIG_HOME="$scratch/home/.config" XDG_DATA_HOME="$scratch/home/.local/share" \
   XDG_STATE_HOME="$scratch/home/.local/state" XDG_CACHE_HOME="$scratch/home/.cache" \

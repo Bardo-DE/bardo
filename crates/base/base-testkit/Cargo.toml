@@ -1,6 +1,6 @@
 [package]
 name = "base-testkit"
-description = "Test-only utilities that know nothing of the accounts service: scratch directories, the one wait deadline, a child process that cannot outlive its test and a private session bus."
+description = "Test-only utilities that know nothing of the accounts service: scratch directories, the scratch HOME and XDG environment, the one wait deadline, a child process that cannot outlive its test and a private session or system bus."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

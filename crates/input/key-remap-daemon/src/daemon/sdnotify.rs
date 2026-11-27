@@ -91,7 +91,7 @@ impl Notifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use key_remap_devtest::Scratch;
+    use base_testkit::Scratch;
     use std::os::linux::net::SocketAddrExt;
     use std::os::unix::net::{SocketAddr, UnixDatagram};
 

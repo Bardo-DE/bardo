@@ -93,7 +93,7 @@ impl Drop for Notifications {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::scratch::Scratch;
+    use base_testkit::Scratch;
 
     #[test]
     fn messages_are_recorded_in_order_with_arrival_times() {

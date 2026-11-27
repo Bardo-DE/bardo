@@ -129,9 +129,8 @@ The key remap daemon grabs the user's only keyboard, so:
 
 - **Tests create no input device unless they are the gated device tests.** The ordinary suite
   drives the core with scripts and a recording sink and never constructs the uinput device. The
-  device tests (`crates/input/key-remap-daemon/tests/it/devices`) are the one exception: each is `#[ignore]`d and
-  asserts `BARDO_KEY_REMAP_DEVICE_TESTS=1`, so neither `cargo test` nor `cargo test -- --ignored` alone
-  creates a device. CI runs them (see Tests).
+  device tests (`crates/input/key-remap-daemon/tests/it/live`) are the one exception: they are the `live` suite, so
+  neither `cargo nextest run` nor the gate creates a device; `cargo xtask live devices` runs them (see Tests).
 - **Virtual devices are never grabbed**, so another remapper's output cannot loop back through
   key_remap. The one exception is `BARDO_KEY_REMAP_GRAB_VIRTUAL=<exact device name>`, which makes the virtual
   device with that name eligible like a hardware keyboard, for tests whose keyboard is itself a
@@ -242,19 +241,17 @@ Three tiers, each in its own CI job (`.github/workflows/ci.yml`).
    grab gate with a key held, Apple vs PC layout, and a property test that every emitted press
    has exactly one release. Socket tests run on a private socket in a temp directory. Scripts
    are synthesised in `tests/support`. No device is touched.
-2. **The device tests** (`devices`). `crates/input/key-remap-daemon/tests/it/devices` runs the built `key_remap` binary
+2. **The device tests** (the `live` module). `crates/input/key-remap-daemon/tests/it/live` runs the built `key_remap` binary
    against a fake keyboard on `/dev/uinput` and reads the "the key remap daemon keyboard" it writes back from
    `/dev/input`, through the real evdev grab, the real uinput device and the real socket. The
-   harness is the `key-remap-devtest` crate. Every test is `#[ignore]`d and asserts
-   `BARDO_KEY_REMAP_DEVICE_TESTS=1`. On a Linux machine you may use as a test bed (they create and grab
-   a keyboard for a few seconds each; the fake is grabbed, your real keyboards are not):
+   harness is the `key-remap-devtest` crate. They are the `devices` live suite. On a Linux machine you may
+   use as a test bed (they create and grab a keyboard for a few seconds each; the fake is grabbed, your
+   real keyboards are not):
 
    ```bash
    sudo modprobe uinput
    cargo build -p key-remap-daemon --bins --examples
-   cargo test -p key-remap-daemon --test it --no-run     # build as yourself
-   sudo -E env "PATH=$PATH" BARDO_KEY_REMAP_DEVICE_TESTS=1 \
-     target/debug/deps/it-<hash> devices:: --ignored --test-threads=1
+   cargo xtask live devices --yes
    ```
 
    They need root (the nodes are `root:input`), run one at a time (one fake name, one daemon),

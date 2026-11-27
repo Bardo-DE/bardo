@@ -5,11 +5,13 @@
 # - a test still running after 30 s is reported, and killed (and failed) after 2 minutes;
 # - a test that leaves a child process holding its output open past 1 s fails;
 # - nothing is retried: a flaky test is a bug to fix, not to hide;
+# - the `accept::` and `live::` tests are filtered out of `default` and `gate`; `cargo xtask accept|live` runs them;
 # - each test process runs under xtask/test-env.sh (the gate sets it as the target runner), which
 #   gives it a throwaway HOME and XDG folders and no session or system bus.
 # A test that truly needs longer gets an override below with the reason, never a wider default.
 
 [profile.default]
+default-filter = "not (test(/^accept::/) | test(/^live::/))"
 slow-timeout = { period = "30s", terminate-after = 4, grace-period = "5s" }
 leak-timeout = { period = "1s", result = "fail" }
 retries = 0
@@ -19,7 +21,34 @@ status-level = "fail"
 final-status-level = "fail"
 
 [profile.gate]
+default-filter = "not (test(/^accept::/) | test(/^live::/))"
 slow-timeout = { period = "30s", terminate-after = 4, grace-period = "5s" }
+leak-timeout = { period = "1s", result = "fail" }
+retries = 0
+fail-fast = false
+failure-output = "immediate-final"
+status-level = "fail"
+final-status-level = "slow"
+
+# `cargo xtask accept` runs the `accept::` tests inside the jail, `cargo xtask live` the `live::` tests on
+# the real machine; they take longer than a unit test (real daemons, real devices).
+[profile.accept]
+# The suite command picks the tests (`-E`); this undoes the default profile's filter, which
+# every profile inherits.
+default-filter = "all()"
+slow-timeout = { period = "60s", terminate-after = 4, grace-period = "5s" }
+leak-timeout = { period = "1s", result = "fail" }
+retries = 0
+fail-fast = false
+failure-output = "immediate-final"
+status-level = "fail"
+final-status-level = "slow"
+
+[profile.live]
+# The suite command picks the tests (`-E`); this undoes the default profile's filter, which
+# every profile inherits.
+default-filter = "all()"
+slow-timeout = { period = "60s", terminate-after = 4, grace-period = "5s" }
 leak-timeout = { period = "1s", result = "fail" }
 retries = 0
 fail-fast = false
@@ -31,10 +60,6 @@ final-status-level = "slow"
 # action-live's hostile worlds each start a sandbox, a private bus and a fake model server.
 hostile-worlds = { max-threads = 6 }
 
-[[profile.default.overrides]]
-filter = "package(action-live) & test(/^hostile::/)"
-test-group = "hostile-worlds"
-
-[[profile.gate.overrides]]
-filter = "package(action-live) & test(/^hostile::/)"
+[[profile.accept.overrides]]
+filter = "package(action-live) & test(/^accept::hostile::/)"
 test-group = "hostile-worlds"

@@ -1,0 +1,15 @@
+[package]
+name = "accept-kit"
+description = "Dev-only helpers for the accept suites: the prebuilt binaries cargo xtask hands a test, the jail's argument list and a headless compositor with its fake logind."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-testkit = {path = "../base-testkit"}
+
+[lints]
+workspace = true

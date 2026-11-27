@@ -228,10 +228,9 @@ The `key-remap-devtest` modules:
 - **The protocol is a crate:** a change to a message is a change to `key-remap-proto`, its
   tests, `PROTOCOL_VERSION` when incompatible, and the desktop, in one change.
 - **Tests never create an input device, with one gated exception.** The device tests in
-  `crates/key_remap/tests/devices` and the `key-remap-devtest` crate they use create fake keyboards on
-  `/dev/uinput` and grab them. Each such test is `#[ignore = "creates input devices; run in CI
-  with BARDO_KEY_REMAP_DEVICE_TESTS=1"]` and asserts that variable, so a plain `cargo test` never touches
-  a device. They run as root, one at a time, in the `devices` CI job (docs/development.md, "Tests"). The
+  `crates/input/key-remap-daemon/tests/it/live` and the `key-remap-devtest` crate they use create fake keyboards on
+  `/dev/uinput` and grab them. They are the `devices` live suite (`cargo xtask live devices`), so a plain
+  `cargo nextest run` or gate never touches a device (docs/development.md, "Tests"). The
   daemon they run is the real binary, made to grab a virtual device by
   `BARDO_KEY_REMAP_GRAB_VIRTUAL=<exact name>`; that switch is read in `command::run` like every other
   variable and widens discovery by one named device (docs/development.md, "Safety rules").

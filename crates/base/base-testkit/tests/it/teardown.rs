@@ -40,3 +40,14 @@ fn a_panic_in_the_test_still_ends_the_daemon() {
     assert_ne!(seen, 0);
     assert!(cmdline(seen).is_none(), "the daemon outlived a panic");
 }
+
+#[test]
+fn a_system_bus_is_a_system_bus_and_ends_with_its_guard() {
+    let bus = PrivateBus::start_system();
+    let pid = bus.pid();
+    let config = std::fs::read_to_string(bus.scratch().join("bus.conf")).expect("config");
+    assert!(config.contains("<type>system</type>"), "{config}");
+    assert!(cmdline(pid).is_some());
+    drop(bus);
+    assert!(cmdline(pid).is_none(), "the daemon outlived its bus");
+}

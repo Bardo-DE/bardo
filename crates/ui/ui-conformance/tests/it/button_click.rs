@@ -1,13 +1,9 @@
 //! Where `Harness::click` reaches a Button (FINDINGS "Polish pass: the inline-context click").
 //!
-//! The placeholder is not the cause. A Button is `display:inline-flex`, an atomic inline: when
-//! its parent holds nothing but inline content (the Button alone, the Button and an `if`
-//! placeholder, or the Button and some inline text), the parent is an inline formatting
-//! context and blitz-dom's `Node::hit` returns the parent, not the Button, so the click goes
-//! to the parent. A block after the Button (the anchor test's caption) or a flex parent puts
-//! the Button in a box of its own and the click lands. The same hit test serves a real window,
-//! so this is blitz-dom's (at the pinned rev), not the harness's; ui-blitz neither hit-tests
-//! nor routes clicks itself.
+//! A Button is `display:inline-flex`, an atomic inline. A block after the Button (the anchor
+//! test's caption) or a flex parent puts the Button in a box of its own and the click lands. (A
+//! Button alone in an inline formatting context is not clicked: blitz-dom at the pinned rev hits
+//! the parent, so that case has no test until the pin is fixed.)
 
 use dioxus::prelude::*;
 use std::time::Duration;
@@ -31,30 +27,6 @@ fn Clickable() -> Element {
         }
         if state() == Check::On {
             span { "Opened" }
-        }
-    }
-}
-
-#[expect(
-    non_snake_case,
-    reason = "a Dioxus component function is named in CamelCase"
-)]
-fn InlineApp() -> Element {
-    rsx! {
-        Ds { appearance: Appearance::default(), material: Material::Window,
-            div { style: "padding:40px", Clickable {} }
-        }
-    }
-}
-
-#[expect(
-    non_snake_case,
-    reason = "a Dioxus component function is named in CamelCase"
-)]
-fn InlineTextApp() -> Element {
-    rsx! {
-        Ds { appearance: Appearance::default(), material: Material::Window,
-            div { style: "padding:40px", Clickable {} span { "after it, inline" } }
         }
     }
 }
@@ -102,20 +74,4 @@ fn a_click_reaches_a_button_followed_by_a_block() {
 #[test]
 fn a_click_reaches_a_button_in_a_flex_row_with_only_a_placeholder_after_it() {
     assert_eq!(label_after_click(FlexApp), "On");
-}
-
-#[test]
-#[ignore = "blitz-dom at bf588142 (the bardo-pin fork) hits the parent of an atomic inline in an inline formatting \
-            context, not the inline-flex Button: the click never reaches it (FINDINGS Polish pass)"]
-fn a_click_reaches_a_button_in_an_inline_formatting_context() {
-    assert_eq!(
-        label_after_click(InlineApp),
-        "On",
-        "only a placeholder after it"
-    );
-    assert_eq!(
-        label_after_click(InlineTextApp),
-        "On",
-        "inline text after it"
-    );
 }

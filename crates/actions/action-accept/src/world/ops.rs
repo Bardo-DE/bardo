@@ -1,6 +1,6 @@
 //! What a running world does: connections, the model's audit, `bardo-do`, the daemons' logs.
 
-use super::{Cgroup, World, env_of, place};
+use super::{Cgroup, World, place};
 use base_testkit::Reaped;
 use std::fmt::Write as _;
 use std::path::Path;
@@ -56,15 +56,11 @@ impl World {
     /// inferd's audit trail so far: one entry per finished model turn, with the app that asked
     /// (never the content).
     pub fn model_turns(&self) -> Vec<inference_core::AuditEntry> {
-        std::fs::read_to_string(
-            self.dir
-                .path()
-                .join(".local/state/bardo/inference/audit.jsonl"),
-        )
-        .unwrap_or_default()
-        .lines()
-        .filter_map(|line| serde_json::from_str(line).ok())
-        .collect()
+        std::fs::read_to_string(self.dir.path().join("state/bardo/inference/audit.jsonl"))
+            .unwrap_or_default()
+            .lines()
+            .filter_map(|line| serde_json::from_str(line).ok())
+            .collect()
     }
 
     /// The requests inferd's replay engine was asked, one JSON line each, when the run was started
@@ -84,13 +80,12 @@ impl World {
     pub async fn bardo_do(&self, binary: &Path, words: &[&str]) -> std::process::Output {
         use std::io::{Read, Write};
         let mut process = Reaped::spawn(
-            Command::new("sh")
+            self.dir
+                .env()
+                .command("sh")
                 .args(["-c", "read _; exec \"$0\" \"$@\" </dev/null"])
                 .arg(binary)
                 .args(words)
-                .env_clear()
-                .envs(env_of(self.dir.path()))
-                .env("DBUS_SESSION_BUS_ADDRESS", self.address())
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped()),

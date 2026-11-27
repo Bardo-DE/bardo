@@ -4,9 +4,8 @@ description = "Test only: the first end-to-end acceptance of the agent tier. The
 publish.workspace = true
 
 # The daemons run as their own processes from these thin mains: the same daemon the packaged
-# binaries run (`run_with`, given the proc root and model tap from the environment), under names that cannot collide with theirs in one target directory. memoryd's
-# memoryd and inferd are not here: `build.rs` builds the packaged binaries of the memory service (with its
-# `test-keys` feature), the accounts service and the inference service, from their folders of this workspace.
+# binaries run (`run_with`, given the proc root and model tap from the environment), under names that cannot collide with theirs in one target directory. The accounts, inference and memory daemons are not here: `cargo xtask accept agent` builds their
+# packaged binaries first (`suites.toml`), and `accept_kit::bin` finds them.
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -52,6 +51,7 @@ path = "src/bin/accept-fake-agent.rs"
 
 [dependencies]
 base-clock = { path = "../../base/base-clock" }
+accept-kit = {path = "../../base/accept-kit"}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 base-time = { path = "../../base/base-time" }
 base-ids = { path = "../../base/base-ids" }
@@ -71,7 +71,6 @@ action-dbus = {path = "../action-dbus", features = ["fixture-callers", "inferd"]
 action-log = {path = "../action-log"}
 action-trace = {path = "../action-trace"}
 agent-session = {path = "../agent-session"}
-fnv = { workspace = true }
 futures-util = { workspace = true, features = ["std"] }
 action-daemon = {path = "../action-daemon"}
 agent-reader-daemon = {path = "../agent-reader-daemon"}

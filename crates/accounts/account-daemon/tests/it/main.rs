@@ -1,19 +1,17 @@
 //! The crate's integration tests: one executable, one module per topic.
 
+mod accept;
 mod acceptance;
 mod account_objects;
-mod binary;
 mod broker;
 mod bus_sheets;
 mod client;
 mod common;
 mod daemon;
 mod dist;
-mod file_keys;
 mod google;
 mod grants;
 mod identities;
-mod install;
 mod keys;
 mod launcher_credential;
 mod launcher_login;

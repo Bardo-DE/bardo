@@ -7,7 +7,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 /// Hands each guard in this process its own number.
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
-/// A scratch directory for a test, `accounts-<name>-<pid>-<n>` under the temp directory, created
+/// A scratch directory for a test, `bardo-test-<name>-<pid>-<n>` under the temp directory, created
 /// empty and removed when the guard drops.
 ///
 /// The temp directory is memory-backed; cargo's own scratch directory sits on the build disk,
@@ -33,7 +33,8 @@ impl Scratch {
     #[must_use]
     pub fn new(name: &str) -> Self {
         let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let dir = std::env::temp_dir().join(format!("accounts-{name}-{}-{n}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("bardo-test-{name}-{}-{n}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).expect("scratch dir");
         Self(dir)

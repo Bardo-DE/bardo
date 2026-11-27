@@ -1,9 +1,10 @@
-//! The integration tests, one binary: whole-core scenarios, the terminal and Plasma profiles, and
-//! the stuck-key property test, and `devices`, the real kernel path (it creates real input
-//! devices, so each of its tests is `#[ignore]`d; see `devices.rs`).
+//! The integration tests, one binary: whole-core scenarios, the terminal and Plasma profiles, the
+//! stuck-key property test, and `live`, the real kernel path (it creates real input devices; see
+//! `live.rs`).
 
-mod devices;
+mod key_table;
 mod keymap_aware;
+mod live;
 mod plasma_overlay;
 mod scenarios;
 mod stuck_keys;

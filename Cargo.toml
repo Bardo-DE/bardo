@@ -254,6 +254,7 @@ members = [
     "crates/settings/settings-store-fs",
     "crates/settings/settings-types",
     "crates/settings/settings-types-macros",
+    "crates/base/accept-kit",
     "crates/base/base-clock",
     "crates/base/base-fs",
     "crates/base/base-ids",

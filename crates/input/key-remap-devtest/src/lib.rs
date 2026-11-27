@@ -3,8 +3,8 @@
 //! `sd_notify` messages.
 //!
 //! Everything here creates or opens real input devices. Nothing in the workspace's ordinary
-//! tests may call it: the device tests that do are `#[ignore]`d and assert
-//! `BARDO_KEY_REMAP_DEVICE_TESTS=1`.
+//! tests may call it: the device tests that do live in the `live` module of the key remap
+//! daemon's integration binary (`cargo xtask live devices`).
 #![expect(
     missing_docs,
     reason = "lints baseline: this crate documents its public items when its domain is refactored (plan phases 3-7)"
@@ -19,7 +19,6 @@ mod grab;
 mod keys;
 mod notify;
 mod output;
-mod scratch;
 mod sysfs;
 
 pub use client::{Client, FOCUS_SETTLE, summary};
@@ -31,5 +30,4 @@ pub use grab::ExternalGrab;
 pub use keys::{KEYS, code_of, name_of};
 pub use notify::{Note, Notifications};
 pub use output::Output;
-pub use scratch::Scratch;
 pub use sysfs::OUTPUT_NAME;

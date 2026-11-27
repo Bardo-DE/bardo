@@ -21,7 +21,7 @@ pub(super) fn lamp_of(sys_input: &Path, device_path: &str) -> Option<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use key_remap_devtest::Scratch;
+    use base_testkit::Scratch;
 
     fn lamp_file(root: &Path, node: &str, led: &str, brightness: &str) {
         let dir = root.join(node).join("device").join(led);

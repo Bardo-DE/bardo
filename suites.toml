@@ -1,0 +1,135 @@
+# The acceptance and live suites (`cargo xtask accept`, `cargo xtask live`).
+#
+# A suite is the tests under the top-level module `accept` (jailed, hermetic) or `live` (touches
+# something real) of the one integration binary of each listed package. `why` says in a plain
+# sentence what the suite proves (accept) or what it touches (live; `cargo xtask live` prints it and
+# asks for `--yes`). A `prebuild` is built by xtask first, into its own target folder per feature
+# set, and handed to the tests as BARDO_ACCEPT_BIN_<BIN IN UPPER_SNAKE> (read with
+# `accept_kit::bin`).
+
+# ---- accept: jailed, no devices, no network, scratch home ------------------------------------
+
+[suite.agent]
+kind = "accept"
+packages = ["action-accept", "action-live"]
+why = "the agent stack end to end: the real daemons on a private bus, playing cassettes"
+
+[[suite.agent.prebuild]]
+package = "account-daemon"
+bin = "bardo-accountd"
+features = ["test-proc-root", "test-keys"]
+
+[[suite.agent.prebuild]]
+package = "inference-daemon"
+bin = "bardo-inferd"
+features = ["test-proc-root"]
+
+[[suite.agent.prebuild]]
+package = "memory-daemon"
+bin = "bardo-memoryd"
+features = ["test-keys", "test-proc-root"]
+
+[[suite.agent.prebuild]]
+package = "action-accept"
+bin = "accept-actiond"
+
+[[suite.agent.prebuild]]
+package = "action-accept"
+bin = "accept-companiond"
+
+[[suite.agent.prebuild]]
+package = "action-accept"
+bin = "accept-readerd"
+
+[[suite.agent.prebuild]]
+package = "action-accept"
+bin = "accept-bardo-do"
+
+[[suite.agent.prebuild]]
+package = "action-accept"
+bin = "accept-actions-mcp"
+
+[[suite.agent.prebuild]]
+package = "action-accept"
+bin = "accept-bus-relay"
+
+[suite.services]
+kind = "accept"
+packages = [
+  "account-daemon",
+  "sync-daemon",
+  "action-cli",
+  "settings-app",
+  "ui-icon-tool",
+  "memory-daemon",
+  "inference-daemon",
+  "account-rig",
+  "sync-rig",
+]
+why = "each service's real program starts, answers and shuts down on a private bus, and the install scripts put its files where they belong in a scratch root"
+
+[suite.devices]
+kind = "live"
+packages = ["input-broker-daemon", "key-remap-daemon"]
+why = "creates virtual keyboards through /dev/uinput and reads real input devices"
+
+[suite.gpu]
+kind = "live"
+packages = ["ui-harness", "ui-blitz", "anyview-peek"]
+why = "renders on this machine's real graphics adapter, and reads its installed colour-emoji fonts"
+
+[suite.session]
+kind = "live"
+packages = [
+  "action-live",
+  "agent-launch",
+  "sandbox",
+  "shell-services",
+  "shell-search",
+  "settings-app-ui",
+  "action-cli",
+]
+why = "uses your running login: the systemd user session, a real sandbox, zsh and fish, fd, the clipboard and screenshots"
+
+[[suite.session.prebuild]]
+package = "account-daemon"
+bin = "bardo-accountd"
+features = ["test-proc-root", "test-keys"]
+
+[[suite.session.prebuild]]
+package = "inference-daemon"
+bin = "bardo-inferd"
+features = ["test-proc-root"]
+
+[[suite.session.prebuild]]
+package = "memory-daemon"
+bin = "bardo-memoryd"
+features = ["test-keys", "test-proc-root"]
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-actiond"
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-companiond"
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-readerd"
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-bardo-do"
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-actions-mcp"
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-bus-relay"
+
+[[suite.session.prebuild]]
+package = "action-accept"
+bin = "accept-fake-agent"

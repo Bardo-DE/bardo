@@ -12,7 +12,7 @@ const ALLOWED: [(&str, &str); 7] = [
     ("env/children.rs", "the seam's real implementation"),
     (
         "launch/backend/run.rs",
-        "an app launch, tracked to its exit; only an `#[ignore]`d test runs it",
+        "an app launch, tracked to its exit; only a `live` test runs it",
     ),
     (
         "now_playing/backend/art/curl.rs",

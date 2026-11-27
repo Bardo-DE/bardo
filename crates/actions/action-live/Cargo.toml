@@ -18,6 +18,8 @@ path = "src/bin/agent-bringup.rs"
 
 # The daemons the world starts are action-accept's binaries (`accept-actiond` and the rest), found
 # beside the running program (`Binaries::beside`): build them first with `cargo build -p action-accept --bins`.
+# The accounts, inference and memory daemons come from the `BARDO_ACCEPT_BIN_*` variables
+# (`cargo xtask accept agent` builds them; `dev/live/daemons.sh` does for the operator scripts).
 [dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 base-time = { path = "../../base/base-time" }
@@ -28,7 +30,7 @@ base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
 agent-registry = {path = "../agent-registry"}
 base-path = { path = "../../base/base-path" }
-base-clock = { path = "../../base/base-clock" }
+base-clock = { path = "../../base/base-clock", features = ["tokio"] }
 sandbox = {path = "../../sandbox/sandbox"}
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 companion-wire = {path = "../companion-wire"}
@@ -66,6 +68,7 @@ toml = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
+accept-kit = {path = "../../base/accept-kit"}
 action-settings = {path = "../action-settings"}
 futures-util = { workspace = true, features = ["std"] }
 tempfile = { workspace = true }

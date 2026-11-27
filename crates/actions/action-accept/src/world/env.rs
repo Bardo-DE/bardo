@@ -1,29 +1,9 @@
-//! What a daemon's process is given: the scratch environment, and the few variables only one
-//! daemon is told.
+//! What a daemon's process is given: the scratch environment (`TestEnv`), and the few variables only
+//! one daemon is told.
 
-use base_testkit::Reaped;
+use base_testkit::{Reaped, TestEnv};
 use std::path::Path;
-use std::process::{Command, Stdio};
-
-#[must_use]
-pub fn env_of(dir: &Path) -> Vec<(&'static str, String)> {
-    let at = |p: &str| dir.join(p).display().to_string();
-    vec![
-        ("HOME", dir.display().to_string()),
-        // What systemd gives a user unit: an engine's compilers (vLLM's Triton runs gcc, which
-        // finds `ld` on PATH) need it.
-        ("PATH", "/usr/bin:/bin".to_owned()),
-        ("XDG_DATA_HOME", at("data")),
-        ("XDG_DATA_DIRS", at("none")),
-        ("XDG_CONFIG_HOME", at("config")),
-        ("XDG_CONFIG_DIRS", at("none")),
-        ("XDG_CACHE_HOME", at("cache")),
-        (
-            "XDG_RUNTIME_DIR",
-            crate::runlink::short_run(dir).display().to_string(),
-        ),
-    ]
-}
+use std::process::Stdio;
 
 /// What only accountd and inferd are told besides the scratch root.
 #[derive(Debug, Clone, Copy, Default)]
@@ -140,28 +120,24 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
     }
 }
 
-/// Starts the daemon `name` from `binary` in the scratch root `dir`, on the bus at `bus`, with the
-/// model tap on when `tap` names a file.
+/// Starts the daemon `name` from `binary` in the scratch root of `env` (its buses already point at
+/// the world's), with the model tap on when `tap` names a file.
 ///
 /// # Errors
 ///
 /// Returns the I/O error of creating the log file or spawning the process.
 pub fn spawn(
-    dir: &Path,
-    bus: &str,
+    env: &TestEnv,
     name: &'static str,
     binary: &Path,
     tap: Option<&Path>,
     daemon: DaemonEnv<'_>,
 ) -> std::io::Result<(&'static str, Reaped)> {
+    let dir = env.root();
     let log = std::fs::File::create(dir.join("logs").join(format!("{name}.log")))?;
-    let mut command = Command::new(binary);
+    let mut command = env.command(binary);
     command
-        .env_clear()
-        .envs(env_of(dir))
         .envs(extra_env(dir, name, daemon))
-        .env("DBUS_SESSION_BUS_ADDRESS", bus)
-        .env("DBUS_SYSTEM_BUS_ADDRESS", bus)
         .envs(tap.map(|file| (crate::seams::TRACE_VAR, file.to_owned())))
         .stdin(Stdio::null())
         .stdout(Stdio::null())

@@ -1,4 +1,5 @@
 //! Integration tests of `action-cli`.
+mod accept;
 mod ask;
 mod bus;
 mod dist;
@@ -6,7 +7,7 @@ mod e2e;
 mod exit_codes;
 mod gate;
 mod grammar;
-mod install_dev;
+mod live;
 mod mapping;
 mod output;
 mod sessions;

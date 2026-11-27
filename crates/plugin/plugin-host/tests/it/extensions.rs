@@ -115,13 +115,13 @@ fn text(id: &str, extra: &str, entries: &str) -> String {
 
 /// A person's directory and system directories, all scratch.
 struct Scratch {
-    root: tempfile::TempDir,
+    root: base_testkit::Scratch,
 }
 
 impl Scratch {
     fn new() -> Scratch {
         Scratch {
-            root: tempfile::tempdir().unwrap(),
+            root: base_testkit::Scratch::new("extensions"),
         }
     }
 

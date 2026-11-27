@@ -7,7 +7,6 @@
 
 use super::spec::AcpSpec;
 use crate::acp::secret::Credentials;
-use action_accept::runlink::short_run;
 use action_accept::world::{Binaries, Cgroup, World};
 use action_core::{TurnVia, UserTurn};
 use action_host::EditorDesk;
@@ -102,7 +101,8 @@ async fn open(
     binaries: &Binaries,
     spec: &AcpSpec,
 ) -> Result<Hosted<LoginOnly>, PlayError> {
-    let home = world.dir.path();
+    let home = world.dir.env().home();
+    let home = home.as_path();
     let work = home.join("work");
     std::fs::create_dir_all(&work).and_then(|()| prepare_state(spec, home))?;
     let (Some(forwarder), Some(cwd)) = (abs(&binaries.action_mcp), abs(&work)) else {
@@ -137,10 +137,10 @@ async fn open(
         bwrap: SandboxLimits::PerProcess.probe("/usr/bin:/bin:/usr/local/bin"),
         forwarder,
         enter: None,
-        run_dir: short_run(home),
+        run_dir: world.dir.env().runtime().to_path_buf(),
         registry: Registry::default(),
         tools: abs(&binaries.action_mcp).map(|bridge| ToolsOffer {
-            run_dir: short_run(home),
+            run_dir: world.dir.env().runtime().to_path_buf(),
             bridge,
         }),
         terminal_fallback: false,

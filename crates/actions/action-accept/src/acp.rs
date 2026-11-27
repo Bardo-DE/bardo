@@ -6,11 +6,11 @@
 //! inferd and memoryd know it: the callers files and tables the world writes name that scope
 //! (`org.bardo.Acp` is an editor and a companion in the shipped `actiond.toml`).
 
-use crate::world::{Cgroup, DaemonEnv, GIVE_UP, World, env_of, extra_env, place};
+use crate::world::{Cgroup, DaemonEnv, GIVE_UP, World, extra_env, place};
 use base_testkit::Reaped;
 use serde_json::{Value, json};
 use std::path::Path;
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, Lines};
 use tokio::process::{ChildStdin, ChildStdout};
 
@@ -40,12 +40,9 @@ impl AcpEditor {
     /// code, and a run that cannot start has nothing to report.
     pub fn start(world: &World, binary: &Path) -> AcpEditor {
         let dir = world.dir.path();
-        let mut command = Command::new(binary);
+        let mut command = world.dir.env().command(binary);
         command
-            .env_clear()
-            .envs(env_of(dir))
             .envs(extra_env(dir, "bardo-agent-acp", DaemonEnv::default()))
-            .env("DBUS_SESSION_BUS_ADDRESS", world.address())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::from(

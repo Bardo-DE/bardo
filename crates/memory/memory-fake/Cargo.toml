@@ -21,7 +21,6 @@ memory-tidy = {path = "../memory-tidy"}
 memory-files-format = {path = "../memory-files-format"}
 jiff = { workspace = true }
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
-tempfile = { workspace = true }
 serde_json = { workspace = true }
 
 [dev-dependencies]

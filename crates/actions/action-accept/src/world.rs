@@ -20,7 +20,7 @@ mod ops;
 mod proc;
 mod start;
 
-pub use env::{DaemonEnv, env_of, extra_env, spawn};
+pub use env::{DaemonEnv, extra_env, spawn};
 pub use files::{
     ACCOUNTD_CALLERS, INFERD_CALLERS, MEMORY_CALLERS, SPACES, inferd_toml, write,
     write_system_callers,
@@ -32,7 +32,7 @@ use crate::confirm::Sheet;
 use crate::provider::{AppLog, Focus};
 use crate::things::App;
 use action_core::ConfirmRequest;
-use base_testkit::{PrivateBus, Reaped};
+use base_testkit::{PrivateBus, Reaped, TestEnv};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tokio::sync::mpsc;
@@ -70,7 +70,7 @@ pub struct Binaries {
     pub companiond: PathBuf,
     /// `accept-readerd`.
     pub readerd: PathBuf,
-    /// The memory service's packaged `memoryd`, built with `test-keys`.
+    /// The memory service's packaged `memoryd`, built with `test-keys` (a prebuild of the suite).
     pub memoryd: PathBuf,
     /// The accounts service's packaged `accountd`, built with `test-keys`: it holds the AI keys.
     pub accountd: PathBuf,
@@ -92,24 +92,59 @@ pub struct Binaries {
 pub const ENGINE_CACHE_VAR: &str = "BARDO_ACTIONS_LIVE_ENGINE_CACHE";
 
 impl Binaries {
-    /// The binaries of a packaged run: the daemons beside `exe` (the program that runs them), and
-    /// the siblings `build.rs` built into the target directory. `env` is the environment
+    /// The binaries of a run: the daemons beside `exe` (the program that runs them), and the
+    /// accounts, inference and memory daemons `cargo xtask accept agent` (or whoever starts the
+    /// run) built beforehand, found with [`accept_kit::bin`]. `env` is the environment
     /// `main` hands in: [`ENGINE_CACHE_VAR`] names the engines' shared compile cache.
+    ///
+    /// # Panics
+    ///
+    /// When a prebuilt daemon is not where its `BARDO_ACCEPT_BIN_*` variable says (see
+    /// [`accept_kit::bin`]).
     pub fn beside(exe: &Path, env: &impl Fn(&str) -> Option<String>) -> Self {
-        let beside = |name: &str| exe.with_file_name(name);
+        // A program the run was told about (`BARDO_ACCEPT_BIN_*`, as `cargo xtask` names the
+        // prebuilds), else the one built beside `exe`.
+        let beside = |name: &str| {
+            env(&accept_kit::bin_var(name))
+                .filter(|path| !path.is_empty())
+                .map_or_else(|| exe.with_file_name(name), PathBuf::from)
+        };
         Self {
             actiond: beside("accept-actiond"),
             companiond: beside("accept-companiond"),
             readerd: beside("accept-readerd"),
-            memoryd: PathBuf::from(env!("BARDO_ACCEPT_MEMORYD")),
-            accountd: PathBuf::from(env!("BARDO_ACCEPT_ACCOUNTD")),
-            inferd: PathBuf::from(env!("BARDO_ACCEPT_INFERD")),
+            memoryd: accept_kit::bin("bardo-memoryd"),
+            accountd: accept_kit::bin("bardo-accountd"),
+            inferd: accept_kit::bin("bardo-inferd"),
             bardo_do: beside("accept-bardo-do"),
             action_mcp: beside("accept-actions-mcp"),
             relay: beside("accept-bus-relay"),
             engine_cache: env(ENGINE_CACHE_VAR)
                 .filter(|root| !root.is_empty())
                 .map(PathBuf::from),
+        }
+    }
+
+    /// Every program from the prebuilds of the suite (`suites.toml`), found with
+    /// [`accept_kit::bin`]: for a test of another package, which has no `CARGO_BIN_EXE_*` of
+    /// this one's programs.
+    ///
+    /// # Panics
+    ///
+    /// When a prebuilt program is not where its `BARDO_ACCEPT_BIN_*` variable says.
+    #[must_use]
+    pub fn prebuilt() -> Self {
+        Self {
+            actiond: accept_kit::bin("accept-actiond"),
+            companiond: accept_kit::bin("accept-companiond"),
+            readerd: accept_kit::bin("accept-readerd"),
+            memoryd: accept_kit::bin("bardo-memoryd"),
+            accountd: accept_kit::bin("bardo-accountd"),
+            inferd: accept_kit::bin("bardo-inferd"),
+            bardo_do: accept_kit::bin("accept-bardo-do"),
+            action_mcp: accept_kit::bin("accept-actions-mcp"),
+            relay: accept_kit::bin("accept-bus-relay"),
+            engine_cache: None,
         }
     }
 }
@@ -193,47 +228,75 @@ pub fn copy_catalog(from: Option<&Path>, root: &Path) {
     }
 }
 
-/// A scratch root: temporary, or kept where the run was told to leave it.
+/// A world's scratch root: a [`TestEnv`] (scratch HOME, XDG tree and runtime directory), and, when
+/// the run asked to keep it, a copy of what it holds under that directory when the world ends.
+///
+/// The copy leaves out what is not a regular file or a directory (the sockets under `run`).
 #[derive(Debug)]
-pub struct Scratch {
-    path: PathBuf,
-    _owned: Option<tempfile::TempDir>,
+pub struct Root {
+    // Declared first: `Drop` below copies, and then the environment removes itself.
+    keep_in: Option<PathBuf>,
+    env: TestEnv,
 }
 
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        crate::runlink::unlink_run(&self.path);
-    }
-}
-
-impl Scratch {
-    /// A scratch root under `keep_in`, or a temporary one when it is `None`.
-    ///
-    /// # Errors
-    ///
-    /// Returns the I/O error of creating the directories.
-    pub fn made(keep_in: Option<&Path>) -> std::io::Result<Self> {
-        if let Some(root) = keep_in {
-            std::fs::create_dir_all(root)?;
-            let dir = tempfile::Builder::new().prefix("world-").tempdir_in(root)?;
-            Ok(Self {
-                path: dir.keep(),
-                _owned: None,
-            })
-        } else {
-            let dir = tempfile::tempdir()?;
-            Ok(Self {
-                path: dir.path().to_owned(),
-                _owned: Some(dir),
-            })
+impl Root {
+    /// The root of `env` (made with `TestEnv::new`, its buses pointed at the world's); `keep_in` is
+    /// where a copy of it is left when this drops.
+    #[must_use]
+    pub fn new(env: TestEnv, keep_in: Option<&Path>) -> Self {
+        Self {
+            keep_in: keep_in.map(Path::to_owned),
+            env,
         }
+    }
+
+    /// The environment of a process started in this root.
+    #[must_use]
+    pub fn env(&self) -> &TestEnv {
+        &self.env
     }
 
     /// The root.
     #[must_use]
     pub fn path(&self) -> &Path {
-        &self.path
+        self.env.root()
     }
+
+    fn keep(&self, keep_in: &Path) -> std::io::Result<PathBuf> {
+        std::fs::create_dir_all(keep_in)?;
+        let to = tempfile::Builder::new()
+            .prefix("world-")
+            .tempdir_in(keep_in)?
+            .keep();
+        copy_tree(self.path(), &to)?;
+        Ok(to)
+    }
+}
+
+impl Drop for Root {
+    fn drop(&mut self) {
+        if let Some(keep_in) = &self.keep_in {
+            match self.keep(keep_in) {
+                Ok(to) => eprintln!("the scratch root is kept at {}", to.display()),
+                Err(e) => eprintln!("the scratch root could not be kept: {e}"),
+            }
+        }
+    }
+}
+
+fn copy_tree(from: &Path, to: &Path) -> std::io::Result<()> {
+    for entry in std::fs::read_dir(from)? {
+        let entry = entry?;
+        let kind = entry.file_type()?;
+        let target = to.join(entry.file_name());
+        if kind.is_dir() {
+            std::fs::create_dir_all(&target)?;
+            copy_tree(&entry.path(), &target)?;
+        } else if kind.is_file() {
+            std::fs::copy(entry.path(), &target)?;
+        }
+    }
+    Ok(())
 }
 
 /// What a world starts with.
@@ -262,7 +325,7 @@ pub struct World {
     /// The relays behind [`World::connect_as`]'s connections, ended with the world.
     relays: std::sync::Mutex<Vec<Reaped>>,
     /// The scratch root.
-    pub dir: Scratch,
+    pub dir: Root,
     bus: PrivateBus,
 }
 

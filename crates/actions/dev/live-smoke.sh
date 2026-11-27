@@ -41,8 +41,10 @@ case "$engine" in
   *) echo "live-smoke: --engine takes scripted, local or cloud" >&2; exit 2 ;;
 esac
 
-export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$(dirname "$root")/accept-target}
+export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$(cd "$root/../.." && pwd)/target}
 cargo build -p action-accept -p action-live --bins
+# shellcheck source=dev/live/daemons.sh
+. "$root/dev/live/daemons.sh"
 bin=$CARGO_TARGET_DIR/debug/agent-live
 
 scratch=${LIVE_SCRATCH:-$(mktemp -d "${TMPDIR:-/tmp}/agent-live.XXXXXX")}
@@ -54,6 +56,7 @@ engine_cache=${ENGINE_CACHE:-${TMPDIR:-/tmp}/agent-live-engine-cache}
 mkdir -p "$engine_cache"
 echo "live-smoke: scratch $scratch" >&2
 exec env -i PATH="$PATH" HOME="$scratch/home" TMPDIR="$scratch/tmp" XDG_RUNTIME_DIR="$scratch/run" \
+  "${daemon_env[@]}" \
   BARDO_ACTIONS_LIVE_ENGINE_CACHE="$engine_cache" \
   XDG_CONFIG_HOME="$scratch/home/.config" XDG_DATA_HOME="$scratch/home/.local/share" \
   XDG_STATE_HOME="$scratch/home/.local/state" XDG_CACHE_HOME="$scratch/home/.cache" \

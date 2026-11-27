@@ -10,7 +10,7 @@ use crate::daemon::socket::client::{connect, recv};
 use crate::daemon::socket::{SeatFile, bind, socket_path, spawn, vouch};
 use crate::daemon::uinput::RecordingEmitter;
 use crate::{Edge, Key, Layout, Mono, Physical, RemapInput};
-use key_remap_devtest::Scratch;
+use base_testkit::Scratch;
 use key_remap_proto::{ProfileName, ToClient};
 use rustix::fd::OwnedFd;
 

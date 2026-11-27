@@ -2,7 +2,7 @@
 
 use super::{
     AcpSetting, Binaries, Cassette, Cgroup, Consent, DaemonEnv, MEMORY_CALLERS, ModelSource,
-    Options, SPACES, Scratch, World, copy_catalog, inferd_toml, place, spawn, within, write,
+    Options, Root, SPACES, World, copy_catalog, inferd_toml, place, spawn, within, write,
     write_system_callers,
 };
 use crate::confirm;
@@ -11,7 +11,7 @@ use crate::things::{AcceptThings, App};
 use crate::world::settings_toml;
 use action_dbus::callers::Identity;
 use action_manifest::{ValidManifest, parse};
-use base_testkit::PrivateBus;
+use base_testkit::{PrivateBus, TestEnv};
 use futures_util::StreamExt;
 use std::path::Path;
 use zbus::fdo::DBusProxy;
@@ -80,19 +80,14 @@ impl World {
         model: &ModelSource,
         options: &Options,
     ) -> World {
-        let dir = Scratch::made(options.keep_in.as_deref()).expect("scratch");
+        let env = TestEnv::new("world");
+        std::fs::create_dir_all(env.root().join("logs")).expect("logs dir");
+        let bus = PrivateBus::start_in(env.root());
+        let dir = Root::new(
+            env.with_bus(&bus).with_system_bus(&bus),
+            options.keep_in.as_deref(),
+        );
         let root = dir.path();
-        for sub in ["logs", "data", "config", "cache", "run"] {
-            std::fs::create_dir_all(root.join(sub)).expect("dirs");
-        }
-        std::fs::set_permissions(
-            root.join("run"),
-            std::os::unix::fs::PermissionsExt::from_mode(0o700),
-        )
-        .expect("run dir mode");
-        crate::runlink::link_run(root).expect("short runtime name");
-        let bus = PrivateBus::start_in(root);
-        let address = bus.address().to_owned();
 
         // The shell is on the bus before any daemon needs it.
         let shell = within("a connection to the private bus", bus.connect()).await;
@@ -144,8 +139,8 @@ impl World {
         };
         let mut daemons = Vec::new();
         let mut start = async |name: &'static str, binary: &Path, owns: &str| {
-            let daemon = spawn(root, &address, name, binary, tap.as_deref(), daemon_env)
-                .expect("daemon starts");
+            let daemon =
+                spawn(dir.env(), name, binary, tap.as_deref(), daemon_env).expect("daemon starts");
             place(root, daemon.1.pid(), Cgroup::Unit(name));
             daemons.push(daemon);
             until_owned(&shell, owns).await;

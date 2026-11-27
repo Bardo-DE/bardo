@@ -17,7 +17,7 @@ pub fn read(dir: &Path) -> FileText {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use key_remap_devtest::Scratch;
+    use base_testkit::Scratch;
 
     #[test]
     fn a_missing_file_is_missing_and_a_file_is_its_text() {

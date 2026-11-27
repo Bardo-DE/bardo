@@ -6,7 +6,7 @@ use crate::Key;
 use crate::daemon::events::{EV_ABS, EV_KEY, EV_REL, EV_SYN, REL_X, REL_Y};
 use crate::daemon::pointer::twin_name;
 use crate::daemon::uinput;
-use key_remap_devtest::Scratch;
+use base_testkit::Scratch;
 use notify::EventKind;
 use notify::event::{CreateKind, Flag, MetadataKind, ModifyKind, RemoveKind, RenameMode};
 use std::path::{Path, PathBuf};

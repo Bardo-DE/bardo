@@ -4,11 +4,12 @@
 use action_checkpoint::WorkRoot;
 use action_checkpoint_git::GitStore;
 use base_path::AbsPath;
+use base_testkit::TestEnv;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub struct Scratch {
-    dir: tempfile::TempDir,
+    env: TestEnv,
 }
 
 fn git_exists() -> bool {
@@ -22,39 +23,30 @@ impl Scratch {
     /// A scratch folder. Fails, saying so, where git is missing: it is a required test tool.
     pub fn new() -> Scratch {
         assert!(git_exists(), "git is a required test tool (install git)");
-        let dir = tempfile::tempdir().expect("scratch folder");
-        std::fs::create_dir_all(dir.path().join("home")).expect("home");
-        Scratch { dir }
+        let env = TestEnv::new("git");
+        let root = env.root().to_string_lossy().into_owned();
+        // Nothing of the person's configuration: no system or global file, and no repository
+        // above the scratch folder.
+        let env = env
+            .with("GIT_CONFIG_NOSYSTEM", "1")
+            .with("GIT_CONFIG_GLOBAL", "/dev/null")
+            .with("GIT_CEILING_DIRECTORIES", &root);
+        Scratch { env }
     }
 
     pub fn path(&self, name: &str) -> PathBuf {
-        self.dir.path().join(name)
+        self.env.root().join(name)
     }
 
     /// The environment git runs in: nothing of the person's configuration.
     pub fn env(&self) -> Vec<(String, String)> {
-        let var = |name: &str, value: String| (name.to_owned(), value);
-        let home = self.path("home").to_string_lossy().into_owned();
-        vec![
-            var("HOME", home.clone()),
-            var("XDG_CONFIG_HOME", format!("{home}/.config")),
-            var("GIT_CONFIG_NOSYSTEM", "1".to_owned()),
-            var("GIT_CONFIG_GLOBAL", "/dev/null".to_owned()),
-            var(
-                "GIT_CEILING_DIRECTORIES",
-                self.dir.path().to_string_lossy().into_owned(),
-            ),
-        ]
+        self.env.vars()
     }
 
     /// Runs git by hand in `cwd`, as a person would; what it printed.
     pub fn git(&self, cwd: &Path, args: &[&str]) -> String {
-        let mut command = Command::new("git");
+        let mut command = self.env.command("git");
         command.args(args).current_dir(cwd);
-        for name in ["GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"] {
-            command.env_remove(name);
-        }
-        command.envs(self.env());
         command
             .env("GIT_AUTHOR_NAME", "Tester")
             .env("GIT_AUTHOR_EMAIL", "tester@example.com")

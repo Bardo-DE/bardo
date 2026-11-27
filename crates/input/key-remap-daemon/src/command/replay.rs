@@ -103,7 +103,7 @@ pub(super) fn replay_file(file: &Path, config: Option<&Path>) -> Result<Vec<Stri
 #[cfg(test)]
 mod tests {
     use super::*;
-    use key_remap_devtest::Scratch;
+    use base_testkit::Scratch;
 
     const COPY: &str = "\
 # Cmd+C in a GUI app, then in a terminal

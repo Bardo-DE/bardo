@@ -11,13 +11,14 @@
 
 pub mod cli;
 pub mod down;
+pub mod env;
 pub mod procs;
 pub mod refuse;
 pub mod seed;
 pub mod up;
 
 use action_accept::keys_home::HomeError;
-use action_accept::world::{Binaries, env_of};
+use action_accept::world::Binaries;
 use cli::{Command, UsageError};
 use procs::ProcsError;
 use refuse::{BringUpError, Own};
@@ -80,7 +81,7 @@ fn quote(word: &str) -> String {
 #[must_use]
 pub fn add_command(root: &Path, accountd: &Path) -> String {
     let keys = format!("file:{}", root.join("keys/accountd.keys").display());
-    let env: Vec<String> = env_of(root)
+    let env: Vec<String> = env::env_of(root)
         .into_iter()
         .map(|(name, value)| format!("{name}={value}"))
         .chain([format!("BARDO_ACCOUNTD_KEYS={keys}")])

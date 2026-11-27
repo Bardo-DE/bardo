@@ -146,7 +146,6 @@ kind = "unclassified"
 # actions
 [crate.action-accept]
 kind = "unclassified"
-lints = "baseline"
 [crate.action-checkpoint]
 kind = "unclassified"
 [crate.action-checkpoint-git]
@@ -289,6 +288,8 @@ kind = "unclassified"
 kind = "unclassified"
 
 # base
+[crate.accept-kit]
+kind = "unclassified"
 [crate.base-clock]
 kind = "unclassified"
 [crate.base-fs]
@@ -1047,6 +1048,11 @@ forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyri
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
 
 [[reach]]
+crate = "accept-kit"
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings"]
+why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
+
+[[reach]]
 crate = "http-core"
 forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings"]
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, settings)"
@@ -1478,6 +1484,12 @@ why = "the table of allowed direct edges between workspace crates"
 crate = "base-testkit"
 features = "all"
 exactly = []
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "accept-kit"
+features = "all"
+exactly = ["base-testkit"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -2083,7 +2095,7 @@ why = "what this crate reaches through any path is limited to its tier"
 [[reach]]
 crate = "action-accept"
 forbid = ["reqwest", "hyper", "hyper-util", "rustls", "pipewire", "ort", "fastembed", "rusqlite"]
-why = "Test only: the acceptance run links the actions service daemons to run them as processes (memoryd and inferd are built by build.rs, not linked); no HTTP, audio, embedding runtime or MCP SDK. (The acceptance run starts the bardo-actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)"
+why = "Test only: the acceptance run links the actions service daemons to run them as processes (memoryd and inferd are built by `cargo xtask accept agent`, not linked); no HTTP, audio, embedding runtime or MCP SDK. (The acceptance run starts the bardo-actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)"
 
 [[reach]]
 crate = "action-live"

@@ -8,9 +8,10 @@ quoted).
 
 ## Where it runs
 
-`crates/actions/action-accept/tests/it/flows.rs`, a test of the workspace: it runs in the gate
-(`~/rs-wt/gate-lane-jailed.sh`, inside `~/desktop/harness/jail.sh`) with every other test.
-`dev/accept/run.sh` runs only this package in the same jail, for working on it.
+`crates/actions/action-accept/tests/it/accept/` (the `accept::` tests of the package, and of
+`action-live` for the worlds it plays). They run as the `agent` suite: `cargo xtask accept agent [filter]`
+builds the daemons below, then runs the tests inside `packaging/harness/jail.sh`. `cargo xtask gate --all`
+runs the suite after the doc tests; a plain gate and a plain `cargo nextest run` skip it.
 A world started with `Options { record: Record::On, .. }` makes inferd's replay engine write every
 request body it is asked (planner, writer, reader) to `<scratch>/record.jsonl`, printed to stderr when
 the world drops. No environment variable turns it on: the library reads none.
@@ -20,9 +21,9 @@ the world drops. No environment variable turns it on: the library reads none.
 | Piece | How it runs |
 |---|---|
 | bardo-actiond, bardo-companiond, bardo-readerd | their own `run()`, one process each (`src/bin/accept-*.rs` are the packaged mains under names that cannot collide in one target dir), `env_clear`, scratch HOME and XDG dirs, the private bus |
-| memoryd (the memory service) | the packaged binary, built by `crates/actions/action-accept/build.rs` from `../memory` with `--features test-keys,test-proc-root` into `<target>/accept-siblings/memory`; `env_clear`, scratch dirs, `BARDO_MEMORYD_KEYS=file:<scratch>/keys/memoryd.keys` (no Secret Service on the bus), `BARDO_MEMORYD_PROC_ROOT=<scratch>/proc`; its Landlock sandbox stays ON. Callers by unit in `<config>/bardo/memoryd-callers.toml` (bardo-actiond agent, the shell sheet_host, bardo-companiond, bardo-readerd) |
-| accountd (the accounts service) | the packaged binary, built the same way from `../accounts` with `--features test-keys,test-proc-root`; it holds the AI keys and starts before inferd, which asks it for them. `env_clear`, scratch dirs, `BARDO_ACCOUNTD_KEYS=file:<scratch>/keys/accountd.keys` (or the key home's file), `BARDO_ACCOUNTD_PROC_ROOT=<scratch>/proc`, `BARDO_ACCOUNTD_TAILSCALE_SOCKET` at a scratch path. Callers by unit in `<scratch>/system/accountd-callers.toml`, named by `BARDO_ACCOUNTD_SYSTEM_CALLERS` (inferd is the `ai_broker`; a row for the agent launcher) |
-| inferd (the accounts service) | the packaged binary, built the same way from `../accounts` with `--features test-proc-root`; `BARDO_INFERD_PROC_ROOT=<scratch>/proc`; `inferd.toml` in the scratch config names the replay engine `scripted` (the cassette) and picks it for every text tier (`[ai.model.text]`); the callers by unit (`[apps]`: memoryd, bardo-actiond, bardo-companiond, bardo-readerd) are `<scratch>/system/inferd-callers.toml`, named by `BARDO_INFERD_CALLERS` |
+| memoryd (the memory service) | the packaged binary, a prebuild of the suite (`suites.toml`: `memory-daemon` with `--features test-keys,test-proc-root`, found with `accept_kit::bin("bardo-memoryd")`); `env_clear`, scratch dirs, `BARDO_MEMORYD_KEYS=file:<scratch>/keys/memoryd.keys` (no Secret Service on the bus), `BARDO_MEMORYD_PROC_ROOT=<scratch>/proc`; its Landlock sandbox stays ON. Callers by unit in `<config>/bardo/memoryd-callers.toml` (bardo-actiond agent, the shell sheet_host, bardo-companiond, bardo-readerd) |
+| accountd (the accounts service) | the packaged binary, a prebuild of the suite the same way (`account-daemon` with `--features test-keys,test-proc-root`); it holds the AI keys and starts before inferd, which asks it for them. `env_clear`, scratch dirs, `BARDO_ACCOUNTD_KEYS=file:<scratch>/keys/accountd.keys` (or the key home's file), `BARDO_ACCOUNTD_PROC_ROOT=<scratch>/proc`, `BARDO_ACCOUNTD_TAILSCALE_SOCKET` at a scratch path. Callers by unit in `<scratch>/system/accountd-callers.toml`, named by `BARDO_ACCOUNTD_SYSTEM_CALLERS` (inferd is the `ai_broker`; a row for the agent launcher) |
+| inferd (the accounts service) | the packaged binary, a prebuild of the suite the same way (`inference-daemon` with `--features test-proc-root`); `BARDO_INFERD_PROC_ROOT=<scratch>/proc`; `inferd.toml` in the scratch config names the replay engine `scripted` (the cassette) and picks it for every text tier (`[ai.model.text]`); the callers by unit (`[apps]`: memoryd, bardo-actiond, bardo-companiond, bardo-readerd) are `<scratch>/system/inferd-callers.toml`, named by `BARDO_INFERD_CALLERS` |
 | caller identity | every daemon reads the callers' `<scratch>/proc/<pid>/cgroup` and the unit's main pid in `<scratch>/proc/units/`, which `World` writes for each daemon it spawns (`.../app.slice/<name>.service`) and for the test process as the shell (`bardo-shell.service`, its main process); the daemons' system callers files are the shipped `dist/*-callers.toml` copied to `<scratch>/system/`; an app is `.../app-<App>-1.scope` (`Cgroup::AppScope`, `as_app`), bardo-agent-acp is `bardo-agent-acp.scope` |
 | the bus | `base-testkit`'s `dbus-daemon`, killed by PID on drop, with a watchdog if the test dies |
 

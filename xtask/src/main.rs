@@ -17,7 +17,11 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules, shear and deny, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs, no-prefs, test-modules, shear and deny, then fmt, clippy and tests on the affected set; --all adds every accept suite and the feature builds
+  accept [<suite>] [<filter>]   run the jailed accept:: tests of a suite from suites.toml (every accept suite without a name)
+  accept --list                 the accept suites and why each exists
+  live <suite> [<filter>] --yes run the live:: tests of a suite on this machine (never part of a gate)
+  live --list                   the live suites and what each touches
   check deny                    cargo deny check (needs cargo-deny)
   check features [--cross]      each package built alone, per feature (clippy) and without default features (portable core); --cross adds macOS and Windows targets (needs cargo-hack)
   check test-modules            one test binary per crate (tests/it), every tests/it file a module of its main.rs
@@ -69,6 +73,42 @@ fn run() -> Result<bool> {
                 }
             }
             tasks::gate::run(base.as_deref(), all)
+        }
+        "accept" | "live" => {
+            let kind = if command == "accept" {
+                tasks::accept::Kind::Accept
+            } else {
+                tasks::accept::Kind::Live
+            };
+            let mut list = false;
+            let mut yes = false;
+            let mut words = Vec::new();
+            while let Some(arg) = parser.next()? {
+                match arg {
+                    Long("list") => list = true,
+                    Long("yes") if command == "live" => yes = true,
+                    Value(v) => words.push(v.string()?),
+                    other => return Err(other.unexpected().into()),
+                }
+            }
+            if words.len() > 2 {
+                bail!("`{command}` takes a suite and an optional filter");
+            }
+            let mut words = words.into_iter();
+            let (name, filter) = (words.next(), words.next());
+            if list {
+                return tasks::accept::list(kind);
+            }
+            match kind {
+                tasks::accept::Kind::Accept => {
+                    tasks::accept::run_accept(name.as_deref(), filter.as_deref())
+                }
+                tasks::accept::Kind::Live => {
+                    let name =
+                        name.context("`live` needs a suite (see `cargo xtask live --list`)")?;
+                    tasks::accept::run_live(&name, filter.as_deref(), yes)
+                }
+            }
         }
         "install" => {
             let mut request = tasks::install::Request::default();

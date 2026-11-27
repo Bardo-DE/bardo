@@ -22,7 +22,7 @@ use crate::{Reaped, Scratch};
 const CONFIG: &str = r#"<!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
 <busconfig>
-  <type>session</type>
+  <type>BUSTYPE</type>
   <listen>unix:path=SOCKET</listen>
   <auth>EXTERNAL</auth>
   SERVICEDIR
@@ -147,6 +147,30 @@ impl PrivateBus {
         )
     }
 
+    /// A bus in a scratch directory of its own that is configured as a system bus (what a daemon
+    /// that talks to `DBUS_SYSTEM_BUS_ADDRESS` connects to). Point a process at it with
+    /// [`crate::TestEnv::with_system_bus`].
+    ///
+    /// # Panics
+    ///
+    /// When `dbus-daemon` is missing or does not print its address.
+    #[must_use]
+    pub fn start_system() -> Self {
+        let scratch = Scratch::new("system-bus");
+        let dir = scratch.path().to_owned();
+        Self::launch_as(dir, Policy::Plain, None, &[], Some(scratch), "system")
+    }
+
+    /// A system bus in `dir`, which the caller owns.
+    ///
+    /// # Panics
+    ///
+    /// When `dbus-daemon` is missing or does not print its address.
+    #[must_use]
+    pub fn start_system_in(dir: &Path) -> Self {
+        Self::launch_as(dir.to_owned(), Policy::Plain, None, &[], None, "system")
+    }
+
     fn launch(
         dir: PathBuf,
         policy: Policy,
@@ -154,12 +178,24 @@ impl PrivateBus {
         env: &[(&str, &str)],
         owned: Option<Scratch>,
     ) -> Self {
+        Self::launch_as(dir, policy, servicedir, env, owned, "session")
+    }
+
+    fn launch_as(
+        dir: PathBuf,
+        policy: Policy,
+        servicedir: Option<&Path>,
+        env: &[(&str, &str)],
+        owned: Option<Scratch>,
+        bus_type: &str,
+    ) -> Self {
         let socket = dir.join("bus.sock");
         let config = dir.join("bus.conf");
         let services = servicedir
             .map(|d| format!("<servicedir>{}</servicedir>", d.display()))
             .unwrap_or_default();
         let text = CONFIG
+            .replace("BUSTYPE", bus_type)
             .replace("RULES", policy.rules())
             .replace("SOCKET", &socket.to_string_lossy())
             .replace("SERVICEDIR", &services);

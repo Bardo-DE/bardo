@@ -7,11 +7,12 @@
 use super::BringupError;
 use super::cli::UpArgs;
 use super::down;
+use super::env::{env_of, link_run};
 use super::procs::{self, Record};
 use super::refuse::{self, Own};
 use super::seed;
 use action_accept::keys_home::KeysHome;
-use action_accept::world::{Binaries, Cgroup, DaemonEnv, env_of, extra_env};
+use action_accept::world::{Binaries, Cgroup, DaemonEnv, extra_env};
 use std::os::unix::process::CommandExt;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
@@ -145,7 +146,7 @@ pub async fn up(
     }
 
     seed::layout(root)?;
-    action_accept::runlink::link_run(root)?;
+    link_run(root)?;
     seed::files(root, args.shell_pid, &inferd_toml)?;
     if let Some(from) = &args.catalog {
         action_accept::catalog::copy_entries(from, &action_accept::catalog::world_dir(root))

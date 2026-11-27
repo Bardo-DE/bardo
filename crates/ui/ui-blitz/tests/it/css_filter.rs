@@ -1,6 +1,6 @@
 //! CSS `filter` on a real Blitz document, one swatch per filter function and per filter list,
 //! read back from the pixels of each backend: `vello_cpu` (the harness default, with the pinned
-//! `multithreading`) and `vello_gpu` (`#[ignore]`d: it needs a GPU adapter, and fails, saying so, where none opens). Every
+//! `multithreading`) and `vello_gpu` (the `live` module: it needs a GPU adapter, and fails, saying so, where none opens). Every
 //! case compares the filtered swatch with a control of the same paint and no filter, so a
 //! function that paints nothing reads as the control.
 //!
@@ -276,60 +276,37 @@ fn verdict(backend: Backend, index: usize) -> Verdict {
     }
 }
 
-/// One case: `backend` gives `SWATCHES[index]` the verdict `expected`. The `gpu` cases are
-/// `#[ignore]`d: they need a GPU adapter.
+/// Asserts `backend` paints `SWATCHES[index]` filtered (the verdict `Rendered`). The `live` module's
+/// GPU cases call it.
+pub(crate) fn assert_rendered(backend: Backend, index: usize) {
+    let got = verdict(backend, index);
+    assert_eq!(got, Verdict::Rendered, "{}", SWATCHES[index].filter);
+}
+
+/// One case: `backend` gives `SWATCHES[index]` the verdict `Rendered`.
 macro_rules! filter_case {
-    (cpu $($test:ident: $backend:ident, $index:expr => $expected:ident;)*) => {
+    ($($test:ident: $backend:ident, $index:expr;)*) => {
         $(
             #[test]
             fn $test() {
-                let got = verdict(Backend::$backend, $index);
-                assert_eq!(got, Verdict::$expected, "{}", SWATCHES[$index].filter);
-            }
-        )*
-    };
-    (gpu $($test:ident: $backend:ident, $index:expr => $expected:ident;)*) => {
-        $(
-            #[test]
-            #[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
-            fn $test() {
-                let got = verdict(Backend::$backend, $index);
-                assert_eq!(got, Verdict::$expected, "{}", SWATCHES[$index].filter);
+                assert_rendered(Backend::$backend, $index);
             }
         )*
     };
 }
 
 filter_case! {
-    cpu
-    vello_cpu_blurs: Cpu, 0 => Rendered;
-    vello_cpu_brightens: Cpu, 1 => Rendered;
-    vello_cpu_contrasts: Cpu, 2 => Rendered;
-    vello_cpu_casts_a_drop_shadow: Cpu, 3 => Rendered;
-    vello_cpu_grays: Cpu, 4 => Rendered;
-    vello_cpu_rotates_the_hue: Cpu, 5 => Rendered;
-    vello_cpu_inverts: Cpu, 6 => Rendered;
-    vello_cpu_fades: Cpu, 7 => Rendered;
-    vello_cpu_saturates: Cpu, 8 => Rendered;
-    vello_cpu_sepias: Cpu, 9 => Rendered;
-    vello_cpu_lists_in_order: Cpu, 10 => Rendered;
-    vello_cpu_lists_a_colour_and_a_blur: Cpu, 11 => Rendered;
-    vello_cpu_lists_a_blur_and_a_colour: Cpu, 12 => Rendered;
-}
-
-filter_case! {
-    gpu
-    vello_gpu_blurs: Hybrid, 0 => Rendered;
-    vello_gpu_brightens: Hybrid, 1 => Rendered;
-    vello_gpu_contrasts: Hybrid, 2 => Rendered;
-    vello_gpu_casts_a_drop_shadow: Hybrid, 3 => Rendered;
-    vello_gpu_grays: Hybrid, 4 => Rendered;
-    vello_gpu_rotates_the_hue: Hybrid, 5 => Rendered;
-    vello_gpu_inverts: Hybrid, 6 => Rendered;
-    vello_gpu_fades: Hybrid, 7 => Rendered;
-    vello_gpu_saturates: Hybrid, 8 => Rendered;
-    vello_gpu_sepias: Hybrid, 9 => Rendered;
-    vello_gpu_lists_in_order: Hybrid, 10 => Rendered;
-    vello_gpu_lists_a_colour_and_a_blur: Hybrid, 11 => Rendered;
-    vello_gpu_lists_a_blur_and_a_colour: Hybrid, 12 => Rendered;
+    vello_cpu_blurs: Cpu, 0;
+    vello_cpu_brightens: Cpu, 1;
+    vello_cpu_contrasts: Cpu, 2;
+    vello_cpu_casts_a_drop_shadow: Cpu, 3;
+    vello_cpu_grays: Cpu, 4;
+    vello_cpu_rotates_the_hue: Cpu, 5;
+    vello_cpu_inverts: Cpu, 6;
+    vello_cpu_fades: Cpu, 7;
+    vello_cpu_saturates: Cpu, 8;
+    vello_cpu_sepias: Cpu, 9;
+    vello_cpu_lists_in_order: Cpu, 10;
+    vello_cpu_lists_a_colour_and_a_blur: Cpu, 11;
+    vello_cpu_lists_a_blur_and_a_colour: Cpu, 12;
 }

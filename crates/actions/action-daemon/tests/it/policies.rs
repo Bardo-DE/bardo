@@ -5,8 +5,9 @@ use action_core::AgentConfig;
 use action_daemon::{PolicyDirs, PresetOrigin, load_policies, read_sources, reload_policies};
 use action_fake::fake_router;
 use action_router::{Router, Seams};
+use base_testkit::TestEnv;
 use permission_policy::{Layer, LayerError, PRESET};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 const NO_READS: &str = r#"
     @id("no-reads")
@@ -19,29 +20,35 @@ fn put(dir: &Path, name: &str, text: &str) {
     std::fs::write(dir.join(name), text).expect("write");
 }
 
+/// The policy folders of one scratch root: the person's data home, a system data directory, the
+/// person's configuration and the administrator's directory.
 struct Scratch {
-    mine: tempfile::TempDir,
-    system: tempfile::TempDir,
-    config: tempfile::TempDir,
-    admin: tempfile::TempDir,
+    mine: PathBuf,
+    system: PathBuf,
+    config: PathBuf,
+    admin: PathBuf,
+    /// Last, so the folders go with it.
+    _env: TestEnv,
 }
 
 impl Scratch {
     fn new() -> Self {
+        let env = TestEnv::new("policies");
         Self {
-            mine: tempfile::tempdir().expect("scratch"),
-            system: tempfile::tempdir().expect("scratch"),
-            config: tempfile::tempdir().expect("scratch"),
-            admin: tempfile::tempdir().expect("scratch"),
+            mine: env.data(),
+            system: env.dir("system"),
+            config: env.config(),
+            admin: env.dir("admin"),
+            _env: env,
         }
     }
 
     fn dirs(&self) -> PolicyDirs {
         PolicyDirs {
-            data_home: self.mine.path().to_path_buf(),
-            system_data: vec![self.system.path().to_path_buf()],
-            person: self.config.path().join("bardo/actions/permissions"),
-            admin: self.admin.path().to_path_buf(),
+            data_home: self.mine.clone(),
+            system_data: vec![self.system.clone()],
+            person: self.config.join("bardo/actions/permissions"),
+            admin: self.admin.clone(),
         }
     }
 }
@@ -69,13 +76,9 @@ fn every_layer_is_read_in_name_order_and_the_first_preset_wins() {
         "nothing installed: the built-in preset stands"
     );
     let preset = |root: &Path| root.join("bardo/actions/permissions/default");
-    put(&preset(scratch.system.path()), "grid.cedar", PRESET);
-    put(
-        &preset(scratch.mine.path()),
-        "notes.txt",
-        "not a policy file",
-    );
-    put(&preset(scratch.mine.path()), "grid.cedar", PRESET);
+    put(&preset(&scratch.system), "grid.cedar", PRESET);
+    put(&preset(&scratch.mine), "notes.txt", "not a policy file");
+    put(&preset(&scratch.mine), "grid.cedar", PRESET);
     put(&dirs.person, "b.cedar", NO_READS);
     put(&dirs.person, "a.cedar", NO_READS);
     put(&dirs.assistant(), "x.cedar", NO_READS);
@@ -83,7 +86,7 @@ fn every_layer_is_read_in_name_order_and_the_first_preset_wins() {
     let sources = read_sources(&dirs);
     let files: Vec<String> = sources.iter().map(|s| s.origin.to_string()).collect();
     assert!(
-        files[1].starts_with(&scratch.mine.path().display().to_string()),
+        files[1].starts_with(&scratch.mine.display().to_string()),
         "{files:?}"
     );
     assert!(
@@ -139,25 +142,13 @@ fn the_preset_is_read_from_its_folder_and_says_whose_it_is() {
     let folder = |root: &Path, name: &str| root.join("bardo/actions/permissions").join(name);
     let loaded = load_policies(&dirs).expect("loads");
     assert_eq!(loaded.preset, PresetOrigin::BuiltIn);
-    put(
-        &folder(scratch.system.path(), "default"),
-        "grid.cedar",
-        PRESET,
-    );
+    put(&folder(&scratch.system, "default"), "grid.cedar", PRESET);
     let loaded = load_policies(&dirs).expect("loads");
     assert_eq!(loaded.preset, PresetOrigin::System);
-    put(
-        &folder(scratch.mine.path(), "default"),
-        "grid.cedar",
-        PRESET,
-    );
+    put(&folder(&scratch.mine, "default"), "grid.cedar", PRESET);
     let loaded = load_policies(&dirs).expect("loads");
     assert_eq!(loaded.preset, PresetOrigin::EditedByYou);
-    put(
-        &folder(scratch.mine.path(), "default"),
-        "grid.cedar",
-        "permit (",
-    );
+    put(&folder(&scratch.mine, "default"), "grid.cedar", "permit (");
     let loaded = load_policies(&dirs).expect("loads");
     assert_eq!(
         loaded.preset,
@@ -170,13 +161,7 @@ fn the_preset_is_read_from_its_folder_and_says_whose_it_is() {
 fn an_edited_auto_or_manual_folder_is_not_read_and_is_named_as_unused() {
     let scratch = Scratch::new();
     let dirs = scratch.dirs();
-    let folder = |name: &str| {
-        scratch
-            .mine
-            .path()
-            .join("bardo/actions/permissions")
-            .join(name)
-    };
+    let folder = |name: &str| scratch.mine.join("bardo/actions/permissions").join(name);
     // An old edit of the Auto grid forbids every read; if it were read, reads would ask.
     put(&folder("auto"), "grid.cedar", NO_READS);
     put(&folder("manual"), "grid.cedar", NO_READS);

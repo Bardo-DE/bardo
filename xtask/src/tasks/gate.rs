@@ -1,5 +1,5 @@
 //! `cargo xtask gate`: the workspace-deps, renderer-edges, layers, lints, product-words, error-names, no-mod-rs,
-//! no-prefs, test-modules, shear and deny checks, then fmt, clippy and tests on the affected set, then a
+//! no-prefs, test-modules, shear and deny checks, then fmt, clippy and tests on the affected set, then (with `--all`) every accept suite, then a
 //! compile of every workspace of its own. With `--all`, the per-package feature builds (`check features`)
 //! run last.
 
@@ -94,6 +94,11 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         if !run_logged_within(&ws.root, &mut cmd, step.deadline)? {
             return Ok(finish("gate", false));
         }
+    }
+    // Whole-workspace gate: the acceptance suites (jailed; a missing jail is a FAIL, not a skip), after the
+    // doc tests. A plain gate runs none.
+    if all && !super::accept::run_accept(None, None)? {
+        return Ok(finish("gate", false));
     }
     // The workspaces of their own (the compositor's perf benches and its wlcs shim) are built by nothing
     // else, so a change to a crate they use is compiled against them here.

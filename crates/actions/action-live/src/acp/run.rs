@@ -184,7 +184,7 @@ pub async fn run_flow_acp(
         };
     }
     let staged = match &spec.credentials {
-        Some(source) => Credentials::stage(source, world.dir.path()).map(Some),
+        Some(source) => Credentials::stage(source, &world.dir.env().home()).map(Some),
         None => Ok(None),
     };
     let (guard, redactor) = match staged {
