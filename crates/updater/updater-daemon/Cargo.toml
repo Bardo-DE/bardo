@@ -24,6 +24,7 @@ serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
 base-url = { path = "../../base/base-url" }
+base-clock = { path = "../../base/base-clock" }
 http-core = { path = "../../network/http-core" }
 http-reqwest = { path = "../../network/http-reqwest" }
 zbus = {workspace = true, features = ["tokio"]}

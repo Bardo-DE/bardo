@@ -86,7 +86,7 @@ pub enum Error {
 
 fn now() -> u64 {
     use base_time::Clock as _;
-    u64::try_from(base_time::SystemClock.now().0).unwrap_or(0)
+    u64::try_from(base_clock::SystemClock.now().0).unwrap_or(0)
 }
 
 fn path(text: &str) -> OwnedObjectPath {

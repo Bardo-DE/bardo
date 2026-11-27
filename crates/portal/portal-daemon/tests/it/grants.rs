@@ -1,7 +1,8 @@
 //! NEW-PI-7: the person can see what the portal remembers and take it back, through the Settings
 //! app and nobody else. On a private bus; callers are introduced with the standing they would have.
 
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 
 use caller_identity_dbus::caller_identity_core::{Pin, Proof};
 use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};

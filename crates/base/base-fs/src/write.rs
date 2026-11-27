@@ -47,6 +47,8 @@ pub enum NewFileMode {
     OwnerOnly,
     /// The system default, the process's umask applied to 0666.
     Umask,
+    /// Exactly these permission bits (for example `0o644`), whatever the umask. Ignored off Unix.
+    Mode(u32),
 }
 
 /// Write `body` as the file at `path`; the directory must exist.
@@ -70,6 +72,29 @@ pub fn write_atomic(path: &Path, body: &[u8], new_file: NewFileMode) -> Result<(
         publish(&target, new_file, |file| file.write_all(body))
     })
     .map_err(|source| WriteError::at(&target, source))
+}
+
+/// Write `body` as a new file at `path`, failing with [`io::ErrorKind::AlreadyExists`] (in the
+/// error's `source`) when anything is there, a dangling symlink included, instead of replacing it.
+///
+/// The bytes are staged and synced as in [`write_atomic`], then hard-linked into place, so the
+/// name is taken or not in one step and a reader never sees a partial file. The new file gets
+/// `new_file`'s permissions. A symlink at `path` is not followed.
+///
+/// # Errors
+///
+/// Returns [`WriteError`] when `path` is taken, or the staging file cannot be written, synced or
+/// linked into place (a file system without hard links cannot be written this way).
+pub fn write_new(path: &Path, body: &[u8], new_file: NewFileMode) -> Result<(), WriteError> {
+    lock::with(path, || {
+        let staged = stage(path, new_file, false, |file| file.write_all(body))?;
+        let linked = std::fs::hard_link(&staged, path);
+        // Best effort: the staging name is only clutter once the file has its real name.
+        let _ = std::fs::remove_file(&staged);
+        linked?;
+        sync_dir(directory_of(path))
+    })
+    .map_err(|source| WriteError::at(path, source))
 }
 
 /// The first half of a write, for a caller that already holds the path's lock and has resolved
@@ -173,11 +198,25 @@ fn open_new(path: &Path, new_file: NewFileMode) -> io::Result<File> {
     let mut options = OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]
-    if new_file == NewFileMode::OwnerOnly {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
+    match new_file {
+        NewFileMode::OwnerOnly => {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        NewFileMode::Mode(mode) => {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(mode);
+        }
+        NewFileMode::Umask => {}
     }
-    options.open(path)
+    let file = options.open(path)?;
+    #[cfg(unix)]
+    if let NewFileMode::Mode(mode) = new_file {
+        use std::os::unix::fs::PermissionsExt;
+        // The open applied the umask; the caller asked for these exact bits.
+        file.set_permissions(std::fs::Permissions::from_mode(mode))?;
+    }
+    Ok(file)
 }
 
 fn sync_file(file: &File) -> io::Result<()> {
@@ -223,5 +262,64 @@ pub(crate) mod sync_count {
     /// Files and directories synced on this thread so far.
     pub(crate) fn so_far() -> (usize, usize) {
         (FILES.with(Cell::get), DIRS.with(Cell::get))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use base_testkit::Scratch;
+
+    #[cfg(unix)]
+    fn bits(path: &Path) -> u32 {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::metadata(path).expect("meta").permissions().mode() & 0o777
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn an_explicit_mode_is_exact_whatever_the_umask() {
+        let scratch = Scratch::new("write");
+        let path = scratch.join("a");
+        write_atomic(&path, b"x", NewFileMode::Mode(0o640)).expect("write");
+        assert_eq!(bits(&path), 0o640);
+        let other = scratch.join("b");
+        write_atomic(&other, b"x", NewFileMode::Mode(0o755)).expect("write");
+        assert_eq!(bits(&other), 0o755);
+    }
+
+    #[test]
+    fn write_new_creates_the_file_and_leaves_nothing_staged() {
+        let scratch = Scratch::new("write");
+        let path = scratch.join("shot.png");
+        write_new(&path, b"png", NewFileMode::OwnerOnly).expect("write");
+        assert_eq!(std::fs::read(&path).expect("read"), b"png");
+        #[cfg(unix)]
+        assert_eq!(bits(&path), 0o600);
+        let count = std::fs::read_dir(scratch.path()).expect("dir").count();
+        assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn write_new_never_replaces_what_is_there() {
+        let scratch = Scratch::new("write");
+        let path = scratch.join("shot.png");
+        std::fs::write(&path, b"mine").expect("seed");
+        let error = write_new(&path, b"new", NewFileMode::Umask).expect_err("taken");
+        assert_eq!(error.source.kind(), io::ErrorKind::AlreadyExists);
+        assert_eq!(std::fs::read(&path).expect("read"), b"mine");
+        let count = std::fs::read_dir(scratch.path()).expect("dir").count();
+        assert_eq!(count, 1, "the staging file is gone");
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn write_new_does_not_follow_a_symlink() {
+        let scratch = Scratch::new("write");
+        let path = scratch.join("link.png");
+        std::os::unix::fs::symlink(scratch.join("missing"), &path).expect("link");
+        let error = write_new(&path, b"x", NewFileMode::Umask).expect_err("taken");
+        assert_eq!(error.source.kind(), io::ErrorKind::AlreadyExists);
+        assert!(!scratch.join("missing").exists());
     }
 }

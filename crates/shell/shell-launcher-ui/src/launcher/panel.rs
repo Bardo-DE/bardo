@@ -447,7 +447,7 @@ fn pane(panel: &PanelCtx, aside: Aside) -> Element {
 
 fn now() -> shell_launcher::UnixTime {
     use base_time::Clock as _;
-    shell_launcher::UnixTime(u64::try_from(base_time::SystemClock.now().0).unwrap_or(0))
+    shell_launcher::UnixTime(u64::try_from(base_clock::SystemClock.now().0).unwrap_or(0))
 }
 
 /// What the rows' icons are drawn with: the icon style on the active Space, the surface's

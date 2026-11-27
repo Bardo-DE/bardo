@@ -63,7 +63,7 @@ where
     T::Session: 'static,
 {
     pub(crate) fn now() -> UnixSeconds {
-        base_time::Clock::now(&base_time::SystemClock)
+        base_time::Clock::now(&base_clock::SystemClock)
     }
 
     pub(crate) fn status_text(&self) -> String {

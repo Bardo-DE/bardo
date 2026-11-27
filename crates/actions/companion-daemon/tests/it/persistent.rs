@@ -6,7 +6,7 @@ use crate::support::infer::{call, words};
 use crate::support::world::*;
 use action_core::*;
 use action_store::Waits;
-use action_vocab::{Caller, Millis, TurnId, WindowKey};
+use action_vocab::{Caller, TurnId, WindowKey};
 use companion_wire::{AnswerBody, AnswerPhase};
 use memory_core::{
     EventRef, EventSummary, KindTag, MemoryItem, MemoryReply, RecallHit, RecallWhy, RecentEntry,
@@ -395,7 +395,7 @@ async fn a_model_that_never_answers_ends_the_task_failed_when_its_span_runs_out(
     let opened = w.open("work").await;
     // The test's clock runs out the model's span the moment the companion starts waiting on it.
     let clock = w.clock.clone();
-    let span = Millis(50);
+    let span = std::time::Duration::from_millis(50);
     let run_out = async {
         loop {
             if clock.next_ask().await == span {

@@ -16,6 +16,7 @@ settings-types = { path = "../settings-types" }
 base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
+base-clock = { path = "../../base/base-clock" }
 thiserror = { workspace = true }
 notify = { workspace = true }
 futures-timer = { workspace = true }

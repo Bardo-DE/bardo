@@ -31,7 +31,7 @@ pub mod slots;
 mod tally;
 
 use backend::real::UinputBackend;
-use base_time::SystemMonotonic;
+use base_clock::SystemMonotonic;
 use clock::Uptime;
 use daemon::{Daemon, DaemonError, LoopConfig};
 use identity::caller_identity_authority::CallerIdentityAuthority;

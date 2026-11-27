@@ -402,7 +402,7 @@ stages the units its caller table names under `system/`, with their drop-ins app
   runs before `SyncSystem` and removes the old link (the old exports list it, it points into the root), so the path
   is empty and the file is placed. A link into the install root that no export list explains (a stale one) is
   `SystemFound::ExportLink` and is replaced the same way; a link anywhere else, or one that climbs out of the root,
-  is still the person's and a conflict. The replacement is the atomic rename of `write_atomic_mode`, which
+  is still the person's and a conflict. The replacement is the atomic rename of `AtomicWrite::with_mode`, which
   replaces the link itself and never writes through it.
 - Tests: `updater-core` `system.rs` (the table, the plan, the both-linked-and-placed refusal) and `updater-root`
   `system_applied.rs` (the upgrade across, the stale link, the three kinds of link in the way).

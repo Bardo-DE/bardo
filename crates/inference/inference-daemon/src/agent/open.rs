@@ -4,7 +4,7 @@
 use super::refusal::{Cause, Refusal};
 use super::route::{AgentRoute, Models, Target, admits, agent_app};
 use super::session::{Agents, Ctx};
-use super::token::{Token, random_hex};
+use super::token::Token;
 use crate::cloud::models::{known_providers, provider_of};
 use crate::engines::Engines;
 use account_capability::Locality;
@@ -177,9 +177,10 @@ impl Agents {
                 "none of the program's protocols is one the route serves",
             )
         })?;
-        let token = Token::fresh().ok_or_else(|| refused(Cause::Unavailable, "no randomness"))?;
-        let session =
-            random_hex::<8>().ok_or_else(|| refused(Cause::Unavailable, "no randomness"))?;
+        let no_randomness =
+            |error: base_random::RandomError| refused(Cause::Unavailable, error.to_string());
+        let token = Token::fresh().map_err(no_randomness)?;
+        let session = base_random::hex::<8>().map_err(no_randomness)?;
         let listener = TcpListener::bind((Ipv4Addr::LOCALHOST, 0))
             .await
             .map_err(|error| refused(Cause::Unavailable, format!("no loopback port: {error}")))?;

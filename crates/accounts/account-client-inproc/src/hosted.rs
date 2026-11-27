@@ -23,7 +23,8 @@ use account_service_grants::GrantsApi;
 use account_sheet::host::Sheets;
 use account_sheet::{EditServers, EditedServers};
 use account_wire::{AccountsReply, ParentWindow, Refusal};
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 use std::sync::Arc;
 
 /// How much of a relay's traffic an in-memory stream holds before the writer waits.

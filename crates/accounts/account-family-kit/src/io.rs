@@ -1,7 +1,8 @@
 //! What the password families reach the world through: the HTTP client and the clock that paces
 //! a poll. Each is handed in as a shared, type-erased value so no family reaches a runtime itself.
 
-use http_core::{SharedHttp, SharedSleep, Sleep};
+use base_time::{SharedSleeper, Sleeper};
+use http_core::SharedHttp;
 use std::time::Duration;
 
 /// How a sign-in that waits on the person (Login Flow v2) polls: each wait is one `first` longer
@@ -42,17 +43,17 @@ pub struct Io {
     /// The HTTP client.
     pub http: SharedHttp,
     /// The clock that paces a poll.
-    pub sleep: SharedSleep,
+    pub sleep: SharedSleeper,
     /// How a sign-in polls.
     pub pacing: Pacing,
 }
 
 impl Io {
     /// The seams over `http` and `sleep`, with the default pacing.
-    pub fn new(http: SharedHttp, sleep: impl Sleep + 'static) -> Self {
+    pub fn new(http: SharedHttp, sleep: impl Sleeper + 'static) -> Self {
         Self {
             http,
-            sleep: SharedSleep::new(sleep),
+            sleep: SharedSleeper::new(sleep),
             pacing: Pacing::default(),
         }
     }

@@ -7,6 +7,7 @@
 
 use account_capability::Tier;
 use action_accept::world::ModelSource;
+use base_time::{Monotonic, Sleeper};
 use inference_core::Readiness;
 use std::time::Duration;
 
@@ -70,10 +71,6 @@ pub trait Prepare {
     /// `Inference1.Prepare` for `tier`: how ready the model is; `None` when inferd refused or is
     /// not there.
     fn prepare(&self, tier: Tier) -> impl Future<Output = Option<Readiness>>;
-    /// Waits one [`POLL`].
-    fn pause(&self) -> impl Future<Output = ()>;
-    /// Time on a monotonic clock, for the report.
-    fn now(&self) -> Duration;
 }
 
 /// The models to bring up for `source`, in the order to ask: a cassette needs none.
@@ -122,19 +119,21 @@ fn asks(patience: Duration) -> u64 {
 async fn warm_one(
     step: &WarmStep,
     inferd: &impl Prepare,
+    time: (&impl Monotonic, &impl Sleeper),
     patience: Duration,
 ) -> Result<Warmed, WarmError> {
-    let started = inferd.now();
+    let (clock, sleeper) = time;
+    let started = clock.now();
     let mut last = Readiness::Loadable;
     for ask in 0..asks(patience) {
         if ask > 0 {
-            inferd.pause().await;
+            sleeper.sleep(POLL).await;
         }
         match inferd.prepare(step.tier).await {
             Some(Readiness::Ready) => {
                 return Ok(Warmed {
                     step: step.clone(),
-                    took: inferd.now().saturating_sub(started),
+                    took: clock.now().since(started),
                 });
             }
             None | Some(Readiness::Unavailable) => {
@@ -146,7 +145,7 @@ async fn warm_one(
     Err(WarmError::NeverCameUp {
         step: step.clone(),
         last: last.slug(),
-        waited: inferd.now().saturating_sub(started),
+        waited: clock.now().since(started),
     })
 }
 
@@ -159,12 +158,13 @@ async fn warm_one(
 pub async fn warm_all(
     steps: &[WarmStep],
     inferd: &impl Prepare,
+    time: (&impl Monotonic, &impl Sleeper),
     patience: Duration,
     mut said: impl FnMut(&Warmed),
 ) -> Result<Vec<Warmed>, WarmError> {
     let mut done = Vec::new();
     for step in steps {
-        let warmed = warm_one(step, inferd, patience).await?;
+        let warmed = warm_one(step, inferd, time, patience).await?;
         said(&warmed);
         done.push(warmed);
     }

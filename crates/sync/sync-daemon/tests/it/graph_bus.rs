@@ -9,7 +9,7 @@
 //! session, and an expired delta token uploads nothing again.
 
 use crate::common;
-use base_time::SystemClock;
+use base_clock::SystemClock;
 
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};

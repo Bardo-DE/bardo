@@ -1,7 +1,7 @@
 //! The accept loop on a real socket in a scratch folder.
 
 use crate::support::{USER, listed, mouse_gestures};
-use base_time::SystemMonotonic;
+use base_clock::SystemMonotonic;
 use caller_identity_core::Uid;
 use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
 use input_broker_daemon::backend::fake::FakeBackend;

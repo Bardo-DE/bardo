@@ -49,9 +49,11 @@ impl Clock for FixedClock {
     fn stamp(&self) -> Stamp {
         Stamp(self.stamp.load(Ordering::SeqCst))
     }
+}
 
-    async fn after(&self, limit: std::time::Duration) {
-        let _ = limit;
+impl base_time::Sleeper for FixedClock {
+    async fn sleep(&self, how_long: std::time::Duration) {
+        let _ = how_long;
         if self.impatient.load(Ordering::SeqCst) {
             return;
         }

@@ -4,7 +4,6 @@
 //! layers, the swipe) is Bardo's.
 
 use std::path::PathBuf;
-use std::time::SystemTime;
 
 use dioxus::prelude::*;
 use shell_desktop_fs::icons::{IconRoots, icon_theme, resolve_icon};
@@ -31,10 +30,7 @@ use shell_model::apps::AppsService;
 /// Now, as the cards' ages count it.
 #[must_use]
 pub fn wall_now() -> UnixMs {
-    let ms = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .map_or(0, |d| d.as_millis());
-    UnixMs(i64::try_from(ms).unwrap_or(i64::MAX))
+    UnixMs(i64::try_from(base_time::Clock::now_ms(&base_clock::SystemClock)).unwrap_or(i64::MAX))
 }
 
 /// What a card is told beyond its notification.

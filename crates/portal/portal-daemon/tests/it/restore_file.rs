@@ -66,6 +66,25 @@ fn the_file_is_private_to_its_owner() {
 
 const HEADER: &str = "portal-restore 3";
 
+/// The files in `dir` that were kept aside (`restore.bad-<seconds>`).
+fn aside_names(dir: &std::path::Path) -> Vec<std::path::PathBuf> {
+    std::fs::read_dir(dir)
+        .expect("dir")
+        .map(|entry| entry.expect("entry").path())
+        .filter(|path| {
+            path.file_name()
+                .is_some_and(|name| name.to_string_lossy().starts_with("restore.bad-"))
+        })
+        .collect()
+}
+
+/// The one file kept aside in `dir`.
+fn kept(dir: &std::path::Path) -> std::path::PathBuf {
+    let mut found = aside_names(dir);
+    assert_eq!(found.len(), 1, "one file is kept: {found:?}");
+    found.remove(0)
+}
+
 #[test]
 fn a_file_this_version_did_not_write_is_set_aside_and_reported_damaged() {
     let dir = tempfile::tempdir().expect("tempdir");
@@ -85,10 +104,9 @@ fn a_file_this_version_did_not_write_is_set_aside_and_reported_damaged() {
             !path.exists(),
             "the foreign file is moved away, not overwritten later"
         );
-        assert_eq!(
-            std::fs::read_to_string(store.bad_path()).expect("kept"),
-            text
-        );
+        let aside = kept(dir.path());
+        assert_eq!(std::fs::read_to_string(&aside).expect("kept"), text);
+        std::fs::remove_file(aside).expect("clear");
     }
 }
 
@@ -111,10 +129,11 @@ fn a_flawed_line_loses_that_grant_only_and_the_file_is_kept_beside() {
     let live = [CastSource::Output("DP-1".into())];
     assert_eq!(book.resolve(&token, "app", &live, 1_800_000_001).len(), 1);
     assert_eq!(
-        std::fs::read_to_string(store.bad_path()).expect("a copy is kept"),
+        std::fs::read_to_string(kept(dir.path())).expect("the file is kept"),
         text
     );
-    assert!(path.exists(), "the file itself stays");
+    assert!(path.exists(), "the readable grants are written back");
+    assert_eq!(FileStore::new(path.clone()).load().expect("clean").len(), 1);
 }
 
 #[test]
@@ -129,7 +148,7 @@ fn a_file_from_the_version_before_is_dropped_without_fuss() {
     .expect("write");
     let store = FileStore::new(path.clone());
     assert!(store.load().expect("an empty book").is_empty());
-    assert!(!store.bad_path().exists(), "nothing was damaged");
+    assert!(aside_names(dir.path()).is_empty(), "nothing was damaged");
 }
 
 #[test]

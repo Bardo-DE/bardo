@@ -27,7 +27,7 @@ anyview-peek = {path = "../../anyview/crates/anyview-peek", default-features = f
 anyview-platform = {path = "../../anyview/crates/anyview-platform"}
 keymap = {path = "../../keymap/keymap"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
-dirs = { workspace = true }
+base-xdg = { path = "../../base/base-xdg" }
 action-core = {path = "../../actions/action-core"}
 ui-components = {path = "../../ui/ui-components"}
 ui-behaviour = {path = "../../ui/ui-behaviour"}
@@ -36,6 +36,7 @@ jiff = { workspace = true }
 md-5 = { workspace = true }
 provenance = {path = "../../provenance/provenance"}
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-settings = {path = "../shell-settings"}

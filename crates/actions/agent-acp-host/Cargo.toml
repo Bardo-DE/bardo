@@ -22,10 +22,10 @@ agent-acp-core = {path = "../agent-acp-core"}
 action-tools = {path = "../action-tools"}
 agent-client-protocol = { workspace = true }
 base-path = { path = "../../base/base-path" }
+base-random = { path = "../../base/base-random" }
 base-xdg = { path = "../../base/base-xdg" }
 sandbox = {path = "../../sandbox/sandbox"}
 companion-model = {path = "../companion-model"}
-const-hex = { workspace = true }
 action-client = {path = "../action-client", default-features = false}
 action-core = {path = "../action-core"}
 action-wire = {path = "../action-wire"}
@@ -37,7 +37,6 @@ agent-session = {path = "../agent-session"}
 action-store = {path = "../action-store"}
 futures-channel = { workspace = true, features = ["std"] }
 futures-util = { workspace = true, features = ["sink", "std"] }
-getrandom = { workspace = true, features = ["std"] }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }

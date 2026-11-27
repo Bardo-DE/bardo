@@ -51,6 +51,7 @@ name = "accept-fake-agent"
 path = "src/bin/accept-fake-agent.rs"
 
 [dependencies]
+base-clock = { path = "../../base/base-clock" }
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 base-time = { path = "../../base/base-time" }
 base-ids = { path = "../../base/base-ids" }

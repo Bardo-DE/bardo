@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-spawn = { path = "../../base/base-spawn" }
 base-fs = { path = "../../base/base-fs" }
+base-xdg = { path = "../../base/base-xdg" }
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }

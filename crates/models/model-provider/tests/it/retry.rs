@@ -4,12 +4,14 @@ use std::ops::ControlFlow;
 use std::pin::pin;
 use std::sync::Mutex;
 use std::task::{Context, Poll, Waker};
+use std::time::Duration;
 
 use base_ids::Tokens;
+use base_time::ManualSleeper;
 use model_provider::{
     Attempt, ModelInfo, ModelName, Permille, Provider, ProviderDetail, ProviderError, RetryClass,
-    RetryPolicy, RetrySeconds, Retrying, Script, ScriptedProvider, ServerStatus, Sleeper,
-    StopReason, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs, next_wait,
+    RetryPolicy, RetrySeconds, Retrying, Script, ScriptedProvider, ServerStatus, StopReason,
+    TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs, next_wait,
 };
 use proptest::prelude::*;
 
@@ -166,16 +168,6 @@ proptest! {
     }
 }
 
-#[derive(Default)]
-struct Recorder(Mutex<Vec<WaitMs>>);
-
-impl Sleeper for &Recorder {
-    fn sleep(&self, wait: WaitMs) -> impl Future<Output = ()> + Send {
-        self.0.lock().unwrap().push(wait);
-        std::future::ready(())
-    }
-}
-
 fn request() -> TurnRequest {
     use model_provider::{
         EngineExtras, Knob, Limits, Milli, OutputShape, Reasoning, Sampling, ToolChoice,
@@ -243,16 +235,16 @@ fn run(
     scripts: Vec<Script>,
 ) -> (
     Result<TurnEnd, ProviderError>,
-    Vec<WaitMs>,
+    Vec<Duration>,
     usize,
     Vec<TurnEvent>,
 ) {
-    let recorder = Recorder::default();
+    let sleeper = ManualSleeper::new();
     let inner = ScriptedProvider::new(vec![], scripts);
-    let retrying = Retrying::new(inner, POLICY, &recorder);
+    let retrying = Retrying::new(inner, POLICY, &sleeper);
     let mut sink = Keep(vec![]);
     let result = block_on(retrying.turn(&request(), &mut sink));
-    let waits = recorder.0.lock().unwrap().clone();
+    let waits = sleeper.slept();
     (result, waits, 0, sink.0)
 }
 
@@ -264,7 +256,7 @@ fn a_turn_that_fails_before_any_event_is_retried_with_backoff() {
         delta(),
     ]);
     assert_eq!(result, Ok(end()));
-    assert_eq!(waits, vec![WaitMs(100), WaitMs(200)]);
+    assert_eq!(waits, vec![ms(100), ms(200)]);
     assert_eq!(events, vec![TurnEvent::TextDelta("hi".into())]);
 }
 
@@ -275,7 +267,7 @@ fn retry_after_is_honoured_up_to_the_cap() {
         delta(),
     ]);
     assert_eq!(result, Ok(end()));
-    assert_eq!(waits, vec![WaitMs(1000)]);
+    assert_eq!(waits, vec![ms(1000)]);
 }
 
 #[test]
@@ -313,7 +305,7 @@ fn the_budget_ends_the_loop_with_the_last_error() {
         delta(),
     ]);
     assert_eq!(result, Err(ProviderError::NotReady));
-    assert_eq!(waits, vec![WaitMs(100), WaitMs(200), WaitMs(400)]);
+    assert_eq!(waits, vec![ms(100), ms(200), ms(400)]);
 }
 
 #[test]
@@ -338,29 +330,19 @@ fn describe_is_retried_the_same_way() {
             std::future::ready(Err(ProviderError::NotReady))
         }
     }
-    let recorder = Recorder::default();
-    let retrying = Retrying::new(Flaky(Mutex::new(0)), POLICY, &recorder);
+    let sleeper = ManualSleeper::new();
+    let retrying = Retrying::new(Flaky(Mutex::new(0)), POLICY, &sleeper);
     assert_eq!(block_on(retrying.describe()), Ok(vec![]));
-    assert_eq!(*recorder.0.lock().unwrap(), vec![WaitMs(100), WaitMs(200)]);
+    assert_eq!(sleeper.slept(), vec![ms(100), ms(200)]);
 }
 
-/// A sleeper that shaves a fixed share off every wait.
-struct Jittery(Mutex<Vec<WaitMs>>, Permille);
-
-impl Sleeper for &Jittery {
-    fn sleep(&self, wait: WaitMs) -> impl Future<Output = ()> + Send {
-        self.0.lock().unwrap().push(wait);
-        std::future::ready(())
-    }
-
-    fn jitter(&self) -> Permille {
-        self.1
-    }
+fn ms(n: u64) -> Duration {
+    Duration::from_millis(n)
 }
 
 #[test]
-fn the_sleepers_jitter_shaves_every_backoff() {
-    let sleeper = Jittery(Mutex::new(vec![]), Permille(250));
+fn the_jitter_shaves_every_backoff() {
+    let sleeper = ManualSleeper::new();
     let inner = ScriptedProvider::new(
         vec![],
         vec![
@@ -369,17 +351,12 @@ fn the_sleepers_jitter_shaves_every_backoff() {
             delta(),
         ],
     );
-    let retrying = Retrying::new(inner, POLICY, &sleeper);
+    let retrying = Retrying::new(inner, POLICY, &sleeper).with_jitter(Permille(250));
     let mut sink = Keep(vec![]);
     assert_eq!(block_on(retrying.turn(&request(), &mut sink)), Ok(end()));
     assert_eq!(
-        *sleeper.0.lock().unwrap(),
-        vec![WaitMs(75), WaitMs(150)],
-        "a jittery sleeper shaves every backoff"
-    );
-    assert_eq!(
-        (&Recorder::default()).jitter(),
-        Permille(0),
-        "a sleeper without a jitter source shaves nothing"
+        sleeper.slept(),
+        vec![ms(75), ms(150)],
+        "a jitter shaves every backoff"
     );
 }

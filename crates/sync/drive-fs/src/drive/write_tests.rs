@@ -16,8 +16,8 @@ impl Stepped {
 }
 
 impl Monotonic for Stepped {
-    fn now(&self) -> Instant {
-        Instant::now() + *held(&self.by)
+    fn now(&self) -> Mono {
+        SystemMonotonic.now() + *held(&self.by)
     }
 }
 

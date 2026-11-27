@@ -21,14 +21,13 @@ use account_callers::choose_proc_root;
 use account_callers::{CallerFileError, ProcCallers};
 use account_client::{AccountClient, AccountsLink, GrantsLink};
 use account_client_dbus::Bus;
-use base_time::SystemClock;
+use base_clock::SystemClock;
 use base_xdg::PathError;
 use dbus_kit::connect::BusTarget;
 use drive_fuse::Mounter;
 use std::path::PathBuf;
 use std::sync::Arc;
 use sync_driver::hub::{Access, Hub};
-use sync_engine::clock::Millis;
 use sync_engine::scheduler::{Network, Settings};
 use sync_pim_mirror::{ClientGrants, PimConfig, PimSupervisor, Wiring};
 use sync_storage::knobs::read_cache_limit;
@@ -37,18 +36,6 @@ use sync_xdg::Paths;
 use tokio::sync::watch;
 use tokio::task::JoinHandle;
 use zbus::Connection;
-
-/// The wall clock in milliseconds, for Photos' hybrid clocks: the daemon is where it is read.
-#[derive(Debug, Clone, Copy)]
-struct SystemMillis;
-
-impl Millis for SystemMillis {
-    fn now_ms(&self) -> u64 {
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_or(0, |d| u64::try_from(d.as_millis()).unwrap_or(u64::MAX))
-    }
-}
 
 /// A value that differs between two runs of the daemon: the time it started, in nanoseconds,
 /// and its process id, in hex.
@@ -257,7 +244,7 @@ impl Daemon {
             owners: Access::default(),
             clock: sync_core::Clock::new(SystemClock),
             nonce: nonce.clone(),
-            millis: Arc::new(SystemMillis),
+            wall: Arc::new(SystemClock),
         };
         let pim = PimSupervisor::new(
             wiring(network.clone()),

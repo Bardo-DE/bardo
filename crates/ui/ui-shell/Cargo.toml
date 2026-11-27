@@ -10,13 +10,12 @@ publish.workspace = true
 
 [dependencies]
 base-words = { path = "../../base/base-words" }
+base-secret = { path = "../../base/base-secret" }
 ui-components = {path = "../ui-components"}
 ui-core = {path = "../ui-core"}
 ui-motion = {path = "../ui-motion", features = ["dioxus"]}
 ui-style = {path = "../ui-style", default-features = false, features = ["dioxus"]}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
-# `accounts::Hidden` wipes a typed secret when it is dropped.
-zeroize = { workspace = true }
 
 [dev-dependencies]
 dioxus-ssr = { workspace = true }

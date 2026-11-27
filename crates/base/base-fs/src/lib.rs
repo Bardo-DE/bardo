@@ -8,6 +8,8 @@
 //!   beside the target, `sync_all`, a rename, and an fsync of the directory; the target's mode is
 //!   kept, a symlink is written through to its target, and two writers of one path in a process
 //!   take turns. Everything below writes through the same core.
+//! - [`write_new`]: the same write for a file that must not exist yet; it fails with
+//!   `AlreadyExists` rather than replace one.
 //! - [`update_atomic`]: read, edit and write back while holding the file's lock (in this process
 //!   and, through a sidecar `flock`, between programs).
 //! - [`move_aside`]: a damaged file kept under a timestamped `.bad` name before anything is
@@ -33,4 +35,4 @@ pub use aside::move_aside;
 pub use cap::ReadCap;
 pub use read::{ReadError, read_capped, read_text_capped};
 pub use update::{UpdateError, update_atomic};
-pub use write::{NewFileMode, WriteError, write_atomic};
+pub use write::{NewFileMode, WriteError, write_atomic, write_new};

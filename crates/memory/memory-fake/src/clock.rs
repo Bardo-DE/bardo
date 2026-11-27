@@ -1,25 +1,7 @@
-//! The stepped test clock, and the instant every fixture uses.
+//! The instant every fixture uses.
 
-use base_time::Clock;
 use memory_core::UnixSeconds;
-use std::sync::atomic::{AtomicI64, Ordering};
 
-/// Every fixture happens at this instant (2026-09-21T10:13:20Z).
+/// Every fixture happens at this instant (2026-09-21T10:13:20Z). A fixture's clock is a
+/// `base_time::ManualClock` made at it.
 pub const NOW: UnixSeconds = UnixSeconds(1_790_000_000);
-
-/// A clock that starts at [`NOW`] and moves only when a test says so.
-#[derive(Debug, Default)]
-pub struct SteppedClock(AtomicI64);
-
-impl SteppedClock {
-    /// Moves the clock forward.
-    pub fn advance(&self, seconds: i64) {
-        self.0.fetch_add(seconds, Ordering::Relaxed);
-    }
-}
-
-impl Clock for SteppedClock {
-    fn now(&self) -> UnixSeconds {
-        UnixSeconds(NOW.0 + self.0.load(Ordering::Relaxed))
-    }
-}

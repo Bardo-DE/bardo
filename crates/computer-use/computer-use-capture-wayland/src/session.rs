@@ -4,37 +4,19 @@ use super::shm::Shared;
 use super::state::{CapState, Constraints, Failure, FrameSlot, pick_format};
 use crate::key::ObjectKey as Key;
 use crate::pump::Pump;
+use base_time::Monotonic;
 use computer_use_action::{Coord, Point, Rect, Scale120, Size, WindowSpace};
 use computer_use_capture::{
     AFTER_DAMAGE_LIMIT_MS, CaptureError, CaptureSession, DamageAt, DamageSource, Frame, FrameSeq,
     FrameWant, MaskRegion, MaskReport, PixelBuf, WholeMask, apply_masks, pixel_diff,
 };
 use computer_use_desktop::{MaskWhere, Stamp};
-use std::fmt;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
-/// Where frame and damage stamps come from.
-pub trait StampClock: Send + Sync + fmt::Debug {
-    /// Now, on whatever clock the caller's run machine uses.
-    fn now(&self) -> Stamp;
-}
-
-/// Milliseconds since the capture was constructed: the default, for callers with no clock of
-/// their own.
-#[derive(Debug)]
-pub(crate) struct SinceStart(Instant);
-
-impl SinceStart {
-    pub(crate) fn now() -> Self {
-        Self(Instant::now())
-    }
-}
-
-impl StampClock for SinceStart {
-    fn now(&self) -> Stamp {
-        Stamp(u64::try_from(self.0.elapsed().as_millis()).unwrap_or(u64::MAX))
-    }
+/// The stamp of the reading `clock` gives now: milliseconds on that clock.
+fn stamp_now(clock: &dyn Monotonic) -> Stamp {
+    Stamp(u64::try_from(clock.now().0.as_millis()).unwrap_or(u64::MAX))
 }
 
 /// Stock captures at logical resolution at every output scale (Spike A, measured at 1.5).
@@ -59,7 +41,7 @@ pub(crate) enum Masking {
 #[derive(Debug)]
 pub struct WaylandSession {
     pump: Arc<Pump<CapState>>,
-    clock: Arc<dyn StampClock>,
+    clock: Arc<dyn Monotonic>,
     key: Key,
     masking: Masking,
     buffer: Shared,
@@ -83,7 +65,7 @@ impl WaylandSession {
     /// Waits for the session's constraints and makes the buffer for them.
     pub(crate) async fn start(
         pump: Arc<Pump<CapState>>,
-        clock: Arc<dyn StampClock>,
+        clock: Arc<dyn Monotonic>,
         key: Key,
         masking: Masking,
     ) -> Result<Self, CaptureError> {
@@ -256,7 +238,7 @@ impl CaptureSession for WaylandSession {
         self.seq += 1;
         Ok(Frame {
             seq: FrameSeq(self.seq),
-            at: self.clock.now(),
+            at: stamp_now(&*self.clock),
             pixels,
             logical,
             scale: LOGICAL,
@@ -272,7 +254,7 @@ impl CaptureSession for WaylandSession {
     async fn damage(&mut self) -> Result<DamageAt, CaptureError> {
         let (_, region) = self.next_change().await?;
         Ok(DamageAt {
-            at: self.clock.now(),
+            at: stamp_now(&*self.clock),
             region,
             source: DamageSource::PixelDiff,
         })

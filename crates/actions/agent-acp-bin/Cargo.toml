@@ -31,6 +31,7 @@ path = "src/bin/bardo-agent-net-enter.rs"
 base-time = { path = "../../base/base-time" }
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
+base-xdg = { path = "../../base/base-xdg" }
 companion-client = {path = "../companion-client"}
 companion-model = {path = "../companion-model"}
 companion-wire = {path = "../companion-wire"}
@@ -48,7 +49,6 @@ action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
 action-vocab = {path = "../action-vocab"}
 action-dbus = {path = "../action-dbus", features = ["inferd"]}
 action-host = {path = "../action-host"}
-action-store = {path = "../action-store"}
 agent-launch = {path = "../agent-launch", features = ["dbus"]}
 action-log = {path = "../action-log"}
 agent-native = {path = "../agent-native"}
@@ -59,6 +59,7 @@ action-settings-fs = {path = "../action-settings-fs"}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 base-path = { path = "../../base/base-path" }
+base-clock = { path = "../../base/base-clock" }
 sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
 companion-tasks = {path = "../companion-tasks"}
 futures-util = { workspace = true, features = ["std"] }

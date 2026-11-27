@@ -7,7 +7,7 @@
 use crate::seams::Surface;
 use crate::shared::Shared;
 use action_store::{WaitStopError, stop_after, until, within};
-use action_vocab::{Clock, Millis};
+use action_vocab::Clock;
 use provenance::TaskId;
 use std::time::Duration;
 
@@ -20,7 +20,7 @@ pub(crate) async fn bounded<K: Clock, S: Surface, T>(
     work: impl Future<Output = T>,
 ) -> Result<T, WaitStopError> {
     let cancel = shared.cancel_of(task);
-    let stop = stop_after(clock.after(millis(span)), cancel.cancelled());
+    let stop = stop_after(clock.sleep(span), cancel.cancelled());
     // Boxed so the waited future lives on the heap: inline it would sit one more layer deep on the
     // polling thread's stack, and the policy point's evaluator refuses to run below its stack floor.
     until(Box::pin(work), stop).await
@@ -33,10 +33,5 @@ pub(crate) async fn timed<K: Clock, T>(
     work: impl Future<Output = T>,
 ) -> Result<T, WaitStopError> {
     // Boxed for the same reason as in `bounded`.
-    within(clock.after(millis(span)), Box::pin(work)).await
-}
-
-/// `span` in milliseconds, as many as a `Millis` holds.
-fn millis(span: Duration) -> Millis {
-    Millis(u32::try_from(span.as_millis()).unwrap_or(u32::MAX))
+    within(clock.sleep(span), Box::pin(work)).await
 }

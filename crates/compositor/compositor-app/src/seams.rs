@@ -14,7 +14,8 @@ use crate::privacy::{
 use crate::space_store::{BackgroundSpaceStore, EphemeralSpaceStore, SpaceStore, StateDirs};
 use crate::space_sync::SpaceSync;
 use crate::spawn::{ChildEnv, ProcessSpawner, Spawner};
-use base_time::{Clock, FixedClock, SystemClock, UnixSeconds};
+use base_clock::SystemClock;
+use base_time::{Clock, FixedClock, UnixSeconds};
 use compositor_backend::tty::TtySeams;
 use compositor_ipc::shell_calls::{ShellCalls, ZbusShellCalls};
 use std::fmt;

@@ -29,18 +29,14 @@ pub enum LinkError {
     Protocol(String),
 }
 
-/// The clock. Only the daemon reads the system's. Wall time is [`base_time::Clock::now`]; this
-/// adds the computer-use daemon's own stamps and the timers.
-pub trait Clock: base_time::Clock {
+/// The clock, with the computer-use daemon's own stamps. Only the daemon reads the system's.
+///
+/// Wall time is [`base_time::Clock::now`] and the
+/// timers are [`base_time::Sleeper::sleep`] (a clock with no timers, a harness's, never wakes, so
+/// what is bounded by it waits as long as it likes).
+pub trait Clock: base_time::Clock + base_time::Sleeper {
     /// Now, on the computer-use daemon's clock.
     fn stamp(&self) -> Stamp;
-
-    /// Ready once `limit` has passed. A clock with no timers (a harness) never is, so what is
-    /// bounded by it waits as long as it likes.
-    fn after(&self, limit: std::time::Duration) -> impl Future<Output = ()> + Send {
-        let _ = limit;
-        std::future::pending()
-    }
 }
 
 /// What a check in flight reports.

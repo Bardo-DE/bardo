@@ -20,10 +20,11 @@ use action_gate::gate::{GateInputs, Pending, gate};
 use action_gate::prepared::grant_state;
 use action_gate_wire::{ComputerUseAsk, GateAnswer};
 use action_manifest::{AgentReach, Lasting};
-use action_vocab::{Clock, Depth, LabelText, Origin};
+use action_vocab::{Depth, LabelText, Origin};
 use action_wire::{GrantAnswer, GrantAsk, IntentsReply};
 use base_ids::Count;
 use base_time::Clock as _;
+use base_time::Sleeper as _;
 use permission_core::{
     ActionGrantKey, AskReason, GrantCaller, GrantTarget, Impact, Level, LimitCall, SessionSaw,
     SinkIntegrity,
@@ -458,7 +459,7 @@ impl<S: Seams> Router<S> {
         let ready = within(
             self.seams
                 .clock()
-                .after(self.agent_config().confirm_proceed),
+                .sleep(self.agent_config().confirm_proceed.duration()),
             within(watch.withdrawn(), watch.proceeded()),
         )
         .await;

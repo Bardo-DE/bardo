@@ -6,7 +6,8 @@
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 use portal_core::{
     CastSource, DeviceKinds, Grant, InputGrant, Keep, Remembered, RestoreBook, RestoreToken,
     Screens, StandingGrant,
@@ -104,7 +105,14 @@ impl Keeper {
             );
             return None;
         };
-        let token = RestoreToken::mint(crate::random::bytes::<16>()?);
+        let bytes = match base_random::bytes::<16>() {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                tracing::error!(%error, "this access is not remembered: no random bytes for its token");
+                return None;
+            }
+        };
+        let token = RestoreToken::mint(bytes);
         let _held = self.held();
         let mut book = match self.store.load() {
             Ok(book) => book,

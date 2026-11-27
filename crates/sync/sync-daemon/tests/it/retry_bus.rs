@@ -65,9 +65,9 @@ async fn a_look_that_could_not_ask_for_grants_says_it_was_not_whole_and_the_next
         settings: Settings::quick(),
         network,
         owners: Access::default(),
-        clock: sync_core::Clock::new(base_time::SystemClock),
+        clock: sync_core::Clock::new(base_clock::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
+        wall: Arc::new(base_time::ManualClock::at_ms(1_700_000_000_000)),
     };
     let down = Arc::new(AtomicBool::new(true));
     let mut supervisor = PimSupervisor::new(

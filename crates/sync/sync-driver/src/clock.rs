@@ -1,7 +1,8 @@
 //! The clock the daemon's engines run on: the system clock, optionally running faster than real
-//! time for a test. (`sync_engine::clock::ManualClock` is the clock a test sets by hand.)
+//! time for a test. (`base_time::ManualClock` is the clock a test sets by hand.)
 
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 
 /// The system clock, running `scale` times faster than real time (see `scheduler::Settings::time_scale`); with a scale of 1 it is exactly [`SystemClock`].
 ///

@@ -10,8 +10,8 @@ use super::error::ApplyError;
 use super::install::{Applied, locked, read_installed, rollback_locked};
 use super::open::{Capped, read_capped};
 use super::relabel::Relabel;
-use crate::fsutil::write_atomic_mode;
 use crate::layout::Layout;
+use base_fs::atomic::AtomicWrite;
 use updater_core::{Authenticator, Guard, GuardRecord, Restore};
 
 /// The largest record read: it is a few lines.
@@ -39,7 +39,10 @@ fn read_record(layout: &Layout) -> GuardRecord {
 /// Writes the record, readable by root alone.
 pub(super) fn write_record(layout: &Layout, record: &GuardRecord) -> Result<(), ApplyError> {
     let text = toml::to_string(record).map_err(|e| ApplyError::Unpack(e.to_string()))?;
-    write_atomic_mode(&layout.health_file(), text.as_bytes(), 0o600)
+    AtomicWrite::with_mode(0o600)
+        .replacing_links()
+        .dirs_with_mode(0o755)
+        .write(&layout.health_file(), text.as_bytes())
         .map_err(ApplyError::io("remembering how the start went"))
 }
 

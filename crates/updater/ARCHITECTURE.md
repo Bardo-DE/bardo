@@ -126,7 +126,7 @@ installed by hand and not by a release, so a new system file needs a new helper 
 release that places the input service's files (`input_broker.*`, `72-bardo-input-broker.rules`) needs the helper that knows them,
 so re-run the installer (`scripts/install.sh`) from the new source before updating to it; an older helper refuses
 that release whole. The same holds for `/usr/lib/bardo/key-remap/key-remap.toml`. A destination folder that does not exist
-(`/usr/lib/bardo/key-remap` on a fresh machine) is made by the write itself (`write_atomic_mode` creates the missing
+(`/usr/lib/bardo/key-remap` on a fresh machine) is made by the write itself (`AtomicWrite::with_mode` creates the missing
 parents, `0755` under the helper's umask) and is left in place when the file is later removed; the test
 `a_system_file_is_placed_replaced_and_dropped_with_the_releases` runs in a sandbox with no such folders.
 A file is overwritten or removed only when it still holds exactly what an earlier release placed

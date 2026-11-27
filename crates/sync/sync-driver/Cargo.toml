@@ -13,6 +13,7 @@ account-callers = {path = "../../accounts/account-callers"}
 caller-role-types = {path = "../../identity/caller-role-types"}
 account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock" }
 sync-core = {path = "../sync-core"}
 sync-engine = {path = "../sync-engine"}
 sync-xdg = {path = "../sync-xdg"}

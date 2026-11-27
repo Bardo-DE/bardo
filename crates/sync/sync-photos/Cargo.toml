@@ -37,6 +37,7 @@ account-callers = {path = "../../accounts/account-callers"}
 caller-role-types = {path = "../../identity/caller-role-types"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-clock = { path = "../../base/base-clock" }
 replica-webdav = {path = "../replica-webdav"}
 sync-core = {path = "../sync-core", features = ["testing"]}
 sync-engine = {path = "../sync-engine", features = ["testing"]}

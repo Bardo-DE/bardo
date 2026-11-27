@@ -285,7 +285,10 @@ fn start(app: fn() -> Element) -> Harness {
         LOG.write().clear();
         *FIELDS.write() = vec![
             field(FieldRole::Address, FieldText::Plain(String::new())),
-            field(FieldRole::Password, FieldText::Secret(Hidden::default())),
+            field(
+                FieldRole::Password,
+                FieldText::Secret(SecretText::default()),
+            ),
         ];
         QUERY.write().clear();
         *CURSOR.write() = None;
@@ -372,7 +375,7 @@ fn what_is_typed_reaches_the_host_and_a_password_never_reaches_the_markup() {
     });
     assert_eq!(address, FieldText::Plain("ada@example.org".to_owned()));
     match secret {
-        FieldText::Secret(text) => assert_eq!(text.reveal(), SECRET, "the host hears the password"),
+        FieldText::Secret(text) => assert_eq!(text.expose(), SECRET, "the host hears the password"),
         FieldText::Plain(other) => panic!("the password field reports {other:?}"),
     }
     assert!(
@@ -398,7 +401,7 @@ fn a_host_that_empties_the_password_empties_the_field() {
         "the typed dots show"
     );
     harness.within(|| {
-        FIELDS.write()[1].text = FieldText::Secret(Hidden::default());
+        FIELDS.write()[1].text = FieldText::Secret(SecretText::default());
     });
     harness.advance(ms(40));
     assert_eq!(
@@ -551,7 +554,7 @@ fn copy_link_reports_the_link_and_shows_the_hosts_word() {
 fn a_password_the_host_hands_back_shows_in_the_field() {
     let mut harness = start(SignIn);
     harness.within(|| {
-        FIELDS.write()[1].text = FieldText::Secret(Hidden::new("abc".to_owned()));
+        FIELDS.write()[1].text = FieldText::Secret(SecretText::new("abc".to_owned()));
     });
     harness.advance(ms(40));
     assert!(

@@ -11,7 +11,13 @@
 
 use account_tailscale::NodeId;
 #[cfg(feature = "persist")]
+use base_clock::SystemClock;
+#[cfg(feature = "persist")]
 use base_fs::atomic::AtomicWrite;
+#[cfg(feature = "persist")]
+use base_fs::move_aside;
+#[cfg(feature = "persist")]
+use base_time::Clock;
 use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -169,7 +175,7 @@ impl Guests {
     }
 
     /// The records kept in the file at `path` (feature `persist`). A missing file is the empty list. One that cannot
-    /// be read as a list is moved aside (`<name>.unusable`) and the list starts empty; the
+    /// be read as a list is moved aside (`<name>.bad-<seconds>`) and the list starts empty; the
     /// second part says so, in a line for a log. A record whose id is not a computer's is
     /// dropped.
     #[cfg(feature = "persist")]
@@ -180,18 +186,18 @@ impl Guests {
                 if let Ok(file) = toml::from_str::<File>(&text) {
                     (file, None)
                 } else {
-                    let mut aside = path.as_os_str().to_owned();
-                    aside.push(".unusable");
-                    let aside = PathBuf::from(aside);
-                    let _ = std::fs::rename(path, &aside);
-                    (
-                        File::default(),
-                        Some(format!(
+                    let said = match move_aside(path, SystemClock.now()) {
+                        Ok(aside) => format!(
                             "{}: is not a list of computers; kept as {} and started empty",
                             path.display(),
                             aside.display()
-                        )),
-                    )
+                        ),
+                        Err(error) => format!(
+                            "{}: is not a list of computers and could not be kept aside ({error}); started empty",
+                            path.display()
+                        ),
+                    };
+                    (File::default(), Some(said))
                 }
             }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => (File::default(), None),

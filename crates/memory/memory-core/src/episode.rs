@@ -13,28 +13,26 @@
 //! per `id` is the one recall indexes.
 
 use crate::slug::slug_enum;
-use crate::text::{UserText, text_id};
+use crate::text::UserText;
 use crate::thing::{ThingRef, ThingRole, ThingView};
 use account_core::SpaceId;
-use base_ids::{Count, is_id};
+use base_ids::Count;
 use base_time::UnixSeconds;
 use provenance::{
     ActionName, AgentRef, Effect, Label, MessageText, ModelRole, OutcomeRef, UndoHandle,
 };
 use serde::{Deserialize, Serialize};
 
-text_id!(
+base_ids::slug_id!(
     /// One episode: the task or run id it closes, in the accounts service's id grammar. A side conversation
     /// of the person with a worker or run gets its own.
     EpisodeId,
-    "episode id",
-    is_id
+    "episode id"
 );
-text_id!(
+base_ids::slug_id!(
     /// The name of one typed result value (`messages_archived`), in the accounts service's id grammar.
     ResultName,
-    "result name",
-    is_id
+    "result name"
 );
 
 slug_enum!(

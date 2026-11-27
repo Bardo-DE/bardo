@@ -87,7 +87,7 @@ impl Epoch {
     #[must_use]
     pub fn now() -> Epoch {
         use base_time::Clock as _;
-        Epoch(base_time::SystemClock.now().0)
+        Epoch(base_clock::SystemClock.now().0)
     }
 
     /// `self` moved later by `by`.

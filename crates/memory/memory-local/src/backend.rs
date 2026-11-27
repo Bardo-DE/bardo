@@ -11,7 +11,6 @@ use memory_recall::{Embedder, ExactScan, Index};
 use memory_seal::{DbKey, ProvidedKeys, Purpose, SpaceKey, derive};
 use memory_service::{Backend, BackendError, Listing, RegistryError};
 use memory_tidy::Consolidator;
-use std::sync::atomic::{AtomicU64, Ordering};
 
 /// An app's own memory on disk: `SQLCipher` log and index, sealed or plain files, keys derived from
 /// the master key the app provides. The embedder, consolidator and clock are the app's.
@@ -20,7 +19,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 /// use memory_client::{InProcess, Memory, Recorded};
 /// use memory_core::{AppId, Isolation, RuleSet, SpaceId, VaultKind};
 /// use memory_fake::{mail, mail_thread_archived};
-/// use base_time::SystemClock;
+/// use base_clock::SystemClock;
 /// use memory_local::{LocalBackend, Root, create_space, open};
 /// use memory_seal::{ProvidedKeys, SpaceKey};
 /// use memory_service::Caller;
@@ -50,7 +49,6 @@ pub struct LocalBackend<Clk, E = NoEmbedder, C = NoConsolidator> {
     embedder: E,
     consolidator: C,
     clock: Clk,
-    draws: AtomicU64,
 }
 
 impl<Clk: Clock> LocalBackend<Clk> {
@@ -64,7 +62,6 @@ impl<Clk: Clock> LocalBackend<Clk> {
             embedder: NoEmbedder::default(),
             consolidator: NoConsolidator,
             clock,
-            draws: AtomicU64::new(0),
         }
     }
 }
@@ -79,7 +76,6 @@ impl<Clk, E, C> LocalBackend<Clk, E, C> {
             embedder,
             consolidator: self.consolidator,
             clock: self.clock,
-            draws: self.draws,
         }
     }
 
@@ -92,7 +88,6 @@ impl<Clk, E, C> LocalBackend<Clk, E, C> {
             embedder: self.embedder,
             consolidator,
             clock: self.clock,
-            draws: self.draws,
         }
     }
 
@@ -117,16 +112,9 @@ fn gone_is_fine(result: std::io::Result<()>) -> Result<(), BackendError> {
 }
 
 impl<Clk: Clock, E: Embedder, C: Consolidator> LocalBackend<Clk, E, C> {
-    /// Sixteen bytes that differ from the last run's: the OS's randomness, or, if it cannot
-    /// answer, the clock's seconds and a counter (an id only needs to differ).
-    fn draw(&self) -> [u8; 16] {
-        let n = self.draws.fetch_add(1, Ordering::Relaxed);
-        let mut out = [0u8; 16];
-        if getrandom::fill(&mut out).is_err() {
-            out[..8].copy_from_slice(&self.clock.now().0.to_be_bytes());
-            out[8..].copy_from_slice(&n.to_be_bytes());
-        }
-        out
+    /// Sixteen bytes that differ from the last run's: the OS's randomness, or the error.
+    fn draw() -> Result<[u8; 16], BackendError> {
+        Ok(base_random::bytes()?)
     }
 }
 
@@ -155,8 +143,8 @@ impl<Clk: Clock, E: Embedder, C: Consolidator> Backend for LocalBackend<Clk, E, 
         &self.clock
     }
 
-    fn random(&self) -> [u8; 16] {
-        self.draw()
+    fn random(&self) -> Result<[u8; 16], BackendError> {
+        Self::draw()
     }
 
     fn remove_space(&self, space: &SpaceId) -> Result<(), BackendError> {

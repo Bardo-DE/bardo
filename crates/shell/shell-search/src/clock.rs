@@ -3,7 +3,8 @@
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 use shell_launcher::UnixTime;
 
 /// The wall clock, in whole seconds since the epoch; a clock that cannot be read (never

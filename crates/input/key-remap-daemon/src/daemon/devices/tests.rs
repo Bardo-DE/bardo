@@ -203,13 +203,13 @@ fn the_conflict_backoff_caps_at_thirty_seconds_and_a_success_resets_it() {
     for _ in 0..7 {
         let wait = rig.devices.next_wake(now).expect("a retry is scheduled");
         waits.push(wait.as_secs());
-        now = now.after(wait);
+        now = now + wait;
         rig.poll(now);
     }
     assert_eq!(waits, [1, 2, 4, 8, 16, 30, 30]);
 
     rig.nodes.free(A);
-    rig.poll(now.after(ms(30_000)));
+    rig.poll(now + ms(30_000));
     assert_eq!(rig.grabs(), [Grab::Active]);
 
     // Another program grabs it again later: the wait starts over at 1 s.

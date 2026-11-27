@@ -15,7 +15,6 @@ use super::meter::Line;
 use super::open::{local_card, model_ref_of};
 use super::route::admits;
 use super::session::Ctx;
-use super::token::random_hex;
 use crate::runner::{Pin, Pinned, Turns};
 use base_ids::Tokens;
 use inference_agent_proto::fail::{Cause, Failure, Shape};
@@ -169,7 +168,12 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
     });
     let turns = Turns::new(pin, engines.supervised().clone(), parsed.chat.tier);
     let mut turn = turns.start(InferRequest::Chat(parsed.chat), Vec::new());
-    let tag = random_hex::<12>().unwrap_or_default();
+    let tag = base_random::hex::<12>().map_err(|error| {
+        Failure::new(
+            Cause::Overloaded,
+            format!("no random bytes for the reply id: {error}"),
+        )
+    })?;
     let created = ctx.clock.now().0;
     let reply = if parsed.stream {
         let sse: Box<dyn SseOut> = match shape {

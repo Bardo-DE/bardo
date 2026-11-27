@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-fs = { path = "../../base/base-fs" }
+base-random = { path = "../../base/base-random" }
 base-time = { path = "../../base/base-time" }
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal"}
@@ -21,10 +22,10 @@ memory-store = {path = "../memory-store"}
 memory-files = {path = "../memory-files"}
 memory-recall = {path = "../memory-recall"}
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
-getrandom = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
+base-clock = { path = "../../base/base-clock" }
 memory-settings = {path = "../memory-settings"}
 memory-client = {path = "../memory-client", default-features = false, features = ["in_process"]}
 memory-fake = {path = "../memory-fake"}

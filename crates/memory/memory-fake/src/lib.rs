@@ -11,7 +11,7 @@ mod fixtures;
 mod scratch;
 
 pub use backend::{FAKE_SPACES, FakeBackend, SharedVault, fake_service, fake_space_metas};
-pub use clock::{NOW, SteppedClock};
+pub use clock::NOW;
 pub use consolidation::{
     ana_topic_text, consolidation_event, consolidation_event_link, consolidation_input,
 };

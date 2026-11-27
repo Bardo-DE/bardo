@@ -29,6 +29,19 @@ impl SecretText {
     pub fn expose(&self) -> &str {
         self.0.expose_secret()
     }
+
+    /// Whether the secret holds no text.
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.expose().is_empty()
+    }
+}
+
+impl Default for SecretText {
+    /// The empty secret.
+    fn default() -> Self {
+        Self::new("")
+    }
 }
 
 impl PartialEq for SecretText {
@@ -117,6 +130,12 @@ mod tests {
         assert_eq!(SecretText::new("pw"), SecretText::new("pw"));
         assert_ne!(SecretText::new("pw"), SecretText::new("pw2"));
         assert_ne!(SecretText::new("pw"), SecretText::new("px"));
+    }
+
+    #[test]
+    fn the_default_secret_is_empty() {
+        assert!(SecretText::default().is_empty());
+        assert!(!SecretText::new("pw").is_empty());
     }
 
     /// `SecretText` wipes itself when dropped: it is `ZeroizeOnDrop`, and `zeroize`, which its

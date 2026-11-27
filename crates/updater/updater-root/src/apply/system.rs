@@ -12,8 +12,8 @@ use super::open::{Capped, read_capped};
 use super::relabel::{Reach, Relabel, Relabeled};
 use super::settle::Change;
 use super::synced::Synced;
-use crate::fsutil::write_atomic_mode;
 use crate::layout::Layout;
+use base_fs::atomic::AtomicWrite;
 use semver::Version;
 use std::collections::BTreeMap;
 use std::fs;
@@ -125,7 +125,10 @@ pub fn sync_system(
             SystemAction::Place(item) => {
                 let bytes = contents(layout, to, &item)?;
                 let at = layout.export_path(&item.path);
-                write_atomic_mode(&at, &bytes, item.mode)
+                AtomicWrite::with_mode(item.mode)
+                    .replacing_links()
+                    .dirs_with_mode(0o755)
+                    .write(&at, &bytes)
                     .map_err(ApplyError::io(format!("placing {}", item.path)))?;
                 written.push(at);
                 changes.push(Change::Placed(item.path));

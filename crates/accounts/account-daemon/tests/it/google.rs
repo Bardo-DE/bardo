@@ -68,12 +68,7 @@ struct Sky(std::sync::atomic::AtomicI64);
 impl base_time::Clock for Sky {
     fn now(&self) -> base_time::UnixSeconds {
         match self.0.load(std::sync::atomic::Ordering::SeqCst) {
-            0 => {
-                let since = std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH)
-                    .unwrap_or_default();
-                base_time::UnixSeconds(i64::try_from(since.as_secs()).unwrap_or(i64::MAX))
-            }
+            0 => base_time::Clock::now(&base_clock::SystemClock),
             at => base_time::UnixSeconds(at),
         }
     }
@@ -107,7 +102,7 @@ impl World {
         let env = OAuthEnv::new(
             ReqwestHttp::default(),
             client_with(&google, traits),
-            base_time::SystemClock,
+            base_clock::SystemClock,
         )
         .with_channel(ClientChannel::Development)
         .with_poll_slice(Duration::from_millis(50))

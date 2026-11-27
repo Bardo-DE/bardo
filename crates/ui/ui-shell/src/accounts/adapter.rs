@@ -6,8 +6,8 @@
 //! Return and Escape are the sheet's (`Sheet { on_return, onclose }`): a field's Enter bubbles to
 //! it, so an entry wires no `onsubmit` of its own and the step's default action runs once.
 
-use super::hidden::Hidden;
 use super::model::{Attempt, Choice, FieldText, PickerChoice};
+use base_secret::SecretText;
 use dioxus::prelude::*;
 use std::hash::Hash;
 use ui_components::components::content::avatar::AvatarSize;
@@ -85,7 +85,7 @@ pub(crate) fn Entry(
         (FieldText::Secret(secret), _) => (
             FieldKind::Secure,
             HeldBy::Caller,
-            secret.reveal().to_owned(),
+            secret.expose().to_owned(),
         ),
         (FieldText::Plain(plain), EntryLook::Field) => {
             (FieldKind::Plain, HeldBy::Own, plain.clone())
@@ -117,7 +117,7 @@ pub(crate) fn Entry(
             focus,
             onkey,
             oninput: move |next: String| {
-                oninput.call(if hidden { FieldText::Secret(Hidden::new(next)) } else { FieldText::Plain(next) });
+                oninput.call(if hidden { FieldText::Secret(SecretText::new(next)) } else { FieldText::Plain(next) });
             },
         }
     }

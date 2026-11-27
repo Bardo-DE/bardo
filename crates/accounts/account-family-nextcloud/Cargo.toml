@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 account-family-kit = {path = "../account-family-kit"}
 account-nextcloud-proto = {path = "../account-nextcloud-proto"}
 account-dav-proto = {path = "../account-dav-proto", features = ["discover"]}

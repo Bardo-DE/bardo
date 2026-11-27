@@ -36,6 +36,12 @@ impl base_time::Clock for EvalClock {
     }
 }
 
+impl base_time::Sleeper for EvalClock {
+    fn sleep(&self, how_long: std::time::Duration) -> impl Future<Output = ()> + Send {
+        base_time::Sleeper::sleep(&*self.0, how_long)
+    }
+}
+
 impl Clock for EvalClock {
     fn stamp(&self) -> Stamp {
         self.0.stamp()

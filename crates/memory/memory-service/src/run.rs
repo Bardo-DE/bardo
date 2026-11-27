@@ -93,7 +93,7 @@ impl<B: Backend> Open<B> {
         let now = cx.now();
         let run = RunId::parse(&format!(
             "c-{}",
-            const_hex::encode(self.entropy(cx, b"run"))
+            const_hex::encode(self.entropy(cx, b"run").map_err(failed)?)
         ))
         .map_err(failed)?;
         let cut = self.last.as_ref().map_or(Seq(0), |l| l.cut);

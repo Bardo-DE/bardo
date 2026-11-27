@@ -120,7 +120,7 @@ fn imap_form() -> Vec<FormField> {
         port(OutgoingPort, "587", "587", Outgoing),
         choose(OutgoingSecurity, "starttls", &SECURITIES, Outgoing),
         entry(Username, "ada", SignIn),
-        field(Password, FieldText::Secret(Hidden::new(PASSWORD))).in_part(SignIn),
+        field(Password, FieldText::Secret(SecretText::new(PASSWORD))).in_part(SignIn),
     ]
 }
 
@@ -130,7 +130,7 @@ fn jmap_form() -> Vec<FormField> {
     vec![
         choose(Protocol, "jmap", &PROTOCOLS, Incoming),
         entry(SessionUrl, "https://mail.example.org/session", Incoming),
-        field(Token, FieldText::Secret(Hidden::new(PASSWORD))).in_part(SignIn),
+        field(Token, FieldText::Secret(SecretText::new(PASSWORD))).in_part(SignIn),
     ]
 }
 
@@ -148,7 +148,7 @@ fn pop3_form() -> Vec<FormField> {
             .in_part(Outgoing),
         choose(OutgoingSecurity, "starttls", &SECURITIES, Outgoing),
         entry(Username, "ada", SignIn),
-        field(Password, FieldText::Secret(Hidden::new(PASSWORD))).in_part(SignIn),
+        field(Password, FieldText::Secret(SecretText::new(PASSWORD))).in_part(SignIn),
     ]
 }
 
@@ -171,7 +171,10 @@ fn address(text: &str) -> FormField {
 }
 
 fn password(text: &str) -> FormField {
-    field(FieldRole::Password, FieldText::Secret(Hidden::new(text)))
+    field(
+        FieldRole::Password,
+        FieldText::Secret(SecretText::new(text)),
+    )
 }
 
 fn sign_in(fields: Vec<FormField>, problem: Option<FieldProblem>) -> Element {
@@ -412,7 +415,7 @@ const SPECIMENS: &[Specimen] = &[
         sign_in(
             vec![
                 field(FieldRole::ServerUrl, plain("")),
-                field(FieldRole::ApiKey, FieldText::Secret(Hidden::default())),
+                field(FieldRole::ApiKey, FieldText::Secret(SecretText::default())),
             ],
             None,
         )

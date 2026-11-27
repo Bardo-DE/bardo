@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-clock = { path = "../../base/base-clock" }
 account-family-kit = {path = "../account-family-kit"}
 account-generic-proto = {path = "../account-generic-proto"}
 account-core = {path = "../account-core"}

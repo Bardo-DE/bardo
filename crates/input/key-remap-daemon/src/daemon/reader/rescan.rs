@@ -61,7 +61,7 @@ impl SafetyLook {
     /// The first one is `SAFETY_EVERY` after `now`.
     pub(super) fn after(now: Mono) -> Self {
         Self {
-            next: now.after(SAFETY_EVERY),
+            next: now + SAFETY_EVERY,
         }
     }
 
@@ -118,15 +118,15 @@ mod tests {
     fn the_safety_look_is_due_every_thirty_seconds() {
         let t0 = Mono::default();
         let look = SafetyLook::after(t0);
-        assert!(!look.due(t0.after(Duration::from_secs(29))));
+        assert!(!look.due(t0 + Duration::from_secs(29)));
         assert_eq!(
-            look.until(t0.after(Duration::from_secs(20))),
+            look.until(t0 + Duration::from_secs(20)),
             Duration::from_secs(10)
         );
-        let late = t0.after(Duration::from_secs(31));
+        let late = t0 + Duration::from_secs(31);
         assert!(look.due(late));
         let next = SafetyLook::done(late);
-        assert!(!next.due(late.after(Duration::from_secs(29))));
-        assert!(next.due(late.after(Duration::from_secs(30))));
+        assert!(!next.due(late + Duration::from_secs(29)));
+        assert!(next.due(late + Duration::from_secs(30)));
     }
 }

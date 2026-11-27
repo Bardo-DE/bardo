@@ -1,27 +1,28 @@
-//! The clocks: the wall clock as [`Clock`] and the monotonic one as [`Monotonic`], each with a system
-//! reader and a test double.
+//! The wall clock as [`Clock`], with the test clocks that stand in for the system's (which is in
+//! `base-clock`).
 
 use crate::UnixSeconds;
 use std::sync::Arc;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 /// The time now. Grants, audit entries, tombstones, sessions and anchors are dated through it;
 /// tests pass a fixed one.
 pub trait Clock: Send + Sync {
     /// Now.
     fn now(&self) -> UnixSeconds;
+
+    /// Now in milliseconds since the epoch, for what orders events within a second (a hybrid
+    /// logical clock). A clock that only knows whole seconds gives them times a thousand.
+    fn now_ms(&self) -> u64 {
+        u64::try_from(self.now().0)
+            .unwrap_or(0)
+            .saturating_mul(1000)
+    }
 }
 
-/// The system's wall clock.
-#[derive(Debug, Clone, Copy, Default)]
-pub struct SystemClock;
-
-impl Clock for SystemClock {
-    fn now(&self) -> UnixSeconds {
-        let since = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default();
-        UnixSeconds(i64::try_from(since.as_secs()).unwrap_or(i64::MAX))
+impl std::fmt::Debug for dyn Clock {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Clock").field(&self.now()).finish()
     }
 }
 
@@ -48,73 +49,89 @@ impl Clock for FixedClock {
     }
 }
 
+/// A clock a test moves by hand, through `&self`.
+///
+/// One handle is shared between the code under test and the test (behind an `Arc`, or by
+/// reference). It keeps milliseconds, so it also stands
+/// in for a clock read to the millisecond; it may be set backwards, as a device's clock can.
+#[derive(Debug, Default)]
+pub struct ManualClock(AtomicU64);
+
+impl ManualClock {
+    /// A clock at `at`.
+    #[must_use]
+    pub fn new(at: UnixSeconds) -> Self {
+        Self::at_ms(u64::try_from(at.0).unwrap_or(0).saturating_mul(1000))
+    }
+
+    /// A clock `ms` milliseconds after the epoch.
+    #[must_use]
+    pub const fn at_ms(ms: u64) -> Self {
+        Self(AtomicU64::new(ms))
+    }
+
+    /// Moves it to `at`.
+    pub fn set(&self, at: UnixSeconds) {
+        self.set_ms(u64::try_from(at.0).unwrap_or(0).saturating_mul(1000));
+    }
+
+    /// Moves it to `ms` milliseconds after the epoch.
+    pub fn set_ms(&self, ms: u64) {
+        self.0.store(ms, Ordering::SeqCst);
+    }
+
+    /// Moves it on by `seconds`.
+    pub fn advance(&self, seconds: u64) {
+        self.0
+            .fetch_add(seconds.saturating_mul(1000), Ordering::SeqCst);
+    }
+}
+
+impl Clock for ManualClock {
+    fn now(&self) -> UnixSeconds {
+        UnixSeconds(i64::try_from(self.now_ms() / 1000).unwrap_or(i64::MAX))
+    }
+
+    fn now_ms(&self) -> u64 {
+        self.0.load(Ordering::SeqCst)
+    }
+}
+
 impl<T: Clock + ?Sized> Clock for Arc<T> {
     fn now(&self) -> UnixSeconds {
         (**self).now()
     }
-}
 
-/// A monotonic reading, for what is paced rather than dated (a rate limit's window). It is a seam
-/// beside [`Clock`] so that a test moves it by hand.
-pub trait Monotonic: Send + Sync {
-    /// Now, on a clock that never goes back.
-    fn now(&self) -> Instant;
-}
-
-/// The system's monotonic clock.
-#[derive(Debug, Clone, Copy, Default)]
-pub struct SystemMonotonic;
-
-impl Monotonic for SystemMonotonic {
-    fn now(&self) -> Instant {
-        Instant::now()
+    fn now_ms(&self) -> u64 {
+        (**self).now_ms()
     }
 }
 
-/// A monotonic clock that stands still until a test moves it with [`ManualMonotonic::advance`].
-#[derive(Debug)]
-pub struct ManualMonotonic {
-    start: Instant,
-    moved: std::sync::Mutex<std::time::Duration>,
-}
-
-impl ManualMonotonic {
-    /// A clock standing at the moment it was made.
-    #[must_use]
-    pub fn new() -> Self {
-        Self {
-            start: Instant::now(),
-            moved: std::sync::Mutex::default(),
-        }
-    }
-
-    /// Moves it on by `by`.
-    pub fn advance(&self, by: std::time::Duration) {
-        *self
-            .moved
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner) += by;
-    }
-}
-
-impl Default for ManualMonotonic {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Monotonic for ManualMonotonic {
-    fn now(&self) -> Instant {
-        self.start
-            + *self
-                .moved
-                .lock()
-                .unwrap_or_else(std::sync::PoisonError::into_inner)
-    }
-}
-
-impl<T: Monotonic + ?Sized> Monotonic for Arc<T> {
-    fn now(&self) -> Instant {
+impl<T: Clock + ?Sized> Clock for &T {
+    fn now(&self) -> UnixSeconds {
         (**self).now()
+    }
+
+    fn now_ms(&self) -> u64 {
+        (**self).now_ms()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_manual_clock_moves_through_a_shared_reference() {
+        let clock = ManualClock::new(UnixSeconds(10));
+        clock.advance(5);
+        assert_eq!(clock.now(), UnixSeconds(15));
+        clock.set(UnixSeconds(3));
+        assert_eq!(clock.now(), UnixSeconds(3));
+        clock.set_ms(1_700_000_000_250);
+        assert_eq!(clock.now(), UnixSeconds(1_700_000_000));
+        assert_eq!(clock.now_ms(), 1_700_000_000_250);
+        clock.set_ms(5);
+        assert_eq!(clock.now_ms(), 5, "a clock may be set backwards");
     }
 }

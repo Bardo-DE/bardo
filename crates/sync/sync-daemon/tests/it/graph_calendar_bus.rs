@@ -229,9 +229,9 @@ async fn rig(seed: bool) -> Rig {
         settings: Settings::quick(),
         network,
         owners: Access::default(),
-        clock: sync_core::Clock::new(base_time::SystemClock),
+        clock: sync_core::Clock::new(base_clock::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
+        wall: Arc::new(base_time::ManualClock::at_ms(1_700_000_000_000)),
     };
     let supervisor = PimSupervisor::new(
         wiring,

@@ -9,6 +9,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 key-remap-proto = { path = "../key-remap-proto" }
 keymap = {path = "../../keymap/keymap"}
 shell-verbs = {path = "../../wayland/shell-verbs"}

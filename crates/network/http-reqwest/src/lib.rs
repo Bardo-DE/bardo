@@ -364,13 +364,3 @@ fn hung_up(error: &(dyn Error + 'static)) -> bool {
     }
     false
 }
-
-/// Sleeps on tokio's timer: what a sign-in that polls waits with (the daemon hands it in).
-#[derive(Debug, Clone, Copy, Default)]
-pub struct TokioSleep;
-
-impl http_core::Sleep for TokioSleep {
-    async fn sleep(&self, how_long: Duration) {
-        tokio::time::sleep(how_long).await;
-    }
-}

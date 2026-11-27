@@ -2,7 +2,6 @@
 //! of the log. Grammars are checked once where text enters.
 
 use crate::text::{decode_lower_hex, dotted, element_ok, text_id};
-use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use ulid::Ulid;
@@ -65,17 +64,15 @@ text_id!(
     "topic path",
     is_topic
 );
-text_id!(
+base_ids::slug_id!(
     /// One remember rule, in the accounts service's id grammar.
     RuleId,
-    "rule id",
-    is_id
+    "rule id"
 );
-text_id!(
+base_ids::slug_id!(
     /// The token of one forget plan, in the accounts service's id grammar.
     PlanToken,
-    "plan token",
-    is_id
+    "plan token"
 );
 text_id!(
     /// A header's kind (`thing.archived`, `file.created`): two or more dotted

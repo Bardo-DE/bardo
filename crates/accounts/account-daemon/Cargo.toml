@@ -20,6 +20,7 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 account-daemon-support = {path = "../account-daemon-support"}
 base-fs = {path = "../../base/base-fs"}
+base-clock = { path = "../../base/base-clock" }
 account-callers = {path = "../account-callers", features = ["file"]}
 account-dbus = {path = "../account-dbus"}
 account-families = {path = "../account-families", features = ["set"]}
@@ -56,7 +57,6 @@ settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "t
 account-fake = {path = "../account-fake"}
 account-daemon = {path = ".", features = ["test-system-callers", "test-keys", "test-proc-root"]}
 account-fake-servers = {path = "../account-fake-servers"}
-http-core = {path = "../../network/http-core"}
 http-reqwest = {path = "../../network/http-reqwest"}
 account-oauth = {path = "../account-oauth"}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}

@@ -28,6 +28,7 @@ base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
 agent-registry = {path = "../agent-registry"}
 base-path = { path = "../../base/base-path" }
+base-clock = { path = "../../base/base-clock" }
 sandbox = {path = "../../sandbox/sandbox"}
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 companion-wire = {path = "../companion-wire"}
@@ -49,7 +50,6 @@ agent-models = {path = "../agent-models"}
 agent-planner = {path = "../agent-planner"}
 agent-reader = {path = "../agent-reader"}
 agent-session = {path = "../agent-session", features = ["testing"]}
-action-store = {path = "../action-store"}
 companion-tasks = {path = "../companion-tasks"}
 action-trace = {path = "../action-trace"}
 action-eval-core = {path = "../action-eval-core"}

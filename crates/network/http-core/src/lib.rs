@@ -41,7 +41,6 @@ mod error;
 mod message;
 mod seam;
 mod shared;
-mod sleep;
 mod stream;
 pub mod webdav;
 
@@ -50,5 +49,4 @@ pub use http;
 pub use message::{HeaderText, SensitiveHeader, request, uri};
 pub use seam::Http;
 pub use shared::SharedHttp;
-pub use sleep::{NoSleep, SharedSleep, Sleep};
 pub use stream::{BodySink, HttpStream, Progress, SharedStream, Waits};

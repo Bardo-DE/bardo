@@ -21,9 +21,10 @@ use account_provider::{
     SignInStep, Signed,
 };
 use account_sheet::{FieldKind, SignInFault, SignInInput};
+use base_time::ManualSleeper;
 use base_url::WebUrl;
 use common::{Fakes, all_on, plain};
-use http_core::{NoSleep, SharedHttp};
+use http_core::SharedHttp;
 use std::time::Duration;
 
 struct World {
@@ -41,13 +42,16 @@ impl World {
 }
 
 fn provider(spec: account_provider::ProviderSpec) -> NextcloudProvider {
-    NextcloudProvider::new(spec, SharedHttp::new(Fakes::loopback()), NoSleep).with_pacing(
-        account_family_kit::Pacing {
-            first: Duration::from_secs(1),
-            step: Duration::from_secs(10),
-            limit: Duration::from_secs(120),
-        },
+    NextcloudProvider::new(
+        spec,
+        SharedHttp::new(Fakes::loopback()),
+        ManualSleeper::new(),
     )
+    .with_pacing(account_family_kit::Pacing {
+        first: Duration::from_secs(1),
+        step: Duration::from_secs(10),
+        limit: Duration::from_secs(120),
+    })
 }
 
 async fn world() -> World {

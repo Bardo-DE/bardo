@@ -29,6 +29,11 @@ pub struct AtomicWrite {
     create_parents: bool,
     /// The permissions of a new file; a file that exists keeps its own.
     new_file: NewFileMode,
+    /// Whether a symlink at the target is replaced rather than followed.
+    replace_links: bool,
+    /// The mode given to the directories this write makes (the umask still applies); `None` for
+    /// the default.
+    dir_mode: Option<u32>,
 }
 
 impl AtomicWrite {
@@ -36,13 +41,58 @@ impl AtomicWrite {
     pub const PRIVATE: Self = Self {
         create_parents: true,
         new_file: NewFileMode::OwnerOnly,
+        replace_links: false,
+        dir_mode: None,
     };
 
     /// Files with the default permissions, missing directories made: data other programs read.
     pub const SHARED: Self = Self {
         create_parents: true,
         new_file: NewFileMode::Umask,
+        replace_links: false,
+        dir_mode: None,
     };
+
+    /// Files with exactly these permission bits (for example `0o644`), whatever the umask and
+    /// whatever mode an existing file had, missing directories made.
+    #[must_use]
+    pub const fn with_mode(mode: u32) -> Self {
+        Self {
+            create_parents: true,
+            new_file: NewFileMode::Mode(mode),
+            replace_links: false,
+            dir_mode: None,
+        }
+    }
+
+    /// The same writer, but a symlink at the target is replaced by the new regular file instead of
+    /// written through: the staging file is renamed onto the path itself, and the link's old
+    /// target is left alone. For programs that write where someone else controls the path.
+    #[must_use]
+    pub const fn replacing_links(self) -> Self {
+        Self {
+            replace_links: true,
+            ..self
+        }
+    }
+
+    /// The same writer, but the missing directories it makes get `mode` (the umask still
+    /// applies, as for `mkdir -m`).
+    #[must_use]
+    pub const fn dirs_with_mode(self, mode: u32) -> Self {
+        Self {
+            dir_mode: Some(mode),
+            ..self
+        }
+    }
+
+    fn resolve(self, target: &Path) -> io::Result<PathBuf> {
+        if self.replace_links {
+            Ok(target.to_path_buf())
+        } else {
+            link::resolve(target)
+        }
+    }
 
     /// The same writer, but it never makes a directory (a write into a missing one fails with `NotFound`).
     #[must_use]
@@ -80,7 +130,7 @@ impl AtomicWrite {
     ///
     /// Returns the I/O error of resolving `target` or of writing and syncing the staged file.
     pub fn stage(&self, target: &Path, bytes: &[u8]) -> io::Result<PathBuf> {
-        let target = link::resolve(target)?;
+        let target = self.resolve(target)?;
         lock::with(&target, || {
             self.stage_resolved(&target, |file| file.write_all(bytes))
         })
@@ -94,7 +144,7 @@ impl AtomicWrite {
     /// Returns the I/O error of resolving `target`, renaming the staged file or syncing the
     /// directory.
     pub fn commit(&self, staged: &Path, target: &Path) -> io::Result<()> {
-        let target = link::resolve(target)?;
+        let target = self.resolve(target)?;
         lock::with(&target, || write::commit(staged, &target))
     }
 
@@ -103,11 +153,22 @@ impl AtomicWrite {
         target: &Path,
         fill: impl FnOnce(&mut std::fs::File) -> io::Result<()>,
     ) -> io::Result<()> {
-        let target = link::resolve(target)?;
+        let target = self.resolve(target)?;
         lock::with(&target, || {
             let staged = self.stage_resolved(&target, fill)?;
             write::commit(&staged, &target)
         })
+    }
+
+    fn make_parents(self, dir: &Path) -> io::Result<()> {
+        let mut builder = std::fs::DirBuilder::new();
+        builder.recursive(true);
+        #[cfg(unix)]
+        if let Some(mode) = self.dir_mode {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(mode);
+        }
+        builder.create(dir)
     }
 
     fn stage_resolved(
@@ -116,7 +177,7 @@ impl AtomicWrite {
         fill: impl FnOnce(&mut std::fs::File) -> io::Result<()>,
     ) -> io::Result<PathBuf> {
         if self.create_parents {
-            std::fs::create_dir_all(directory_of(target))?;
+            self.make_parents(directory_of(target))?;
         }
         // An owner-only file is made owner-only again on every write (a credential found at 0644 is
         // tightened); a shared one keeps the mode it has.

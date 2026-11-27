@@ -1,6 +1,6 @@
 //! Building the launcher from the person's installed apps and file associations.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use base_xdg::Xdg;
@@ -14,8 +14,8 @@ use crate::icons::ThemeIcons;
 /// The XDG folders, read once from the environment (`$XDG_DATA_HOME` and friends, with the
 /// specification's defaults).
 pub fn xdg_dirs() -> XdgDirs {
-    let home = dirs::home_dir().unwrap_or_default();
     let xdg = Xdg::process();
+    let home = xdg.home().map(Path::to_path_buf).unwrap_or_default();
     XdgDirs {
         data_home: xdg
             .data_home()

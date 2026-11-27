@@ -279,7 +279,7 @@ async fn a_client_id_written_after_start_is_used_by_the_next_sign_in() {
             graph: std::sync::Arc::clone(&rig.graph),
         },
         account_oauth::ClientRegistry::default(),
-        base_time::SystemClock,
+        base_clock::SystemClock,
     )
     .with_channel(account_provider::ClientChannel::Development)
     .with_files(files.clone());

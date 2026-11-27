@@ -1,0 +1,25 @@
+[package]
+name = "base-clock"
+description = "The system's clocks and sleeper: the real implementations of base-time's seams."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-time = { path = "../base-time" }
+# The sleeper's timer: a wall-clock delay on its own timer thread, so it works under any executor.
+futures-timer = { workspace = true }
+tokio = { workspace = true, features = ["time"], optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "test-util"] }
+
+[features]
+# `TokioSleeper`: the timer of a tokio program, which a test with paused time does not wait on.
+tokio = ["dep:tokio"]
+
+[lints]
+workspace = true

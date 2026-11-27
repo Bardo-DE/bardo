@@ -3,7 +3,7 @@
 //! environment variable, a directory or a bus address itself; this file
 //! is the one place the process is asked.
 
-use std::ffi::OsString;
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 
 /// Where the person's files, caches and application entries live.
@@ -27,18 +27,25 @@ pub struct Dirs {
 }
 
 impl Dirs {
-    /// This process's, as the `dirs` crate and the XDG variables name them. Without a home at
-    /// all everything hangs off `/`, where writes fail and are reported.
+    /// This process's, as the XDG variables name them. Without a home at all everything hangs
+    /// off `/`, where writes fail and are reported.
     #[must_use]
     pub fn from_process() -> Dirs {
-        let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("/"));
+        let xdg = Xdg::process();
+        let home = xdg
+            .home()
+            .map_or_else(|| PathBuf::from("/"), Path::to_path_buf);
         Dirs {
-            config: dirs::config_dir().unwrap_or_else(|| home.join(".config")),
-            data: dirs::data_dir().unwrap_or_else(|| home.join(".local/share")),
-            cache: dirs::cache_dir().unwrap_or_else(|| home.join(".cache")),
-            state: dirs::state_dir().unwrap_or_else(|| home.join(".local/state")),
-            config_dirs: search_path("XDG_CONFIG_DIRS", SYSTEM_CONFIG),
-            data_dirs: search_path("XDG_DATA_DIRS", SYSTEM_DATA),
+            config: xdg.config_home().unwrap_or_else(|_| home.join(".config")),
+            data: xdg
+                .data_home()
+                .unwrap_or_else(|_| home.join(".local/share")),
+            cache: xdg.cache_home().unwrap_or_else(|_| home.join(".cache")),
+            state: xdg
+                .state_home()
+                .unwrap_or_else(|_| home.join(".local/state")),
+            config_dirs: xdg.config_dirs(),
+            data_dirs: xdg.data_dirs(),
             home,
         }
     }
@@ -58,29 +65,6 @@ impl Dirs {
             data_dirs: vec![root.join("share")],
         }
     }
-}
-
-/// The system directories searched when `XDG_CONFIG_DIRS` is unset. Windows has no such place.
-#[cfg(not(windows))]
-const SYSTEM_CONFIG: &str = "/etc/xdg";
-#[cfg(windows)]
-const SYSTEM_CONFIG: &str = "";
-
-/// The system directories searched when `XDG_DATA_DIRS` is unset. Windows has no such place.
-#[cfg(not(windows))]
-const SYSTEM_DATA: &str = "/usr/local/share:/usr/share";
-#[cfg(windows)]
-const SYSTEM_DATA: &str = "";
-
-/// A search path variable in the platform's own list syntax (colons, or semicolons on Windows), or
-/// `default` when it is unset or empty.
-fn search_path(variable: &str, default: &str) -> Vec<PathBuf> {
-    let text = std::env::var_os(variable)
-        .filter(|text| !text.is_empty())
-        .unwrap_or_else(|| OsString::from(default));
-    std::env::split_paths(&text)
-        .filter(|part| !part.as_os_str().is_empty())
-        .collect()
 }
 
 /// How the session bus is reached.

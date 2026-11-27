@@ -23,10 +23,10 @@ use account_tailscale::{Machine, MachineOwner};
 use base_testkit::PrivateBus;
 use base_testkit::{Deadline, Scratch};
 use base_time::FixedClock;
+use base_time::{SharedSleeper, Sleeper};
 use caller_role_types::CallerRole;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, caller, error_name, eventually};
-use http_core::{SharedSleep, Sleep};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -45,7 +45,7 @@ type Svc = AccountService<
 #[derive(Debug, Clone, Copy)]
 struct Quick;
 
-impl Sleep for Quick {
+impl Sleeper for Quick {
     async fn sleep(&self, _how_long: Duration) {
         tokio::time::sleep(Duration::from_millis(20)).await;
     }
@@ -140,7 +140,7 @@ impl World {
         let providers = vec![DynProvider::boxed(TailnetProvider::new(
             spec,
             scene.api.clone(),
-            SharedSleep::new(Quick),
+            SharedSleeper::new(Quick),
         ))];
         let bus = PrivateBus::start();
         let callers = Arc::new(TableCallers::new());

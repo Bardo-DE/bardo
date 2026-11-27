@@ -118,7 +118,7 @@ mod tests {
     use crate::{Edge, Key, Physical};
 
     const DEV: DeviceId = DeviceId(7);
-    const AT: Mono = Mono(5);
+    const AT: Mono = Mono(std::time::Duration::from_nanos(5));
 
     const fn ev(kind: u16, code: u16, value: i32) -> InputEvent {
         InputEvent { kind, code, value }

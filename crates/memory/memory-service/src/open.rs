@@ -149,7 +149,11 @@ impl<B: Backend> Open<B> {
     /// backend's random bytes and what the id is for. No ambient randomness (the
     /// bytes come through `Backend::random`); ids from two machines differ because their Space
     /// keys do, and a restarted daemon's differ because its random bytes do.
-    pub(crate) fn entropy(&mut self, cx: &Cx<'_, B>, what: &[u8]) -> [u8; 10] {
+    pub(crate) fn entropy(
+        &mut self,
+        cx: &Cx<'_, B>,
+        what: &[u8],
+    ) -> Result<[u8; 10], BackendError> {
         let now = cx.now();
         self.minted += 1;
         let head = self.rt.log.head().map(|h| h.seq.0).unwrap_or_default();
@@ -158,11 +162,11 @@ impl<B: Backend> Open<B> {
         hasher.update(&self.minted.to_be_bytes());
         hasher.update(&now.0.to_be_bytes());
         hasher.update(&head.to_be_bytes());
-        hasher.update(&cx.backend.random());
+        hasher.update(&cx.backend.random()?);
         hasher.update(what);
         let mut out = [0u8; 10];
         out.copy_from_slice(&hasher.finalize().as_bytes()[..10]);
-        out
+        Ok(out)
     }
 
     /// Whether one more event costing `cost` bytes fits the Space's quota. The cached count is

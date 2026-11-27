@@ -9,6 +9,8 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-clock = { path = "../../base/base-clock" }
+base-time = { path = "../../base/base-time" }
 computer-use-capture = {path = "../computer-use-capture"}
 computer-use-action = {path = "../../models/computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}

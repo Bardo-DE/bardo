@@ -1,0 +1,16 @@
+[package]
+name = "base-random"
+description = "Random bytes from the operating system, or an error: never a weaker source made up in their place."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+getrandom = { workspace = true, features = ["std"] }
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

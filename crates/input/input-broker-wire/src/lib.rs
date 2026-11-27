@@ -24,7 +24,7 @@ pub use ceiling::{BadCapsError, Denial, Filter, Filtered, Plan, Route, plan};
 pub use codec::{WireError, decode_reply, decode_request, encode_reply, encode_request};
 pub use event::Event;
 pub use kind::{Delivery, Kind};
-pub use limiter::{Admit, Limiter, Millis};
+pub use limiter::{Admit, Limiter, millis_since};
 pub use maker::Maker;
 pub use message::{Create, DeviceId, PointerCaps, Reason, Reply, Request};
 pub use spec::{AbsAxis, DeviceSpec};

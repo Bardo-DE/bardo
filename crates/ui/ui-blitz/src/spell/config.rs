@@ -25,7 +25,9 @@ impl SpellConfig {
     /// The system's dictionaries (and `$XDG_DATA_HOME/hunspell`), and the user's words under
     /// `$XDG_DATA_HOME/bardo/spelling`.
     pub fn system() -> SpellConfig {
-        let data = dirs::data_dir().unwrap_or_else(|| PathBuf::from(".local/share"));
+        let data = base_xdg::Xdg::process()
+            .data_home()
+            .unwrap_or_else(|_| PathBuf::from(".local/share"));
         let mut dictionaries: Vec<PathBuf> =
             SYSTEM_DICTIONARIES.iter().map(PathBuf::from).collect();
         dictionaries.push(data.join("hunspell"));

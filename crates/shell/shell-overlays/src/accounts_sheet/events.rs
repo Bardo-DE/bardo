@@ -2,8 +2,8 @@
 //! of `props.rs`. A key the shell cannot parse (an account or provider that is not one) is no
 //! action.
 
+use account_core::SessionToken;
 use account_core::consent::GrantScope;
-use account_core::{SecretText, SessionToken};
 use account_sheet::FieldValue;
 use shell_model::accounts::sheet::{ListKey, SheetAction};
 use ui_components::prelude::Check;
@@ -55,7 +55,7 @@ pub(super) fn list_key(pick: &ProviderPick) -> Option<ListKey> {
 pub(super) fn typed(role: FieldRole, text: FieldText) -> SheetAction {
     let value = match text {
         FieldText::Plain(text) => FieldValue::Plain(text),
-        FieldText::Secret(text) => FieldValue::Secret(SecretText::new(text.reveal())),
+        FieldText::Secret(text) => FieldValue::Secret(text),
     };
     SheetAction::Type(kind_of(role), value)
 }

@@ -58,22 +58,28 @@ pub struct Dirs {
 }
 
 impl Dirs {
-    /// This process's, as the `dirs` crate reads them. Without a home at all (no `$HOME` and
-    /// no passwd entry) everything hangs off `/`, where writes fail and are logged.
+    /// This process's, as the XDG variables name them (the Pictures folder as the `dirs` crate
+    /// reads it). Without a home at all everything hangs off `/`, where writes fail and are
+    /// logged.
     #[must_use]
     pub fn from_process() -> Dirs {
-        let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("/"));
+        let base = Xdg::process();
+        let home = base
+            .home()
+            .map_or_else(|| PathBuf::from("/"), Path::to_path_buf);
         let xdg = XdgEnv::from_process();
         Dirs {
-            config: dirs::config_dir().unwrap_or_else(|| home.join(".config")),
+            config: base.config_home().unwrap_or_else(|_| home.join(".config")),
             data: xdg.data_home().unwrap_or_else(|| home.join(".local/share")),
             data_dirs: xdg.data_dirs(),
             applications: xdg.applications_dirs(),
-            config_dirs: Xdg::process().config_dirs(),
+            config_dirs: base.config_dirs(),
             program_dirs: absolute_dirs(std::env::var_os("PATH").as_ref()),
-            state: dirs::state_dir().unwrap_or_else(|| home.join(".local/state")),
-            cache: dirs::cache_dir().unwrap_or_else(|| home.join(".cache")),
-            runtime: dirs::runtime_dir(),
+            state: base
+                .state_home()
+                .unwrap_or_else(|_| home.join(".local/state")),
+            cache: base.cache_home().unwrap_or_else(|_| home.join(".cache")),
+            runtime: base.runtime_dir(),
             pictures: dirs::picture_dir(),
             app_stores: app_stores_in(&[PathBuf::from(OPT), home.join(HOME_OPT)], Path::new(SNAP)),
             home,

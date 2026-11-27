@@ -2,7 +2,6 @@
 //! their own.
 
 use account_core::AppName;
-use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 
 macro_rules! text_id {
@@ -27,31 +26,9 @@ macro_rules! text_id {
                     Err(::account_core::CoreError::MalformedId { what: $what, text: text.to_owned() })
                 }
             }
-
-            /// The id's text.
-            pub fn as_str(&self) -> &str {
-                &self.0
-            }
         }
 
-        impl TryFrom<String> for $name {
-            type Error = ::account_core::CoreError;
-            fn try_from(text: String) -> Result<Self, ::account_core::CoreError> {
-                Self::parse(&text)
-            }
-        }
-
-        impl From<$name> for String {
-            fn from(id: $name) -> String {
-                id.0
-            }
-        }
-
-        impl ::std::fmt::Display for $name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                f.write_str(&self.0)
-            }
-        }
+        base_ids::string_newtype!($name, ::account_core::CoreError);
     };
 }
 
@@ -77,17 +54,15 @@ fn opaque(text: &str) -> bool {
     !text.is_empty() && text.len() <= 128 && !text.chars().any(char::is_control)
 }
 
-text_id!(
+base_ids::slug_id!(
     /// One companion session. A slug minted by the companion service.
     SessionId,
-    "session id",
-    is_id
+    "session id"
 );
-text_id!(
+base_ids::slug_id!(
     /// One computer-use run. A slug minted by the computer-use daemon (`r-<n>`).
     RunId,
-    "run id",
-    is_id
+    "run id"
 );
 text_id!(
     /// An external MCP client's name, as it introduced itself: 1 to 64 bytes, no control
@@ -116,7 +91,7 @@ text_id!(
     dotted
 );
 
-text_id!(
+base_ids::slug_id!(
     /// One task: an actions service `Session` for one prompt, worker or side conversation.
     ///
     /// A slug minted by the companion service. It moved here from action-core so
@@ -125,21 +100,18 @@ text_id!(
     /// [`AgentRole::Worker`]: crate::AgentRole::Worker
     /// [`AgentRef::Worker`]: crate::AgentRef::Worker
     TaskId,
-    "task id",
-    is_id
+    "task id"
 );
-text_id!(
+base_ids::slug_id!(
     /// One [`Message`](crate::Message). A slug minted by the router that stamps it.
     MessageId,
-    "message id",
-    is_id
+    "message id"
 );
-text_id!(
+base_ids::slug_id!(
     /// A conversation: the messages that answer one another share it. A slug; the first
     /// message's id is a fine choice.
     ThreadId,
-    "thread id",
-    is_id
+    "thread id"
 );
 text_id!(
     /// A reference to one action outcome, opaque to prov (the actions service owns the outcome and its

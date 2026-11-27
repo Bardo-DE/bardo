@@ -15,6 +15,7 @@ path = "src/main.rs"
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock" }
 action-fake = {path = "../action-fake"}
 action-core = {path = "../action-core"}
 action-wire = {path = "../action-wire"}

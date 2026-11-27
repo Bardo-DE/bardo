@@ -81,16 +81,16 @@ async fn acceptance_5_a_favourite_set_on_both_while_offline_resolves_by_clock() 
 
     // Both go offline and favourite (or un-favourite) each photo; on `one` B's clock is the
     // later, on `two` A's is. Different fields of one photo do not clash either.
-    a.millis.set(10_000);
-    b.millis.set(20_000);
+    a.millis.set_ms(10_000);
+    b.millis.set_ms(20_000);
     a.library
         .edit(vec![Edit::Favourite(one.clone(), Mark::On)])
         .expect("edit");
     b.library
         .edit(vec![Edit::Favourite(one.clone(), Mark::Off)])
         .expect("edit");
-    a.millis.set(40_000);
-    b.millis.set(30_000);
+    a.millis.set_ms(40_000);
+    b.millis.set_ms(30_000);
     a.library
         .edit(vec![Edit::Favourite(two.clone(), Mark::On)])
         .expect("edit");

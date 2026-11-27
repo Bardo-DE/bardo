@@ -130,7 +130,8 @@ impl<B: Backend> Open<B> {
             return Ok(None);
         };
         let now = cx.now();
-        let id = FactId::mint(unix_ms(now), self.entropy(cx, text.as_str().as_bytes()));
+        let entropy = self.entropy(cx, text.as_str().as_bytes()).map_err(failed)?;
+        let id = FactId::mint(unix_ms(now), entropy);
         let fact = Fact {
             id,
             text: fact_text,

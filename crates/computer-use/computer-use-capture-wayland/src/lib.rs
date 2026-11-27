@@ -15,13 +15,15 @@ mod state;
 
 pub use key::{ObjectKey, Rounds, SyncTag};
 pub use pump::{Pump, PumpError};
-pub use session::{StampClock, WaylandSession};
+pub use session::WaylandSession;
 
 use crate::key::ObjectKey as Key;
+use base_clock::SystemMonotonic;
+use base_time::Monotonic;
 use computer_use_capture::{CaptureError, WindowCapture};
 use computer_use_desktop::LeaseGrant;
 use lease::Standing;
-use session::{Masking, SinceStart};
+use session::Masking;
 use state::CapState;
 use std::sync::Arc;
 use wayland_client::Connection;
@@ -34,7 +36,7 @@ const SETTLE_ROUNDS: u32 = 2;
 #[derive(Debug)]
 pub struct StockToplevelCapture {
     pump: Arc<Pump<CapState>>,
-    clock: Arc<dyn StampClock>,
+    clock: Arc<dyn Monotonic>,
 }
 
 /// Capture through the lease's `get_capture_source`.
@@ -46,7 +48,7 @@ pub struct StockToplevelCapture {
 #[derive(Debug)]
 pub struct BardoMaskedCapture {
     pump: Arc<Pump<CapState>>,
-    clock: Arc<dyn StampClock>,
+    clock: Arc<dyn Monotonic>,
 }
 
 impl StockToplevelCapture {
@@ -57,14 +59,14 @@ impl StockToplevelCapture {
         let state = CapState::new(&connection, queue.handle());
         Self {
             pump: Arc::new(Pump::new(connection, queue, state)),
-            clock: Arc::new(SinceStart::now()),
+            clock: Arc::new(SystemMonotonic),
         }
     }
 
     /// Stamps frames and damage with `clock` instead of milliseconds since construction. The computer-use daemon
     /// passes its own clock: the run machine compares these stamps with its own.
     #[must_use]
-    pub fn with_clock(mut self, clock: Arc<dyn StampClock>) -> Self {
+    pub fn with_clock(mut self, clock: Arc<dyn Monotonic>) -> Self {
         self.clock = clock;
         self
     }
@@ -84,13 +86,13 @@ impl BardoMaskedCapture {
         let state = CapState::new(&connection, queue.handle());
         Self {
             pump: Arc::new(Pump::new(connection, queue, state)),
-            clock: Arc::new(SinceStart::now()),
+            clock: Arc::new(SystemMonotonic),
         }
     }
 
     /// Stamps frames and damage with `clock` instead of milliseconds since construction.
     #[must_use]
-    pub fn with_clock(mut self, clock: Arc<dyn StampClock>) -> Self {
+    pub fn with_clock(mut self, clock: Arc<dyn Monotonic>) -> Self {
         self.clock = clock;
         self
     }

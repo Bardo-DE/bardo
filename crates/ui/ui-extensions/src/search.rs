@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
+use base_xdg::Xdg;
 use plugin_host::manifest::Raw;
 use plugin_host::registry::{Candidate, Origin};
 use plugin_host::{Layout, Rejected};
@@ -50,11 +51,11 @@ impl Search {
     /// `$HOME/.local/share`) and `$XDG_DATA_DIRS`.
     #[must_use]
     pub fn from_env() -> Search {
-        Search::from_dirs(
-            std::env::var_os("XDG_DATA_HOME").as_deref(),
-            std::env::var_os("XDG_DATA_DIRS").as_deref(),
-            std::env::var_os("HOME").as_deref(),
-        )
+        let xdg = Xdg::process();
+        Search {
+            person: xdg.data_home().ok(),
+            system: xdg.data_dirs(),
+        }
     }
 
     /// [`Search::from_env`] with the variables handed in, under the XDG rules (an empty or

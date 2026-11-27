@@ -2,8 +2,7 @@
 //! the vault is sealed or plain per Space, the models are inferd's.
 
 use crate::registry::SpaceRegistry;
-use base_time::Clock;
-use base_time::SystemClock;
+use base_clock::SystemClock;
 use inference_client::DbusTransport;
 use memory_core::{Dirs, ReplicaId, SpaceId, SpaceMeta, VaultKind};
 use memory_eventlog::SqliteLog;
@@ -16,7 +15,6 @@ use memory_tidy::Consolidator;
 use rusqlite::Connection;
 use std::path::Path;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
 
 /// memoryd's seams over the real system: `SQLCipher` files under `dirs`, sealed or plain vaults,
 /// the OS's randomness and clock.
@@ -111,21 +109,6 @@ fn open_index_file<E: Embedder>(
     Ok(Index::new(fts, vectors))
 }
 
-/// Sixteen random bytes from the OS; if it cannot answer, a hash of the time and the process
-/// (an id only needs to differ from the last run's).
-fn random_bytes() -> [u8; 16] {
-    let mut out = [0u8; 16];
-    if getrandom::fill(&mut out).is_err() {
-        static DRAWS: AtomicU64 = AtomicU64::new(0);
-        let mut hasher = blake3::Hasher::new();
-        hasher.update(&SystemClock.now().0.to_be_bytes());
-        hasher.update(&DRAWS.fetch_add(1, Ordering::Relaxed).to_be_bytes());
-        hasher.update(&std::process::id().to_be_bytes());
-        out.copy_from_slice(&hasher.finalize().as_bytes()[..16]);
-    }
-    out
-}
-
 fn gone_is_fine(result: std::io::Result<()>) -> Result<(), BackendError> {
     match result {
         Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
@@ -160,8 +143,8 @@ impl<K: KeyStore, E: Embedder, C: Consolidator> Backend for SystemBackend<K, E, 
         &self.clock
     }
 
-    fn random(&self) -> [u8; 16] {
-        random_bytes()
+    fn random(&self) -> Result<[u8; 16], BackendError> {
+        Ok(base_random::bytes()?)
     }
 
     fn remove_space(&self, space: &SpaceId) -> Result<(), BackendError> {

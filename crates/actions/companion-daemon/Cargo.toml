@@ -17,6 +17,8 @@ name = "bardo-companiond"
 path = "src/main.rs"
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
+base-clock = { path = "../../base/base-clock" }
 computer-use-dbus = { path = "../../computer-use/computer-use-dbus" }
 companion-core = {path = "../companion-core"}
 companion-model = {path = "../companion-model"}
@@ -25,7 +27,6 @@ action-core = {path = "../action-core"}
 action-wire = {path = "../action-wire"}
 action-vocab = {path = "../action-vocab"}
 companion-helpers = {path = "../companion-helpers", features = ["tokio"]}
-action-store = {path = "../action-store"}
 action-log = {path = "../action-log"}
 agent-planner = {path = "../agent-planner"}
 agent-skills = {path = "../agent-skills"}
@@ -76,6 +77,7 @@ action-client = {path = "../action-client", default-features = false, features =
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}
 tempfile = { workspace = true }
+action-store = {path = "../action-store"}
 
 [lints]
 workspace = true

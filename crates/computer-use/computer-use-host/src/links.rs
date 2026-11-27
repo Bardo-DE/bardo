@@ -129,7 +129,7 @@ pub fn record_of(ctx: &RecordContext, record: &ComputerUseRecord) -> Result<Reco
 
 /// The seconds since the epoch: the system's clock, here in the daemon.
 fn system_unix() -> UnixSeconds {
-    base_time::Clock::now(&base_time::SystemClock)
+    base_time::Clock::now(&base_clock::SystemClock)
 }
 
 /// Records over memoryd and messages over the router.

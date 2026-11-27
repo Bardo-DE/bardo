@@ -122,7 +122,7 @@ fn corpus_agent(args: &CorpusArgs, spec: &AcpSpec) -> Result<ExitCode, CommandEr
 
 /// Today in UTC, as `YYYY-MM-DD`: the one clock read of the summary, made here in the binary.
 fn today() -> String {
-    let now = base_time::Clock::now(&base_time::SystemClock);
+    let now = base_time::Clock::now(&base_clock::SystemClock);
     utc_date(u64::try_from(now.0).unwrap_or(0))
 }
 

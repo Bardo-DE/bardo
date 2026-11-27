@@ -59,7 +59,7 @@ fn chosen(role: FieldRole, slug: &str, options: &[(&str, &str)], part: FormPart)
 }
 
 fn secret(role: FieldRole, part: FormPart) -> FormField {
-    field(role, FieldText::Secret(Hidden::new("not shown"))).in_part(part)
+    field(role, FieldText::Secret(SecretText::new("not shown"))).in_part(part)
 }
 
 const PROTOCOLS: [(&str, &str); 3] = [
@@ -164,11 +164,11 @@ pub fn AccountsPage() -> Element {
             div { class: "g-row g-row-top",
                 Stage { theme: Theme::Light, body: sign_in(vec![
                     field(FieldRole::Address, FieldText::Plain(String::new())),
-                    field(FieldRole::Password, FieldText::Secret(Hidden::default())),
+                    field(FieldRole::Password, FieldText::Secret(SecretText::default())),
                 ], None) }
                 Stage { theme: Theme::Dark, body: sign_in(vec![
                     field(FieldRole::Address, FieldText::Plain("ada@example.org".to_owned())),
-                    field(FieldRole::Password, FieldText::Secret(Hidden::new("not shown"))),
+                    field(FieldRole::Password, FieldText::Secret(SecretText::new("not shown"))),
                 ], Some(FieldProblem { role: FieldRole::Password, kind: ProblemKind::Refused, attempt: Attempt(1) })) }
             }
         }

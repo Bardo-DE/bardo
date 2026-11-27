@@ -3,23 +3,28 @@
 
 use std::fmt;
 
-use jiff::Zoned;
+use base_time::Clock;
 use jiff::tz::TimeZone;
+use jiff::{Timestamp, Zoned};
 
 /// The local date and time now.
 pub trait WallClock: Send + Sync + fmt::Debug {
     fn now(&self) -> Zoned;
 }
 
-/// The system clock in the system time zone, read afresh on every call, so a zone change shows
-/// at the next read.
+/// `base_clock`'s system clock in the system time zone, read afresh on every call.
+///
+/// A zone change shows at the next read. It is read to the millisecond: the notification limits
+/// count what arrives within a second.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct SystemClock;
 
 impl WallClock for SystemClock {
     fn now(&self) -> Zoned {
         let zone = TimeZone::try_system().unwrap_or(TimeZone::UTC);
-        Zoned::now().with_time_zone(zone)
+        let ms = i64::try_from(base_clock::SystemClock.now_ms()).unwrap_or(i64::MAX);
+        let at = Timestamp::from_millisecond(ms).unwrap_or_default();
+        at.to_zoned(zone)
     }
 }
 

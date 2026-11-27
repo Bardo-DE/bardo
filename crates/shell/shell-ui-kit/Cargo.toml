@@ -43,7 +43,9 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 # and find `$XDG_CACHE_HOME`.
 image = { workspace = true, features = ["png", "jpeg", "webp"] }
 resvg = { workspace = true }
-dirs = { workspace = true }
+base-xdg = { path = "../../base/base-xdg" }
+base-clock = { path = "../../base/base-clock" }
+base-time = { path = "../../base/base-time" }
 # Civil dates for the calendar widgets' month grid and the world clock.
 jiff = { workspace = true }
 thiserror = { workspace = true }

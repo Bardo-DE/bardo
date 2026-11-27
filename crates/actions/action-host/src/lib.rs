@@ -9,7 +9,7 @@
 //!   editor and puts the editor's choice back.
 //!
 //! No bus, no runtime and no clock of its own: the clock that stamps receipts is passed in
-//! (`action_store::SystemClock` is the one system clock).
+//! (`base_clock::SystemClock` is the one system clock).
 
 mod desk;
 mod sheet;

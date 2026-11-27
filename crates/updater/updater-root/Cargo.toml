@@ -23,6 +23,7 @@ name = "bardo-updater-health"
 path = "src/bin/bardo_updater_health.rs"
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 updater-core = {path = "../updater-core"}
 thiserror = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
@@ -32,7 +33,6 @@ tar = {workspace = true, features = ["default"]}
 zstd = { workspace = true }
 
 [dev-dependencies]
-base-fs = { path = "../../base/base-fs" }
 tempfile = { workspace = true }
 
 [lints]

@@ -249,8 +249,8 @@ pub(crate) fn step_cursor(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::accounts::hidden::Hidden;
     use crate::accounts::model::{Attempt, FieldText, ProviderKey};
+    use base_secret::SecretText;
     use base_words::Word;
 
     fn entry(key: &str, label: &str) -> ProviderEntry {
@@ -272,7 +272,7 @@ mod tests {
     #[test]
     fn a_form_continues_only_when_every_required_field_has_text() {
         let plain = |text: &str| FieldText::Plain(text.to_owned());
-        let secret = |text: &str| FieldText::Secret(Hidden::new(text));
+        let secret = |text: &str| FieldText::Secret(SecretText::new(text));
         let cases: &[(&str, Vec<FormField>, bool)] = &[
             ("no fields", vec![], true),
             (

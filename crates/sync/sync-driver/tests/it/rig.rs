@@ -1,13 +1,13 @@
 //! The shared test rig: a world of one replica, one dataset, one clock and a journal file.
 
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
+use base_time::ManualClock;
 use base_time::UnixSeconds;
 use std::sync::Arc;
 use sync_core::{
     BaseVersion, Blob, ByteRange, ChangePage, ConflictRule, Cursor, ItemPath, MemoryReplica,
     PutError, PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
 };
-use sync_engine::clock::ManualClock;
 use sync_engine::dataset::{MemoryDataset, replica_hash};
 use sync_engine::engine::Engine;
 use sync_journal_sqlite::Journal;
@@ -73,7 +73,7 @@ impl World {
         Self {
             replica: Arc::new(MemoryReplica::new(features, page, UnixSeconds(1_000))),
             dataset: Arc::new(MemoryDataset::new("files", ConflictRule::KeepBoth)),
-            clock: Arc::new(ManualClock::at(5_000)),
+            clock: Arc::new(ManualClock::new(UnixSeconds(5_000))),
             dir: tempfile::Builder::new()
                 .prefix(&format!("syncd-{name}-"))
                 .tempdir()

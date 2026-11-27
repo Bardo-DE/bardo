@@ -1,7 +1,7 @@
 //! The shipped [`Prepare`]: inference-client's `Transport::prepare` over a private bus, as the
 //! actiond unit (the policy writer's identity, which inferd serves every tier of a run to).
 
-use crate::warm::{POLL, Prepare, WarmError, plan, warm_all};
+use crate::warm::{Prepare, WarmError, plan, warm_all};
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
@@ -9,17 +9,17 @@ use account_core::consent::Usage;
 use account_match::LlmNeed;
 use account_match::Need;
 use action_accept::world::{Cgroup, ModelSource, World, place, restore_unit, unit_main};
+use base_clock::{SystemMonotonic, TokioSleeper};
 use base_ids::Tokens;
 use inference_client::{DbusTransport, OpenOptions, Transport};
 use inference_core::Readiness;
 use std::collections::BTreeSet;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 /// Asks inferd over `connection`.
 #[derive(Debug)]
 pub struct BusPrepare {
     transport: DbusTransport,
-    began: Instant,
 }
 
 impl BusPrepare {
@@ -28,7 +28,6 @@ impl BusPrepare {
     pub fn over(connection: zbus::Connection) -> Self {
         Self {
             transport: DbusTransport::over(connection),
-            began: Instant::now(),
         }
     }
 }
@@ -59,14 +58,6 @@ impl Prepare for BusPrepare {
             .await
             .ok()
     }
-
-    async fn pause(&self) {
-        tokio::time::sleep(POLL).await;
-    }
-
-    fn now(&self) -> Duration {
-        self.began.elapsed()
-    }
 }
 
 /// Warms every model `source` routes to over `connection` (a cassette routes to none, and this
@@ -82,9 +73,15 @@ pub async fn warm_up(
 ) -> Result<(), WarmError> {
     let steps = plan(source)?;
     let inferd = BusPrepare::over(connection);
-    warm_all(&steps, &inferd, patience, |w| eprintln!("{}", w.line()))
-        .await
-        .map(drop)
+    warm_all(
+        &steps,
+        &inferd,
+        (&SystemMonotonic, &TokioSleeper),
+        patience,
+        |w| eprintln!("{}", w.line()),
+    )
+    .await
+    .map(drop)
 }
 
 /// Runs `work` with the harness process standing in as the actiond unit, then puts both back.

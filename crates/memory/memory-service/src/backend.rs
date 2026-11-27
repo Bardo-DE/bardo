@@ -28,6 +28,9 @@ pub enum BackendError {
     /// A Space's directories could not be removed.
     #[error("removing a Space: {0}")]
     Remove(String),
+    /// The system gave no random bytes.
+    #[error("random bytes: {0}")]
+    Random(#[from] base_random::RandomError),
 }
 
 /// The service's seams, bundled: closed sets of implementations are types, never `dyn`.
@@ -58,7 +61,11 @@ pub trait Backend: Send + Sync {
     /// Sixteen random bytes. The one place real randomness enters the service: it is mixed into
     /// every id the service mints (a fact, a consolidation run), so two ids minted in the same
     /// second by a restarted daemon do not collide. memoryd reads the OS; tests count.
-    fn random(&self) -> [u8; 16];
+    ///
+    /// # Errors
+    ///
+    /// [`BackendError::Random`] when the system gives no random bytes: there is no weaker source.
+    fn random(&self) -> Result<[u8; 16], BackendError>;
     /// Removes everything a Space stored on disk (its log, index and files), after its key was
     /// destroyed. Called once, when the Space's deletion finishes; removing what is already gone
     /// is not an error.

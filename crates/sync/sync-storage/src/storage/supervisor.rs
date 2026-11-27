@@ -34,7 +34,7 @@ use account_client::GrantsLink;
 use account_core::{AppName, Candidate, EndpointUrl};
 use base_url::WebUrl;
 use drive_fs::{CacheLimit, Drive, DriveConfig, FreeSpace, ReplicaSource};
-use drive_fuse::{DriveFs, Mounter, Now};
+use drive_fuse::{DriveFs, Mounter};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
@@ -521,10 +521,11 @@ where
         let mounting = match &self.config.mount {
             DriveMount::Off => None,
             DriveMount::Fuse(mounter) => {
-                let fs = DriveFs::new(files.clone(), tokio::runtime::Handle::current(), {
-                    let millis = Arc::clone(&self.wiring.millis);
-                    Now::new(move || std::time::UNIX_EPOCH + Duration::from_millis(millis.now_ms()))
-                });
+                let fs = DriveFs::new(
+                    files.clone(),
+                    tokio::runtime::Handle::current(),
+                    Arc::clone(&self.wiring.wall),
+                );
                 let (mounter, path, live, set) = (
                     mounter.clone(),
                     path.clone(),
@@ -752,7 +753,7 @@ where
         let library = PhotoLibrary::open(
             wiring.paths.photos_dir(account),
             new_device(account, &wiring.nonce),
-            Arc::clone(&wiring.millis),
+            Arc::clone(&wiring.wall),
         )
         .map_err(|e| e.to_string())?;
         let photos = PhotosWiring {

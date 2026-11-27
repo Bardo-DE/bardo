@@ -297,6 +297,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
+name = "base-clock"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "futures-timer",
+]
+
+[[package]]
 name = "base-fs"
 version = "0.1.0"
 dependencies = [
@@ -602,6 +610,7 @@ name = "compositor-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-spawn",
@@ -2984,6 +2993,7 @@ dependencies = [
 name = "settings-store-fs"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-fs",
  "base-spawn",
  "base-time",
@@ -3571,6 +3581,7 @@ dependencies = [
  "base-fs",
  "base-spawn",
  "base-time",
+ "base-xdg",
  "objc2-core-foundation",
  "serde",
  "serde_json",
@@ -3586,6 +3597,7 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-ids",
  "base-time",
  "base-words",

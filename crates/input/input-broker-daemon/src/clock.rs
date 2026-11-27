@@ -1,15 +1,13 @@
 //! Time as an argument: the service reads the clock in one place.
 
-use base_time::Monotonic;
-use input_broker_wire::Millis;
-use std::time::Instant;
+use base_time::{Mono, Monotonic};
 
-/// Milliseconds since a [`Monotonic`] clock was first read: the counter the wire crate's rate
-/// limiter and idle timer compare.
+/// Time since a [`Monotonic`] clock was first read: the counter the wire crate's rate limiter
+/// and idle timer compare.
 #[derive(Debug, Clone)]
 pub struct Uptime<M> {
     clock: M,
-    start: Instant,
+    start: Mono,
 }
 
 impl<M: Monotonic> Uptime<M> {
@@ -19,9 +17,8 @@ impl<M: Monotonic> Uptime<M> {
         Self { clock, start }
     }
 
-    /// Milliseconds since the counter was made; never goes back.
-    pub fn now(&self) -> Millis {
-        let since = self.clock.now().saturating_duration_since(self.start);
-        Millis(u64::try_from(since.as_millis()).unwrap_or(u64::MAX))
+    /// Time since the counter was made; never goes back.
+    pub fn now(&self) -> Mono {
+        Mono(self.clock.now().since(self.start))
     }
 }

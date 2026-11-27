@@ -19,7 +19,7 @@ use account_provider::{
     SignInStart,
 };
 use account_tailscale::LocalApi;
-use http_core::SharedSleep;
+use base_time::SharedSleeper;
 
 pub use sign_in::TailnetFlow;
 
@@ -28,14 +28,14 @@ pub use sign_in::TailnetFlow;
 pub struct TailnetProvider {
     spec: ProviderSpec,
     api: LocalApi,
-    sleep: SharedSleep,
+    sleep: SharedSleeper,
 }
 
 impl TailnetProvider {
     /// The provider serving the accounts of `spec`, asking Tailscale through `api`, and waiting
     /// between its questions through `sleep`.
     #[must_use]
-    pub fn new(spec: ProviderSpec, api: LocalApi, sleep: SharedSleep) -> Self {
+    pub fn new(spec: ProviderSpec, api: LocalApi, sleep: SharedSleeper) -> Self {
         Self { spec, api, sleep }
     }
 }
@@ -124,7 +124,7 @@ impl ProviderSession for TailnetSession {
 pub(crate) fn build(spec: ProviderSpec, io: &crate::set::FamilyIo) -> crate::set::Built {
     match spec.auth.kind {
         account_core::AuthKind::OwnProgram => {
-            let sleep = SharedSleep::new(http_reqwest::TokioSleep);
+            let sleep = SharedSleeper::new(base_clock::TokioSleeper);
             Ok(Box::new(TailnetProvider::new(
                 spec,
                 io.tailscale.clone(),

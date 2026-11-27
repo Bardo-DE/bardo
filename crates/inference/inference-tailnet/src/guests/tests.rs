@@ -197,7 +197,12 @@ fn a_file_that_is_not_a_list_is_put_aside_and_the_list_starts_empty() {
     let (guests, said) = Guests::open(&path);
     assert!(said.unwrap().contains("started empty"));
     assert!(guests.rows().is_empty());
-    assert!(dir.join("guests.toml.unusable").exists());
+    let kept: Vec<_> = std::fs::read_dir(&dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .filter(|name| name.starts_with("guests.toml.bad-"))
+        .collect();
+    assert_eq!(kept.len(), 1, "the file is kept beside: {kept:?}");
     assert!(!path.exists());
 }
 

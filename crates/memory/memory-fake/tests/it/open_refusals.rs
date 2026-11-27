@@ -1,9 +1,10 @@
 //! A Space whose stores will not open answers by what is wrong: a key that does not open the
 //! log (or a locked key store) is `SpaceLocked`, never `Invalid`.
 
+use base_time::ManualClock;
 use memory_core::{MemoryReply, MemoryRequest, Refusal, ReplicaId, RuleSet, SpaceId, SpaceMeta};
 use memory_eventlog::{LogError, MemoryLog};
-use memory_fake::{FakeBackend, ScriptedConsolidator, SharedVault, SteppedClock};
+use memory_fake::{FakeBackend, ScriptedConsolidator, SharedVault};
 use memory_recall::{ExactScan, FakeEmbedder, Index};
 use memory_seal::{MemoryKeys, SpaceKey};
 use memory_service::Caller;
@@ -22,7 +23,7 @@ impl Backend for Refusing {
     type Index = Index<ExactScan>;
     type Embedder = FakeEmbedder;
     type Consolidator = ScriptedConsolidator;
-    type Clock = SteppedClock;
+    type Clock = ManualClock;
 
     fn keys(&self) -> &MemoryKeys {
         self.inner.keys()
@@ -33,10 +34,10 @@ impl Backend for Refusing {
     fn consolidator(&self) -> &ScriptedConsolidator {
         self.inner.consolidator()
     }
-    fn clock(&self) -> &SteppedClock {
+    fn clock(&self) -> &ManualClock {
         self.inner.clock()
     }
-    fn random(&self) -> [u8; 16] {
+    fn random(&self) -> Result<[u8; 16], BackendError> {
         self.inner.random()
     }
     fn remove_space(&self, space: &SpaceId) -> Result<(), BackendError> {

@@ -16,20 +16,8 @@ use account_dbus::accounts::launcher_fault_error_name_in;
 use account_service_accounts::{Launchers as _, LoginEnd};
 use account_service_core::audit::AuditEvent;
 use account_wire::LauncherWireError;
-use base_time::Clock;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicI64, Ordering};
 use zbus::export::futures_core::Stream;
-
-/// accountd's clock, moved by the test.
-#[derive(Debug, Default)]
-struct TestClock(AtomicI64);
-
-impl Clock for TestClock {
-    fn now(&self) -> base_time::UnixSeconds {
-        base_time::UnixSeconds(self.0.load(Ordering::SeqCst))
-    }
-}
 
 async fn next<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
     std::future::poll_fn(|cx| std::pin::Pin::new(&mut *stream).poll_next(cx)).await
@@ -210,8 +198,8 @@ async fn a_failure_and_a_cancel_leave_the_state_and_a_logout_done_needs_a_login(
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_request_the_launcher_does_not_answer_expires_on_accountds_clock() {
-    let clock = Arc::new(TestClock::default());
-    let timing = quick_timing().with_clock(Arc::<TestClock>::clone(&clock));
+    let clock = Arc::new(base_time::ManualClock::default());
+    let timing = quick_timing().with_clock(Arc::<base_time::ManualClock>::clone(&clock));
     let rig = Rig::start(vec![], vec![], timing).await;
     let launcher = rig.launcher("org.example.Launcher").await;
     launcher
@@ -225,7 +213,7 @@ async fn a_request_the_launcher_does_not_answer_expires_on_accountds_clock() {
         .await
         .expect("asked");
     // Nothing is decided by waiting: the bound is on the clock, which the test moves.
-    clock.0.store(31, Ordering::SeqCst);
+    clock.set(base_time::UnixSeconds(31));
     assert!(matches!(within(waiting).await, LoginEnd::Expired));
 }
 

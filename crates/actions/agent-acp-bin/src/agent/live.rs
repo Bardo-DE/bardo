@@ -24,7 +24,7 @@ use companion_model::helper::{TerminalLine, TerminalLogin, TerminalRun};
 use companion_model::{SeenCommand, WatchedAgent};
 use permission_core::ACP_AGENT_APP;
 
-use action_store::SystemClock;
+use base_clock::SystemClock;
 use provenance::{HelperId, SessionId, TaskId};
 use std::path::PathBuf;
 use std::sync::Arc;

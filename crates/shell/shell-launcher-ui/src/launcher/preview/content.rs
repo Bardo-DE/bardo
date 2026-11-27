@@ -328,7 +328,7 @@ fn file_name(path: &Path) -> String {
 /// The folder as the rows word it: `~/…` under the home folder.
 fn folder(path: &Path) -> String {
     let parent = path.parent().map(Path::to_path_buf).unwrap_or_default();
-    let home = dirs::home_dir();
+    let home = base_xdg::Xdg::process().home().map(Path::to_path_buf);
     match home.and_then(|home| parent.strip_prefix(&home).ok().map(Path::to_path_buf)) {
         Some(inside) if inside.as_os_str().is_empty() => "~".to_owned(),
         Some(inside) => format!("~/{}", inside.display()),

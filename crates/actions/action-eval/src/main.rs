@@ -16,7 +16,7 @@ use std::process::ExitCode;
 
 /// Today in UTC, as `YYYY-MM-DD`: the one clock read of the attack summary.
 fn today() -> String {
-    let now = base_time::Clock::now(&base_time::SystemClock);
+    let now = base_time::Clock::now(&base_clock::SystemClock);
     utc_date(u64::try_from(now.0).unwrap_or(0))
 }
 

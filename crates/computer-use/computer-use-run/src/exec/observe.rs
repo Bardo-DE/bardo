@@ -16,6 +16,7 @@ use crate::seams::{Clock, MessageLink, Seams};
 use crate::sensitivity::window_sensitivity;
 use crate::turn::note_of;
 use action_core::InboxAsk;
+use base_time::Sleeper as _;
 use computer_use_a11y_tree::{
     A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget, NodeSelector, Resolution, prune,
     resolve,
@@ -138,7 +139,7 @@ impl<S: Seams> Exec<'_, S> {
             if fit != Fit::NotFocused {
                 return (now, fit);
             }
-            self.seam.clock.after(FOCUS_POLL).await;
+            self.seam.clock.sleep(FOCUS_POLL).await;
             match self.window_now().await {
                 Some(again) => now = again,
                 None => return (now, fit),

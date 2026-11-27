@@ -4,8 +4,9 @@
 use super::wire::wire_of;
 use crate::bus::{Pinned, ToAbsence, absence_of, because, connect, pinned, relay};
 use account_dbus::{BusFailure, classify};
+use base_clock::SystemClock;
+use base_time::Clock;
 use base_time::deadline::{NotAnsweringError, within};
-use base_time::{Clock, SystemClock};
 use settings_app_link::Ticks;
 use settings_app_link::bus::BusSource;
 use settings_app_link::updates::{InstallRefusal, UpdateTicks, UpdatesLink};

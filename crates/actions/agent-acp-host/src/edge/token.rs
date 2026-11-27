@@ -4,14 +4,13 @@ use action_tools::EdgeToken;
 
 /// A new token, from the kernel's random bytes.
 pub(super) fn mint() -> std::io::Result<EdgeToken> {
-    let mut bytes = [0_u8; 32];
-    getrandom::fill(&mut bytes).map_err(std::io::Error::other)?;
-    EdgeToken::parse(&const_hex::encode(bytes)).ok_or_else(|| std::io::Error::other("token"))
+    let text = base_random::hex::<32>().map_err(std::io::Error::other)?;
+    EdgeToken::parse(&text).ok_or_else(|| std::io::Error::other("token"))
 }
 
 /// Eight random bytes as hex, to make a directory name that cannot be guessed.
 pub(super) fn nonce() -> std::io::Result<String> {
-    Ok(mint()?.reveal()[..16].to_owned())
+    base_random::hex::<8>().map_err(std::io::Error::other)
 }
 
 #[cfg(test)]

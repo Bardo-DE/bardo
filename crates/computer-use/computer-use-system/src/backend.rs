@@ -1,10 +1,9 @@
 //! The capture backend the system seam chooses between: the stock toplevel source with masking
 //! in the computer-use daemon, or the fork's masked source. Both open the same session type.
 
+use base_time::Monotonic;
 use computer_use_capture::{CaptureError, WindowCapture};
-use computer_use_capture_wayland::{
-    BardoMaskedCapture, StampClock, StockToplevelCapture, WaylandSession,
-};
+use computer_use_capture_wayland::{BardoMaskedCapture, StockToplevelCapture, WaylandSession};
 use computer_use_desktop::{BackendCaps, BackendKind, LeaseGrant, MaskWhere};
 use std::sync::Arc;
 use wayland_client::Connection;
@@ -43,7 +42,7 @@ impl CaptureBackend {
     /// The same backend, stamping its frames with `clock`: the stock source takes it, the
     /// masked one has no frames of its own to stamp.
     #[must_use]
-    pub fn with_clock(self, clock: Arc<dyn StampClock>) -> Self {
+    pub fn with_clock(self, clock: Arc<dyn Monotonic>) -> Self {
         match self {
             CaptureBackend::StockToplevel(capture) => {
                 CaptureBackend::StockToplevel(capture.with_clock(clock))

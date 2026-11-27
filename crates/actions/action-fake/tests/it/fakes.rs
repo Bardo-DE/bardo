@@ -8,8 +8,8 @@ use action_provider::IntentProvider;
 use action_review::{ReviewVerdict, Reviewer};
 use action_router::GrantStore;
 use action_vocab::{
-    ActionRef, Args, CallId, CallRequest, CallerRole, Clock, FileRef, LabelText, Millis, Origin,
-    ParamName, Seconds, TargetValue, UndoToken, Value,
+    ActionRef, Args, CallId, CallRequest, CallerRole, FileRef, LabelText, Origin, ParamName,
+    Seconds, TargetValue, UndoToken, Value,
 };
 use action_wire::{CallerId, SessionOpen};
 use computer_use_action::{RunMode, WindowTrust};
@@ -464,22 +464,23 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
 
 #[tokio::test]
 async fn the_virtual_clock_completes_a_timer_only_when_advanced_to_it() {
-    use base_time::Clock as _;
+    use base_time::{Clock as _, Sleeper as _};
     use std::future::Future;
+    use std::time::Duration;
     let clock = FixedClock::at(UnixSeconds(1));
-    let mut timer = Box::pin(clock.after(Millis(100)));
+    let mut timer = Box::pin(clock.sleep(Duration::from_millis(100)));
     let waker = std::task::Waker::noop();
     let mut cx = std::task::Context::from_waker(waker);
     assert!(timer.as_mut().poll(&mut cx).is_pending());
-    assert_eq!(clock.next_ask().await, Millis(100));
-    clock.advance(Millis(99));
+    assert_eq!(clock.next_ask().await, Duration::from_millis(100));
+    clock.advance(Duration::from_millis(99));
     assert!(timer.as_mut().poll(&mut cx).is_pending());
-    clock.advance(Millis(1));
+    clock.advance(Duration::from_millis(1));
     assert!(timer.as_mut().poll(&mut cx).is_ready());
     // No time at all is no wait; the instant never moves.
-    clock.after(Millis(0)).await;
+    clock.sleep(Duration::ZERO).await;
     assert_eq!(clock.now(), UnixSeconds(1));
-    assert_eq!(clock.asked(), [Millis(100), Millis(0)]);
+    assert_eq!(clock.asked(), [Duration::from_millis(100), Duration::ZERO]);
 }
 
 fn send_to(key: &str) -> Invocation {

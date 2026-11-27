@@ -11,7 +11,7 @@ use account_nextcloud_proto::flow::{Granted, Polled, Started};
 use account_nextcloud_proto::paths::server_of;
 use account_provider::{SignInMode, SignInStep, Signed};
 use account_sheet::{FieldKind, SignInFault, SignInInput};
-use http_core::Sleep;
+use base_time::Sleeper;
 use std::time::Duration;
 
 /// How many polls in a row may fail to reach the server before the flow is given up.

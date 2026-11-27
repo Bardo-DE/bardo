@@ -1,8 +1,8 @@
-//! Small durable file operations: atomic replace, symlink switch, directory modes and flush.
+//! Small durable file operations: symlink switch, directory modes and flush.
 
-use std::fs::{self, DirBuilder, File, OpenOptions};
-use std::io::{self, Write};
-use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt, PermissionsExt, symlink};
+use std::fs::{self, DirBuilder, File};
+use std::io;
+use std::os::unix::fs::{DirBuilderExt, PermissionsExt, symlink};
 use std::path::{Path, PathBuf};
 
 fn sibling(path: &Path, suffix: &str) -> PathBuf {
@@ -31,36 +31,6 @@ pub fn sync_dir(dir: &Path) -> io::Result<()> {
 /// Returns the I/O error when a directory cannot be made.
 pub fn create_dirs(path: &Path, mode: u32) -> io::Result<()> {
     DirBuilder::new().recursive(true).mode(mode).create(path)
-}
-
-/// Writes `bytes` to `path` so a reader sees the old file or the whole new one, for a file whose
-/// permission bits matter.
-///
-/// The new file is made with `mode` (whatever the umask), flushed, and renamed over `path`. A
-/// leftover file of the temporary name is removed first, never written through.
-///
-/// # Errors
-///
-/// Returns the I/O error when the file cannot be written, flushed or renamed.
-pub fn write_atomic_mode(path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {
-    let parent = path.parent().unwrap_or_else(|| Path::new("."));
-    create_dirs(parent, 0o755)?;
-    let staged = sibling(path, ".new");
-    match fs::remove_file(&staged) {
-        Ok(()) => {}
-        Err(e) if e.kind() == io::ErrorKind::NotFound => {}
-        Err(e) => return Err(e),
-    }
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .mode(mode)
-        .open(&staged)?;
-    file.set_permissions(fs::Permissions::from_mode(mode))?;
-    file.write_all(bytes)?;
-    file.sync_all()?;
-    fs::rename(&staged, path)?;
-    sync_dir(parent)
 }
 
 /// Points the symlink `link` at `target` with one atomic rename: `link.new` is made first and

@@ -17,6 +17,7 @@
 
 use crate::bridge::{self, Frames};
 use crate::computer_use_run::{ComputerUseRun, StepJob};
+use base_clock::TokioSleeper;
 use engine_supervisor::EngineId;
 use inference_core::{
     ChatReply, ChatSink, ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply,
@@ -36,16 +37,6 @@ use tokio::time::Instant;
 
 mod turn;
 pub use turn::LocalTurn;
-
-/// Waits with the clock of the runtime, so a test with paused time does not wait.
-#[derive(Debug, Clone, Copy)]
-pub struct TokioSleep;
-
-impl sp::Sleeper for TokioSleep {
-    fn sleep(&self, wait: sp::WaitMs) -> impl Future<Output = ()> + Send {
-        tokio::time::sleep(Duration::from_millis(u64::from(wait.0)))
-    }
-}
 
 /// Three attempts, a quarter of a second doubling to four seconds (inference-bridge's).
 pub const RETRY: sp::RetryPolicy = inference_bridge::ENGINE_RETRY;
@@ -81,12 +72,12 @@ fn client(model: &LocalModel) -> HttpClient {
 /// The provider of a chat engine on this computer, retried as the daemon retries; none for a model
 /// whose engine speaks no chat wire (a speech host).
 #[must_use]
-pub fn chat_provider(model: &LocalModel) -> Option<Retrying<OpenAiCompat, TokioSleep>> {
+pub fn chat_provider(model: &LocalModel) -> Option<Retrying<OpenAiCompat, TokioSleeper>> {
     let flavor: Flavor = model.flavor?;
     Some(Retrying::new(
         OpenAiCodec::new(flavor).provider(client(model)),
         RETRY,
-        TokioSleep,
+        TokioSleeper,
     ))
 }
 

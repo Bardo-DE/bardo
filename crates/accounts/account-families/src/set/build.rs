@@ -15,7 +15,7 @@ use http_reqwest::ReqwestHttp;
 pub(super) fn nextcloud(spec: ProviderSpec, io: &FamilyIo) -> Built {
     match spec.auth.kind {
         AuthKind::LoginFlowV2 => {
-            let sleep = http_reqwest::TokioSleep;
+            let sleep = base_clock::TokioSleeper;
             Ok(Box::new(NextcloudProvider::new(
                 spec,
                 io.http.clone(),

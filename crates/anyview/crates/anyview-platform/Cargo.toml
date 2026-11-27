@@ -21,9 +21,9 @@ testing = []
 [dependencies]
 base-words = { path = "../../../base/base-words" }
 base-fs = { path = "../../../base/base-fs" }
+base-xdg = { path = "../../../base/base-xdg" }
 # Capped reads and atomic writes of the thumbnail and cover caches: Bardo's, shared by the desktop's apps.
 anyview-core = {path = "../anyview-core"}
-dirs = { workspace = true }
 service-locator = {path = "../../../platform/service-locator"}
 log = { workspace = true }
 md-5 = { workspace = true }

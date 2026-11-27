@@ -9,7 +9,7 @@ use files_ui::{PlaceKind, Places};
 /// The folder a new window opens on: the one chosen, or the home folder when that is not a folder
 /// on this computer.
 pub fn new_window(choice: NewWindow) -> Option<PathBuf> {
-    let home = dirs::home_dir();
+    let home = base_xdg::Xdg::process().home().map(Path::to_path_buf);
     let chosen = match choice {
         NewWindow::Home => home.clone(),
         NewWindow::Desktop => dirs::desktop_dir(),
@@ -31,7 +31,10 @@ fn expanded(path: &Path, home: Option<&Path>) -> PathBuf {
 /// Home and the user folders that exist, as the sidebar's favorites.
 pub fn found() -> Places {
     let folders = [
-        (PlaceKind::Home, dirs::home_dir()),
+        (
+            PlaceKind::Home,
+            base_xdg::Xdg::process().home().map(Path::to_path_buf),
+        ),
         (PlaceKind::Desktop, dirs::desktop_dir()),
         (PlaceKind::Documents, dirs::document_dir()),
         (PlaceKind::Downloads, dirs::download_dir()),

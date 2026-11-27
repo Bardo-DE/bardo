@@ -5,6 +5,7 @@
 use crate::fault::SkillError;
 use crate::folder::SkillFolder;
 use crate::skill::{Origin, Skill, parse};
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 
 /// The skill directories, in precedence order.
@@ -41,16 +42,9 @@ impl Roots {
     /// The roots from an environment lookup, as the XDG base directory spec reads it. Called by
     /// a daemon's `main` with `std::env::var`, never from below.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Self {
-        let set = |key: &str| env(key).filter(|v| !v.is_empty());
-        let home = set("XDG_DATA_HOME")
-            .map(PathBuf::from)
-            .or_else(|| set("HOME").map(|h| PathBuf::from(h).join(".local").join("share")));
-        let dirs = set("XDG_DATA_DIRS")
-            .unwrap_or_else(|| "/usr/local/share:/usr/share".to_owned())
-            .split(':')
-            .filter(|d| !d.is_empty())
-            .map(PathBuf::from)
-            .collect::<Vec<_>>();
+        let xdg = Xdg::new(env);
+        let home = xdg.data_home().ok();
+        let dirs = xdg.data_dirs();
         Self::in_data_dirs(home.as_deref(), &dirs)
     }
 

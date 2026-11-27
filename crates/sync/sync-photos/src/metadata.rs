@@ -134,15 +134,15 @@ mod tests {
     use super::super::manifest::{Edit, Mark};
     use super::*;
     use crate::testing::scratch;
+    use base_time::ManualClock;
     use std::sync::Arc;
-    use sync_engine::clock::ManualMillis;
 
     fn dataset(name: &str) -> (PhotoMetadata, PhotoLibrary, tempfile::TempDir) {
         let dir = scratch(name);
         let library = PhotoLibrary::open(
             dir.path().join("lib"),
             DeviceId::parse("a").expect("device"),
-            Arc::new(ManualMillis::at(1_000)),
+            Arc::new(ManualClock::at_ms(1_000)),
         )
         .expect("library");
         (PhotoMetadata::new(library.clone()), library, dir)
@@ -172,7 +172,7 @@ mod tests {
             let other = PhotoLibrary::open(
                 dir.path().join("other"),
                 DeviceId::parse("b").expect("device"),
-                Arc::new(ManualMillis::at(9_000)),
+                Arc::new(ManualClock::at_ms(9_000)),
             )
             .expect("library");
             other

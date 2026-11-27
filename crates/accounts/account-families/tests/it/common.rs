@@ -79,7 +79,7 @@ impl Http for Fakes {
 #[derive(Debug, Clone, Copy)]
 pub struct Brief;
 
-impl http_core::Sleep for Brief {
+impl base_time::Sleeper for Brief {
     async fn sleep(&self, _how_long: std::time::Duration) {
         tokio::time::sleep(std::time::Duration::from_millis(3)).await;
     }

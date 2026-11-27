@@ -363,8 +363,6 @@ fn a_taken_name_is_skipped_and_never_overwritten() {
     let pictures = dir.path().join("Pictures");
     std::fs::create_dir_all(&pictures).expect("dir");
     std::fs::write(pictures.join("Screenshot-t-0.png"), b"mine").expect("write");
-    // A leftover of a crashed run sits where the next name's partial file would go.
-    std::fs::write(pictures.join("Screenshot-t-1.png.part"), b"stale").expect("write");
     let setup = ScreenshotSetup::new(
         OutputGrab::new(
             DisplayName::session(),
@@ -375,15 +373,10 @@ fn a_taken_name_is_skipped_and_never_overwritten() {
         "t".into(),
     );
     let path = take(&setup, 0).expect("take");
-    assert_eq!(path, pictures.join("Screenshot-t-2.png"));
+    assert_eq!(path, pictures.join("Screenshot-t-1.png"));
     assert_eq!(
         std::fs::read(pictures.join("Screenshot-t-0.png")).expect("read"),
         b"mine"
-    );
-    assert_eq!(
-        std::fs::read(pictures.join("Screenshot-t-1.png.part")).expect("read"),
-        b"stale",
-        "somebody else's partial file is left alone"
     );
 }
 

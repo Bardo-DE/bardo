@@ -7,8 +7,9 @@ use super::relabel::{Reach, Relabel, Relabeled};
 use super::staged::{Sealed, Staged};
 use super::system::sync_system;
 use super::unpack::{open_tree, unpack};
-use crate::fsutil::{remove_tree, switch_link, sync_dir, sync_tree, write_atomic_mode};
+use crate::fsutil::{remove_tree, switch_link, sync_dir, sync_tree};
 use crate::layout::{Layout, RECORD_DIR, RECORD_RELEASE, RECORD_SIGNATURE};
+use base_fs::atomic::AtomicWrite;
 use semver::Version;
 use std::fs;
 use std::io;
@@ -191,13 +192,15 @@ fn run_steps(
 /// and writable by root alone.
 fn keep_record(partial: &Path, staged: &Staged) -> Result<(), ApplyError> {
     let dir = partial.join(RECORD_DIR);
-    write_atomic_mode(&dir.join(RECORD_RELEASE), &staged.release_bytes, 0o644)
+    AtomicWrite::with_mode(0o644)
+        .replacing_links()
+        .dirs_with_mode(0o755)
+        .write(&dir.join(RECORD_RELEASE), &staged.release_bytes)
         .map_err(ApplyError::io("keeping the release description"))?;
-    write_atomic_mode(
-        &dir.join(RECORD_SIGNATURE),
-        staged.signature.as_bytes(),
-        0o644,
-    )
-    .map_err(ApplyError::io("keeping the signature"))?;
+    AtomicWrite::with_mode(0o644)
+        .replacing_links()
+        .dirs_with_mode(0o755)
+        .write(&dir.join(RECORD_SIGNATURE), staged.signature.as_bytes())
+        .map_err(ApplyError::io("keeping the signature"))?;
     sync_tree(partial).map_err(ApplyError::io("flushing the new release"))
 }

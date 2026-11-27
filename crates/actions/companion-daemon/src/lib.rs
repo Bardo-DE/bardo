@@ -57,5 +57,4 @@ pub type Shared = companion_tasks::Shared<Bell>;
 
 /// The companion as the daemon and its tests run it: the task model over the system clock (or a
 /// test's hand) and the bell.
-pub type Companiond<P, I, K = action_store::SystemClock> =
-    companion_tasks::Companion<P, I, K, Bell>;
+pub type Companiond<P, I, K = base_clock::SystemClock> = companion_tasks::Companion<P, I, K, Bell>;

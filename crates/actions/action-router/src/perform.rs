@@ -17,8 +17,9 @@ use action_gate::driven::{Driven, Next, Run, code_of, reviewer_model, unissued};
 use action_gate::gate::Pending;
 use action_gate::prepared::Prepared;
 use action_review::{DeniedBy, ReviewVerdict, Reviewer};
-use action_vocab::{CallRequest, Clock, Depth, Millis, WindowKey};
+use action_vocab::{CallRequest, Depth, Millis, WindowKey};
 use base_time::Clock as _;
+use base_time::Sleeper as _;
 use permission_core::{AlwaysOffer, ReviewError, ReviewMark, Stage};
 use provenance::SpaceScope;
 use tracing::Instrument;
@@ -255,7 +256,7 @@ impl<S: Seams> Router<S> {
             Stage::SecondOpinion => limit.second,
         };
         let verdict = within(
-            self.seams.clock().after(wait),
+            self.seams.clock().sleep(wait.duration()),
             self.seams.reviewer().review(stage, request),
         )
         .await

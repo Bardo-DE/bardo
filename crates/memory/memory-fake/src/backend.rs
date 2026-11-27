@@ -1,7 +1,8 @@
 //! `FakeBackend`: every seam in memory, and the service built over it.
 
-use crate::clock::SteppedClock;
+use crate::clock::NOW;
 use crate::consolidator::ScriptedConsolidator;
+use base_time::ManualClock;
 use memory_core::{ReplicaId, RuleSet, SpaceId, SpaceMeta, UnixSeconds};
 use memory_eventlog::MemoryLog;
 use memory_files::MemoryVault;
@@ -55,7 +56,7 @@ pub struct FakeBackend {
     keys: MemoryKeys,
     embedder: FakeEmbedder,
     consolidator: ScriptedConsolidator,
-    clock: SteppedClock,
+    clock: ManualClock,
     draws: AtomicU64,
     removed: Mutex<Vec<SpaceId>>,
     vaults: Mutex<BTreeMap<SpaceId, SharedVault>>,
@@ -69,7 +70,7 @@ impl FakeBackend {
             keys: MemoryKeys::new(),
             embedder: FakeEmbedder::new(),
             consolidator,
-            clock: SteppedClock::default(),
+            clock: ManualClock::new(NOW),
             draws: AtomicU64::new(0),
             removed: Mutex::new(Vec::new()),
             vaults: Mutex::new(BTreeMap::new()),
@@ -115,7 +116,7 @@ impl FakeBackend {
 
     /// Moves the clock forward (retention, expiry and plan lapse tests).
     pub fn advance_clock(&self, seconds: i64) {
-        self.clock.advance(seconds);
+        self.clock.advance(u64::try_from(seconds).unwrap_or(0));
     }
 
     /// A Space's vault, the same files the service reads and writes.
@@ -149,7 +150,7 @@ impl Backend for FakeBackend {
     type Index = Index<ExactScan>;
     type Embedder = FakeEmbedder;
     type Consolidator = ScriptedConsolidator;
-    type Clock = SteppedClock;
+    type Clock = ManualClock;
 
     fn keys(&self) -> &MemoryKeys {
         &self.keys
@@ -163,16 +164,16 @@ impl Backend for FakeBackend {
         &self.consolidator
     }
 
-    fn clock(&self) -> &SteppedClock {
+    fn clock(&self) -> &ManualClock {
         &self.clock
     }
 
     /// A counter, so the fake's ids are reproducible.
-    fn random(&self) -> [u8; 16] {
+    fn random(&self) -> Result<[u8; 16], BackendError> {
         let n = self.draws.fetch_add(1, Ordering::Relaxed);
         let mut out = [0u8; 16];
         out[8..].copy_from_slice(&n.to_be_bytes());
-        out
+        Ok(out)
     }
 
     fn remove_space(&self, space: &SpaceId) -> Result<(), BackendError> {

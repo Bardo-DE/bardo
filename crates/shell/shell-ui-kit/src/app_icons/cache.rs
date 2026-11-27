@@ -65,7 +65,10 @@ static CACHE: LazyLock<Cache> = LazyLock::new(|| Cache {
 
 /// `$XDG_CACHE_HOME/bardo/shell/icons`.
 fn cache_dir() -> Option<PathBuf> {
-    dirs::cache_dir().map(|dir| dir.join("bardo").join("shell").join("icons"))
+    base_xdg::Xdg::process()
+        .cache_home()
+        .ok()
+        .map(|dir| dir.join("bardo").join("shell").join("icons"))
 }
 
 fn slots() -> MutexGuard<'static, HashMap<IconKey, Slot>> {

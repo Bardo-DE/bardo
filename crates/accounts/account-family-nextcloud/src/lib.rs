@@ -21,8 +21,9 @@ use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInStart,
 };
 use account_sheet::SignInFault;
+use base_time::Sleeper;
 use discover::Who;
-use http_core::{SharedHttp, Sleep};
+use http_core::SharedHttp;
 
 pub use sign_in::NextcloudFlow;
 
@@ -55,7 +56,7 @@ pub struct NextcloudProvider {
 impl NextcloudProvider {
     /// The provider serving the accounts of `spec`, dialling through `http` and waiting on
     /// `sleep` between the polls of a sign-in.
-    pub fn new(spec: ProviderSpec, http: SharedHttp, sleep: impl Sleep + 'static) -> Self {
+    pub fn new(spec: ProviderSpec, http: SharedHttp, sleep: impl Sleeper + 'static) -> Self {
         Self {
             spec,
             io: Io::new(http, sleep),

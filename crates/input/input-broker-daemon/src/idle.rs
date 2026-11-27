@@ -1,12 +1,13 @@
 //! When the service has nothing left to do. Pure: the caller passes the time and the count.
 
-use input_broker_wire::Millis;
+use base_time::Mono;
+use input_broker_wire::millis_since;
 
 /// Counts how long no one has been connected.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Idle {
     limit_ms: u64,
-    quiet_since: Option<Millis>,
+    quiet_since: Option<Mono>,
 }
 
 impl Idle {
@@ -21,12 +22,12 @@ impl Idle {
 
     /// Looks at the connection count at `now`. True once it has been quiet for the whole limit:
     /// the service exits and socket activation starts it again.
-    pub fn observe(&mut self, now: Millis, connections: usize) -> bool {
+    pub fn observe(&mut self, now: Mono, connections: usize) -> bool {
         if connections > 0 {
             self.quiet_since = None;
             return false;
         }
         let since = *self.quiet_since.get_or_insert(now);
-        now.since(since) >= self.limit_ms
+        millis_since(now, since) >= self.limit_ms
     }
 }

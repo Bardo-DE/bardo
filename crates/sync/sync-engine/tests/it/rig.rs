@@ -3,6 +3,7 @@
 
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use base_ids::Bytes;
+use base_time::ManualClock;
 use base_time::UnixSeconds;
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -12,7 +13,6 @@ use sync_core::{
     MemoryReplica, PutError, PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
     ReplicaError,
 };
-use sync_engine::clock::ManualClock;
 use sync_engine::dataset::MemoryDataset;
 use sync_engine::engine::{Engine, Report};
 use sync_engine::journal::{JournalError, JournalStore, Op};
@@ -144,7 +144,7 @@ impl World {
                 fetches: AtomicUsize::new(0),
             }),
             dataset: Arc::new(MemoryDataset::new("files", ConflictRule::KeepBoth)),
-            clock: Arc::new(ManualClock::at(5_000)),
+            clock: Arc::new(ManualClock::new(UnixSeconds(5_000))),
             dir: scratch(name),
             cutting: Mutex::default(),
         }

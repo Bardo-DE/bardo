@@ -9,7 +9,6 @@
 //! Clear, Clear All, a dismissal, "Show less") fades and slides up, then the rows below close the
 //! gap.
 
-use std::time::{SystemTime, UNIX_EPOCH};
 use ui_components::components::controls::button_model::Bezel;
 
 use dioxus::prelude::*;
@@ -145,8 +144,5 @@ pub(super) fn app_of(history: &History, row: &CenterRow) -> Option<String> {
 
 /// The wall clock the ages are counted against (the history's arrival times are wall-clock).
 fn wall_clock() -> UnixMs {
-    let since = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default();
-    UnixMs(i64::try_from(since.as_millis()).unwrap_or(i64::MAX))
+    UnixMs(i64::try_from(base_time::Clock::now_ms(&base_clock::SystemClock)).unwrap_or(i64::MAX))
 }

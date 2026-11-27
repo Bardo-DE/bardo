@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 account-core = {path = "../account-core"}
 account-provider = {path = "../account-provider"}
 account-sheet = {path = "../account-sheet"}

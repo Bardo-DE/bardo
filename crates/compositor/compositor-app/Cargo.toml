@@ -25,6 +25,7 @@ base-words = { path = "../../base/base-words" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }
+base-clock = { path = "../../base/base-clock" }
 compositor-core = {path = "../compositor-core"}
 compositor-layout = {path = "../compositor-layout"}
 compositor-motion = {path = "../compositor-motion"}

@@ -255,7 +255,6 @@ impl Lender {
                 format!("this computer cannot serve the request: {}", why.0),
             )
         })?;
-        let unavailable = || Failure::new(Cause::Overloaded, "the model is not available");
         let ctx = Ctx {
             program: AgentProgram::parse("computer").map_err(|error| {
                 Failure::new(
@@ -270,7 +269,12 @@ impl Lender {
             },
             class: DataClass::Prompt,
             // Never compared with anything: the judgement of who asks was made at the door.
-            token: Token::fresh().ok_or_else(unavailable)?,
+            token: Token::fresh().map_err(|error| {
+                Failure::new(
+                    Cause::Overloaded,
+                    format!("the model is not available: {error}"),
+                )
+            })?,
             engines: self.engines.clone(),
             audit: Arc::clone(&self.audit),
             clock: Arc::clone(&self.clock),

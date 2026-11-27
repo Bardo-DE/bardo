@@ -5,7 +5,7 @@
 //! timers, written from the same schedules, only start companiond at the time.
 
 use super::host::Host;
-use action_vocab::{Clock, Millis};
+use action_vocab::Clock;
 use companion_core::{EventWatch, Settle, ended_events, event_asks, group_by_space};
 use companion_model::routine::{
     RoutineBook, RoutineEffect, RoutineEvent, RoutineId, RoutineRecord, step,
@@ -14,9 +14,10 @@ use provenance::{SpaceId, UnixSeconds};
 use std::collections::VecDeque;
 use std::fmt;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 /// How often the timer ticks.
-const POLL: Millis = Millis(5_000);
+const POLL: Duration = Duration::from_secs(5);
 
 struct State {
     book: RoutineBook,
@@ -183,7 +184,7 @@ impl<H: Host, K: Clock> Routines<H, K> {
     pub async fn run(self: Arc<Self>) {
         loop {
             self.tick().await;
-            self.clock.after(POLL).await;
+            self.clock.sleep(POLL).await;
         }
     }
 

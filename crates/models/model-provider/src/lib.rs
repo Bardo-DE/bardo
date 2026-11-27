@@ -65,7 +65,7 @@ pub use request::{
     Effort, ImageBytes, ImageDetail, ImageInput, Limits, Message, NativeTool, OutputShape, Part,
     Reasoning, Role, ToolCall, ToolChoice, ToolResult, ToolSpec, ToolStatus, TurnRequest,
 };
-pub use retry::{RetryClass, RetryPolicy, Retrying, Sleeper, next_wait};
+pub use retry::{RetryClass, RetryPolicy, Retrying, next_wait};
 #[cfg(feature = "testing")]
 pub use scripted::{Script, ScriptedProvider};
 pub use sequence::{SequenceError, check as check_sequence};

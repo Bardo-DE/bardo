@@ -1,6 +1,7 @@
 //! The wall clock and the per-computer jitter seed; the only readers of either.
 
-use base_time::{Clock, SystemClock, UnixSeconds};
+use base_clock::SystemClock;
+use base_time::{Clock, UnixSeconds};
 use updater_core::Sha256Hex;
 
 /// The time now.

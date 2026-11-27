@@ -26,7 +26,7 @@
 //!   follows; one removed here while it was sent goes to the recycle bin. The change stays laid
 //!   over the listing until a listing pass shows it.
 
-use super::{Drive, Inner, NodeId, held};
+use super::{Drive, Inner, Mono, NodeId, held};
 use crate::SkipError;
 use crate::index::{Awaiting, Base, Edit, Index, Row};
 use crate::naming;
@@ -35,7 +35,7 @@ use crate::sink::Sink;
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Weak};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use sync_core::{
     BaseVersion, Conflict, Content, Place, Progress, PutError, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter, Session, Upload, UploadTo, Written,
@@ -214,7 +214,7 @@ impl Progress for Told {
 
 impl Inner {
     /// Whether `edit`'s file may be sent now, or when it may.
-    fn quiet_since(&self, id: &NodeId) -> Result<(), Option<Instant>> {
+    fn quiet_since(&self, id: &NodeId) -> Result<(), Option<Mono>> {
         match held(&self.writing).get(id) {
             Some(writing) if writing.handles > 0 => Err(None),
             Some(writing) => {
@@ -241,7 +241,7 @@ impl Inner {
     }
 
     /// The step `edit` needs now; `Err` with when it may be ready, or `None` for not yet.
-    fn op_for(&self, index: &Index, edit: &Edit) -> Result<Op, Option<Instant>> {
+    fn op_for(&self, index: &Index, edit: &Edit) -> Result<Op, Option<Mono>> {
         let id = edit.id.clone();
         let listed = |item: &RemoteId| {
             self.listing
@@ -370,7 +370,7 @@ impl Inner {
         if let Some((until, _)) = *held(&self.backoff)
             && until > now
         {
-            return Next::Wait(Some(until.saturating_duration_since(now)));
+            return Next::Wait(Some(until.since(now)));
         }
         let edits: Vec<Edit> = {
             let index = held(&self.index);
@@ -385,7 +385,7 @@ impl Inner {
             edits.sort_by_key(|edit| edit.seq);
             edits
         };
-        let mut soonest: Option<Instant> = None;
+        let mut soonest: Option<Mono> = None;
         for edit in &edits {
             if self.local_only(&edit.id) {
                 continue;
@@ -400,7 +400,7 @@ impl Inner {
                 Err(None) => {}
             }
         }
-        Next::Wait(soonest.map(|at| at.saturating_duration_since(now)))
+        Next::Wait(soonest.map(|at| at.since(now)))
     }
 
     /// Waits longer before the next try: the drive could not take a change now.

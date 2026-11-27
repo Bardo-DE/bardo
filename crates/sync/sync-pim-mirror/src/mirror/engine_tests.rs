@@ -5,6 +5,7 @@ use super::tests::ics;
 use super::*;
 use crate::testing::scratch;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
+use base_time::ManualClock;
 use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_core::RemoteId;
@@ -12,7 +13,6 @@ use sync_core::{
     BaseVersion, ByteRange, ChangePage, Cursor, MemoryReplica, PutError, PutItem, PutTarget, Quota,
     RemoteVersion, Replica, ReplicaError,
 };
-use sync_engine::clock::ManualClock;
 use sync_engine::engine::Engine;
 use sync_vdir::items_in;
 
@@ -129,7 +129,7 @@ fn engine(
         &journal,
     )
     .expect("open");
-    let clock = Arc::new(ManualClock::at(5_000));
+    let clock = Arc::new(ManualClock::new(UnixSeconds(5_000)));
     (
         Engine::new(server.clone(), mirror.clone(), journal, clock),
         mirror,

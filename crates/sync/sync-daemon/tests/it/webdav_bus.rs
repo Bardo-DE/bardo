@@ -5,7 +5,7 @@
 //! nothing again.
 
 use crate::common;
-use base_time::SystemClock;
+use base_clock::SystemClock;
 
 use account_capability::CapabilityKind;
 use account_capability::StorageScope;

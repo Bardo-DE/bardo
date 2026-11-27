@@ -4,8 +4,9 @@
 
 use crate::error::SettingsError;
 use crate::text::{FileText, file_text};
+use base_clock::SystemClock;
 use base_fs::{ReadCap, move_aside};
-use base_time::{Clock, SystemClock};
+use base_time::Clock;
 use std::fmt;
 use std::path::{Path, PathBuf};
 

@@ -8,7 +8,7 @@ use memory_core::{ReplicaId, RuleSet, SpaceId, SpaceMeta, VaultKind};
 use memory_host::read_config;
 use memory_recall::Embedder;
 use memory_service::{
-    Backend, ConfigError, MemoryService, SpacesFile, spaces_from_toml, spaces_to_toml,
+    Backend, BackendError, ConfigError, MemoryService, SpacesFile, spaces_from_toml, spaces_to_toml,
 };
 use memory_tidy::Consolidator;
 
@@ -24,6 +24,9 @@ pub enum LocalError {
     /// A Space with this id is already there.
     #[error("the Space already exists")]
     Exists,
+    /// The system gave no random bytes for the Space's replica id.
+    #[error("replica id: {0}")]
+    Random(#[source] BackendError),
 }
 
 /// The service over `backend`, with every Space in the root's `spaces.toml` registered (none
@@ -83,7 +86,7 @@ pub fn create_space<Clk: Clock, E: Embedder, C: Consolidator>(
     }
     let backend = service.backend();
     let mut replica = [0u8; 16];
-    replica.copy_from_slice(&backend.random());
+    replica.copy_from_slice(&backend.random().map_err(LocalError::Random)?);
     let meta = SpaceMeta {
         id,
         created: backend.clock().now(),

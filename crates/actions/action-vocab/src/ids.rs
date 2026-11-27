@@ -2,10 +2,8 @@
 //! router and mean nothing outside it.
 
 use account_core::{AppName, CoreError};
-use base_ids::is_id;
 use provenance::{ActionName, EntityId};
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 macro_rules! text_id {
     ($(#[$doc:meta])* $name:ident, $what:literal, $ok:expr) => {
@@ -28,31 +26,9 @@ macro_rules! text_id {
                     Err(CoreError::MalformedId { what: $what, text: text.to_owned() })
                 }
             }
-
-            /// The id's text.
-            pub fn as_str(&self) -> &str {
-                &self.0
-            }
         }
 
-        impl TryFrom<String> for $name {
-            type Error = CoreError;
-            fn try_from(text: String) -> Result<Self, CoreError> {
-                Self::parse(&text)
-            }
-        }
-
-        impl From<$name> for String {
-            fn from(id: $name) -> String {
-                id.0
-            }
-        }
-
-        impl fmt::Display for $name {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                f.write_str(&self.0)
-            }
-        }
+        base_ids::string_newtype!($name, CoreError);
     };
 }
 
@@ -95,11 +71,10 @@ text_id!(
     "relation name",
     ident
 );
-text_id!(
+base_ids::slug_id!(
     /// One option of a choice parameter.
     ChoiceId,
-    "choice id",
-    is_id
+    "choice id"
 );
 text_id!(
     /// App-authored UI words from the manifest (trusted): a label, a plural, a rationale.
@@ -149,11 +124,10 @@ text_id!(
     "file ref",
     |t| !t.is_empty() && t.len() <= 4096 && !t.chars().any(char::is_control)
 );
-text_id!(
+base_ids::slug_id!(
     /// One voice utterance, `u-<n>`, minted by voiced.
     UtteranceId,
-    "utterance id",
-    is_id
+    "utterance id"
 );
 
 impl RelationName {

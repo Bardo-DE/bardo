@@ -24,7 +24,10 @@ use super::book::AttachedBook;
 use account_capability::ModelId;
 use account_core::SecretText;
 use account_tailscale::NodeId;
+use base_clock::SystemClock;
 use base_fs::atomic::AtomicWrite;
+use base_fs::move_aside;
+use base_time::Clock;
 use inference_core::{ComputerName, PlaceId};
 use inference_router::attached::{
     Attached, AttachedEntry, AttachedError, Reach, Site, local_model,
@@ -131,7 +134,7 @@ pub enum AddedError {
 impl AddedFile {
     /// The file at `path`; a missing one is the empty list.
     ///
-    /// One that is not a list of computers is moved aside (`computers.toml.unusable`) and the list
+    /// One that is not a list of computers is moved aside (`computers.toml.bad-<seconds>`) and the list
     /// starts empty, so a later change does not write over what the person may want back.
     ///
     /// # Errors
@@ -151,10 +154,11 @@ impl AddedFile {
         if let Ok(file) = toml::from_str(&text) {
             Ok(file)
         } else {
-            let mut aside = path.as_os_str().to_owned();
-            aside.push(".unusable");
-            let aside = PathBuf::from(aside);
-            let _ = std::fs::rename(path, &aside);
+            let aside =
+                move_aside(path, SystemClock.now()).map_err(|error| AddedError::Unreadable {
+                    path: path.to_owned(),
+                    kind: error.source.kind(),
+                })?;
             Err(AddedError::Unusable {
                 path: path.to_owned(),
                 aside,

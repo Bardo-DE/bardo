@@ -16,6 +16,7 @@ path = "src/main.rs"
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock" }
 companion-client = {path = "../companion-client"}
 companion-wire = {path = "../companion-wire"}
 action-core = {path = "../action-core"}

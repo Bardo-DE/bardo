@@ -119,7 +119,10 @@ fn main() -> ExitCode {
         ))),
         Err(_) => launch,
     };
-    let launch = match dirs::home_dir().and_then(|home| FolderPath::new(home).ok()) {
+    let home = base_xdg::Xdg::process()
+        .home()
+        .and_then(|home| FolderPath::new(home.to_path_buf()).ok());
+    let launch = match home {
         Some(home) => launch.with_home(home),
         None => launch,
     };

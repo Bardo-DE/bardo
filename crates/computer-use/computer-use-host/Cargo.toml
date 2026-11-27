@@ -17,6 +17,7 @@ permission-core = {path = "../../actions/permission-core"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock", features = ["tokio"] }
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-bus = {path = "../computer-use-bus"}
 computer-use-run = {path = "../computer-use-run"}

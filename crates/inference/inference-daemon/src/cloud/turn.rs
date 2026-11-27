@@ -14,13 +14,14 @@ use super::accountd::AccountdFault;
 use super::models::RemoteModel;
 use super::wire::{BodyShape, Temperature, flavor_of};
 use account_core::AppId;
+use base_clock::TokioSleeper;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusedError, Knob, Model,
     ModelCard, ModelError, ServedBy, SpendVerdict, TaskRequest, TurnError, TurnUsage,
 };
 use inference_settings::SpendLine;
 use inference_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
-use inference_turns::local::{RETRY, TokioSleep};
+use inference_turns::local::RETRY;
 use model_openai_compat::OpenAiCodec;
 use model_provider as sp;
 use model_provider::{Provider, Retrying};
@@ -171,7 +172,7 @@ impl<'a> CloudModel<'a> {
                 pin,
             },
             RETRY,
-            TokioSleep,
+            TokioSleeper,
         );
         let mut forward = Forward {
             sink,

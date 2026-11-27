@@ -22,6 +22,7 @@ base-fs = { path = "../../base/base-fs" }
 base-xdg = { path = "../../base/base-xdg" }
 base-ids = { path = "../../base/base-ids" }
 base-path = { path = "../../base/base-path" }
+base-clock = { path = "../../base/base-clock" }
 companion-model = {path = "../companion-model"}
 action-checkpoint-git = {path = "../action-checkpoint-git"}
 permission-core = {path = "../permission-core"}

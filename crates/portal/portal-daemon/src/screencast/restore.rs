@@ -3,7 +3,9 @@
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use base_fs::{NewFileMode, ReadCap, ReadError, read_text_capped, write_atomic};
+use base_clock::SystemClock;
+use base_fs::{NewFileMode, ReadCap, ReadError, move_aside, read_text_capped, write_atomic};
+use base_time::Clock;
 
 use portal_core::{
     DeviceKinds, Grant, InputGrant, Keep, RestoreBook, RestoreToken, Screens, StandingGrant,
@@ -65,9 +67,10 @@ impl FileStore {
 
 impl RestoreStore for FileStore {
     /// The saved book. A file whose first line is not this version's is moved aside to
-    /// `<name>.bad` and reported as damaged; a line that cannot be read is skipped (loudly) and
-    /// a copy of the whole file is kept as `<name>.bad`, so a flaw in one line loses one grant and
-    /// never the rest, and nothing is lost without a trace.
+    /// `<name>.bad-<seconds>` and reported as damaged; a line that cannot be read is skipped
+    /// (loudly), the whole file is kept as `<name>.bad-<seconds>` and the readable grants are
+    /// written back, so a flaw in one line loses one grant and never the rest, and nothing is lost
+    /// without a trace.
     fn load(&self) -> Result<RestoreBook, StoreError> {
         let text = match read_text_capped(&self.path, MAX_FILE) {
             Ok(text) => text,
@@ -76,7 +79,7 @@ impl RestoreStore for FileStore {
             Err(
                 ReadError::NotText { .. } | ReadError::NotRegular { .. } | ReadError::TooBig { .. },
             ) => {
-                self.set_aside(Aside::Move);
+                self.set_aside();
                 return Err(StoreError::Damaged);
             }
             Err(ReadError::Io { source, .. }) => return Err(StoreError::Io(source)),
@@ -87,9 +90,11 @@ impl RestoreStore for FileStore {
                 tracing::error!(
                     skipped,
                     "lines of the restore file could not be read and were left out; \
-                     a copy of the file is kept next to it"
+                     the file is kept next to it"
                 );
-                self.set_aside(Aside::Copy);
+                self.set_aside();
+                // The file is ours, only flawed: the readable grants go back in its place.
+                self.save(&book)?;
                 Ok(book)
             }
             Decoded::OlderVersion => {
@@ -97,7 +102,7 @@ impl RestoreStore for FileStore {
                 Ok(RestoreBook::new())
             }
             Decoded::Foreign => {
-                self.set_aside(Aside::Move);
+                self.set_aside();
                 Err(StoreError::Damaged)
             }
         }
@@ -112,35 +117,11 @@ impl RestoreStore for FileStore {
     }
 }
 
-/// What to do with a file that could not be fully read.
-#[derive(Clone, Copy, Debug)]
-enum Aside {
-    /// Move it away: it is not ours, and the next save must not replace it unseen.
-    Move,
-    /// Keep a copy: it is ours, with a flaw.
-    Copy,
-}
-
 impl FileStore {
-    /// Where a file that could not be read is kept.
-    #[must_use]
-    pub fn bad_path(&self) -> PathBuf {
-        self.with_suffix(".bad")
-    }
-
-    fn with_suffix(&self, suffix: &str) -> PathBuf {
-        let mut name = self.path.file_name().unwrap_or_default().to_os_string();
-        name.push(suffix);
-        self.path.with_file_name(name)
-    }
-
-    fn set_aside(&self, how: Aside) {
-        let bad = self.bad_path();
-        let done = match how {
-            Aside::Move => std::fs::rename(&self.path, &bad),
-            Aside::Copy => std::fs::copy(&self.path, &bad).map(|_| ()),
-        };
-        if let Err(error) = done {
+    /// Keep the file that could not be fully read as `<name>.bad-<seconds>` beside it, so the next
+    /// save does not replace it unseen.
+    fn set_aside(&self) {
+        if let Err(error) = move_aside(&self.path, SystemClock.now()) {
             tracing::error!(%error, "the damaged restore file could not be kept");
         }
     }

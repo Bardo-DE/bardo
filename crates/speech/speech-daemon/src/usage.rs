@@ -40,10 +40,7 @@ impl FileUse {
     ///
     /// `env` answers a variable by name (a daemon's main passes `|k| std::env::var(k).ok()`).
     pub fn shell_default(env: impl Fn(&str) -> Option<String>) -> Self {
-        let base = env("XDG_CONFIG_HOME")
-            .map(PathBuf::from)
-            .or_else(|| env("HOME").map(|home| PathBuf::from(home).join(".config")))
-            .unwrap_or_default();
+        let base = base_xdg::Xdg::new(env).config_home().unwrap_or_default();
         Self::new(base.join("bardo/shell/settings.toml"))
     }
 }

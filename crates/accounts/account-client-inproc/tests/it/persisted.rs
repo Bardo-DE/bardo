@@ -26,7 +26,7 @@ fn config(
     account_fake::FakeProvider,
     MemorySecrets,
     ScriptedSheets,
-    base_time::SystemClock,
+    base_clock::SystemClock,
     MemoryStore,
 > {
     HostConfig::new(

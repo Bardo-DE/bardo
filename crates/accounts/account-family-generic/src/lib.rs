@@ -50,7 +50,8 @@ use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSet, ProviderSpec, RevokeOutcome,
     SignInStart,
 };
-use http_core::{NoSleep, SharedHttp};
+use base_clock::SystemClock;
+use http_core::SharedHttp;
 use std::marker::PhantomData;
 
 pub use dns::SharedDns;
@@ -74,7 +75,7 @@ impl<L> GenericProvider<L> {
     pub fn new(spec: ProviderSpec, http: SharedHttp, dns: impl Dns + 'static) -> Self {
         Self {
             spec,
-            io: Io::new(http, NoSleep),
+            io: Io::new(http, SystemClock),
             dns: SharedDns::new(dns),
             providers: ProviderSet::default(),
             login: login::SharedLogin::platform(),

@@ -12,6 +12,7 @@ repository.workspace = true
 
 [dependencies]
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}

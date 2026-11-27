@@ -13,8 +13,8 @@ use account_family_kit::{Flow, Move};
 use account_provider::{SignInStep, Signed};
 use account_sheet::{SignInFault, SignInInput};
 use account_tailscale::{LocalApi, Standing, Status, TailscaleError};
+use base_time::{SharedSleeper, Sleeper};
 use base_url::WebUrl;
-use http_core::{SharedSleep, Sleep};
 use std::time::Duration;
 
 /// How long between two looks at Tailscale while the person signs in, or while it settles.
@@ -30,7 +30,7 @@ const SETTLE_LOOKS: u32 = 8;
 #[derive(Debug)]
 pub struct TailnetFlow {
     api: LocalApi,
-    sleep: SharedSleep,
+    sleep: SharedSleeper,
     /// Whether a new account is shown for review first (adding), or the sign-in just ends
     /// (signing in again).
     review: bool,
@@ -54,7 +54,7 @@ fn fault_of(error: &TailscaleError) -> SignInFault {
 }
 
 impl TailnetFlow {
-    pub(super) fn new(api: LocalApi, sleep: SharedSleep, review: bool) -> Self {
+    pub(super) fn new(api: LocalApi, sleep: SharedSleeper, review: bool) -> Self {
         Self { api, sleep, review }
     }
 

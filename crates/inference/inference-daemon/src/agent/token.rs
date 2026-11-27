@@ -9,14 +9,6 @@ use subtle::ConstantTimeEq;
 /// The prefix of every token, so a person who sees one in a process list knows what it is.
 const PREFIX: &str = "sk-account-agent-";
 
-/// `N` random bytes from the kernel, as hex.
-#[must_use]
-pub fn random_hex<const N: usize>() -> Option<String> {
-    let mut bytes = [0_u8; N];
-    getrandom::fill(&mut bytes).ok()?;
-    Some(hex::encode(bytes))
-}
-
 /// A session's token.
 #[derive(Clone, PartialEq, Eq)]
 pub struct Token(String);
@@ -28,10 +20,12 @@ impl std::fmt::Debug for Token {
 }
 
 impl Token {
-    /// A fresh token, or `None` when the kernel gives no randomness.
-    #[must_use]
-    pub fn fresh() -> Option<Self> {
-        Some(Self(format!("{PREFIX}{}", random_hex::<32>()?)))
+    /// A fresh token.
+    ///
+    /// # Errors
+    /// [`base_random::RandomError`] when the kernel gives no randomness.
+    pub fn fresh() -> Result<Self, base_random::RandomError> {
+        Ok(Self(format!("{PREFIX}{}", base_random::hex::<32>()?)))
     }
 
     /// The token as text, for the one reply to the launcher and for tests.

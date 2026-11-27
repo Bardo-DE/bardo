@@ -228,7 +228,7 @@ fn serve(
 ) -> Result<(), String> {
     let failed = |error: pw::Error| error.to_string();
     pw::init();
-    let node_name = share_node_name();
+    let node_name = share_node_name().map_err(|error| error.to_string())?;
     let mainloop = pw::main_loop::MainLoopRc::new(None).map_err(failed)?;
     let context = pw::context::ContextRc::new(&mainloop, None).map_err(failed)?;
     let core = context.connect_rc(None).map_err(failed)?;
@@ -323,9 +323,8 @@ fn serve(
 /// A node name of this share alone. A fixed name would tell any other client of the graph which
 /// node carries a screen; a random one is not a guarantee of secrecy (the graph lists nodes) but
 /// it stops a share being found by name.
-fn share_node_name() -> String {
-    let unique = crate::random::hex::<6>().unwrap_or_else(|| std::process::id().to_string());
-    format!("bardo-portal-share-{unique}")
+fn share_node_name() -> Result<String, base_random::RandomError> {
+    Ok(format!("bardo-portal-share-{}", base_random::hex::<6>()?))
 }
 
 /// The process step: if the picture is due (new, or old enough to repeat) and a buffer is free,

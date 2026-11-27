@@ -4,7 +4,8 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 use base_xdg::Xdg;
 use caller_identity_dbus::caller_identity_core::Table;
 use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};

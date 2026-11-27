@@ -5,9 +5,10 @@
     reason = "builders shared by the tests; a test file uses only some of them"
 )]
 
+use base_time::ManualClock;
 use memory_client::{InProcess, Memory};
 use memory_core::*;
-use memory_fake::{ScriptedConsolidator, SteppedClock};
+use memory_fake::{NOW, ScriptedConsolidator};
 use memory_local::{LocalBackend, Root, create_space, open};
 use memory_seal::{ProvidedKeys, SpaceKey};
 use memory_service::Caller;
@@ -15,7 +16,7 @@ use memory_service::MemoryService;
 use std::path::Path;
 use std::sync::Arc;
 
-pub type Backend = LocalBackend<SteppedClock, memory_local::NoEmbedder, ScriptedConsolidator>;
+pub type Backend = LocalBackend<ManualClock, memory_local::NoEmbedder, ScriptedConsolidator>;
 pub type Service = MemoryService<Backend>;
 pub type Client = Memory<InProcess<Backend>>;
 
@@ -31,7 +32,7 @@ pub fn backend(root: &Path, master: u8, consolidator: ScriptedConsolidator) -> B
     LocalBackend::new(
         Root::new(root),
         ProvidedKeys::new(SpaceKey::from_bytes([master; 32])),
-        SteppedClock::default(),
+        ManualClock::new(NOW),
     )
     .with_consolidator(consolidator)
 }

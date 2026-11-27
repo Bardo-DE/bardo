@@ -6,6 +6,7 @@ use super::rig::*;
 use account_callers::Caller;
 use account_capability::{Delta, StorageCap};
 use account_core::{AppId, AppName, Isolation};
+use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
 use std::sync::Arc;
 use std::time::Duration;
@@ -58,7 +59,7 @@ async fn a_clock_that_jumped_while_the_computer_slept_runs_the_next_cycle_within
     // on, the timer does not. The driver, asleep until about an hour from the first cycle,
     // must notice within a step.
     world.remote_put("b.txt", b"second").await;
-    world.clock.set(5_000 + 7_200);
+    world.clock.set(UnixSeconds(5_000 + 7_200));
     base_testkit::eventually(
         "a cycle after the clock jumped (the driver notices within a step, not an hour)",
         || has("b.txt"),

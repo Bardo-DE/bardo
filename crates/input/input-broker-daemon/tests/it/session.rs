@@ -1,3 +1,4 @@
+use base_time::Mono;
 use caller_identity_core::roles::{KEYMAP_DAEMON, PAD_DAEMON};
 use input_broker_daemon::backend::fake::{FakeBackend, Fate};
 use input_broker_daemon::policy::AllowKinds;
@@ -8,8 +9,9 @@ use input_broker_wire::limits::{
     MAX_DEVICES_PER_CONNECTION, MAX_HANDED_PER_CONNECTION,
 };
 use input_broker_wire::{
-    Create, Delivery, DeviceId, Event, Kind, Maker, Millis, PointerCaps, Reason, Reply, Request,
+    Create, Delivery, DeviceId, Event, Kind, Maker, PointerCaps, Reason, Reply, Request,
 };
+use std::time::Duration;
 
 fn all() -> AllowKinds {
     AllowKinds(Kind::ALL.to_vec())
@@ -40,7 +42,12 @@ fn wheel(v: i32) -> Event {
     Event::new(EV_REL, REL_WHEEL, v)
 }
 
-const T0: Millis = Millis(0);
+const T0: Mono = Mono(Duration::ZERO);
+
+/// The reading `n` milliseconds after the start.
+fn mono_ms(n: u64) -> Mono {
+    Mono(Duration::from_millis(n))
+}
 
 #[test]
 fn a_mouse_gestures_device_is_made_fed_and_destroyed_with_the_connection() {
@@ -215,7 +222,7 @@ fn events_above_the_rate_are_dropped_counted_and_a_sustained_flood_is_cut() {
     // Ten times the rate for longer than the cut: the connection ends.
     let mut ended = None;
     for ms in 0..=FLOOD_CUT_MS + 500 {
-        let handled = s.handle(Millis(ms), one());
+        let handled = s.handle(mono_ms(ms), one());
         if let Some(reason) = refused(&handled) {
             ended = Some((ms, reason));
             break;
@@ -238,7 +245,7 @@ fn a_peer_that_keeps_sending_what_the_ceiling_refuses_is_cut() {
     let mut ended = None;
     for _ in 0..10 {
         ms += 100;
-        let handled = s.handle(Millis(ms), events(0, hostile.clone()));
+        let handled = s.handle(mono_ms(ms), events(0, hostile.clone()));
         if let Some(reason) = refused(&handled) {
             ended = Some(reason);
             break;

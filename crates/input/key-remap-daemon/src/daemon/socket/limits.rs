@@ -124,7 +124,7 @@ pub(super) enum Intake {
 impl Intake {
     /// The listener, left alone from `now` for `ACCEPT_PAUSE`.
     pub(super) fn paused_at(now: Mono) -> Self {
-        Intake::PausedUntil(now.after(ACCEPT_PAUSE))
+        Intake::PausedUntil(now + ACCEPT_PAUSE)
     }
 
     /// The state at `now`: a pause that has run out is over.
@@ -181,12 +181,12 @@ mod tests {
         let t0 = Mono::default();
         let (last, pacing) = (0..STEERING_PER_SECOND)
             .fold((Pace::starting(t0), false), |(pace, _), _| {
-                pace.note(t0.after(Duration::from_millis(10)))
+                pace.note(t0 + Duration::from_millis(10))
             });
         assert!(!pacing, "the hundredth is still inside");
-        let (over, pacing) = last.note(t0.after(Duration::from_millis(20)));
+        let (over, pacing) = last.note(t0 + Duration::from_millis(20));
         assert!(pacing, "the hundred and first is not");
-        let (_, pacing) = over.note(t0.after(Duration::from_secs(1)));
+        let (_, pacing) = over.note(t0 + Duration::from_secs(1));
         assert!(!pacing, "a new second opens a new window");
     }
 

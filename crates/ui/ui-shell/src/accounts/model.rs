@@ -1,7 +1,7 @@
 //! What the account sheets are given and what they report: plain values, no accounts types. A host
 //! maps its sheet view to these in one table-tested file (design/31 section 5.1).
 
-use super::hidden::Hidden;
+use base_secret::SecretText;
 use base_words::Word;
 use ui_components::components::content::mark_face::MarkFace;
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
@@ -134,7 +134,7 @@ pub enum FieldText {
     /// Shown as typed.
     Plain(String),
     /// Hidden as typed; its `Debug` never prints it.
-    Secret(Hidden),
+    Secret(SecretText),
 }
 
 impl FieldText {

@@ -216,7 +216,7 @@ reaches `reqwest`, `hyper` and `tokio` (http-reqwest); `tailnet` reaches `hyper`
 | D-Bus names and paths | `account-dbus::accounts` (the sync service's `sync-bus` has syncd's) |
 | D-Bus argument shapes | `account-dbus::Details`; a candidate in `account-dbus::accounts` |
 | `Found` for apps | `account-client::found` |
-| the system clock | `account-ids::clock::SystemClock` and `SystemMonotonic`, called only by the daemons (`accountd`, and the sync service's `syncd`); `Clock` dates, `Monotonic` paces. Crates with a `clippy.toml` (`disallowed-methods`: `SystemTime::now`, `Instant::now`, `std::fs::*`) read neither |
+| the system clock | `base_clock::SystemClock` and `SystemMonotonic`, called only by the daemons (`accountd`, and the sync service's `syncd`); `Clock` dates, `Monotonic` paces. Crates with a `clippy.toml` (`disallowed-methods`: `SystemTime::now`, `Instant::now`, `std::fs::*`) read neither |
 | a family, and the protocol a relay speaks for it | `account-core::family` (`Family`, `relay_protocol`, `serves`) |
 | where an account's servers are | `account-core::endpoint` (`ServiceEndpoint`); returned in `Candidate.endpoints` |
 | which audiences a grant covers | `account-service-grants::audience` |

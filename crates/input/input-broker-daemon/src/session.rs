@@ -3,13 +3,14 @@
 
 use crate::backend::{Backend, Device};
 use crate::policy::Admission;
+use base_time::Mono;
 use input_broker_wire::limits::{
     MAX_CREATES_PER_CONNECTION, MAX_DENIED_EVENTS, MAX_DEVICES_PER_CONNECTION,
     MAX_HANDED_PER_CONNECTION,
 };
 use input_broker_wire::{
-    Admit, Create, Delivery, DeviceId, Event, Filter, Kind, Limiter, Millis, Reason, Reply,
-    Request, Route, plan,
+    Admit, Create, Delivery, DeviceId, Event, Filter, Kind, Limiter, Reason, Reply, Request, Route,
+    plan,
 };
 use std::os::fd::OwnedFd;
 
@@ -119,7 +120,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
     ///
     /// Returns [`Refused`] with the reason and a note when the request is not allowed: a refused
     /// creation, an unknown device or a policy the caller fails.
-    pub fn handle(&mut self, now: Millis, request: Request) -> Handled {
+    pub fn handle(&mut self, now: Mono, request: Request) -> Handled {
         match request {
             Request::Create(create) => self.create(now, &create),
             Request::Events { device, events } => self.events(now, device, &events),
@@ -130,7 +131,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
         }
     }
 
-    fn create(&mut self, now: Millis, create: &Create) -> Handled {
+    fn create(&mut self, now: Mono, create: &Create) -> Handled {
         let kind = Some(create.kind());
         if let Err(why) = self.admission.admit(create.kind()) {
             return Err(Refused::new(Reason::NotAllowed, kind, &why));
@@ -188,7 +189,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
         }
     }
 
-    fn events(&mut self, now: Millis, device: DeviceId, events: &[Event]) -> Handled {
+    fn events(&mut self, now: Mono, device: DeviceId, events: &[Event]) -> Handled {
         let Self { slots, stats, .. } = self;
         let Some(slot) = slots.iter_mut().find(|slot| slot.id == device) else {
             return Err(Refused::new(

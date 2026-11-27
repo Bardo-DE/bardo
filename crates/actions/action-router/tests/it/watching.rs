@@ -13,6 +13,7 @@ use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};
 use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, UnixSeconds};
 use std::sync::Arc;
+use std::time::Duration;
 
 fn computer_use_daemon() -> CallerId {
     caller("org.bardo.ComputerUse", CallerRole::ComputerUse)
@@ -363,13 +364,16 @@ async fn a_watcher_that_never_proceeds_is_refused_unasked_after_the_configured_t
     let check = router.handle_watched(&caller, IntentsRequest::GateCheck(step(&run)), watch);
     let clock_side = async {
         // The router asks the clock for the Proceed deadline: the configured one.
-        assert_eq!(router.seams.clock.next_ask().await, Millis(2_500));
-        router.seams.clock.advance(Millis(2_499));
+        assert_eq!(
+            router.seams.clock.next_ask().await,
+            Duration::from_millis(2_500)
+        );
+        router.seams.clock.advance(Duration::from_millis(2_499));
         for _ in 0..5 {
             tokio::task::yield_now().await;
         }
-        assert_eq!(router.seams.clock.asked(), [Millis(2_500)]);
-        router.seams.clock.advance(Millis(1));
+        assert_eq!(router.seams.clock.asked(), [Duration::from_millis(2_500)]);
+        router.seams.clock.advance(Duration::from_millis(1));
     };
     let (answer, ()) = tokio::join!(check, clock_side);
     assert_eq!(

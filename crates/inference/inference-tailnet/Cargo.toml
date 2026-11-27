@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-time = { path = "../../base/base-time" }
+base-clock = {optional = true, path = "../../base/base-clock"}
 base-fs = {optional = true, path = "../../base/base-fs"}
 account-tailscale = {path = "../../accounts/account-tailscale"}
 serde = { workspace = true, features = ["derive"] }
@@ -32,7 +33,7 @@ tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "r
 [features]
 # `Guests::open`: the records kept in a file the owner reads, written with base-fs. Off by default,
 # so a client that only reads the rows of a lending computer builds no file writer and no toml.
-persist = ["dep:base-fs", "dep:toml"]
+persist = ["dep:base-clock", "dep:base-fs", "dep:toml"]
 # The listeners, the dial, the relay and the hello client: sockets, tokio and hyper. Off by
 # default, so the judgement of who may ask and the lists of guests reach none of them.
 io = [

@@ -7,8 +7,10 @@
 //! The rule that matters: never retry once the first event reached the sink. A half-delivered
 //! turn is not idempotent for the planner.
 
+use base_time::Sleeper;
 use serde::{Deserialize, Serialize};
 use std::ops::ControlFlow;
+use std::time::Duration;
 
 use crate::{
     Attempt, Charges, ModelInfo, Permille, Provider, ProviderError, RetrySeconds, TurnEnd,
@@ -91,17 +93,6 @@ pub fn next_wait(
     Some(WaitMs(u32::try_from(wait).unwrap_or(u32::MAX)))
 }
 
-/// Where the waiting happens: a tokio timer in a daemon, a recorder in a test.
-pub trait Sleeper: Send + Sync {
-    fn sleep(&self, wait: WaitMs) -> impl Future<Output = ()> + Send;
-
-    /// How much of each backoff to shave off (thousandths), so callers spread out: a daemon
-    /// draws a random one, a test returns a fixed one. The default is none.
-    fn jitter(&self) -> Permille {
-        Permille(0)
-    }
-}
-
 /// Wraps a provider and retries a turn that failed before it delivered an event. `describe` is
 /// retried the same way (it has no events).
 #[derive(Debug, Clone)]
@@ -109,15 +100,25 @@ pub struct Retrying<P: Provider, S: Sleeper> {
     inner: P,
     policy: RetryPolicy,
     sleep: S,
+    jitter: Permille,
 }
 
 impl<P: Provider, S: Sleeper> Retrying<P, S> {
+    /// Retries `inner` by `policy`, waiting on `sleep` (a timer in a daemon, a recorder in a test).
     pub fn new(inner: P, policy: RetryPolicy, sleep: S) -> Self {
         Self {
             inner,
             policy,
             sleep,
+            jitter: Permille(0),
         }
+    }
+
+    /// Shaves `jitter` (thousandths) off every backoff, so callers spread out. None by default.
+    #[must_use]
+    pub fn with_jitter(mut self, jitter: Permille) -> Self {
+        self.jitter = jitter;
+        self
     }
 }
 
@@ -161,14 +162,11 @@ impl<P: Provider, S: Sleeper> Retrying<P, S> {
     /// Sleeps the wait that follows try `attempt`, or hands `error` back when it may not be
     /// retried. The jitter comes from the sleeper, which owns the clock and any random source.
     async fn pause(&self, attempt: Attempt, error: &ProviderError) -> Result<(), ProviderError> {
-        match next_wait(
-            &self.policy,
-            attempt,
-            error.retry_class(),
-            self.sleep.jitter(),
-        ) {
+        match next_wait(&self.policy, attempt, error.retry_class(), self.jitter) {
             Some(wait) => {
-                self.sleep.sleep(wait).await;
+                self.sleep
+                    .sleep(Duration::from_millis(u64::from(wait.0)))
+                    .await;
                 Ok(())
             }
             None => Err(error.clone()),

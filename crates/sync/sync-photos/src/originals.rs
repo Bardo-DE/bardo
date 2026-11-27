@@ -167,8 +167,8 @@ mod tests {
     use super::super::hlc::DeviceId;
     use super::*;
     use crate::testing::scratch;
+    use base_time::ManualClock;
     use std::sync::Arc;
-    use sync_engine::clock::ManualMillis;
     use sync_engine::dataset::fingerprint;
 
     fn dataset(name: &str) -> (PhotoOriginals, PhotoLibrary, tempfile::TempDir) {
@@ -176,7 +176,7 @@ mod tests {
         let library = PhotoLibrary::open(
             dir.path().join("lib"),
             DeviceId::parse("a").expect("device"),
-            Arc::new(ManualMillis::at(1)),
+            Arc::new(ManualClock::at_ms(1)),
         )
         .expect("library");
         (PhotoOriginals::new(library.clone()), library, dir)

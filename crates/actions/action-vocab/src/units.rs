@@ -20,6 +20,14 @@ unit!(
     /// A length of time in milliseconds (a reviewer's latency, a stage timeout).
     Millis(u32)
 );
+impl Millis {
+    /// The length as a [`Duration`](std::time::Duration), for a timer.
+    #[must_use]
+    pub fn duration(self) -> std::time::Duration {
+        std::time::Duration::from_millis(u64::from(self.0))
+    }
+}
+
 unit!(
     /// A length of time in whole days (how long a restore point is kept).
     Days(u32)

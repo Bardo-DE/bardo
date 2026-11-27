@@ -5,6 +5,7 @@
 
 use agent_launch::login::VisibleLogin;
 use agent_registry::dirs::AgentsDir;
+use base_xdg::Xdg;
 use settings_store_fs::Locator;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -48,12 +49,9 @@ impl Places {
     pub fn read(env: impl Fn(&str) -> Option<String> + Send + Sync + 'static) -> Self {
         let env: Env = Arc::new(env);
         let get = |name: &str| (*env)(name);
-        let data = get("XDG_DATA_HOME")
-            .filter(|v| !v.is_empty())
-            .map_or_else(
-                || PathBuf::from(get("HOME").unwrap_or_default()).join(".local/share"),
-                PathBuf::from,
-            )
+        let data = Xdg::new(&get)
+            .data_home()
+            .unwrap_or_else(|_| PathBuf::from(".local/share"))
             .join("bardo")
             .join("actions");
         Self {
@@ -61,7 +59,7 @@ impl Places {
             data,
             home: get("HOME").map(PathBuf::from),
             path: get("PATH").unwrap_or_default(),
-            runtime: get("XDG_RUNTIME_DIR").map(PathBuf::from),
+            runtime: Xdg::new(&get).runtime_dir(),
             login: LOGIN_VARS
                 .iter()
                 .filter_map(|k| get(k).map(|v| ((*k).to_owned(), v)))

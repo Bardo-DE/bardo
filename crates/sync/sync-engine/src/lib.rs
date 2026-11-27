@@ -5,11 +5,9 @@
 //! - `journal`: the journal contract (`Op`, `JournalStore`); `sync-journal-sqlite` is the store.
 //! - `scheduler`: the pure rules of when a dataset looks next (poll, backoff, push window,
 //!   metered networks), over inputs the driver reads.
-//! - `clock`: `ManualClock`, the clock a test moves.
 //!
 //! `MemoryDataset` and `Settings::quick` are behind the `testing` feature.
 
-pub mod clock;
 pub mod dataset;
 pub mod engine;
 pub mod journal;

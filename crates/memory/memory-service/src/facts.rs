@@ -192,7 +192,8 @@ impl<B: Backend> Open<B> {
             u64::try_from(now.0)
                 .unwrap_or_default()
                 .saturating_mul(1000),
-            self.entropy(cx, draft.text.as_str().as_bytes()),
+            self.entropy(cx, draft.text.as_str().as_bytes())
+                .map_err(failed)?,
         );
         let fact = Fact {
             id: id.clone(),

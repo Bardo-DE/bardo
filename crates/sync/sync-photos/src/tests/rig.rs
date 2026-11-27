@@ -4,7 +4,8 @@
 use crate::testing::scratch;
 use crate::{DeviceId, PhotoLibrary, PhotoMetadata, PhotoOriginals};
 use account_fake_servers::{DavHandle, FakeDav, Running};
-use base_time::SystemClock;
+use base_clock::SystemClock;
+use base_time::ManualClock;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use http_core::http::header::{AUTHORIZATION, HeaderValue};
@@ -15,7 +16,6 @@ use replica_webdav::WebDavReplica;
 use std::path::PathBuf;
 use std::sync::Arc;
 use sync_core::Clock;
-use sync_engine::clock::ManualMillis;
 use sync_engine::engine::{Engine, Report};
 use sync_journal_sqlite::Journal;
 use tokio::net::TcpStream;
@@ -117,7 +117,7 @@ pub struct Synced {
 pub struct Machine {
     pub dir: tempfile::TempDir,
     pub library: PhotoLibrary,
-    pub millis: Arc<ManualMillis>,
+    pub millis: Arc<ManualClock>,
     pub originals: Engine<Dav, PhotoOriginals, SystemClock>,
     pub metadata: Engine<Dav, PhotoMetadata, SystemClock>,
 }
@@ -126,11 +126,11 @@ impl Machine {
     /// A machine named `name` whose wall clock reads `ms`.
     pub fn new(server: &Server, name: &str, ms: u64) -> Self {
         let dir = scratch(&format!("photos-{name}"));
-        let millis = Arc::new(ManualMillis::at(ms));
+        let millis = Arc::new(ManualClock::at_ms(ms));
         let library = PhotoLibrary::open(
             dir.path().join("data/photos"),
             DeviceId::parse(name).expect("device"),
-            Arc::<ManualMillis>::clone(&millis),
+            Arc::<ManualClock>::clone(&millis),
         )
         .expect("library");
         // Not flushed on each commit: a thousand photos make thousands of them, and these tests

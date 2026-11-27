@@ -14,6 +14,7 @@ account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock", features = ["tokio"] }
 inference-core = {path = "../inference-core"}
 inference-bridge = {path = "../inference-bridge"}
 inference-router = {path = "../inference-router"}

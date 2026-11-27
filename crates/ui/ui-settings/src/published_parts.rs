@@ -145,9 +145,10 @@ pub fn parts_dirs_from(
 /// [`parts_dirs_from`] read from the environment.
 #[must_use]
 pub fn parts_dirs() -> Vec<PathBuf> {
-    parts_dirs_from(
-        std::env::var_os("XDG_DATA_HOME").as_deref(),
-        std::env::var_os("XDG_DATA_DIRS").as_deref(),
-        std::env::var_os("HOME").as_deref(),
-    )
+    let xdg = base_xdg::Xdg::process();
+    xdg.data_dirs()
+        .into_iter()
+        .chain(xdg.data_home().ok())
+        .map(|base| base.join("bardo").join("selectors"))
+        .collect()
 }

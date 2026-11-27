@@ -21,8 +21,9 @@ test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
 base-fs = { path = "../../base/base-fs" }
-base-time = { path = "../../base/base-time" }
+base-random = { path = "../../base/base-random" }
 base-xdg = { path = "../../base/base-xdg" }
+base-clock = { path = "../../base/base-clock" }
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal", features = ["oo7"]}
 memory-keyfile = {path = "../memory-keyfile", optional = true}
@@ -44,7 +45,6 @@ account-callers = {features = ["file"], path = "../../accounts/account-callers"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 clap = {workspace = true, features = ["default", "derive"]}
-getrandom = { workspace = true }
 landlock = { workspace = true }
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { workspace = true, features = ["derive"] }
@@ -52,7 +52,6 @@ thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {workspace = true, features = ["tokio"]}
 serde_json = { workspace = true }
-blake3 = { workspace = true }
 caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]

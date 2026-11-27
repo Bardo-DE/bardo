@@ -1,6 +1,6 @@
 [package]
 name = "base-time"
-description = "The time as a seam: the Clock and Monotonic traits, the system and test clocks, and UnixSeconds."
+description = "The time as a seam: the Clock, Monotonic and Sleeper traits, the test clocks, and UnixSeconds."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

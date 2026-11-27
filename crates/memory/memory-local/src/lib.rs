@@ -7,7 +7,7 @@
 //! What it wires together: `SqliteLog` (memory-eventlog), `SealedDir` or `PlainDir` (memory-files),
 //! `ExactScan` over FTS5 (recall) and `ProvidedKeys` (memory-seal). The embedder and the
 //! consolidator are the app's (generic parameters, defaulting to [`NoEmbedder`], which leaves
-//! recall lexical-only, and [`NoConsolidator`]); the clock is a parameter too, and `base_time::SystemClock` is the
+//! recall lexical-only, and [`NoConsolidator`]); the clock is a parameter too, and `base_clock::SystemClock` is the
 //! ready-made one an app passes when it has no need of its own. Nothing else here reads the
 //! environment, the wall clock or the system's directories.
 

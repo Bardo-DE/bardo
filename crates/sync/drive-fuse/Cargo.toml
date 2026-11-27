@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 drive-fs = {path = "../drive-fs"}
 # The helper syncd asks to mount when its sandbox may not (its client and wire format).
 drive-mount-daemon = {path = "../drive-mount-daemon"}

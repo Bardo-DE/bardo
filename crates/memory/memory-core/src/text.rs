@@ -44,31 +44,9 @@ macro_rules! text_id {
                     Err(::account_core::CoreError::MalformedId { what: $what, text: text.to_owned() })
                 }
             }
-
-            /// The id's text.
-            pub fn as_str(&self) -> &str {
-                &self.0
-            }
         }
 
-        impl TryFrom<String> for $name {
-            type Error = ::account_core::CoreError;
-            fn try_from(text: String) -> Result<Self, ::account_core::CoreError> {
-                Self::parse(&text)
-            }
-        }
-
-        impl From<$name> for String {
-            fn from(id: $name) -> String {
-                id.0
-            }
-        }
-
-        impl ::std::fmt::Display for $name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                f.write_str(&self.0)
-            }
-        }
+        ::base_ids::string_newtype!($name, ::account_core::CoreError);
     };
 }
 

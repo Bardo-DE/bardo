@@ -35,7 +35,7 @@ async fn ids_are_minted_not_named_and_survive_renames_and_restarts() {
     let scratch = Scratch::new("spaces");
     let (mut book, _) = SpaceBook::open(Some(&store(&scratch))).await;
     let photos = app("org.bardo.Photos");
-    let at = (Instant::now(), NOW);
+    let at = (Mono::default(), NOW);
     // A registered Space already holds the id the counter would give first.
     let taken = DesktopSpace::parse("space-1").expect("id");
     book.register(&photos, taken, name("Taken"), SpaceLook::default(), at)
@@ -95,7 +95,7 @@ async fn changing_or_removing_a_space_that_is_not_there_is_refused() {
 async fn creates_are_limited_per_app_within_the_window() {
     let (mut book, _) = SpaceBook::open(None).await;
     let (flood, calm) = (app("org.example.Flood"), app("org.example.Calm"));
-    let start = Instant::now();
+    let start = Mono::default();
     for n in 0..CREATES_PER_WINDOW {
         book.create(&flood, name("x"), SpaceLook::default(), (start, NOW))
             .await
@@ -128,7 +128,7 @@ async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
     let dir = scratch.path().join("accounts");
     std::fs::create_dir_all(&dir).expect("dir");
     let file = dir.join("spaces.json");
-    let at = (Instant::now(), NOW);
+    let at = (Mono::default(), NOW);
     let photos = app("org.bardo.Photos");
 
     // The last id the counter can mint is made; the counter cannot move past it.
@@ -177,7 +177,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
             &app("org.bardo.Photos"),
             name("x"),
             SpaceLook::default(),
-            (Instant::now(), NOW)
+            (Mono::default(), NOW)
         )
         .await,
         Err(SpaceError::Unsaved)
@@ -196,7 +196,7 @@ async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_noth
     let scratch = Scratch::new("spaces");
     let (mut book, _) = SpaceBook::open(Some(&store(&scratch))).await;
     let compositor = app("org.bardo.Compositor");
-    let at = (Instant::now(), NOW);
+    let at = (Mono::default(), NOW);
     let workspace = DesktopSpace::parse("s-0123456789abcdef0123456789abcdef").expect("id");
     let taken = DesktopSpace::parse("space-1").expect("id");
     for id in [&workspace, &taken] {

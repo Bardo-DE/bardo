@@ -27,6 +27,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-clock"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "futures-timer",
+]
+
+[[package]]
 name = "base-ids"
 version = "0.1.0"
 dependencies = [
@@ -659,6 +667,7 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-ids",
  "base-time",
  "base-words",

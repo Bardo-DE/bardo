@@ -14,10 +14,10 @@
 use super::cas::{self, ContentId};
 use super::hlc::{DeviceId, HlcClock};
 use super::manifest::{Edit, Manifest};
+use base_time::Clock;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
-use sync_engine::clock::Millis;
 
 /// Why a library call failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -64,7 +64,7 @@ pub struct Imported {
 struct Inner {
     root: PathBuf,
     device: DeviceId,
-    millis: Arc<dyn Millis>,
+    wall: Arc<dyn Clock>,
     clock: Mutex<HlcClock>,
 }
 
@@ -102,7 +102,7 @@ impl PhotoLibrary {
     pub fn open(
         root: PathBuf,
         device: DeviceId,
-        millis: Arc<dyn Millis>,
+        wall: Arc<dyn Clock>,
     ) -> Result<Self, PhotosError> {
         std::fs::create_dir_all(&root).map_err(|e| io_error("cannot make the library", &e))?;
         let stored = std::fs::read_to_string(root.join("device"))
@@ -120,7 +120,7 @@ impl PhotoLibrary {
                 clock: Mutex::new(HlcClock::new(device.clone())),
                 root,
                 device,
-                millis,
+                wall,
             }),
         };
         {
@@ -257,7 +257,7 @@ impl PhotoLibrary {
             clock.observe(latest);
         }
         for edit in edits {
-            manifest.apply(edit, clock.tick(self.inner.millis.now_ms()));
+            manifest.apply(edit, clock.tick(self.inner.wall.now_ms()));
         }
         let json = serde_json::to_vec_pretty(&manifest).map_err(|e| PhotosError::Io {
             what: "cannot write the manifest".to_owned(),
@@ -294,14 +294,14 @@ mod tests {
     use super::super::manifest::Mark;
     use super::*;
     use crate::testing::scratch;
-    use sync_engine::clock::ManualMillis;
+    use base_time::ManualClock;
 
-    fn open(dir: &Path, device: &str, ms: u64) -> (PhotoLibrary, Arc<ManualMillis>) {
-        let millis = Arc::new(ManualMillis::at(ms));
+    fn open(dir: &Path, device: &str, ms: u64) -> (PhotoLibrary, Arc<ManualClock>) {
+        let millis = Arc::new(ManualClock::at_ms(ms));
         let library = PhotoLibrary::open(
             dir.join(device),
             DeviceId::parse(device).expect("device"),
-            Arc::<ManualMillis>::clone(&millis),
+            Arc::<ManualClock>::clone(&millis),
         )
         .expect("library");
         (library, millis)
@@ -392,7 +392,7 @@ mod tests {
             .expect("edit");
         drop(library);
         // The machine's clock is now behind what it wrote before.
-        millis.set(10);
+        millis.set_ms(10);
         let (library, _) = open(&dir, "a", 10);
         library
             .edit(vec![Edit::Favourite(id.clone(), Mark::Off)])
@@ -414,7 +414,7 @@ mod tests {
         let dir_guard = scratch("lib-device");
         let dir = dir_guard.path().to_owned();
         let root = dir.join("lib");
-        let millis: Arc<dyn Millis> = Arc::new(ManualMillis::at(1));
+        let millis: Arc<dyn Clock> = Arc::new(ManualClock::at_ms(1));
         let first = PhotoLibrary::open(
             root.clone(),
             DeviceId::parse("laptop").expect("d"),

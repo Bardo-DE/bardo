@@ -12,8 +12,9 @@
 use std::io;
 use std::path::Path;
 
+use base_clock::SystemClock;
 use base_fs::{NewFileMode, move_aside, write_atomic};
-use base_time::{Clock, SystemClock};
+use base_time::Clock;
 
 use crate::error::ServiceError;
 

@@ -56,15 +56,10 @@ pub(crate) fn clients_now<'a>(
     }
 }
 
-/// 48 bytes from the operating system's `/dev/urandom`.
+/// A PKCE verifier (32 bytes) and a state (16 bytes) from the operating system's random source;
+/// `None` when it gives none (the seam this fills, `account_oauth`'s `Random`, has no error).
 pub(crate) fn system_random() -> Option<([u8; 32], [u8; 16])> {
-    use std::io::Read;
-    let mut bytes = [0u8; 48];
-    std::fs::File::open("/dev/urandom")
-        .and_then(|mut f| f.read_exact(&mut bytes))
-        .ok()?;
-    let (verifier, state) = bytes.split_at(32);
-    Some((verifier.try_into().ok()?, state.try_into().ok()?))
+    Some((base_random::bytes().ok()?, base_random::bytes().ok()?))
 }
 
 #[cfg(test)]

@@ -9,7 +9,6 @@ use std::collections::{HashMap, VecDeque};
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use std::task::Waker;
-use std::time::SystemTime;
 
 /// Files larger than this are not digested.
 pub const DIGEST_LIMIT: u64 = 1 << 20;
@@ -29,10 +28,7 @@ pub struct Inbox {
 
 /// The current time as a [`Stamp`].
 pub fn now() -> Stamp {
-    let since = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or_default();
-    Stamp(i64::try_from(since.as_millis()).unwrap_or(i64::MAX))
+    Stamp(i64::try_from(base_time::Clock::now_ms(&base_clock::SystemClock)).unwrap_or(i64::MAX))
 }
 
 fn space_path(path: &Path) -> Option<SpacePath> {

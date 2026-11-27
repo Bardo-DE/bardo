@@ -26,7 +26,9 @@ shell-dbus = { path = "../../shell/shell-dbus" }
 portal-dbus = { path = "../portal-dbus" }
 compositor-dbus = { path = "../../compositor/compositor-dbus" }
 dbus-kit = { path = "../../bus/dbus-kit" }
+base-clock = { path = "../../base/base-clock" }
 base-fs = { path = "../../base/base-fs" }
+base-random = { path = "../../base/base-random" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 portal-core = {path = "../portal-core"}

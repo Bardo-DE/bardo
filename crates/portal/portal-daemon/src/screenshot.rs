@@ -16,9 +16,10 @@ pub use color::{ColorPicker, FakeColorPicker, NoColorPicker, ShellColorPicker, c
 pub use layout::{FixedLayout, LiveLayout, OutputLayout};
 pub use service::ScreenshotService;
 
-use std::io::{Cursor, Write};
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
 
+use base_fs::{NewFileMode, write_new};
 use portal_core::{Extent, Point, Tile};
 
 use crate::access::{Asker, NoAsker};
@@ -426,41 +427,11 @@ pub fn take(setup: &ScreenshotSetup, seq: u32) -> Result<PathBuf, ShotError> {
         let path = setup
             .pictures
             .join(format!("Screenshot-{}-{n}.png", setup.stamp));
-        match write_new(&path, &png) {
+        match write_new(&path, &png, NewFileMode::OwnerOnly) {
             Ok(()) => return Ok(path),
-            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
-            Err(e) => return Err(e.into()),
+            Err(e) if e.source.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(e) => return Err(e.source.into()),
         }
     }
     Err(std::io::Error::from(std::io::ErrorKind::AlreadyExists).into())
-}
-
-/// Write `bytes` to a new file at `path` that only its owner can read. The bytes go to a
-/// `.part` file first and it is renamed into place, so a failed write leaves no truncated picture
-/// under the final name. `AlreadyExists` if `path` is taken.
-fn write_new(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
-    use std::os::unix::fs::OpenOptionsExt;
-
-    if path.symlink_metadata().is_ok() {
-        return Err(std::io::ErrorKind::AlreadyExists.into());
-    }
-    let mut partial = path.as_os_str().to_os_string();
-    partial.push(".part");
-    let partial = PathBuf::from(partial);
-    // `create_new`: a `.part` that is somebody else's (or an earlier run's) is never overwritten or
-    // removed; the caller moves on to the next name.
-    let mut file = std::fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .mode(0o600)
-        .open(&partial)?;
-    let written = file.write_all(bytes).and_then(|()| file.sync_all());
-    drop(file);
-    match written.and_then(|()| std::fs::rename(&partial, path)) {
-        Ok(()) => Ok(()),
-        Err(error) => {
-            let _ = std::fs::remove_file(&partial);
-            Err(error)
-        }
-    }
 }

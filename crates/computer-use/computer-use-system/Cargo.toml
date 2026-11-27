@@ -13,6 +13,7 @@ compositor-dbus = { path = "../../compositor/compositor-dbus" }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 computer-use-desktop = {path = "../computer-use-desktop"}
 desktop-client = {features = ["client"], path = "../../wayland/desktop-client"}
 computer-use-capture = {path = "../computer-use-capture"}

@@ -15,7 +15,6 @@ use sync_core::Clock;
 use sync_driver::Driver;
 use sync_driver::clock::Wall;
 use sync_driver::hub::{Access, DatasetName, Hub};
-use sync_engine::clock::Millis;
 use sync_engine::dataset::{DatasetError, DatasetId};
 use sync_engine::engine::Engine;
 use sync_engine::scheduler::{Network, Settings};
@@ -51,8 +50,8 @@ pub struct Wiring<T> {
     /// What tells this run's feed anchors from an earlier run's, and this run's new devices from
     /// every other: it differs between two runs of the daemon (letters and digits only).
     pub nonce: String,
-    /// The wall clock in milliseconds, for the hybrid clocks of Photos.
-    pub millis: Arc<dyn Millis>,
+    /// The wall clock, read to the millisecond for the hybrid clocks of Photos.
+    pub wall: Arc<dyn base_time::Clock>,
 }
 
 /// Why an account's collections could not be refreshed.

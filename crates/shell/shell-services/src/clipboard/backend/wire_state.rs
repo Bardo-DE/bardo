@@ -9,7 +9,8 @@ use std::io::ErrorKind;
 use std::os::fd::{AsFd, OwnedFd};
 use std::sync::Arc;
 
-use base_time::{Clock, SystemClock};
+use base_clock::SystemClock;
+use base_time::Clock;
 use shell_launcher::UnixTime;
 use shell_model::clipboard::{
     ClipContent, ClipEvent, ImageCap, ImagesKept, MimePick, Skipped, offer_verdict,

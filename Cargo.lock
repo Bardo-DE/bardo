@@ -196,6 +196,7 @@ dependencies = [
  "account-service-grants",
  "account-sheet",
  "account-wire",
+ "base-clock",
  "base-time",
  "http-core",
  "http-reqwest",
@@ -251,6 +252,7 @@ dependencies = [
  "account-store",
  "account-tailscale",
  "account-wire",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-testkit",
@@ -259,7 +261,6 @@ dependencies = [
  "caller-role-types",
  "clap",
  "dbus-kit",
- "http-core",
  "http-reqwest",
  "rustix 1.1.6",
  "serde",
@@ -347,6 +348,7 @@ dependencies = [
 name = "account-fake-secret-service"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-time",
  "dbus-kit",
  "serde",
@@ -404,6 +406,7 @@ dependencies = [
  "account-sheet",
  "account-tailscale",
  "account-wire",
+ "base-clock",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -428,6 +431,7 @@ dependencies = [
  "account-provider",
  "account-proxy",
  "account-sheet",
+ "base-clock",
  "http-core",
  "tokio",
 ]
@@ -439,6 +443,7 @@ dependencies = [
  "account-core",
  "account-provider",
  "account-sheet",
+ "base-time",
  "base64 0.22.1",
  "http-core",
  "tokio",
@@ -455,6 +460,7 @@ dependencies = [
  "account-nextcloud-proto",
  "account-provider",
  "account-sheet",
+ "base-time",
  "http-core",
 ]
 
@@ -470,6 +476,7 @@ dependencies = [
  "account-provider",
  "account-sheet",
  "base-ids",
+ "base-random",
  "base-testkit",
  "base-time",
  "base-url",
@@ -865,6 +872,7 @@ dependencies = [
  "agent-acp-bin",
  "agent-reader-daemon",
  "agent-session",
+ "base-clock",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -937,6 +945,7 @@ dependencies = [
  "agent-session",
  "agent-skills",
  "agent-skills-disk",
+ "base-clock",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -1073,6 +1082,7 @@ dependencies = [
  "agent-session",
  "agent-skills",
  "agent-skills-disk",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-path",
@@ -1152,6 +1162,7 @@ dependencies = [
  "action-wire",
  "agent-skills",
  "agent-skills-disk",
+ "base-clock",
  "base-ids",
  "base-time",
  "clap",
@@ -1287,7 +1298,6 @@ dependencies = [
  "action-manifest",
  "action-review",
  "action-settings",
- "action-store",
  "action-trace",
  "action-vocab",
  "action-wire",
@@ -1299,6 +1309,7 @@ dependencies = [
  "agent-reader",
  "agent-registry",
  "agent-session",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-path",
@@ -1502,9 +1513,7 @@ dependencies = [
 name = "action-store"
 version = "0.1.0"
 dependencies = [
- "action-vocab",
  "base-fs",
- "base-time",
  "futures-util",
  "tempfile",
  "thiserror 2.0.21",
@@ -1651,7 +1660,6 @@ dependencies = [
  "action-provider",
  "action-settings",
  "action-settings-fs",
- "action-store",
  "action-vocab",
  "action-wire",
  "agent-acp-bin",
@@ -1664,9 +1672,11 @@ dependencies = [
  "agent-planner",
  "agent-registry",
  "agent-session",
+ "base-clock",
  "base-ids",
  "base-path",
  "base-time",
+ "base-xdg",
  "clap",
  "companion-client",
  "companion-model",
@@ -1730,13 +1740,12 @@ dependencies = [
  "agent-session",
  "base-ids",
  "base-path",
+ "base-random",
  "base-testkit",
  "base-xdg",
  "companion-model",
- "const-hex",
  "futures-channel",
  "futures-util",
- "getrandom 0.4.3",
  "jsonschema",
  "permission-core",
  "provenance",
@@ -2075,6 +2084,7 @@ dependencies = [
  "action-core",
  "action-manifest",
  "action-vocab",
+ "base-xdg",
  "provenance",
  "serde",
  "thiserror 2.0.21",
@@ -2475,7 +2485,7 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-words",
- "dirs 6.0.0",
+ "base-xdg",
  "log",
  "md-5 0.10.6",
  "percent-encoding",
@@ -2932,6 +2942,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-clock"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "futures-timer",
+ "tokio",
+]
+
+[[package]]
 name = "base-fs"
 version = "0.1.0"
 dependencies = [
@@ -2966,6 +2985,14 @@ name = "base-process"
 version = "0.1.0"
 dependencies = [
  "rustix 1.1.6",
+]
+
+[[package]]
+name = "base-random"
+version = "0.1.0"
+dependencies = [
+ "getrandom 0.4.3",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -4025,9 +4052,11 @@ dependencies = [
  "agent-planner",
  "agent-skills",
  "agent-skills-disk",
+ "base-clock",
  "base-ids",
  "base-testkit",
  "base-time",
+ "base-xdg",
  "caller-role-types",
  "companion-core",
  "companion-daemon",
@@ -4218,6 +4247,7 @@ name = "compositor-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-spawn",
@@ -4592,7 +4622,9 @@ name = "computer-use-capture-wayland"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-clock",
  "base-ids",
+ "base-time",
  "computer-use-action",
  "computer-use-capture",
  "computer-use-desktop",
@@ -4790,6 +4822,7 @@ dependencies = [
  "action-core",
  "action-gate-wire",
  "action-wire",
+ "base-clock",
  "base-ids",
  "base-time",
  "computer-use-action",
@@ -4927,6 +4960,7 @@ dependencies = [
  "account-match",
  "action-client",
  "base-ids",
+ "base-time",
  "compositor-dbus",
  "computer-use-a11y-atspi",
  "computer-use-a11y-tree",
@@ -5992,6 +6026,7 @@ name = "drive-fs"
 version = "0.1.0"
 dependencies = [
  "account-capability",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-testkit",
@@ -6016,6 +6051,7 @@ name = "drive-fuse"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
+ "base-time",
  "drive-fs",
  "drive-mount-daemon",
  "fuser",
@@ -7988,9 +8024,11 @@ dependencies = [
  "account-settings",
  "account-tailscale",
  "account-wire",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-process",
+ "base-random",
  "base-testkit",
  "base-time",
  "base-url",
@@ -8004,8 +8042,6 @@ dependencies = [
  "engine-spec",
  "engine-supervisor",
  "futures-util",
- "getrandom 0.4.3",
- "hex",
  "http-core",
  "http-reqwest",
  "inference-agent-proto",
@@ -8159,6 +8195,7 @@ version = "0.1.0"
 dependencies = [
  "account-fake-servers",
  "account-tailscale",
+ "base-clock",
  "base-fs",
  "base-testkit",
  "base-time",
@@ -8180,6 +8217,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
+ "base-clock",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -8279,6 +8317,7 @@ dependencies = [
 name = "input-broker-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-fs",
  "base-testkit",
  "base-time",
@@ -8299,6 +8338,7 @@ dependencies = [
 name = "input-broker-wire"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "thiserror 2.0.21",
 ]
 
@@ -8860,6 +8900,7 @@ dependencies = [
 name = "key-remap-core"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "key-remap-proto",
  "keymap",
  "shell-verbs",
@@ -9698,16 +9739,15 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-wire",
+ "base-clock",
  "base-fs",
  "base-ids",
+ "base-random",
  "base-testkit",
- "base-time",
  "base-xdg",
- "blake3",
  "caller-role-types",
  "clap",
  "dbus-kit",
- "getrandom 0.4.3",
  "inference-client",
  "inference-core",
  "inference-dbus",
@@ -9865,9 +9905,10 @@ dependencies = [
 name = "memory-local"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-fs",
+ "base-random",
  "base-time",
- "getrandom 0.4.3",
  "memory-client",
  "memory-core",
  "memory-eventlog",
@@ -9903,10 +9944,10 @@ dependencies = [
 name = "memory-seal"
 version = "0.1.0"
 dependencies = [
+ "base-random",
  "blake3",
  "chacha20poly1305",
  "const-hex",
- "getrandom 0.4.3",
  "memory-core",
  "memory-seal",
  "oo7",
@@ -9927,6 +9968,7 @@ dependencies = [
 name = "memory-service"
 version = "0.1.0"
 dependencies = [
+ "base-random",
  "base-time",
  "blake3",
  "caller-role-types",
@@ -9992,7 +10034,9 @@ dependencies = [
 name = "memory-watch"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-testkit",
+ "base-time",
  "blake3",
  "memory-core",
  "notify",
@@ -10189,6 +10233,7 @@ name = "model-provider"
 version = "0.1.0"
 dependencies = [
  "base-ids",
+ "base-time",
  "base64 0.22.1",
  "computer-use-action",
  "iso_currency",
@@ -12153,7 +12198,9 @@ dependencies = [
 name = "portal-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-fs",
+ "base-random",
  "base-testkit",
  "base-time",
  "base-xdg",
@@ -13739,6 +13786,7 @@ dependencies = [
  "anyview-fs",
  "anyview-image",
  "anyview-platform",
+ "base-clock",
  "base-testkit",
  "base-time",
  "base-xdg",
@@ -13855,6 +13903,7 @@ dependencies = [
 name = "settings-store-fs"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-fs",
  "base-spawn",
  "base-time",
@@ -14150,13 +14199,14 @@ dependencies = [
  "anyview-image",
  "anyview-peek",
  "anyview-platform",
+ "base-clock",
  "base-testkit",
  "base-time",
+ "base-xdg",
  "companion-model",
  "companion-wire",
  "dioxus",
  "dioxus-ssr",
- "dirs 6.0.0",
  "image",
  "jiff",
  "keymap",
@@ -14230,6 +14280,8 @@ dependencies = [
 name = "shell-notify-ui"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
+ "base-time",
  "dioxus",
  "image",
  "layer-shell-hooks",
@@ -14286,6 +14338,7 @@ dependencies = [
  "action-vocab",
  "anyview-core",
  "anyview-store",
+ "base-clock",
  "base-fs",
  "base-testkit",
  "base-time",
@@ -14340,6 +14393,7 @@ dependencies = [
  "anyview-core",
  "anyview-platform",
  "async-trait",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-secret",
@@ -14454,13 +14508,15 @@ dependencies = [
  "action-core",
  "action-manifest",
  "action-vocab",
+ "base-clock",
  "base-fs",
+ "base-time",
  "base-words",
+ "base-xdg",
  "companion-wire",
  "computer-use-action",
  "dioxus",
  "dioxus-ssr",
- "dirs 6.0.0",
  "image",
  "jiff",
  "key-remap-client",
@@ -14785,8 +14841,10 @@ dependencies = [
  "action-procroot",
  "action-vocab",
  "action-wire",
+ "base-clock",
  "base-testkit",
  "base-time",
+ "base-xdg",
  "caller-role-types",
  "clap",
  "dbus-kit",
@@ -15476,6 +15534,7 @@ dependencies = [
  "account-service-core",
  "account-sheet",
  "account-wire",
+ "base-clock",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -15523,6 +15582,7 @@ dependencies = [
  "account-callers",
  "account-capability",
  "account-core",
+ "base-clock",
  "base-testkit",
  "base-time",
  "caller-role-types",
@@ -15606,6 +15666,7 @@ dependencies = [
  "account-client",
  "account-core",
  "account-fake-servers",
+ "base-clock",
  "base-fs",
  "base-ids",
  "base-testkit",
@@ -16448,7 +16509,6 @@ dependencies = [
  "dioxus-asset-resolver",
  "dioxus-native",
  "dioxus-native-dom",
- "dirs 6.0.0",
  "image",
  "keyboard-types",
  "keymap",
@@ -16564,6 +16624,7 @@ dependencies = [
  "base-fs",
  "base-testkit",
  "base-words",
+ "base-xdg",
  "plugin-host",
  "serde",
  "settings-store",
@@ -16709,6 +16770,7 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-words",
+ "base-xdg",
  "dioxus",
  "objc2-core-foundation",
  "serde",
@@ -16740,6 +16802,7 @@ dependencies = [
 name = "ui-shell"
 version = "0.1.0"
 dependencies = [
+ "base-secret",
  "base-words",
  "dioxus",
  "dioxus-ssr",
@@ -16748,13 +16811,13 @@ dependencies = [
  "ui-lint",
  "ui-motion",
  "ui-style",
- "zeroize",
 ]
 
 [[package]]
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-ids",
  "base-time",
  "base-words",
@@ -16930,6 +16993,7 @@ dependencies = [
 name = "updater-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-clock",
  "base-fs",
  "base-testkit",
  "base-time",

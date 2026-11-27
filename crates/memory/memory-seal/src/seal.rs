@@ -68,11 +68,9 @@ impl Nonce {
     ///
     /// # Errors
     ///
-    /// The [`getrandom::Error`] when the system gives no random bytes.
-    pub fn random() -> Result<Self, getrandom::Error> {
-        let mut bytes = [0u8; NONCE_LEN];
-        getrandom::fill(&mut bytes)?;
-        Ok(Self(bytes))
+    /// The [`base_random::RandomError`] when the system gives no random bytes.
+    pub fn random() -> Result<Self, base_random::RandomError> {
+        base_random::bytes().map(Self)
     }
 }
 

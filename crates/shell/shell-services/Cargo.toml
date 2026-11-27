@@ -36,6 +36,7 @@ account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
+base-clock = { path = "../../base/base-clock" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["desktop"]}
 shell-model = {path = "../shell-model"}

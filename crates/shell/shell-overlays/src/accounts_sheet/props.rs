@@ -25,7 +25,6 @@ use account_sheet::{
 use shell_model::accounts::sheet::{CopyMark, Draft, ListKey, OpenSheet};
 use ui_components::components::content::provider_mark::MarkProvider;
 use ui_components::prelude::Check;
-use ui_shell::accounts::hidden::Hidden;
 use ui_shell::accounts::model::{
     AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText, FormField,
     FormPart, ProblemKind, ProviderEntry, ProviderKey, ProviderPick, ServiceKey, ServiceLine,
@@ -335,7 +334,7 @@ fn form_fields(draft: &Draft, provider: &ProviderId) -> Vec<FormField> {
                 role_of(field.kind),
                 field.required,
                 match (&field.value, field.entry) {
-                    (FieldValue::Secret(text), _) => FieldText::Secret(Hidden::new(text.expose())),
+                    (FieldValue::Secret(text), _) => FieldText::Secret(text.clone()),
                     (FieldValue::Plain(text), Entry::Plain | Entry::Secret) => {
                         FieldText::Plain(text.clone())
                     }

@@ -13,10 +13,11 @@ use action_context::state::SessionKind;
 use action_core::{
     AgentConfig, CheckpointEvent, CheckpointId, CheckpointNote, Retention, Rewind, SkipReason,
 };
-use action_vocab::{Clock, Millis, TurnId};
+use action_vocab::TurnId;
 use agent_session::{Logged, Read, SessionEntry, SessionLog, resume_plan};
 use base_ids::Count;
 use base_time::Clock as _;
+use base_time::Sleeper as _;
 use provenance::SessionId;
 
 /// Marks a session's workspace as being saved or restored; leaving the scope (or dropping the
@@ -72,8 +73,8 @@ impl<S: Seams> Router<S> {
         cfg: &AgentConfig,
         work: impl Future<Output = T>,
     ) -> Option<T> {
-        let wait = Millis(cfg.checkpoint_wait.0.saturating_mul(1000));
-        within(self.seams.clock().after(wait), work).await
+        let wait = std::time::Duration::from_secs(u64::from(cfg.checkpoint_wait.0));
+        within(self.seams.clock().sleep(wait), work).await
     }
 
     /// The number for the next point of `session`: above every one the log names and every one

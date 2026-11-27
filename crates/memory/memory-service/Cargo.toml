@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 const-hex = { workspace = true }
+base-random = { path = "../../base/base-random" }
 base-time = { path = "../../base/base-time" }
 caller-role-types = {path = "../../identity/caller-role-types"}
 memory-core = {path = "../memory-core"}

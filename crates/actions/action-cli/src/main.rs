@@ -28,7 +28,7 @@ fn main() -> ExitCode {
         },
         stdin: read_stdin,
         env,
-        now: base_time::Clock::now(&base_time::SystemClock),
+        now: base_time::Clock::now(&base_clock::SystemClock),
     };
     let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
         .enable_all()

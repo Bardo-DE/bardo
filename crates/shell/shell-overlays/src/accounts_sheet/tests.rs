@@ -17,7 +17,6 @@ use shell_model::accounts::sheet::{
 };
 use ui_components::components::content::provider_mark::MarkProvider;
 use ui_components::prelude::Check;
-use ui_shell::accounts::hidden::Hidden;
 use ui_shell::accounts::model::{
     AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, FieldProblem, FieldRole,
     FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey, ProviderPick,
@@ -266,7 +265,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
                     FormField::new(
                         FieldRole::Password,
                         true,
-                        FieldText::Secret(Hidden::new("")),
+                        FieldText::Secret(SecretText::new("")),
                     ),
                     FormField::new(FieldRole::Server, false, FieldText::Plain(String::new())),
                 ],
@@ -426,7 +425,10 @@ fn the_draft_reaches_the_props() {
         panic!("no form");
     };
     assert_eq!(props.fields[0].text, FieldText::Plain("ada".to_owned()));
-    assert_eq!(props.fields[1].text, FieldText::Secret(Hidden::new("pw")));
+    assert_eq!(
+        props.fields[1].text,
+        FieldText::Secret(SecretText::new("pw"))
+    );
     assert!(!format!("{props:?}").contains("pw\""), "{props:?}");
 
     let Some(Step::Providers(props)) = shown(
@@ -583,7 +585,10 @@ fn events_become_what_the_person_did() {
         Some(ListKey::Provider(provider("google")))
     );
     assert_eq!(
-        events::typed(FieldRole::Password, FieldText::Secret(Hidden::new("pw"))),
+        events::typed(
+            FieldRole::Password,
+            FieldText::Secret(SecretText::new("pw"))
+        ),
         SheetAction::Type(
             FieldKind::Password,
             FieldValue::Secret(SecretText::new("pw"))

@@ -15,11 +15,11 @@
 
 use account_core::{AppName, DesktopSpace, DesktopSpaceRecord, SpaceLook, SpaceName};
 use base_fs::atomic::AtomicFile;
-use base_time::UnixSeconds;
+use base_time::{Mono, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, VecDeque};
 use std::path::Path;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 /// The file's name inside the state directory.
 const FILE: &str = "spaces.json";
@@ -80,7 +80,7 @@ pub struct SpaceBook {
     /// False when the file on disk could not be read at start: it is left as it is.
     writable: bool,
     /// When each app last made Spaces, within the window.
-    creates: BTreeMap<AppName, VecDeque<Instant>>,
+    creates: BTreeMap<AppName, VecDeque<Mono>>,
 }
 
 impl SpaceBook {
@@ -151,11 +151,11 @@ impl SpaceBook {
     }
 
     /// Whether `app` may make another Space at `now`; counts it when it may.
-    fn admit(&mut self, app: &AppName, now: Instant) -> bool {
+    fn admit(&mut self, app: &AppName, now: Mono) -> bool {
         let made = self.creates.entry(app.clone()).or_default();
         while made
             .front()
-            .is_some_and(|at| now.saturating_duration_since(*at) >= CREATE_WINDOW)
+            .is_some_and(|at| now.since(*at) >= CREATE_WINDOW)
         {
             made.pop_front();
         }
@@ -184,7 +184,7 @@ impl SpaceBook {
         app: &AppName,
         name: SpaceName,
         look: SpaceLook,
-        now: (Instant, UnixSeconds),
+        now: (Mono, UnixSeconds),
     ) -> Result<DesktopSpace, SpaceError> {
         if !self.writable {
             return Err(SpaceError::Unsaved);
@@ -223,7 +223,7 @@ impl SpaceBook {
         id: DesktopSpace,
         name: SpaceName,
         look: SpaceLook,
-        now: (Instant, UnixSeconds),
+        now: (Mono, UnixSeconds),
     ) -> Result<bool, SpaceError> {
         if !self.writable {
             return Err(SpaceError::Unsaved);

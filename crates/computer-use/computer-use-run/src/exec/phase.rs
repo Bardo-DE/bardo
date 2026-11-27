@@ -93,7 +93,7 @@ pub(super) async fn bounded<T>(
     work: impl Future<Output = T>,
 ) -> Bound<T> {
     let mut work = pin!(work);
-    let mut timer = pin!(clock.after(limit));
+    let mut timer = pin!(clock.sleep(limit));
     std::future::poll_fn(|cx| {
         if let Poll::Ready(value) = work.as_mut().poll(cx) {
             return Poll::Ready(Bound::Done(value));

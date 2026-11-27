@@ -243,7 +243,7 @@ fn refused(tracked: Tracked, grab: Grab, now: Mono) -> Tracked {
     let (delay, backoff) = tracked.retry.backoff().step();
     Tracked {
         retry: Retry::Waiting {
-            until: now.after(delay),
+            until: now + delay,
             backoff,
         },
         ..tracked.at_gate(grab)

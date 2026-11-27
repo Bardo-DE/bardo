@@ -289,6 +289,8 @@ kind = "unclassified"
 kind = "unclassified"
 
 # base
+[crate.base-clock]
+kind = "unclassified"
 [crate.base-fs]
 kind = "unclassified"
 [crate.base-ids]
@@ -298,6 +300,8 @@ kind = "unclassified"
 [crate.base-process]
 kind = "unclassified"
 unsafe = true
+[crate.base-random]
+kind = "unclassified"
 [crate.base-secret]
 kind = "unclassified"
 [crate.base-spawn]
@@ -1211,7 +1215,7 @@ why = "the set family feature reaches only what it really uses"
 [[edges]]
 crate = "account-families"
 features = ["set"]
-exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core", "http-reqwest"]
+exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core", "http-reqwest", "base-clock"]
 why = "the set family feature's direct workspace dependencies are exactly these"
 
 [[source]]
@@ -1285,6 +1289,18 @@ why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "base-time"
+features = "all"
+exactly = []
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "base-clock"
+features = "all"
+exactly = ["base-time"]
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "base-random"
 features = "all"
 exactly = []
 why = "the table of allowed direct edges between workspace crates"
@@ -1436,7 +1452,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-client-inproc"
 features = "all"
-exactly = ["account-capability", "account-client", "account-core", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-service-grants", "account-sheet", "account-wire", "base-time"]
+exactly = ["account-capability", "account-client", "account-core", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-service-grants", "account-sheet", "account-wire", "base-time", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1526,37 +1542,37 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-families"
 features = "all"
-exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core", "http-reqwest"]
+exactly = ["account-capability", "account-core", "account-discover", "account-family-generic", "account-family-kit", "account-family-nextcloud", "account-family-oauth", "account-provider", "account-sheet", "account-tailscale", "base-time", "base-url", "http-core", "http-reqwest", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "account-family-kit"
 features = "all"
-exactly = ["account-core", "account-provider", "account-sheet", "http-core"]
+exactly = ["account-core", "account-provider", "account-sheet", "http-core", "base-time"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "account-family-nextcloud"
 features = "all"
-exactly = ["account-family-kit", "account-nextcloud-proto", "account-dav-proto", "account-core", "account-capability", "account-sheet", "account-provider", "http-core"]
+exactly = ["account-family-kit", "account-nextcloud-proto", "account-dav-proto", "account-core", "account-capability", "account-sheet", "account-provider", "http-core", "base-time"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "account-family-generic"
 features = "all"
-exactly = ["account-family-kit", "account-generic-proto", "account-core", "account-capability", "account-sheet", "account-provider", "http-core", "account-discover", "account-proxy"]
+exactly = ["account-family-kit", "account-generic-proto", "account-core", "account-capability", "account-sheet", "account-provider", "http-core", "account-discover", "account-proxy", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "account-family-oauth"
 features = "all"
-exactly = ["account-capability", "account-core", "account-family-kit", "account-oauth", "account-oauth-probe-proto", "account-provider", "account-sheet", "base-ids", "base-time", "base-url", "http-core", "http-reqwest"]
+exactly = ["account-capability", "account-core", "account-family-kit", "account-oauth", "account-oauth-probe-proto", "account-provider", "account-sheet", "base-ids", "base-random", "base-time", "base-url", "http-core", "http-reqwest"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "account-daemon"
 features = "all"
-exactly = ["account-callers", "account-capability", "account-core", "account-daemon-support", "account-dbus", "account-families", "account-family-oauth", "account-identities", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-settings", "account-sheet", "account-sheets", "account-spaces", "account-store", "account-tailscale", "account-wire", "base-fs", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "settings-dbus", "settings-types"]
+exactly = ["account-callers", "account-capability", "account-core", "account-daemon-support", "account-dbus", "account-families", "account-family-oauth", "account-identities", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-settings", "account-sheet", "account-sheets", "account-spaces", "account-store", "account-tailscale", "account-wire", "base-fs", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "settings-dbus", "settings-types", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1568,7 +1584,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-fake-secret-service"
 features = "all"
-exactly = ["base-time", "dbus-kit"]
+exactly = ["base-time", "dbus-kit", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 # --- accounts, second pass (untranslated checks of the same script)
@@ -2645,7 +2661,7 @@ why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md sectio
 [[edges]]
 crate = "anyview-platform"
 features = "all"
-exactly = ["account-core", "action-core", "action-dbus", "action-manifest", "action-provider", "action-vocab", "action-wire", "anyview-core", "base-fs", "base-ids", "base-words", "provenance", "service-locator"]
+exactly = ["account-core", "action-core", "action-dbus", "action-manifest", "action-provider", "action-vocab", "action-wire", "anyview-core", "base-fs", "base-ids", "base-words", "base-xdg", "provenance", "service-locator"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
@@ -2690,8 +2706,9 @@ why = "reach these through ui-blitz, never name them in the peek's own manifest"
 crate = "anyview-peek"
 features = ["media", "pane"]
 # 581 in the script; 605 since the monorepo moves (the base-* split, ui-components), which raised no
-# budget. Set to today's count so it stops growing; trimming it back is a review item.
-max = 605
+# budget. Set to today's count so it stops growing; trimming it back is a review item. 606 when
+# the real clock moved out of base-time into base-clock (phase 3.1: the same code in its own crate).
+max = 606
 why = "the launcher links the peek, so growth here is growth of its binary"
 
 [[budget]]
@@ -4136,7 +4153,7 @@ why = "the protocol crate: no device, socket, runtime, bus, file-watching crate 
 scope = "all"
 crate = "key-remap-core"
 features = "all"
-exactly = ["key-remap-proto", "keymap", "shell-verbs", "thiserror", "toml"]
+exactly = ["base-time", "key-remap-proto", "keymap", "shell-verbs", "thiserror", "toml"]
 why = "direct normal and build dependencies (ours and third-party, all features) are exactly these; the pure core also names keymap and shell-verbs for the table of handled actions that moved here from key-remap-client"
 
 [[edges]]
@@ -4853,14 +4870,46 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "settings-app-system"
 features = "all"
-exactly = ["account-callers", "account-client", "account-client-dbus", "account-core", "account-dbus",
-  "account-wire", "anyview-core", "anyview-fs", "anyview-image", "anyview-platform", "base-time",
-  "base-xdg", "bluez-proxy", "dbus-kit", "desktop-client", "desktop-protocols", "engine-install",
-  "engine-manifest", "engine-probe", "engine-spec", "inference-client", "inference-dbus",
-  "inference-tailnet", "memory-core", "memory-dbus", "model-catalog", "networkmanager-proxy",
-  "portal-dbus", "settings-app-callers", "settings-app-files", "settings-app-link",
-  "settings-app-model", "settings-dbus", "settings-types", "shell-dbus", "sync-bus",
-  "updater-dbus"]
+exactly = [
+    "account-callers",
+    "account-client",
+    "account-client-dbus",
+    "account-core",
+    "account-dbus",
+    "account-wire",
+    "anyview-core",
+    "anyview-fs",
+    "anyview-image",
+    "anyview-platform",
+    "base-time",
+    "base-xdg",
+    "bluez-proxy",
+    "dbus-kit",
+    "desktop-client",
+    "desktop-protocols",
+    "engine-install",
+    "engine-manifest",
+    "engine-probe",
+    "engine-spec",
+    "inference-client",
+    "inference-dbus",
+    "inference-tailnet",
+    "memory-core",
+    "memory-dbus",
+    "model-catalog",
+    "networkmanager-proxy",
+    "portal-dbus",
+    "settings-app-callers",
+    "settings-app-files",
+    "settings-app-link",
+    "settings-app-model",
+    "settings-dbus",
+    "settings-types",
+    "shell-dbus",
+    "sync-bus",
+    "updater-dbus",
+    "base-clock",
+]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5060,37 +5109,132 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-services"
 features = "all"
-exactly = ["account-client", "account-client-dbus", "account-core", "account-dbus", "account-sheet",
-  "account-tailscale", "account-wire", "action-client", "action-core", "action-dbus",
-  "action-manifest", "action-provider", "action-vocab", "action-wire", "anyview-core",
-  "anyview-platform", "base-fs", "base-ids", "base-secret", "base-time", "base-words",
-  "bluez-proxy", "caller-identity-dbus", "companion-model", "companion-wire", "compositor-dbus",
-  "computer-use-action", "computer-use-bus", "computer-use-dbus", "dbus-kit", "desktop-client",
-  "desktop-protocols", "http-core", "http-reqwest", "inference-client", "inference-core",
-  "inference-tailnet", "key-remap-proto", "memory-core", "memory-dbus", "networkmanager-proxy",
-  "outputs-dbus", "permission-core", "portal-dbus", "provenance", "settings-store",
-  "settings-store-fs", "settings-types", "shell-dbus", "shell-desktop-fs", "shell-launcher",
-  "shell-model", "speech-dbus", "speech-wire", "sync-bus", "ui-core", "ui-helpers"]
+exactly = [
+    "account-client",
+    "account-client-dbus",
+    "account-core",
+    "account-dbus",
+    "account-sheet",
+    "account-tailscale",
+    "account-wire",
+    "action-client",
+    "action-core",
+    "action-dbus",
+    "action-manifest",
+    "action-provider",
+    "action-vocab",
+    "action-wire",
+    "anyview-core",
+    "anyview-platform",
+    "base-fs",
+    "base-ids",
+    "base-secret",
+    "base-time",
+    "base-words",
+    "bluez-proxy",
+    "caller-identity-dbus",
+    "companion-model",
+    "companion-wire",
+    "compositor-dbus",
+    "computer-use-action",
+    "computer-use-bus",
+    "computer-use-dbus",
+    "dbus-kit",
+    "desktop-client",
+    "desktop-protocols",
+    "http-core",
+    "http-reqwest",
+    "inference-client",
+    "inference-core",
+    "inference-tailnet",
+    "key-remap-proto",
+    "memory-core",
+    "memory-dbus",
+    "networkmanager-proxy",
+    "outputs-dbus",
+    "permission-core",
+    "portal-dbus",
+    "provenance",
+    "settings-store",
+    "settings-store-fs",
+    "settings-types",
+    "shell-dbus",
+    "shell-desktop-fs",
+    "shell-launcher",
+    "shell-model",
+    "speech-dbus",
+    "speech-wire",
+    "sync-bus",
+    "ui-core",
+    "ui-helpers",
+    "base-clock",
+]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "shell-search"
 features = "all"
-exactly = ["action-core", "action-manifest", "action-vocab", "anyview-core", "anyview-store", "base-fs",
-  "base-time", "base-words", "companion-model", "companion-wire", "computer-use-action",
-  "http-reqwest", "memory-core", "permission-core", "provenance", "settings-types",
-  "shell-launcher", "shell-model", "shell-services", "ui-core"]
+exactly = [
+    "action-core",
+    "action-manifest",
+    "action-vocab",
+    "anyview-core",
+    "anyview-store",
+    "base-fs",
+    "base-time",
+    "base-words",
+    "companion-model",
+    "companion-wire",
+    "computer-use-action",
+    "http-reqwest",
+    "memory-core",
+    "permission-core",
+    "provenance",
+    "settings-types",
+    "shell-launcher",
+    "shell-model",
+    "shell-services",
+    "ui-core",
+    "base-clock",
+]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "shell-ui-kit"
 features = "all"
-exactly = ["account-capability", "account-core", "action-core", "action-manifest", "action-vocab",
-  "base-fs", "base-words", "companion-wire", "computer-use-action", "key-remap-client", "keymap",
-  "layer-shell-hooks", "layer-shell-types", "permission-core", "provenance", "settings-store-fs",
-  "settings-types", "shell-desktop-fs", "shell-kit", "shell-launcher", "shell-model",
-  "shell-settings", "ui-behaviour", "ui-components", "ui-core", "ui-harness", "ui-host-hooks",
-  "ui-settings"]
+exactly = [
+    "account-capability",
+    "account-core",
+    "action-core",
+    "action-manifest",
+    "action-vocab",
+    "base-fs",
+    "base-words",
+    "base-xdg",
+    "companion-wire",
+    "computer-use-action",
+    "key-remap-client",
+    "keymap",
+    "layer-shell-hooks",
+    "layer-shell-types",
+    "permission-core",
+    "provenance",
+    "settings-store-fs",
+    "settings-types",
+    "shell-desktop-fs",
+    "shell-kit",
+    "shell-launcher",
+    "shell-model",
+    "shell-settings",
+    "ui-behaviour",
+    "ui-components",
+    "ui-core",
+    "ui-harness",
+    "ui-host-hooks",
+    "ui-settings",
+    "base-clock",
+    "base-time",
+]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5110,18 +5254,51 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "shell-launcher-ui"
 features = "all"
-exactly = ["action-core", "action-vocab", "anyview-core", "anyview-fs", "anyview-image", "anyview-peek",
-  "anyview-platform", "base-time", "companion-model", "companion-wire", "keymap",
-  "layer-shell-hooks", "layer-shell-types", "memory-core", "permission-core", "provenance",
-  "shell-kit", "shell-launcher", "shell-model", "shell-settings", "shell-ui-kit", "ui-behaviour",
-  "ui-components"]
+exactly = [
+    "action-core",
+    "action-vocab",
+    "anyview-core",
+    "anyview-fs",
+    "anyview-image",
+    "anyview-peek",
+    "anyview-platform",
+    "base-time",
+    "base-xdg",
+    "companion-model",
+    "companion-wire",
+    "keymap",
+    "layer-shell-hooks",
+    "layer-shell-types",
+    "memory-core",
+    "permission-core",
+    "provenance",
+    "shell-kit",
+    "shell-launcher",
+    "shell-model",
+    "shell-settings",
+    "shell-ui-kit",
+    "ui-behaviour",
+    "ui-components",
+    "base-clock",
+]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "shell-notify-ui"
 features = "all"
-exactly = ["ui-components", "ui-settings", "shell-model", "shell-settings", "shell-kit", "shell-ui-kit",
-  "ui-host-hooks", "layer-shell-types", "layer-shell-hooks"]
+exactly = [
+    "ui-components",
+    "ui-settings",
+    "shell-model",
+    "shell-settings",
+    "shell-kit",
+    "shell-ui-kit",
+    "ui-host-hooks",
+    "layer-shell-types",
+    "layer-shell-hooks",
+    "base-clock",
+    "base-time",
+]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5383,13 +5560,13 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "drive-fs"
 features = "all"
-exactly = ["account-capability", "base-fs", "base-ids", "base-time", "base-url", "quickxorhash", "sync-core"]
+exactly = ["account-capability", "base-fs", "base-ids", "base-time", "base-url", "quickxorhash", "sync-core", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "drive-fuse"
 features = "all"
-exactly = ["drive-fs", "drive-mount-daemon"]
+exactly = ["drive-fs", "drive-mount-daemon", "base-time"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -5443,7 +5620,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-driver"
 features = "all"
-exactly = ["account-callers", "account-core", "base-time", "caller-role-types", "sync-core", "sync-engine", "sync-xdg"]
+exactly = ["account-callers", "account-core", "base-time", "caller-role-types", "sync-core", "sync-engine", "sync-xdg", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -5467,7 +5644,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-pim-mirror"
 features = "all"
-exactly = ["account-capability", "account-client", "account-core", "account-match", "base-ids", "sync-core", "sync-driver", "sync-engine", "sync-journal-sqlite", "sync-pim-feed", "sync-vdir", "sync-xdg"]
+exactly = ["account-capability", "account-client", "account-core", "account-match", "base-ids", "base-time", "sync-core", "sync-driver", "sync-engine", "sync-journal-sqlite", "sync-pim-feed", "sync-vdir", "sync-xdg"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -5479,7 +5656,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-daemon"
 features = "all"
-exactly = ["account-callers", "account-capability", "account-client", "account-client-dbus", "account-core", "account-dbus", "account-match", "account-wire", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "drive-fs", "drive-fuse", "settings-dbus", "settings-types", "sync-bus", "sync-core", "sync-driver", "sync-engine", "sync-photos", "sync-pim-mirror", "sync-storage", "sync-xdg"]
+exactly = ["account-callers", "account-capability", "account-client", "account-client-dbus", "account-core", "account-dbus", "account-match", "account-wire", "base-ids", "base-time", "base-xdg", "caller-role-types", "dbus-kit", "drive-fs", "drive-fuse", "settings-dbus", "settings-types", "sync-bus", "sync-core", "sync-driver", "sync-engine", "sync-photos", "sync-pim-mirror", "sync-storage", "sync-xdg", "base-clock"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -5759,7 +5936,7 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-style"
 features = "all"
-exactly = ["base-ids", "base-time", "base-words", "base-words-macros", "settings-store", "ui-core"]
+exactly = ["base-ids", "base-time", "base-words", "base-words-macros", "settings-store", "ui-core", "base-clock"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5796,20 +5973,20 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-shell"
 features = "all"
-exactly = ["base-words", "ui-components", "ui-core", "ui-motion", "ui-style"]
+exactly = ["base-secret", "base-words", "ui-components", "ui-core", "ui-motion", "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-settings"
 features = "all"
-exactly = ["base-fs", "base-spawn", "base-time", "settings-store", "settings-store-fs", "settings-types",
+exactly = ["base-fs", "base-spawn", "base-time", "base-xdg", "settings-store", "settings-store-fs", "settings-types",
   "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-extensions"
 features = "all"
-exactly = ["base-fs", "base-words", "plugin-host", "settings-store", "settings-store-fs", "settings-types",
+exactly = ["base-fs", "base-words", "base-xdg", "plugin-host", "settings-store", "settings-store-fs", "settings-types",
   "ui-helpers", "ui-style"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
@@ -6184,7 +6361,7 @@ why = "what runs as root holds no user-level program, caller-identity library, n
 scope = "all"
 crate = "updater-root"
 build = true
-exactly = ["updater-core", "thiserror", "semver", "toml", "rustix", "tar", "zstd"]
+exactly = ["updater-core", "base-fs", "thiserror", "semver", "toml", "rustix", "tar", "zstd"]
 why = "a new direct dependency of the privileged programs is a decision, so it is made here"
 
 # --- wayland (from crates/wayland/scripts/check-boundary.sh)

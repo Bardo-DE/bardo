@@ -198,3 +198,73 @@ fn a_staged_file_is_not_the_file_until_it_is_committed() {
     assert!(stale.exists(), "another save leaves a staged file alone");
     assert_ne!(stale, file.staging());
 }
+
+#[test]
+#[cfg(unix)]
+fn a_write_with_a_mode_sets_those_bits_on_a_new_file_and_an_old_one() {
+    use std::os::unix::fs::PermissionsExt;
+    let bits = |path: &Path| std::fs::metadata(path).expect("meta").permissions().mode() & 0o777;
+    let scratch = Scratch::new("atomic");
+    let target = scratch.join("deep").join("a.conf");
+    AtomicWrite::with_mode(0o644)
+        .write(&target, b"one")
+        .expect("new");
+    assert_eq!(bits(&target), 0o644);
+    std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600)).expect("chmod");
+    AtomicWrite::with_mode(0o644)
+        .write(&target, b"two")
+        .expect("old");
+    assert_eq!(bits(&target), 0o644);
+}
+
+#[test]
+#[cfg(unix)]
+fn a_symlink_at_the_target_is_replaced_not_followed_when_asked() {
+    use std::os::unix::fs::PermissionsExt;
+    let scratch = Scratch::new("atomic");
+    let elsewhere = scratch.join("elsewhere");
+    std::fs::write(&elsewhere, b"theirs").expect("seed");
+    let target = scratch.join("out");
+    std::os::unix::fs::symlink(&elsewhere, &target).expect("link");
+    AtomicWrite::with_mode(0o640)
+        .replacing_links()
+        .write(&target, b"mine")
+        .expect("write");
+    let meta = std::fs::symlink_metadata(&target).expect("meta");
+    assert!(meta.is_file(), "a regular file now");
+    assert_eq!(meta.permissions().mode() & 0o777, 0o640);
+    assert_eq!(std::fs::read(&target).expect("read"), b"mine");
+    assert_eq!(std::fs::read(&elsewhere).expect("read"), b"theirs");
+}
+
+#[test]
+#[cfg(unix)]
+fn a_symlink_at_the_target_is_followed_by_default() {
+    let scratch = Scratch::new("atomic");
+    let elsewhere = scratch.join("elsewhere");
+    std::fs::write(&elsewhere, b"theirs").expect("seed");
+    let target = scratch.join("out");
+    std::os::unix::fs::symlink(&elsewhere, &target).expect("link");
+    AtomicWrite::SHARED.write(&target, b"mine").expect("write");
+    assert!(
+        std::fs::symlink_metadata(&target)
+            .expect("meta")
+            .is_symlink()
+    );
+    assert_eq!(std::fs::read(&elsewhere).expect("read"), b"mine");
+}
+
+#[test]
+#[cfg(unix)]
+fn made_directories_take_the_asked_mode() {
+    use std::os::unix::fs::PermissionsExt;
+    let scratch = Scratch::new("atomic");
+    let target = scratch.join("a").join("b").join("f");
+    AtomicWrite::with_mode(0o644)
+        .dirs_with_mode(0o700)
+        .write(&target, b"x")
+        .expect("write");
+    let mode = |p: &Path| std::fs::metadata(p).expect("meta").permissions().mode() & 0o777;
+    assert_eq!(mode(&scratch.join("a")), 0o700);
+    assert_eq!(mode(&scratch.join("a").join("b")), 0o700);
+}

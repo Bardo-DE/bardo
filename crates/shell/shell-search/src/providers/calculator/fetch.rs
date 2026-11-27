@@ -12,6 +12,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
+use base_fs::atomic::AtomicWrite;
 use http_reqwest::{Limits, ReqwestHttp};
 use shell_launcher::UnixTime;
 
@@ -121,10 +122,6 @@ impl Drop for InFlight {
 /// answer that is not a success), not only on an I/O error, so [`refresh_if_due`] records it as
 /// a [`Outcome::Failure`] and backs off.
 async fn fetch_into(path: &Path) -> std::io::Result<()> {
-    if let Some(dir) = path.parent() {
-        tokio::fs::create_dir_all(dir).await?;
-    }
-    let temp = path.with_extension("xml.tmp");
     // The file is a few kilobytes: a connection that stalls, a server that never stops or a
     // redirect to anywhere but an https address is given up on.
     let http = ReqwestHttp::new().with_limits(Limits {
@@ -141,9 +138,11 @@ async fn fetch_into(path: &Path) -> std::io::Result<()> {
             reply.status()
         )));
     }
-    tokio::fs::write(&temp, reply.body()).await?;
-    tokio::fs::rename(&temp, path).await?;
-    Ok(())
+    let body = reply.body().clone();
+    let path = path.to_path_buf();
+    tokio::task::spawn_blocking(move || AtomicWrite::SHARED.write(&path, &body))
+        .await
+        .map_err(std::io::Error::other)?
 }
 
 /// `path`'s rates, if the file exists and parses; a missing or damaged file is no rates, never

@@ -5,17 +5,26 @@
 use account_capability::Tier;
 use action_accept::world::ModelSource;
 use action_live::warm::{POLL, Prepare, WarmError, WarmStep, plan, warm_all};
+use base_time::{ManualMonotonic, Sleeper};
 use inference_core::Readiness;
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::time::Duration;
 
-/// An inferd that answers each ask from a script (`None` when it runs out: refused) and a clock
-/// that moves one poll per pause.
+/// An inferd that answers each ask from a script (`None` when it runs out: refused).
 struct Scripted {
     answers: RefCell<VecDeque<Readiness>>,
     asked: RefCell<Vec<Tier>>,
-    clock: Cell<Duration>,
+}
+
+/// A virtual clock that moves by the time it is asked to sleep, and does not wait.
+#[derive(Default)]
+struct Virtual(ManualMonotonic);
+
+impl Sleeper for Virtual {
+    async fn sleep(&self, how_long: Duration) {
+        self.0.advance(how_long);
+    }
 }
 
 impl Scripted {
@@ -23,7 +32,6 @@ impl Scripted {
         Self {
             answers: RefCell::new(answers.into()),
             asked: RefCell::new(Vec::new()),
-            clock: Cell::new(Duration::ZERO),
         }
     }
 }
@@ -36,14 +44,6 @@ impl Prepare for Scripted {
     async fn prepare(&self, tier: Tier) -> Option<Readiness> {
         self.asked.borrow_mut().push(tier);
         self.answers.borrow_mut().pop_front()
-    }
-
-    async fn pause(&self) {
-        self.clock.set(self.clock.get() + POLL);
-    }
-
-    fn now(&self) -> Duration {
-        self.clock.get()
     }
 }
 
@@ -98,10 +98,17 @@ async fn a_loading_model_is_waited_for_and_the_wait_is_reported() {
         Readiness::Ready,
         Readiness::Ready,
     ]);
+    let time = Virtual::default();
     let mut said = Vec::new();
-    let warmed = warm_all(&steps, &inferd, Duration::from_secs(60), |w| {
-        said.push(w.line());
-    })
+    let warmed = warm_all(
+        &steps,
+        &inferd,
+        (&time.0, &time),
+        Duration::from_secs(60),
+        |w| {
+            said.push(w.line());
+        },
+    )
     .await
     .expect("warm");
     assert_eq!(warmed[0].took, POLL * 2);
@@ -117,10 +124,17 @@ async fn a_loading_model_is_waited_for_and_the_wait_is_reported() {
 #[tokio::test]
 async fn a_model_that_never_comes_up_stops_the_run_with_a_typed_fault() {
     let steps = [step(Tier::Best, "b"), step(Tier::Fast, "f")];
+    let time = Virtual::default();
     let inferd = Scripted::answering(vec![Readiness::Loading; 10]);
-    let fault = warm_all(&steps, &inferd, Duration::from_secs(4), |_| {})
-        .await
-        .expect_err("never ready");
+    let fault = warm_all(
+        &steps,
+        &inferd,
+        (&time.0, &time),
+        Duration::from_secs(4),
+        |_| {},
+    )
+    .await
+    .expect_err("never ready");
     assert_eq!(
         fault,
         WarmError::NeverCameUp {
@@ -140,10 +154,17 @@ async fn a_model_that_never_comes_up_stops_the_run_with_a_typed_fault() {
 async fn an_unavailable_or_refusing_inferd_fails_at_once() {
     let steps = [step(Tier::Fast, "f")];
     for answers in [vec![Readiness::Unavailable], vec![]] {
+        let time = Virtual::default();
         let inferd = Scripted::answering(answers);
-        let fault = warm_all(&steps, &inferd, Duration::from_secs(60), |_| {})
-            .await
-            .expect_err("unavailable");
+        let fault = warm_all(
+            &steps,
+            &inferd,
+            (&time.0, &time),
+            Duration::from_secs(60),
+            |_| {},
+        )
+        .await
+        .expect_err("unavailable");
         assert_eq!(fault, WarmError::Unavailable(step(Tier::Fast, "f")));
         assert_eq!(inferd.asked.borrow().len(), 1);
     }

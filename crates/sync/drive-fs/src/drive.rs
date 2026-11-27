@@ -48,7 +48,8 @@ use crate::limit::CacheLimit;
 use crate::listing::{Listing, ListingError};
 use crate::sink::Sink;
 use crate::source::Source;
-use base_time::{Monotonic, SystemMonotonic, UnixSeconds};
+use base_clock::SystemMonotonic;
+use base_time::{Mono, Monotonic, UnixSeconds};
 use fetch::Transfer;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -56,7 +57,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError, Weak};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use sync_core::{ItemKind, RemoteId};
 use tokio::sync::{Notify, Semaphore, broadcast, watch};
 
@@ -259,7 +260,7 @@ pub(crate) struct Failure {
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct Writing {
     handles: usize,
-    last: Instant,
+    last: Mono,
 }
 
 pub(crate) struct Inner {
@@ -319,7 +320,7 @@ pub(crate) struct Inner {
     stale: Mutex<HashSet<NodeId>>,
     /// When the sender tries again after the drive could not take a change, and how long it
     /// waited last.
-    backoff: Mutex<Option<(Instant, Duration)>>,
+    backoff: Mutex<Option<(Mono, Duration)>>,
     /// One lock per file of bytes written here (`local/<n>`), taken around each change of the
     /// bytes and of what the index says of them, by a write, a snapshot for an upload and the
     /// upload's landing. Always taken before the index's lock.
@@ -490,7 +491,7 @@ fn reconcile(dir: &Path, index: &mut Index) -> std::io::Result<bool> {
 
 /// Seconds since the epoch, now.
 fn now_secs() -> i64 {
-    base_time::Clock::now(&base_time::SystemClock).0
+    base_time::Clock::now(&base_clock::SystemClock).0
 }
 
 /// An action's `Reason` for a listing that could not be read: `Reason` is a code and carries no

@@ -6,13 +6,12 @@ use crate::compositor::{CompositorDesktop, Door};
 use crate::connect::Links;
 use crate::model::InferdComputerUseModel;
 use computer_use_a11y_atspi::AtspiSource;
-use computer_use_capture_wayland::StampClock;
-use computer_use_desktop::{BackendKind, SeatIsolation, Stamp};
+use computer_use_desktop::{BackendKind, SeatIsolation};
 use computer_use_host::DaemonLinks;
 use computer_use_host::IntentsGate;
 use computer_use_host::SystemClock;
 use computer_use_host::{A11yChoice, BackendChoice, ComputerUseDaemonConfig};
-use computer_use_run::{Clock, Parts, Rules, Seams};
+use computer_use_run::{Parts, Rules, Seams};
 use computer_use_seat_ei::EiSeat;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
@@ -55,16 +54,6 @@ impl WaylandPair {
         Ok(Self {
             capture: Connection::connect_to_env()?,
         })
-    }
-}
-
-/// Frames are stamped on the clock the run machine reads.
-#[derive(Debug)]
-struct RunClock(SystemClock);
-
-impl StampClock for RunClock {
-    fn now(&self) -> Stamp {
-        self.0.stamp()
     }
 }
 
@@ -178,7 +167,7 @@ impl SystemSeams {
         rules: Rules,
     ) -> Parts<SystemSeams> {
         let capture_over = |kind, connection| {
-            Some(CaptureBackend::over(kind, connection).with_clock(Arc::new(RunClock(clock))))
+            Some(CaptureBackend::over(kind, connection).with_clock(Arc::new(clock)))
         };
         let (desktop, capture) = match reached {
             Reached::Compositor { desktop, capture } => (

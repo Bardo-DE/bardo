@@ -5,6 +5,7 @@
 use crate::support::{FakeCompositor, Stance, Window};
 use account_core::AppName;
 use base_ids::Px;
+use base_time::ManualMonotonic;
 use computer_use_action::{
     Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
 };
@@ -12,7 +13,7 @@ use computer_use_capture::{
     CaptureError, CaptureSession, DamageSource, FrameWant, MaskReason, MaskRegion, WholeMask,
     WindowCapture,
 };
-use computer_use_capture_wayland::{BardoMaskedCapture, StampClock, StockToplevelCapture};
+use computer_use_capture_wayland::{BardoMaskedCapture, StockToplevelCapture};
 use computer_use_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
     ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
@@ -20,7 +21,7 @@ use computer_use_desktop::{
 use desktop_protocols::server::bardo_agent_v1::bardo_agent_lease_v1::RevokeReason;
 use std::collections::BTreeSet;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Duration;
 use wayland_client::Connection;
 use wayland_server::protocol::wl_shm::Format;
 
@@ -65,14 +66,11 @@ fn region(x: u32, y: u32, w: u32, h: u32) -> MaskRegion {
     }
 }
 
-/// A clock the test sets.
-#[derive(Debug, Default)]
-struct SetClock(AtomicU64);
-
-impl StampClock for SetClock {
-    fn now(&self) -> Stamp {
-        Stamp(self.0.load(Ordering::Relaxed))
-    }
+/// A clock standing `ms` milliseconds after its start.
+fn clock_at(ms: u64) -> Arc<ManualMonotonic> {
+    let clock = Arc::new(ManualMonotonic::new());
+    clock.advance(Duration::from_millis(ms));
+    clock
 }
 
 const RED: [u8; 4] = [255, 0, 0, 255];
@@ -88,7 +86,7 @@ fn with_pixel(mut pixels: Vec<u8>, w: u32, x: u32, y: u32, rgba: [u8; 4]) -> Vec
 async fn a_frame_carries_the_windows_pixels_at_logical_resolution() {
     let window = Window::solid("w1", (4, 3), RED);
     let mut server = FakeCompositor::start(vec![window.clone()]);
-    let clock = Arc::new(SetClock(AtomicU64::new(41)));
+    let clock = clock_at(41);
     let capture = capture(&mut server).with_clock(clock);
     let mut session = capture.open(&grant("w1")).await.expect("open");
 
@@ -200,7 +198,7 @@ async fn a_still_window_gives_the_current_frame_when_the_wait_ends() {
 async fn damage_is_the_next_pixel_diff() {
     let window = Window::solid("w1", (4, 3), RED);
     let mut server = FakeCompositor::start(vec![window.clone()]);
-    let clock = Arc::new(SetClock(AtomicU64::new(7)));
+    let clock = clock_at(7);
     let capture = capture(&mut server).with_clock(clock);
     let mut session = capture.open(&grant("w1")).await.expect("open");
 
