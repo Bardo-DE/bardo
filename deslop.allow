@@ -1018,6 +1018,7 @@ shallow-module action_live::flows
 shallow-module action_vocab
 shallow-module agent_acp_core
 shallow-module agent_registry
+shallow-module base_ids
 shallow-module base_machine
 shallow-module base_machine::time
 shallow-module base_time
