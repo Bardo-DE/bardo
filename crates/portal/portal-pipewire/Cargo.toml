@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-random = { path = "../../base/base-random" }
 pipewire = { workspace = true }
 portal-core = { path = "../portal-core" }
 portal-wayland = { path = "../portal-wayland" }
