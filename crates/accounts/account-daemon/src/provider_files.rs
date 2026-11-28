@@ -52,12 +52,12 @@ mod tests {
         let [shipped, named] = read.as_slice() else {
             panic!("two directories");
         };
-        let names: Vec<_> = shipped
+        let files: Vec<_> = shipped
             .files
             .iter()
             .map(|f| f.path.file_name().expect("name").to_owned())
             .collect();
-        assert_eq!(names, ["a.toml", "b.toml"]);
+        assert_eq!(files, ["a.toml", "b.toml"]);
         assert_eq!(shipped.files[0].text.as_deref().ok(), Some("a"));
         assert!(named.files.is_empty());
     }
