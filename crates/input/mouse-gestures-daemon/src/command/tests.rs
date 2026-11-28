@@ -1,7 +1,7 @@
 //! Argument parsing.
 
 use super::{Command, DEFAULT_RECORD, Origin, ReplayReport, parse};
-use crate::replay::Timing;
+use mouse_gestures_core::replay::Timing;
 use std::path::PathBuf;
 use std::time::Duration;
 

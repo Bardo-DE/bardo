@@ -5,7 +5,8 @@
 
 use crate::error::ClientError;
 use crate::session::{DeviceSource, Made, Sent, Session};
-use input_broker_wire::{Create, Delivery, DeviceId, Event, Reason, plan};
+use input_broker_core::ceiling::plan;
+use input_broker_wire::{Create, Delivery, DeviceId, Event, Reason};
 use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};

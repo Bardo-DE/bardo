@@ -505,6 +505,8 @@ kind = "unclassified"
 unsafe = true
 [crate.input-broker-client]
 kind = "unclassified"
+[crate.input-broker-core]
+kind = "core"
 [crate.input-broker-daemon]
 kind = "unclassified"
 [crate.input-broker-wire]
@@ -525,6 +527,9 @@ kind = "unclassified"
 lints = "baseline"
 [crate.key-remap-proto]
 kind = "unclassified"
+lints = "baseline"
+[crate.mouse-gestures-core]
+kind = "core"
 lints = "baseline"
 [crate.mouse-gestures-daemon]
 kind = "unclassified"
@@ -4214,6 +4219,12 @@ crate = "input-broker-wire"
 build = false
 forbid = ["zbus", "tokio", "async-std", "smol", "caller-identity-dbus", "caller-identity-dev", "caller-identity-linux", "rustix", "libc", "input-linux*", "listenfd", "nix"]
 why = "stays pure: no bus, async runtime, process reading, socket or device library (the caller-identity vocabulary of the two daemons' role names is the one thing it takes)"
+
+[[reach]]
+crate = "input-broker-core"
+build = false
+forbid = ["zbus", "tokio", "async-std", "smol", "caller-identity-dbus", "caller-identity-dev", "caller-identity-linux", "rustix", "libc", "input-linux*", "listenfd", "nix"]
+why = "the broker's decisions stay pure: no bus, async runtime, process reading, socket or device library (the sockets, threads and the kernel are input-broker-daemon's); the caller-identity vocabulary and the wire types are its only inputs"
 
 [[reach]]
 crate = "input-broker-client"

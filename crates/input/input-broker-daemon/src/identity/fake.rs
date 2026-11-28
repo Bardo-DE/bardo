@@ -1,8 +1,9 @@
 //! An authority that names every caller the same: for tests that drive the service over a socket
 //! pair, where no real process stands behind the other end.
 
-use super::{Authority, Caller, IdentifyError};
+use super::{Authority, IdentifyError};
 use caller_identity_linux::PinError;
+use input_broker_core::identity::Caller;
 use std::os::fd::OwnedFd;
 
 /// Names every peer as `caller`, or cannot pin any (the process is gone).

@@ -1,0 +1,42 @@
+use caller_identity_core::{CgroupPath, Pid, Uid};
+use input_broker_core::identity::{ActiveUid, Caller, parse_active_uid};
+
+#[test]
+fn the_active_user_is_the_active_uid_line() {
+    let table: &[(&str, &str, Option<u32>)] = &[
+        (
+            "logged in",
+            "IS_SEAT0=1\nACTIVE=1\nACTIVE_SESSION=2\nACTIVE_UID=1000\nUIDS=1000\n",
+            Some(1000),
+        ),
+        ("nobody yet", "IS_SEAT0=1\nCAN_GRAPHICAL=1\n", None),
+        ("empty", "", None),
+        ("not a number", "ACTIVE_UID=root\n", None),
+        ("padded", "ACTIVE_UID= 42 \n", Some(42)),
+        ("a lookalike key", "XACTIVE_UID=7\n", None),
+        (
+            "the first one wins",
+            "ACTIVE_UID=1\nACTIVE_UID=2\n",
+            Some(1),
+        ),
+    ];
+    for (name, text, want) in table {
+        assert_eq!(
+            parse_active_uid(text),
+            ActiveUid((*want).map(Uid::new)),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn a_caller_is_described_for_the_log_without_trusting_it() {
+    let caller = Caller {
+        pid: Pid::new(7).expect("a process number"),
+        uid: Uid::new(1000),
+        cgroup: CgroupPath::new("/").expect("a cgroup path"),
+        image: None,
+        credential: None,
+    };
+    assert_eq!(caller.describe(), "pid=7 uid=1000 image=?");
+}

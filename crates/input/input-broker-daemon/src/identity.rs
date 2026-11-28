@@ -2,7 +2,7 @@
 //!
 //! The kernel names the process behind the socket (a pidfd, so a recycled process id cannot pass
 //! for another program); `caller_identity` judges it against the root-owned table of desktop programs;
-//! [`crate::policy`] decides what that program may have.
+//! `input_broker_core::policy` decides what that program may have.
 
 // Test seams: never in a shipped build.
 pub mod caller_identity_authority;
@@ -10,52 +10,12 @@ pub mod caller_identity_authority;
 pub mod fake;
 pub mod seat;
 
-use caller_identity_core::{CgroupPath, ExePath, Pid, Pin, ProbeError, Proof, RoleName, Uid};
+use caller_identity_core::{ProbeError, Uid};
 use caller_identity_linux::{LoadError, PinError};
+use input_broker_core::identity::Caller;
 use rustix::io::Errno;
 use rustix::net::sockopt::socket_peercred;
 use std::os::fd::OwnedFd;
-
-/// What the table says about a listed program of the desktop.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Credential {
-    /// Its role in the table (`pad_daemon`, `keymap_daemon`, ...).
-    pub role: RoleName,
-    /// How well it was proven (`Full` is the unit: its files are root-owned, it unsets the
-    /// loader variables, and the process shows none of them).
-    pub proof: Proof,
-    /// How firmly the process was held.
-    pub pin: Pin,
-}
-
-/// The facts about the process behind a connection.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Caller {
-    /// Process id, for the log.
-    pub pid: Pid,
-    /// The user the kernel vouches for.
-    pub uid: Uid,
-    /// Its control group path, for example `/system.slice/bardo-key-remap.service`.
-    pub cgroup: CgroupPath,
-    /// Its image, for the log (`None` when the kernel hides it).
-    pub image: Option<ExePath>,
-    /// What the table says; `None` when it is not in the table, or not proven.
-    pub credential: Option<Credential>,
-}
-
-impl Caller {
-    /// The log fields that name the caller.
-    pub fn describe(&self) -> String {
-        format!(
-            "pid={} uid={} image={}",
-            self.pid,
-            self.uid,
-            self.image
-                .as_ref()
-                .map_or_else(|| "?".to_owned(), ExePath::to_text)
-        )
-    }
-}
 
 /// Why a caller could not be identified.
 #[derive(Debug, thiserror::Error)]
@@ -97,5 +57,3 @@ pub trait Authority: Send + Sync + 'static {
             .map_err(IdentifyError::Peer)
     }
 }
-
-pub use seat::{ActiveUid, SeatSource};

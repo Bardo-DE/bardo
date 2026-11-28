@@ -3,7 +3,7 @@
 use super::super::model::{Effect, Event, Life, Why};
 use super::super::step::step;
 use crate::daemon::discover::Backoff;
-use crate::time::Mono;
+use mouse_gestures_core::time::Mono;
 use std::time::Duration;
 
 const ZERO: u8 = 0;

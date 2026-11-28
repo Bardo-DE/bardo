@@ -17,10 +17,10 @@ pub mod uinput;
 
 use crate::config;
 use crate::error::Error;
-use crate::outputs::Emitter;
-use crate::tracker::Tracker;
 use devices::{Devices, Factory};
 pub use env::Env;
+use mouse_gestures_core::outputs::Emitter;
+use mouse_gestures_core::tracker::Tracker;
 use std::sync::mpsc;
 use uinput::{LiveSource, Origin, UinputEmitter};
 

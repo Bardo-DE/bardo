@@ -9,11 +9,11 @@ mod schema;
 #[cfg(test)]
 mod tests;
 
-use crate::config::{self, Config};
 use crate::daemon::uinput::Origin;
 use crate::daemon::{self, Env};
 use crate::error::Error;
-use crate::replay::Timing;
+use mouse_gestures_core::config::{Config, to_toml};
+use mouse_gestures_core::replay::Timing;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::time::Duration;
@@ -154,7 +154,7 @@ fn execute(command: Command, env: &Env) -> Result<(), Error> {
         } => replay::replay(&file, report, timing, env),
         Command::CheckUinput { origin } => probe::check_uinput(origin),
         Command::PrintConfig => {
-            print!("{}", config::to_toml(&Config::default()));
+            print!("{}", to_toml(&Config::default()));
             Ok(())
         }
         Command::WriteSchema { dir } => schema::write_schema(&dir),

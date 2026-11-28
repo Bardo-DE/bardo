@@ -1,12 +1,13 @@
 //! `mouse_gestures replay FILE`: a recording through the core, printed as outputs or latency.
 
 use super::ReplayReport;
-use crate::config::{self, Config};
+use crate::config;
 use crate::daemon::Env;
 use crate::daemon::latency::{self, LatencyReport};
 use crate::error::Error;
-use crate::recording::{self, Record, RecordedSource};
-use crate::replay::{Timing, replay_from};
+use mouse_gestures_core::config::Config;
+use mouse_gestures_core::recording::{self, Record, RecordedSource};
+use mouse_gestures_core::replay::{Timing, replay_from};
 use std::path::Path;
 
 /// Replays `file` with the user's config and prints `report`.

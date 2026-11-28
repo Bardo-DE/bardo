@@ -7,7 +7,7 @@
 use super::hidraw;
 use super::source::{self, Purpose};
 use crate::error::Error;
-use crate::recording::{Record, encode_record, header};
+use mouse_gestures_core::recording::{Record, encode_record, header};
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;

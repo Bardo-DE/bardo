@@ -2,17 +2,18 @@
 //! serve it (NEW-FA-3).
 //!
 //! Identification may wait on the peer, so it never runs on the accept loop; the ticket in
-//! [`crate::pending`] holds the connection's place until the slot is decided, so identification
+//! [`input_broker_core::pending`] holds the connection's place until the slot is decided, so identification
 //! still comes before counting (NEW-PI-6).
 
-use crate::backend::Backend;
-use crate::identity::{Authority, SeatSource};
+use crate::identity::Authority;
 use crate::journal::{self, kv};
 use crate::link;
-use crate::pending::Ticket;
 use crate::serve::{Context, identify, serve_caller};
-use crate::slots::{Bucket, Slots};
 use base_time::Monotonic;
+use input_broker_core::backend::Backend;
+use input_broker_core::identity::SeatSource;
+use input_broker_core::pending::Ticket;
+use input_broker_core::slots::{Bucket, Slots};
 use input_broker_wire::{Reason, Reply};
 use std::os::fd::OwnedFd;
 

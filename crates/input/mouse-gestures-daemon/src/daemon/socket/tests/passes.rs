@@ -3,8 +3,9 @@
 
 use super::support::{Role, Scripted, TOUCHES, me, queued, seat_file, send};
 use crate::daemon::socket::io::Server;
-use crate::daemon::socket::limits::{MAX_CLIENTS, PACKETS_PER_PASS, QUEUE_MAX};
-use crate::daemon::socket::{FromSocket, SocketHandle, ToSocket, bind};
+use crate::daemon::socket::limits::{PACKETS_PER_PASS, QUEUE_MAX};
+use crate::daemon::socket::{SocketHandle, bind};
+use mouse_gestures_core::socket::{FromSocket, MAX_CLIENTS, ToSocket};
 use mouse_gestures_proto::{self as protocol, ToDaemon, ToHost};
 use rustix::event::{EventfdFlags, eventfd};
 use rustix::fd::OwnedFd;

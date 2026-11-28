@@ -11,14 +11,15 @@ those and no others.
 ## Crates and seams
 
 ```
-input-broker-wire    pure          kinds, ceilings, codec, rate limiter, key table
+input-broker-wire    pure          kinds, messages, codec, the caps the datagrams carry
+input-broker-core    pure          ceilings, policy, Session, slots, pending, rate limiter, key table, idle timer
 input-broker-client  rustix        Broker (the socket), FakeSource; the mouse gestures daemon and the key remap daemon link this
 The input broker         rustix,       Daemon, serve, Session, policy; seams: Backend, Authority,
                   input-linux,  SeatSource, Clock
                   caller_identity
 ```
 
-`cargo xtask check layers` keeps the graph honest: the wire links no socket, device or identity
+`cargo xtask check layers` keeps the graph honest: the wire and the core link no socket, device or identity
 library; the client links no bus, async runtime or identity crate; the root service never links the
 bus or an async runtime.
 
@@ -92,7 +93,7 @@ can only be filled by the system manager, and a person's process cannot put itse
 unit folders are not read (the service cannot open a home folder), and a user-manager unit is not
 admitted at all: the policy asks for a group under `/system.slice`.
 
-## The ceilings (`input-broker-wire/src/ceiling/`)
+## The ceilings (`input-broker-core/src/ceiling/`)
 
 | Kind | Delivery | Device and per-event rules |
 |---|---|---|
@@ -125,10 +126,11 @@ The mouse gestures daemon from becoming a general typist.
 
 ## Tests
 
-- `input-broker-wire`: tables for every ceiling row, the codec (round trips, every prefix, random bytes),
-  the limiter, and a comparison of the key table with the mouse gestures daemon's source when it sits next to this one.
+- `input-broker-wire`: the codec (round trips, every prefix, random bytes) and the kinds and roles.
+- `input-broker-core`: tables for every ceiling row, the limiter, the policy, the slots and pending caps, the
+  idle timer and the key table's own consistency (`mouse-gestures-core` pins its name table against it).
 - `input-broker-client`: a thread stands in for the service on a socket pair or a socket in a scratch
   folder: create, split events, handed descriptors, refusals, timeouts, full queue, gone peer.
-- `input_broker`: `Session` with a fake kernel (caps, flood, hostile events, failures); `serve` over a
+- `input-broker-daemon`: `Session` (from the core) with a fake kernel (caps, flood, hostile events, failures); `serve` over a
   socket pair with the real client; the accept loop on a real socket (idle exit, the connection cap);
   the policy as a table; the real authority over a fixture tree standing for `/proc` and the table files; two `#[ignore]`d tests that make real devices.

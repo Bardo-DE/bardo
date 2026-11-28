@@ -1,6 +1,6 @@
 //! The real kernel side: `/dev/uinput` through `input-linux`'s safe wrappers of the ioctls.
 
-use super::{Backend, BackendError, Device};
+use input_broker_core::backend::{Backend, BackendError, Device};
 use input_broker_wire::{AbsAxis, DeviceSpec, Event};
 use input_linux::{
     AbsoluteAxis, AbsoluteInfo, AbsoluteInfoSetup, EventKind, EventTime, InputId, InputProperty,

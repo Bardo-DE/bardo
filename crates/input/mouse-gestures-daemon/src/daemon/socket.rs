@@ -1,15 +1,13 @@
 //! O1: the socket thread (12.3.10). Accepts subscribers, fans messages out, and turns their
-//! `PointerOver` reports into the one claim the tracker needs (11.3.14: while any subscriber
-//! has the pointer, foreign outputs are silent), and their `SessionLock` reports into whether
-//! the session is locked (a locked session runs no gesture action).
+//! reports into the claims the tracker needs (see `mouse_gestures_core::socket`).
 //!
-//! The mouse gestures daemon is a system service, so the socket is open to every local account and the server
-//! decides whom to serve: only the person at the seat (`seat`), and of their programs only the
-//! shell (`shell`) is believed about the pointer and an unlocked session.
+//! The mouse gestures daemon is a system service, so the socket is open to every local account and
+//! the server decides whom to serve: only the person at the seat (`seat`), and of their programs
+//! only the shell (`shell`) is believed about the pointer and an unlocked session.
 //!
-//! The decisions are pure: `model` holds the subscribers and the events and effects, `step` (with
-//! `admit`, `packet`, `deliver` and `publish`) is the one transition, and `io` is the thread that
-//! polls, gathers the facts that need a syscall, feeds the events and carries out the effects.
+//! The decisions are pure and live in `mouse_gestures_core::socket`; `io` is the thread that
+//! polls, gathers the facts that need a syscall, feeds them in as events and carries out the
+//! effects.
 //!
 //! The reader thread hands messages over a bounded channel and wakes this thread with an
 //! eventfd, so the reader never blocks on a slow subscriber: a subscriber whose queue is full
@@ -17,22 +15,14 @@
 //! the message rather than stalling the reader. Subscribers are known by id, never by their
 //! position in the list, and their number is capped.
 
-mod admit;
-mod aggregate;
 mod conn;
-mod deliver;
 mod io;
 mod limits;
-mod model;
-mod packet;
-mod publish;
-mod seat;
 mod shell;
-mod step;
 
 use io::{Exit, Server};
 use limits::QUEUE_MAX;
-use mouse_gestures_proto::{DeviceInfo, HostAction, ToHost};
+use mouse_gestures_core::socket::{FromSocket, ToSocket};
 use rustix::event::{EventfdFlags, eventfd};
 use rustix::fd::OwnedFd;
 use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
@@ -45,30 +35,6 @@ use std::sync::mpsc::{self, Sender, SyncSender, TrySendError};
 
 /// The process exit status when the socket can no longer be served; systemd restarts the unit.
 const SOCKET_LOST_STATUS: i32 = 70;
-
-/// What the reader thread tells the socket thread.
-#[derive(Debug, Clone, PartialEq)]
-pub enum ToSocket {
-    /// A mouse was opened: remembered for every later `Hello`, and announced now.
-    Device(DeviceInfo),
-    /// The mouse went away (after the tracker's `DeviceGone`).
-    Gone,
-    /// A message for every admitting subscriber.
-    Msg(ToHost),
-    /// An action for the shell of the person at the seat, and for nobody else.
-    Run(HostAction),
-}
-
-/// What the socket thread tells the reader: the subscribers' joint state, when it changes.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum FromSocket {
-    /// The pointer is over a subscriber's surface, or not (11.3.14).
-    Pointer(bool),
-    /// A subscriber says the session is locked, or none does any more.
-    Session(bool),
-    /// The shell sent the person's settings (`None`: it sent none, or the person left the seat).
-    UserConfig(Option<String>),
-}
 
 /// The reader's end: a channel plus the eventfd that wakes the socket thread.
 #[derive(Debug, Clone)]

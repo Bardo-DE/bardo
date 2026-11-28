@@ -1,12 +1,12 @@
 use base_time::Mono;
-use input_broker_daemon::backend::fake::{FakeBackend, Fate};
-use input_broker_daemon::policy::AllowKinds;
-use input_broker_daemon::session::{Handled, Outgoing, Refused, Session};
-use input_broker_wire::codes::*;
-use input_broker_wire::limits::{
+use input_broker_core::limits::{
     EVENT_BURST, FLOOD_CUT_MS, MAX_CREATES_PER_CONNECTION, MAX_DENIED_EVENTS,
     MAX_DEVICES_PER_CONNECTION, MAX_HANDED_PER_CONNECTION,
 };
+use input_broker_core::policy::AllowKinds;
+use input_broker_core::session::{Handled, Outgoing, Refused, Session};
+use input_broker_daemon::backend::fake::{FakeBackend, Fate};
+use input_broker_wire::codes::*;
 use input_broker_wire::{
     Create, Delivery, DeviceId, Event, KEYMAP_DAEMON, Kind, Maker, PAD_DAEMON, PointerCaps, Reason,
     Reply, Request,

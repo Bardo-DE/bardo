@@ -10,10 +10,11 @@ publish.workspace = true
 
 [features]
 # The stand-in for the service, for the callers' tests; a shipped build never enables it.
-fake = []
+fake = ["dep:input-broker-core"]
 
 [dependencies]
 rustix = {workspace = true, features = ["event", "net", "std"]}
+input-broker-core = {optional = true, path = "../input-broker-core"}
 input-broker-wire = {path = "../input-broker-wire"}
 thiserror = { workspace = true }
 

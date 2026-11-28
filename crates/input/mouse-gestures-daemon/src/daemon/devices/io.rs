@@ -3,11 +3,11 @@
 
 use super::model::{Effect, Event, Life, Shape, Why};
 use super::step::{first, step};
-use crate::config::Config;
-use crate::keys::KeyCombo;
-use crate::outputs::pad::PadFrame;
-use crate::outputs::{Emitter, OutputError};
-use crate::time::Mono;
+use mouse_gestures_core::Config;
+use mouse_gestures_core::keys::KeyCombo;
+use mouse_gestures_core::outputs::pad::PadFrame;
+use mouse_gestures_core::outputs::{Emitter, OutputError};
+use mouse_gestures_core::time::Mono;
 
 /// Makes the emitter for a configuration (the uinput one in the daemon).
 pub type Factory = Box<dyn Fn(&[KeyCombo]) -> Result<Box<dyn Emitter>, OutputError>>;

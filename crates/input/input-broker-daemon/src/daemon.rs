@@ -4,19 +4,20 @@
 //! The loop itself reads nothing of a peer but the user the kernel names from the socket (NEW-FA-3):
 //! naming the rest can wait for ever on a program the peer controls, so it happens on the
 //! connection's own thread ([`crate::admit`]), and the loop only counts how many such threads each
-//! user has waiting ([`crate::pending`]) and closes a connection over its user's share at once.
+//! user has waiting ([`input_broker_core::pending`]) and closes a connection over its user's share at once.
 //! Slots are still counted after identification, so the reserve of the mouse gestures daemon and the key remap daemon is safe.
 
 use crate::admit::admit;
-use crate::backend::Backend;
-use crate::identity::{Authority, SeatSource};
-use crate::idle::Idle;
+use crate::identity::Authority;
 use crate::journal::{self, kv};
 use crate::link;
-use crate::pending::{Caps, Pending};
 use crate::serve::Context;
-use crate::slots::Slots;
 use base_time::Monotonic;
+use input_broker_core::backend::Backend;
+use input_broker_core::identity::SeatSource;
+use input_broker_core::idle::Idle;
+use input_broker_core::pending::{Caps, Pending};
+use input_broker_core::slots::Slots;
 use input_broker_wire::{Reason, Reply};
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::io::Errno;

@@ -12,7 +12,7 @@
 //! node is opened read-only and never grabbed.
 
 use super::sys::{self, AbsInfo, MtAxis};
-use crate::sensor::evdev::{AbsAxis, EvdevSpec};
+use mouse_gestures_core::sensor::evdev::{AbsAxis, EvdevSpec};
 use mouse_gestures_proto::DeviceInfo;
 use rustix::fd::OwnedFd;
 use rustix::fs::{Mode, OFlags};

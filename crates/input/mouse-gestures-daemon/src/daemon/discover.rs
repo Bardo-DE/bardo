@@ -3,7 +3,7 @@
 //! The uevent's `HID_ID` is parsed as `bus:vendor:product` and looked up field by field in
 //! `sensor::magic_mouse::KNOWN`.
 
-use crate::sensor::magic_mouse::{KnownDevice, known};
+use mouse_gestures_core::sensor::magic_mouse::{KnownDevice, known};
 use mouse_gestures_proto::DeviceInfo;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
@@ -73,7 +73,7 @@ pub fn find(sys: &Path) -> Option<Found> {
         Some(Found { node, info, device })
     });
     let rank = |f: &Found| {
-        crate::sensor::magic_mouse::KNOWN
+        mouse_gestures_core::sensor::magic_mouse::KNOWN
             .iter()
             .position(|k| *k == f.device)
     };

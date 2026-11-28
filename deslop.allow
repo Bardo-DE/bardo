@@ -122,7 +122,7 @@ module-cycle inference_daemon::engines,inference_daemon::pipeline,inference_daem
 module-cycle inference_router::attached,inference_router::local,inference_router::startup
 module-cycle inference_router::audio,inference_router::session
 module-cycle inference_router::pipeline,inference_router::router
-module-cycle input_broker_wire::ceiling::filter,input_broker_wire::ceiling::keys,input_broker_wire::ceiling::touchpad,input_broker_wire::ceiling::wheel
+module-cycle input_broker_core::ceiling::filter,input_broker_core::ceiling::keys,input_broker_core::ceiling::touchpad,input_broker_core::ceiling::wheel
 module-cycle key_remap_core::config::devices,key_remap_core::config::layer
 module-cycle key_remap_core::held::bare,key_remap_core::held::lift,key_remap_core::held::step
 module-cycle key_remap_core::remap::press,key_remap_core::remap::step
@@ -151,7 +151,7 @@ module-cycle model_catalog::check,model_catalog::parse
 module-cycle model_extract::mode,model_extract::session
 module-cycle model_http::client,model_http::exchange,model_http::head,model_http::target
 module-cycle model_openai_compat::codec,model_openai_compat::decode,model_openai_compat::embed,model_openai_compat::logprobs,model_openai_compat::models,model_openai_compat::provider,model_openai_compat::request,model_openai_compat::server
-module-cycle mouse_gestures_daemon::action,mouse_gestures_daemon::config,mouse_gestures_daemon::gestures,mouse_gestures_daemon::outputs,mouse_gestures_daemon::sensor
+module-cycle mouse_gestures_core::action,mouse_gestures_core::config,mouse_gestures_core::gestures,mouse_gestures_core::outputs,mouse_gestures_core::sensor
 module-cycle mouse_gestures_daemon::daemon::hidraw,mouse_gestures_daemon::daemon::source
 module-cycle permission_core::agent_app,permission_core::standing_match
 module-cycle permission_core::limit,permission_core::standing
@@ -840,10 +840,10 @@ field-leak model_catalog::file::EntryFile::locality
 field-leak model_catalog::file::EntryFile::serving
 field-leak model_extract::session::Machine::mode
 field-leak model_replay::wire::WireCassette::exchanges
-field-leak mouse_gestures_daemon::daemon::socket::model::Subscriber::claim
-field-leak mouse_gestures_daemon::daemon::socket::model::Subscriber::filter
-field-leak mouse_gestures_daemon::gestures::tap::Touchdown::centroid
-field-leak mouse_gestures_daemon::gestures::tap::Touchdown::since
+field-leak mouse_gestures_core::socket::model::Subscriber::claim
+field-leak mouse_gestures_core::socket::model::Subscriber::filter
+field-leak mouse_gestures_core::gestures::tap::Touchdown::centroid
+field-leak mouse_gestures_core::gestures::tap::Touchdown::since
 field-leak permission_core::floor::Floor::locked
 field-leak permission_core::limit::Limit::id
 field-leak permission_core::limit::Limit::key
@@ -1199,10 +1199,9 @@ wide-directory crates/inference/inference-daemon/src/
 wide-directory crates/inference/inference-daemon/tests/it/
 wide-directory crates/inference/inference-router/src/
 wide-directory crates/inference/inference-turns/src/
-wide-directory crates/input/input-broker-daemon/src/
 wide-directory crates/input/key-remap-core/src/
 wide-directory crates/input/key-remap-daemon/src/daemon/
-wide-directory crates/input/mouse-gestures-daemon/src/
+wide-directory crates/input/mouse-gestures-core/src/
 wide-directory crates/input/mouse-gestures-daemon/src/daemon/
 wide-directory crates/keymap/keymap/src/
 wide-directory crates/layer-shell/layer-shell-host/examples/

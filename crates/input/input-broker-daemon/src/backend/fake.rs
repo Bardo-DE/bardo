@@ -1,7 +1,7 @@
 //! A kernel that records. The tests of the service, and of anything built on it, use this and make
 //! no device.
 
-use super::{Backend, BackendError, Device};
+use input_broker_core::backend::{Backend, BackendError, Device};
 use input_broker_wire::{DeviceSpec, Event};
 use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
 use std::io;

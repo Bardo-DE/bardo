@@ -4,13 +4,13 @@
 //! owner of the emitter (`Devices`) through `OutputError`, which decides when to rebuild and
 //! when to stop: a lost frame here is counted and nothing more.
 
-use crate::keys::KeyCombo;
-use crate::outputs::events::{InputEvent, PadEncoder, key_events};
-use crate::outputs::pad::PadFrame;
-use crate::outputs::{Emitter, OutputError};
 use input_broker_client::{
     ClientError, Create, DeviceId, DeviceSource, Event, Made, Reason, Sent, Session,
 };
+use mouse_gestures_core::keys::KeyCombo;
+use mouse_gestures_core::outputs::events::{InputEvent, PadEncoder, key_events};
+use mouse_gestures_core::outputs::pad::PadFrame;
+use mouse_gestures_core::outputs::{Emitter, OutputError};
 
 #[cfg(test)]
 mod tests;

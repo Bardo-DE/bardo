@@ -1,8 +1,8 @@
 //! Why a mouse gestures daemon command stopped: each variant's text is the line the command prints.
 
-use crate::outputs::OutputError;
-use crate::recording::RecordingError;
-use crate::sensor::magic_mouse::Model;
+use mouse_gestures_core::outputs::OutputError;
+use mouse_gestures_core::recording::RecordingError;
+use mouse_gestures_core::sensor::magic_mouse::Model;
 use std::io;
 use std::path::PathBuf;
 use thiserror::Error;

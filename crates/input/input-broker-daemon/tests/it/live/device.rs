@@ -1,10 +1,11 @@
 //! The tests that make a real device. They need `/dev/uinput` and are the `live` suite
 //! (`cargo xtask live devices`), never run in the jail.
 
+use input_broker_core::backend::{Backend, Device};
+use input_broker_core::ceiling::plan;
 use input_broker_daemon::backend::real::UinputBackend;
-use input_broker_daemon::backend::{Backend, Device};
 use input_broker_wire::codes::{ABS_MT_SLOT, EV_ABS};
-use input_broker_wire::{Create, Event, plan};
+use input_broker_wire::{Create, Event};
 
 /// Whether an input device called `name` is registered with the kernel.
 fn registered(name: &str) -> bool {

@@ -2,7 +2,7 @@
 
 use base_time::{Mono, Monotonic};
 
-/// Time since a [`Monotonic`] clock was first read: the counter the wire crate's rate limiter
+/// Time since a [`Monotonic`] clock was first read: the counter the core's rate limiter
 /// and idle timer compare.
 #[derive(Debug, Clone)]
 pub struct Uptime<M> {

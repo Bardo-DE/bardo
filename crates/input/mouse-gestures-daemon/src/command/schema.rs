@@ -1,8 +1,8 @@
 //! `bardo-mouse-gestures --write-schema DIR`: writes the schema of `gestures.toml` for the Settings app.
 
-use crate::config::{SCHEMA_FILE_NAME, Schema};
 use crate::error::Error;
 use base_fs::NewFileMode;
+use mouse_gestures_core::config::{SCHEMA_FILE_NAME, Schema};
 use std::path::Path;
 
 /// Writes `mouse-gestures.settings.toml` into `dir`, creating it, by a temporary file and a rename

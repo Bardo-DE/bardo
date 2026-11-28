@@ -6,10 +6,11 @@ use caller_identity_core::{
     FileTrust, LOADER_VARIABLES, Pid, Prober, Proof, RoleName, Uid, Writer,
 };
 use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, TableFiles};
+use input_broker_core::identity::ActiveUid;
+use input_broker_core::policy::{ControlGroupError, authorise};
 use input_broker_daemon::identity::caller_identity_authority::CallerIdentityAuthority;
 use input_broker_daemon::identity::fake::FixedAuthority;
-use input_broker_daemon::identity::{ActiveUid, Authority, IdentifyError};
-use input_broker_daemon::policy::{ControlGroupError, authorise};
+use input_broker_daemon::identity::{Authority, IdentifyError};
 use input_broker_wire::Kind;
 use rustix::net::sockopt::socket_peercred;
 use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
@@ -273,7 +274,7 @@ fn mouse_gestures_is_served_only_as_its_proven_system_unit() {
             .identify(&socket())
             .expect("identified");
         // The test process stands for the mouse gestures daemon's dynamic user, whatever its real number is.
-        let caller = input_broker_daemon::identity::Caller {
+        let caller = input_broker_core::identity::Caller {
             uid: MOUSE_GESTURES_UID,
             ..caller
         };
@@ -297,7 +298,7 @@ fn a_hidden_image_is_only_the_cgroup_strength_and_the_policy_refuses_it() {
         Some((role("pad_daemon"), Proof::Cgroup))
     );
     // Even in the right place and as the right user, a caller whose image was not read gets nothing.
-    let caller = input_broker_daemon::identity::Caller {
+    let caller = input_broker_core::identity::Caller {
         uid: MOUSE_GESTURES_UID,
         ..caller
     };

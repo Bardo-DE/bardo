@@ -1,11 +1,11 @@
 //! The lifecycle of the virtual devices as data: where they are, what can happen to them and what
 //! each happening asks the shell around them to do.
 
-use crate::config::Config;
 use crate::daemon::discover::Backoff;
-use crate::keys::KeyCombo;
-use crate::outputs::OutputError;
-use crate::time::Mono;
+use mouse_gestures_core::Config;
+use mouse_gestures_core::keys::KeyCombo;
+use mouse_gestures_core::outputs::OutputError;
+use mouse_gestures_core::time::Mono;
 
 /// What the devices are made from; a change recreates them.
 #[derive(Debug, Clone, PartialEq, Eq)]

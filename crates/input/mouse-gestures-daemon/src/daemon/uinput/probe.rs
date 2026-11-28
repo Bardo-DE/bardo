@@ -1,8 +1,8 @@
 //! `mouse_gestures --check-uinput`: can this machine make the mouse gestures daemon's virtual devices?
 
 use super::emitter::UinputEmitter;
-use crate::outputs::OutputError;
 use input_broker_client::DeviceSource;
+use mouse_gestures_core::outputs::OutputError;
 
 /// Opens a session on `source` and makes the touchpad, then lets go of both: the same first
 /// steps the daemon takes, so a pass here means the daemon will get its devices.

@@ -1,15 +1,16 @@
 //! One connection from accept to close: identify the peer, then read datagrams and feed them to a
 //! [`Session`] until the peer leaves, is refused, or says something that does not parse.
 
-use crate::backend::Backend;
 use crate::clock::Uptime;
-use crate::identity::{Authority, Caller, SeatSource};
+use crate::identity::Authority;
 use crate::journal::{self, kv};
 use crate::link::{self, Inbox, Incoming};
-use crate::policy::CallerAdmission;
-use crate::session::{Handled, Outgoing, Refused, Session};
 use base_time::Monotonic;
-use input_broker_wire::limits::HANDSHAKE_TIMEOUT_MS;
+use input_broker_core::backend::Backend;
+use input_broker_core::identity::{Caller, SeatSource};
+use input_broker_core::limits::HANDSHAKE_TIMEOUT_MS;
+use input_broker_core::policy::CallerAdmission;
+use input_broker_core::session::{Handled, Outgoing, Refused, Session};
 use input_broker_wire::{Reason, Reply, decode_request};
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;

@@ -2,12 +2,12 @@
 //! and to uinput, measured on the daemon's own path (decode, stamp, step, encode) without the
 //! device or the kernel. The live figure needs the mouse (FINDINGS).
 
-use crate::config::Config;
-use crate::outputs::events::{PadEncoder, key_events};
-use crate::recording::{Record, RecordedSource};
-use crate::replay::{Timing, feed_from};
-use crate::stamp::StampClock;
-use crate::tracker::{Out, Tracker};
+use mouse_gestures_core::Config;
+use mouse_gestures_core::outputs::events::{PadEncoder, key_events};
+use mouse_gestures_core::recording::{Record, RecordedSource};
+use mouse_gestures_core::replay::{Timing, feed_from};
+use mouse_gestures_core::stamp::StampClock;
+use mouse_gestures_core::tracker::{Out, Tracker};
 use mouse_gestures_proto as protocol;
 use std::time::{Duration, Instant};
 

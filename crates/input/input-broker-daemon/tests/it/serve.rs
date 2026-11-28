@@ -5,10 +5,9 @@ use crate::support::{USER, context, key_remap, mouse_gestures};
 use input_broker_client::{
     ClientError, Connection, Create, DeviceId, Event, Made, Reason, Sent, Session,
 };
+use input_broker_core::identity::{ActiveUid, Caller, FixedSeat};
 use input_broker_daemon::backend::fake::Fate;
 use input_broker_daemon::identity::fake::FixedAuthority;
-use input_broker_daemon::identity::seat::FixedSeat;
-use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::serve::{Context, serve};
 use input_broker_wire::codes::{EV_REL, REL_WHEEL};
 use input_broker_wire::limits::MAX_DATAGRAM;

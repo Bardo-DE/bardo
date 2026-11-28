@@ -4,10 +4,9 @@
 //! `ConfigurationDirectory=`), else `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` for a tool run
 //! by a person (22-SETTINGS §2).
 
-use super::file::{Config, parse};
-use super::lenient::Warning;
 use base_fs::{ReadCap, read_text_capped};
 use base_xdg::Xdg;
+use mouse_gestures_core::config::{Config, Warning, parse};
 use std::path::{Path, PathBuf};
 
 /// The file name the Settings app writes.

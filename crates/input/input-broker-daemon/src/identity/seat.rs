@@ -1,23 +1,14 @@
-//! Who is logged in on the seat: the `ACTIVE_UID` line of logind's file, the same fact the key remap daemon reads.
+//! Who is logged in on the seat: logind's seat file, read each time. The `ACTIVE_UID` line is parsed by
+//! `input_broker_core::identity::parse_active_uid`, the same fact the key remap daemon reads.
 
 use base_fs::{ReadCap, read_text_capped};
-use caller_identity_core::Uid;
+use input_broker_core::identity::{ActiveUid, SeatSource, parse_active_uid};
 use std::path::PathBuf;
 
 /// Where logind records the seat's state.
 pub const SEAT_FILE: &str = "/run/systemd/seats/seat0";
 /// The most of the seat file that is read: it holds a few short lines.
 const MAX_SEAT: ReadCap = ReadCap::bytes(4096);
-
-/// The user of the active session, if there is one (there is none before anyone logs in).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ActiveUid(pub Option<Uid>);
-
-/// Where the active user comes from.
-pub trait SeatSource: Send + Sync + 'static {
-    /// The user of the active session now.
-    fn active_uid(&self) -> ActiveUid;
-}
 
 /// Reads logind's seat file each time it is asked: a login changes it.
 #[derive(Debug, Clone)]
@@ -44,25 +35,5 @@ impl SeatSource for SeatFile {
             Ok(text) => parse_active_uid(&text),
             Err(_) => ActiveUid(None),
         }
-    }
-}
-
-/// The `ACTIVE_UID=` line of a seat file; none when there is no active session.
-pub fn parse_active_uid(text: &str) -> ActiveUid {
-    ActiveUid(
-        text.lines()
-            .find_map(|line| line.strip_prefix("ACTIVE_UID="))
-            .and_then(|value| value.trim().parse().ok())
-            .map(Uid::new),
-    )
-}
-
-/// A seat a test sets by hand.
-#[derive(Debug, Clone, Copy)]
-pub struct FixedSeat(pub ActiveUid);
-
-impl SeatSource for FixedSeat {
-    fn active_uid(&self) -> ActiveUid {
-        self.0
     }
 }

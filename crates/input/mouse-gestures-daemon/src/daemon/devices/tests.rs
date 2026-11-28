@@ -4,14 +4,14 @@
 mod lifecycle;
 
 use super::{Devices, Factory};
-use crate::config::Config;
 use crate::daemon::uinput::UinputEmitter;
-use crate::keys::KeyCombo;
-use crate::outputs::pad::PadFrame;
-use crate::outputs::{Emitter, OutputError, RecordingEmitter};
-use crate::time::Mono;
 use input_broker_client::Reason;
 use input_broker_client::fake::{FakeSource, SendMode};
+use mouse_gestures_core::Config;
+use mouse_gestures_core::keys::KeyCombo;
+use mouse_gestures_core::outputs::pad::PadFrame;
+use mouse_gestures_core::outputs::{Emitter, OutputError, RecordingEmitter};
+use mouse_gestures_core::time::Mono;
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -44,7 +44,7 @@ fn waits_then_becomes_ready_and_rebuilds_on_a_shape_change() {
 fn land() -> PadFrame {
     PadFrame::Land {
         fingers: 2,
-        at: crate::outputs::pad::CENTRE,
+        at: mouse_gestures_core::outputs::pad::CENTRE,
         spacing: 400,
     }
 }
@@ -53,8 +53,8 @@ fn land() -> PadFrame {
 fn other_gestures() -> Config {
     let mut c = Config::default();
     c.gestures.gesture_action_map = c.gestures.gesture_action_map.with(
-        crate::action::Gesture::OneFingerSwipeLeft,
-        crate::action::Action::None,
+        mouse_gestures_core::action::Gesture::OneFingerSwipeLeft,
+        mouse_gestures_core::action::Action::None,
     );
     c
 }

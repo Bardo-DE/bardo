@@ -2,7 +2,7 @@
 //! also serves the evdev node, whose reads are runs of events.
 
 use super::source::Purpose;
-use crate::time::Mono;
+use mouse_gestures_core::time::Mono;
 use rustix::event::{PollFd, PollFlags, poll};
 use rustix::fd::OwnedFd;
 use rustix::fs::{Mode, OFlags};

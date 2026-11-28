@@ -4,13 +4,13 @@
 //! change there. Only the direct path (`direct.rs`) uses the capabilities; the service path
 //! sends just which device it wants.
 
-use crate::outputs::events::{
+use input_broker_client::Create;
+use mouse_gestures_core::outputs::events::{
     ABS_MT_POSITION_X, ABS_MT_POSITION_Y, ABS_MT_SLOT, ABS_MT_TRACKING_ID, ABS_X, ABS_Y, BTN_LEFT,
     BTN_TOOL_DOUBLETAP, BTN_TOOL_FINGER, BTN_TOOL_QUADTAP, BTN_TOOL_TRIPLETAP, BTN_TOUCH,
     PAD_SLOTS,
 };
-use crate::outputs::pad::{PAD_X_MAX, PAD_Y_MAX, UNITS_PER_MM};
-use input_broker_client::Create;
+use mouse_gestures_core::outputs::pad::{PAD_X_MAX, PAD_Y_MAX, UNITS_PER_MM};
 
 /// `INPUT_PROP_POINTER`: a touchpad, not a touchscreen.
 pub(super) const INPUT_PROP_POINTER: u16 = 0x00;

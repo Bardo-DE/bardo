@@ -1,10 +1,11 @@
 //! Carrying out a tracker's outputs: socket messages, virtual device frames, and the actions that
 //! are keys or are asked of the shell.
 
-use super::socket::{SocketHandle, ToSocket};
-use crate::action::plan;
-use crate::outputs::{Emitter, OutputError};
-use crate::tracker::Out;
+use super::socket::SocketHandle;
+use mouse_gestures_core::action::plan;
+use mouse_gestures_core::outputs::{Emitter, OutputError};
+use mouse_gestures_core::socket::ToSocket;
+use mouse_gestures_core::tracker::Out;
 
 /// Performs every output, in order. Device write failures are logged and dropped: a missed
 /// frame is better than a stalled reader. Returns whether any device write failed, which for

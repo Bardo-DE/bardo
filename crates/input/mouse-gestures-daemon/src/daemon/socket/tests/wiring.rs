@@ -3,7 +3,8 @@
 //! as pure steps in `step`, `packet` and `aggregate`.
 
 use super::support::{connect, me, recv, seat_file, send};
-use crate::daemon::socket::{FromSocket, Steering, ToSocket, bind, spawn};
+use crate::daemon::socket::{Steering, bind, spawn};
+use mouse_gestures_core::socket::{FromSocket, ToSocket};
 use mouse_gestures_proto::{
     DeviceInfo, Filter, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
 };

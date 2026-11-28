@@ -57,7 +57,8 @@ sensor's millimetres feel the same per millimetre.
 | `tracker` | `Tracker::step(self, &Report, now) -> (Self, Vec<Out>)`: all of the above composed (12.4) |
 | `action`, `keys` | the gesture -> action table and what an action asks of the shell (the same on every desktop) |
 | `mouse-gestures-proto` (crate) | the socket messages and their codec (12.3.10) |
-| `config` | `gestures.toml`, lenient per key, the watch |
+| `mouse-gestures-core` (crate) | every layer below `daemon` below, as pure values in and out, and the socket's decisions; the daemon crate holds only the effects |
+| `config` | `gestures.toml`, lenient per key (in the core); finding, reading and watching the file is the daemon's |
 | `outputs` | the `Emitter` seam, `RecordingEmitter`, the virtual touchpad session (`pad`: scroll pair and four-finger Spaces swipe, and the policy of what may be down), evdev event encoding |
 | `recording`, `replay` | the `mouse_gestures record` file (v1 hidraw, v2 any sensor) and the replay used by every acceptance test |
 | `daemon` | threads, socket, discovery and backoff, the sensor node (hidraw), devices, record, latency, the virtual-device emitter over the input service (and the direct fallback), `sys`: the evdev and uinput ioctls through `input-linux`'s safe handles, with the one hidraw ioctl in the `hidraw-ioctl` crate |

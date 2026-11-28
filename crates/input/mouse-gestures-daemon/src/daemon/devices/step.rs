@@ -2,7 +2,7 @@
 
 use super::model::{Effect, Event, Life, Why, spent};
 use crate::daemon::discover::Backoff;
-use crate::time::Mono;
+use mouse_gestures_core::time::Mono;
 use std::iter::once;
 
 pub(super) fn step(life: Life, event: Event) -> (Life, Vec<Effect>) {

@@ -8451,9 +8451,21 @@ dependencies = [
 name = "input-broker-client"
 version = "0.1.0"
 dependencies = [
+ "input-broker-core",
  "input-broker-wire",
  "rustix 1.1.6",
  "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "input-broker-core"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "caller-identity-core",
+ "input-broker-wire",
+ "key-types",
  "thiserror 2.0.21",
 ]
 
@@ -8468,6 +8480,7 @@ dependencies = [
  "caller-identity-core",
  "caller-identity-linux",
  "input-broker-client",
+ "input-broker-core",
  "input-broker-wire",
  "input-linux",
  "libc",
@@ -8482,9 +8495,7 @@ dependencies = [
 name = "input-broker-wire"
 version = "0.1.0"
 dependencies = [
- "base-time",
  "caller-identity-core",
- "key-types",
  "thiserror 2.0.21",
 ]
 
@@ -10474,6 +10485,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "mouse-gestures-core"
+version = "0.1.0"
+dependencies = [
+ "input-broker-core",
+ "key-types",
+ "mouse-gestures-proto",
+ "seat-guard",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
 name = "mouse-gestures-daemon"
 version = "0.1.0"
 dependencies = [
@@ -10484,18 +10509,14 @@ dependencies = [
  "caller-roles",
  "hidraw-ioctl",
  "input-broker-client",
- "input-broker-wire",
  "input-linux",
- "key-types",
+ "mouse-gestures-core",
  "mouse-gestures-proto",
  "notify",
  "rustix 1.1.6",
  "seat-guard",
- "serde",
- "serde_json",
  "settings-store-fs",
  "thiserror 2.0.21",
- "toml",
 ]
 
 [[package]]

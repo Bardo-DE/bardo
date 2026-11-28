@@ -9,10 +9,11 @@
 //! process itself ([`caller_identity_linux::unit_facts`]). A listed program whose image checks out but whose unit
 //! does not stays at `Proof::Exe`, and the policy refuses it.
 
-use super::{Authority, Caller, Credential, IdentifyError};
+use super::{Authority, IdentifyError};
 use crate::journal::{self, kv};
 use caller_identity_core::{Exe, Facts, Prober, ProcFs, Standing, Table, judge};
 use caller_identity_linux::{Pinned, RealProc, TableFiles, unit_facts};
+use input_broker_core::identity::{Caller, Credential};
 use std::os::fd::OwnedFd;
 
 /// Judges callers against the table on disk, through a view of `/proc` and the file system.

@@ -1,30 +1,25 @@
-//! The input broker wire: what a client may ask for, what the service answers, and the fixed list of
-//! devices it will make with the per-event ceilings on each.
+//! The input broker wire: what a client may ask for and what the service answers, as values and as
+//! datagrams, plus the fixed list of device kinds.
 //!
 //! This crate is pure. It reads no file, clock or socket and links nothing but `thiserror` and the pure caller-identity vocabulary (the role names of the two daemons it names); the
-//! daemon and the client both build on it, so a ceiling is written down once. A message is one
-//! `SOCK_SEQPACKET` datagram: [`codec`] turns it into a [`message::Request`] or a
-//! [`message::Reply`] and back, and [`ceiling::plan`] turns a [`message::Create`] into the device
-//! the service would make plus the [`ceiling::Filter`] every event of a proxied device passes.
+//! daemon and the client both build on it. A message is one `SOCK_SEQPACKET` datagram: [`codec`]
+//! turns it into a [`message::Request`] or a [`message::Reply`] and back. What the service does
+//! with a request (the per-event ceilings, the rate limit, the connection caps) is policy and
+//! lives in `input-broker-core`.
 #![forbid(unsafe_code)]
 
-pub mod ceiling;
 pub mod codec;
 pub mod codes;
 pub mod event;
-pub mod keytable;
 pub mod kind;
-pub mod limiter;
 pub mod limits;
 pub mod maker;
 pub mod message;
 pub mod spec;
 
-pub use ceiling::{BadCapsError, Denial, Filter, Filtered, Plan, Route, plan};
 pub use codec::{WireError, decode_reply, decode_request, encode_reply, encode_request};
 pub use event::Event;
 pub use kind::{Delivery, Kind};
-pub use limiter::{Admit, Limiter, millis_since};
 pub use maker::{KEYMAP_DAEMON, Maker, PAD_DAEMON};
 pub use message::{Create, DeviceId, PointerCaps, Reason, Reply, Request};
 pub use spec::{AbsAxis, DeviceSpec};

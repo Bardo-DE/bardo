@@ -2,11 +2,10 @@
 
 use base_time::ManualMonotonic;
 use caller_identity_core::{CgroupPath, ExePath, Pid, Pin, Proof, RoleName, Uid};
+use input_broker_core::identity::{ActiveUid, Caller, Credential, FixedSeat};
 use input_broker_daemon::backend::fake::FakeBackend;
 use input_broker_daemon::clock::Uptime;
 use input_broker_daemon::identity::fake::FixedAuthority;
-use input_broker_daemon::identity::seat::FixedSeat;
-use input_broker_daemon::identity::{ActiveUid, Caller, Credential};
 use input_broker_daemon::serve::Context;
 use std::sync::Arc;
 

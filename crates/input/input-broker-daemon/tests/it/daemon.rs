@@ -4,17 +4,17 @@ use crate::support::{USER, listed, mouse_gestures};
 use base_clock::SystemMonotonic;
 use caller_identity_core::Uid;
 use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
+use input_broker_core::identity::{ActiveUid, Caller, FixedSeat};
+use input_broker_core::limits::{
+    MAX_CONNECTIONS_PER_USER, MAX_PENDING_PER_USER, MAX_RESERVED_PER_CLIENT,
+};
+use input_broker_core::pending::Caps;
 use input_broker_daemon::backend::fake::FakeBackend;
 use input_broker_daemon::clock::Uptime;
 use input_broker_daemon::daemon::{Daemon, LoopConfig};
 use input_broker_daemon::identity::fake::FixedAuthority;
-use input_broker_daemon::identity::seat::FixedSeat;
-use input_broker_daemon::identity::{ActiveUid, Authority, Caller, IdentifyError};
-use input_broker_daemon::pending::Caps;
+use input_broker_daemon::identity::{Authority, IdentifyError};
 use input_broker_daemon::serve::Context;
-use input_broker_wire::limits::{
-    MAX_CONNECTIONS_PER_USER, MAX_PENDING_PER_USER, MAX_RESERVED_PER_CLIENT,
-};
 use rustix::net::{
     AddressFamily, SocketAddrUnix, SocketFlags, SocketType, bind, listen, socket_with,
 };

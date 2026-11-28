@@ -1,9 +1,9 @@
 //! The emitter against the fake service: nothing here opens a socket or a device.
 
 use super::*;
-use crate::keys::Key;
-use crate::outputs::pad::CENTRE;
 use input_broker_client::fake::{FakeSource, OpenMode, SendMode};
+use mouse_gestures_core::keys::Key;
+use mouse_gestures_core::outputs::pad::CENTRE;
 
 const LAND: PadFrame = PadFrame::Land {
     fingers: 2,

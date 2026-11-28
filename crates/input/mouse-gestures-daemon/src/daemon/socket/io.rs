@@ -6,8 +6,9 @@
 
 use super::conn::{Conn, Read};
 use super::limits::{ACCEPTS_PER_PASS, PACKETS_PER_PASS, SEAT_RECHECK};
-use super::model::{ClientId, SocketEffect, SocketEvent, Subscribers};
-use super::{FromSocket, ToSocket};
+use mouse_gestures_core::socket::{
+    ClientId, FromSocket, SocketEffect, SocketEvent, Subscribers, ToSocket,
+};
 use mouse_gestures_proto as protocol;
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::fd::OwnedFd;
@@ -154,8 +155,12 @@ impl Server {
             match accepted {
                 Ok(fd) => self.admit(fd),
                 Err(errno) => {
-                    self.feed(SocketEvent::AcceptFailed { errno });
-                    if accept_failure(errno) != AcceptFailure::Retry {
+                    let failure = accept_failure(errno);
+                    self.feed(SocketEvent::AcceptFailed {
+                        failure,
+                        why: errno.to_string(),
+                    });
+                    if failure != AcceptFailure::Retry {
                         return;
                     }
                 }

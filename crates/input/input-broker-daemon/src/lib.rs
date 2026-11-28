@@ -6,11 +6,13 @@
 //! its peer, so a peer that stalls the identification stalls only itself. A caller is
 //! identified by the kernel (the process behind the socket, held by a pidfd), judged against the
 //! root-owned table of desktop programs, and then may ask for exactly the device kinds of its own
-//! program. The mouse gestures daemon's devices are proxied: every event passes the ceiling in `input-broker-wire`.
+//! program. The mouse gestures daemon's devices are proxied: every event passes the ceiling in `input-broker-core`.
 //! The key remap daemon's are made to a fixed shape and handed over as descriptors.
 //!
-//! The seams are traits with fakes: [`backend::Backend`] (the kernel), [`identity::Authority`] (who
-//! is calling), [`identity::SeatSource`] (who is logged in) and [`clock::Uptime`]. The tests drive
+//! The decisions (policy, ceilings, one connection's state, the slots) are `input-broker-core`; this
+//! crate holds the sockets, threads and the kernel. The seams are traits with fakes:
+//! `input_broker_core::backend::Backend` (the kernel), [`identity::Authority`] (who is calling),
+//! `input_broker_core::identity::SeatSource` (who is logged in) and [`clock::Uptime`]. The tests drive
 //! the whole service over a socket pair with the fakes and touch no device.
 #![forbid(unsafe_code)]
 
@@ -20,15 +22,9 @@ pub mod backend;
 pub mod clock;
 pub mod daemon;
 pub mod identity;
-pub mod idle;
 pub mod journal;
 pub mod link;
-pub mod pending;
-pub mod policy;
 pub mod serve;
-pub mod session;
-pub mod slots;
-mod tally;
 
 use backend::real::UinputBackend;
 use base_clock::SystemMonotonic;

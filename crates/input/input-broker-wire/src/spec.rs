@@ -1,6 +1,6 @@
 //! The device the service would make: every number the kernel is told.
 //!
-//! Built only by [`crate::ceiling::plan`], from constants of the kind and the client's request cut
+//! Built only by `input_broker_core::ceiling::plan`, from constants of the kind and the client's request cut
 //! to the ceiling; a client's name, ids or axis ranges never reach the kernel except through a
 //! pointer's label.
 

@@ -20,7 +20,8 @@ not by anything the caller says. A kind of device is only made for the program i
 
 | Crate | What |
 |---|---|
-| `input-broker-wire` | Pure. The datagrams, their codec, the fixed list of device kinds and the per-event ceilings. |
+| `input-broker-wire` | Pure. The datagrams, their codec and the fixed list of device kinds. |
+| `input-broker-core` | Pure. What the service decides: the per-event ceilings, who may have which device, one connection's state, the connection caps, the rate limit. |
 | `input-broker-client` | What the mouse gestures daemon and the key remap daemon link. Sync and small: connect, ask for a device, send events, get a descriptor. A `DeviceSource` trait with the real service and, under feature `fake`, a stand-in. Re-exports the wire types callers name. |
 | `input_broker` | The root service: socket activation, caller identity, the device life cycle, exit after 60 s idle. |
 

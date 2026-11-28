@@ -1,0 +1,28 @@
+[package]
+name = "mouse-gestures-core"
+description = "The Magic Mouse gesture daemon without its devices: the report decoders, scroll feel, gestures, tracker, settings and the socket's decisions, all as values in and values out"
+publish.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[dependencies]
+mouse-gestures-proto = { path = "../mouse-gestures-proto" }
+key-types = {path = "../../keymap/key-types"}
+seat-guard = {path = "../../identity/seat-guard"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+
+[dev-dependencies]
+input-broker-core = {path = "../input-broker-core"}
+
+[lints]
+workspace = true

@@ -1,0 +1,99 @@
+//! The mouse gestures daemon's keyboard: only keys of the name table, never auto-repeat, and no typing. A letter,
+//! digit, Enter, Space, Backspace, Delete or Escape goes down only while control, alt or super is
+//! held, so a compromised the mouse gestures daemon can press shortcuts but not write text. That is a large step
+//! down from arbitrary typing, not a proof of safety (`Ctrl+M` is Enter in a terminal): the gate
+//! is the caller's identity.
+
+use super::filter::{Denial, Filter};
+use super::{BadCapsError, Plan, Route};
+use crate::keytable::{KeyClass, class_of};
+use crate::limits::MAX_KEYS_DOWN;
+use input_broker_wire::DeviceSpec;
+use input_broker_wire::Event;
+use input_broker_wire::Maker;
+use input_broker_wire::codes::{EV_KEY, EV_SYN, SYN_REPORT};
+use input_broker_wire::limits::MAX_KEY_CODES;
+use key_types::KeyCode;
+
+/// The modifiers that turn a key press into a shortcut. Shift alone does not.
+const CHORD_MODIFIERS: [u16; 3] = [
+    KeyCode::LEFTCTRL.code(),
+    KeyCode::LEFTALT.code(),
+    KeyCode::LEFTMETA.code(),
+];
+
+pub(super) fn plan(maker: Maker, requested: &[u16]) -> Result<Plan, BadCapsError> {
+    if requested.is_empty() {
+        return Err(BadCapsError::NoKeys);
+    }
+    if requested.len() > MAX_KEY_CODES {
+        return Err(BadCapsError::TooManyKeys);
+    }
+    if let Some(&bad) = requested.iter().find(|&&c| class_of(c).is_none()) {
+        return Err(BadCapsError::UnknownKey(bad));
+    }
+    let mut keys = requested.to_vec();
+    keys.sort_unstable();
+    keys.dedup();
+    Ok(Plan {
+        spec: DeviceSpec {
+            name: "mouse-gestures keys".to_owned(),
+            maker,
+            vendor: 0x0001,
+            product: 0x0003,
+            keys: keys.clone(),
+            rels: Vec::new(),
+            abs: Vec::new(),
+            props: Vec::new(),
+            leds: Vec::new(),
+        },
+        route: Route::Proxied(Filter::Keys(KeysState {
+            allowed: keys,
+            down: Vec::new(),
+        })),
+    })
+}
+
+/// The keys the device registered and the keys the service believes are down.
+#[derive(Debug, Clone)]
+pub struct KeysState {
+    allowed: Vec<u16>,
+    down: Vec<u16>,
+}
+
+impl KeysState {
+    fn chord_held(&self) -> bool {
+        self.down.iter().any(|c| CHORD_MODIFIERS.contains(c))
+    }
+
+    pub(super) fn check(&mut self, event: Event) -> Result<Event, Denial> {
+        match (event.kind, event.code) {
+            (EV_SYN, SYN_REPORT) if event.value == 0 => Ok(event),
+            (EV_KEY, code) if self.allowed.contains(&code) => match event.value {
+                0 => {
+                    self.down.retain(|&d| d != code);
+                    Ok(event)
+                }
+                1 => self.press(event),
+                _ => Err(Denial::BadValue),
+            },
+            _ => Err(Denial::NotAllowed),
+        }
+    }
+
+    fn press(&mut self, event: Event) -> Result<Event, Denial> {
+        let code = event.code;
+        if self.down.contains(&code) {
+            return Ok(event);
+        }
+        let class = class_of(code);
+        if class == Some(KeyClass::Chorded) && !self.chord_held() {
+            return Err(Denial::NeedsChord);
+        }
+        if self.down.len() >= MAX_KEYS_DOWN {
+            return Err(Denial::TooManyKeys);
+        }
+        self.down.push(code);
+        Ok(event)
+    }
+}

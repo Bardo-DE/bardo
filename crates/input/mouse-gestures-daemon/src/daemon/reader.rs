@@ -5,14 +5,16 @@ use super::devices::Devices;
 use super::discover::Backoff;
 use super::dispatch::dispatch;
 use super::hidraw;
-use super::socket::{FromSocket, SocketHandle, ToSocket};
+use super::socket::SocketHandle;
 use super::source::{self, Opened, Purpose};
-use crate::config::{self, Loaded};
-use crate::recording::Record;
-use crate::replay::{Timing, feed_from};
-use crate::stamp::StampClock;
-use crate::time::Mono;
-use crate::tracker::{Out, Tracker};
+use crate::config::Loaded;
+use mouse_gestures_core::config::layered;
+use mouse_gestures_core::recording::Record;
+use mouse_gestures_core::replay::{Timing, feed_from};
+use mouse_gestures_core::socket::{FromSocket, ToSocket};
+use mouse_gestures_core::stamp::StampClock;
+use mouse_gestures_core::time::Mono;
+use mouse_gestures_core::tracker::{Out, Tracker};
 use std::sync::mpsc::Receiver;
 use std::time::Duration;
 
@@ -134,7 +136,7 @@ impl Reader {
 
     /// The settings in force: the machine's file with the person's laid over it.
     fn with_layers(mut self, now: Mono) -> Self {
-        let (config, warnings) = config::layered(&self.system, self.user.as_deref());
+        let (config, warnings) = layered(&self.system, self.user.as_deref());
         for w in &warnings {
             eprintln!("bardo-mouse-gestures: config: {w}");
         }

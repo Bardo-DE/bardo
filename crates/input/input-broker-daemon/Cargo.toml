@@ -30,6 +30,7 @@ base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }
 base-clock = { path = "../../base/base-clock" }
 rustix = {workspace = true, features = ["event", "fs", "net", "std"]}
+input-broker-core = {path = "../input-broker-core"}
 input-broker-wire = {path = "../input-broker-wire"}
 thiserror = { workspace = true }
 input-linux = { workspace = true }

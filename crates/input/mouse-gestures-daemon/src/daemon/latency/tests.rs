@@ -2,12 +2,12 @@
 //! `cargo test --release -p mouse-gestures-daemon --lib latency -- --ignored --nocapture`.
 
 use super::measure;
-use crate::config::Config;
-use crate::recording::{Record, RecordedSource};
-use crate::sensor::magic_mouse::encode::encode;
-use crate::sensor::magic_mouse::report::{Buttons, Motion, Report, Stamp};
-use crate::time::Mono;
-use crate::touch::{Point, RawTouch, TouchId, TouchState};
+use mouse_gestures_core::Config;
+use mouse_gestures_core::recording::{Record, RecordedSource};
+use mouse_gestures_core::sensor::magic_mouse::encode::encode;
+use mouse_gestures_core::sensor::magic_mouse::report::{Buttons, Motion, Report, Stamp};
+use mouse_gestures_core::time::Mono;
+use mouse_gestures_core::touch::{Point, RawTouch, TouchId, TouchState};
 
 /// A firm, finger-sized contact at `(x, y)` in the kernel frame.
 fn finger(id: u8, x: i32, y: i32) -> RawTouch {
