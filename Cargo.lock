@@ -13186,9 +13186,11 @@ dependencies = [
  "base-url",
  "http-core",
  "http-relay",
+ "replica-http",
  "serde",
  "serde_json",
  "sync-core",
+ "sync-core-fake",
  "tokio",
 ]
 
@@ -13206,11 +13208,22 @@ dependencies = [
  "hex",
  "http-core",
  "http-relay",
+ "replica-http",
  "serde",
  "serde_json",
  "sync-core",
+ "sync-core-fake",
  "sync-fake-graph",
  "tokio",
+]
+
+[[package]]
+name = "replica-http"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "http-core",
+ "sync-core",
 ]
 
 [[package]]
@@ -13226,8 +13239,10 @@ dependencies = [
  "base64 0.22.1",
  "http-core",
  "http-relay",
+ "replica-http",
  "roxmltree 0.21.1",
  "sync-core",
+ "sync-core-fake",
  "tokio",
  "tracing",
 ]
@@ -15834,14 +15849,21 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "base-ids",
- "base-testkit",
  "base-time",
  "base-url",
- "http-core",
  "serde",
  "serde_json",
- "sync-core",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "sync-core-fake"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "base-ids",
+ "base-time",
+ "sync-core",
  "tokio",
 ]
 
@@ -15889,9 +15911,11 @@ dependencies = [
  "settings-types",
  "sync-bus",
  "sync-core",
+ "sync-core-fake",
  "sync-daemon",
  "sync-driver",
  "sync-engine",
+ "sync-engine-fake",
  "sync-fake-graph",
  "sync-fakes",
  "sync-journal-sqlite",
@@ -15920,7 +15944,9 @@ dependencies = [
  "base-time",
  "caller-role-types",
  "sync-core",
+ "sync-core-fake",
  "sync-engine",
+ "sync-engine-fake",
  "sync-journal-sqlite",
  "sync-xdg",
  "tempfile",
@@ -15939,11 +15965,21 @@ dependencies = [
  "hex",
  "sha2 0.10.9",
  "sync-core",
- "sync-engine",
+ "sync-core-fake",
+ "sync-engine-fake",
  "sync-journal-sqlite",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
+]
+
+[[package]]
+name = "sync-engine-fake"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "sync-core",
+ "sync-engine",
 ]
 
 [[package]]
@@ -16016,8 +16052,10 @@ dependencies = [
  "serde_json",
  "sha2 0.10.9",
  "sync-core",
+ "sync-core-fake",
  "sync-driver",
  "sync-engine",
+ "sync-engine-fake",
  "sync-journal-sqlite",
  "sync-relay",
  "sync-xdg",
@@ -16042,6 +16080,7 @@ dependencies = [
  "http-relay",
  "jiff",
  "nanohtml2text",
+ "replica-http",
  "replica-webdav",
  "serde",
  "serde_json",
@@ -16068,6 +16107,7 @@ dependencies = [
  "hex",
  "sha2 0.10.9",
  "sync-core",
+ "sync-core-fake",
  "sync-driver",
  "sync-engine",
  "sync-journal-sqlite",
