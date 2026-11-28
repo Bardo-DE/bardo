@@ -5,7 +5,7 @@
 use crate::connect::Connect;
 use crate::fault::RelayFault;
 use account_core::Tls;
-use account_core::stream::ByteStream;
+use base_stream::ByteStream;
 use base_url::Origin;
 use rustls_pki_types::{CertificateDer, ServerName};
 use std::io;

@@ -14,6 +14,7 @@
 //! [`NAMESPACE`]. Sync's sign-ins belong to syncd.
 
 use crate::paths::{HONOURS_PROC_ROOT, HONOURS_SYSTEM_CALLERS, Paths};
+use crate::provider_files::read_provider_dirs;
 use crate::{FileAudit, Options, serve_with};
 use account_callers::choose_proc_root;
 use account_callers::load_callers;
@@ -154,7 +155,7 @@ impl Families {
 /// (identities and Tailscale), the AI services and the assistants. The local runtimes have no
 /// family and are reported by the probe.
 pub(crate) fn families_of(paths: &Paths, clock: Arc<dyn Clock>) -> Families {
-    let loaded = load_specs(&paths.provider_layers());
+    let loaded = load_specs(read_provider_dirs(&paths.provider_layers()));
     for (file, why) in &loaded.skipped {
         eprintln!("accountd: skipped provider file {}: {why}", file.display());
     }

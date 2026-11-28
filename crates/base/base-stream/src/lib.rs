@@ -1,7 +1,7 @@
 //! Ordered async bytes, without a runtime.
 //!
-//! This is the seam an authenticated relay reads and writes (`account-proxy`), and an in-memory
-//! pair of ends for where there is no socketpair (an app hosting the accounts service in process, Windows).
+//! [`ByteStream`] is the seam a relay reads and writes, and [`duplex`] makes an in-memory pair of
+//! ends for where there is no socketpair (an app hosting a service in process, Windows).
 //! Nothing here opens a socket or spawns a task; a host that has a runtime implements
 //! [`ByteStream`] over its own streams.
 

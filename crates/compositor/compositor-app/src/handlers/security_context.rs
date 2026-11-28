@@ -5,7 +5,8 @@
 use crate::clients::{self, Room, Vetting, accept, insert_client};
 use crate::core_loop;
 use crate::state::State;
-use account_core::{CgroupPath, PeerFacts, PeerIdentity, SandboxFacts, identity_of};
+use account_core::{PeerFacts, PeerIdentity, SandboxFacts, identity_of};
+use caller_identity_core::CgroupPath;
 use compositor_core::policy::ConnectionRole;
 use compositor_ipc::dbus::peer::Alive;
 use compositor_wayland::ClientState;

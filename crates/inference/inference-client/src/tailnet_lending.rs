@@ -252,8 +252,8 @@ pub use session::SessionUnits;
 #[cfg(feature = "dbus")]
 mod session {
     use super::{UnitError, UnitManager};
-    use account_callers::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
     use account_dbus::{BusConnection, BusStream};
+    use caller_identity_dbus::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
     use std::pin::Pin;
     use std::time::Duration;
     use zbus::zvariant::OwnedObjectPath;

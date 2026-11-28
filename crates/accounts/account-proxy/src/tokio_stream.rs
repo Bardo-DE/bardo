@@ -1,7 +1,7 @@
 //! `ByteStream` over a tokio stream (feature `io`): a Unix socket, a TCP stream, a TLS stream,
 //! tokio's own duplex.
 
-use account_core::stream::ByteStream;
+use base_stream::ByteStream;
 use std::io;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 

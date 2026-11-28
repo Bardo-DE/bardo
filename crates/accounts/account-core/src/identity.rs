@@ -6,7 +6,7 @@
 use crate::app_id::{AppId, AppName, Isolation};
 use crate::error::CoreError;
 use crate::scope::{FLATPAK_LAUNCHER, ScopeName};
-pub use caller_identity_core::CgroupPath;
+use caller_identity_core::CgroupPath;
 use serde::{Deserialize, Serialize};
 
 /// What the peer's sandbox says about it.

@@ -9,7 +9,6 @@ use account_client::{
 use account_core::RelayPlan;
 use account_core::consent::{Availability, Grant, Usage};
 use account_core::store::{NoStore, Persisted, RegistryStore, StoreError};
-use account_core::stream::duplex;
 use account_core::{
     AccountId, AppId, Candidate, DataClass, EndpointUrl, GrantId, ProviderHint, ProviderId,
 };
@@ -24,6 +23,7 @@ use account_sheet::host::Sheets;
 use account_sheet::{EditServers, EditedServers};
 use account_wire::{AccountsReply, ParentWindow, Refusal};
 use base_clock::SystemClock;
+use base_stream::duplex;
 use base_time::Clock;
 use std::sync::Arc;
 

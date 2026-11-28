@@ -42,6 +42,7 @@ compositor-privacy = {path = "../compositor-privacy"}
 desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["server"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 account-core = {path = "../../accounts/account-core"}
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }

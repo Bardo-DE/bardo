@@ -7,7 +7,7 @@
 //! daemon that hosts its own `AccountService` (syncd) hands it to `Hosted::with_relays`.
 
 use account_core::RelayPlan;
-use account_core::stream::DuplexEnd;
+use base_stream::DuplexEnd;
 
 /// Runs the relay for a plan the service checked.
 pub trait RelayHost: Send + Sync {
@@ -35,8 +35,8 @@ pub use account_relays::AccountRelays;
 mod account_relays {
     use super::RelayHost;
     use account_core::RelayPlan;
-    use account_core::stream::DuplexEnd;
     use account_proxy::{RustlsConnect, relay};
+    use base_stream::DuplexEnd;
     use std::sync::Arc;
     use tokio::sync::OnceCell;
 

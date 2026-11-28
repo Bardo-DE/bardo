@@ -28,6 +28,7 @@ toml = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 
 [lints]
 workspace = true

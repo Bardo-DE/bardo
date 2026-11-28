@@ -4,7 +4,7 @@
 
 use crate::fault::RelayFault;
 use account_core::Tls;
-use account_core::stream::ByteStream;
+use base_stream::ByteStream;
 use base_url::Origin;
 
 /// Opens connections to an endpoint's origin.

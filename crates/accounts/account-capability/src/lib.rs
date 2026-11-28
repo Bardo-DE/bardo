@@ -8,8 +8,8 @@ mod ai;
 mod ai_props;
 mod computer_use;
 mod effective;
-#[cfg(any(test, feature = "testing"))]
-pub mod fixtures;
+#[cfg(test)]
+mod fixtures;
 mod kinds;
 mod mail;
 mod model_id;

@@ -1,6 +1,7 @@
 //! The provider files a daemon serves, and the family that serves each.
 //!
-//! Files are read from the directories in order, a later directory's file replacing an earlier one's of the same
+//! The daemon reads the files of its directories (this crate does no file I/O) and hands them
+//! over in order, a later directory's file replacing an earlier one's of the same
 //! id (the user's over the system's); a file that does not parse is skipped and named, never
 //! fatal. The person's own file may not change where a shipped provider signs in or which
 //! servers it reaches ([`Layer::Person`]). A provider whose sign-in no built family serves (a
@@ -79,21 +80,31 @@ pub enum Layer {
     Named,
 }
 
-/// The provider files of `dirs`, later directories winning; a missing directory is empty.
+/// One provider file as the daemon read it: where it was, and its text or why it could not be read.
+#[derive(Debug)]
+pub struct ProviderFile {
+    /// The file's path (its stem is the provider's id).
+    pub path: PathBuf,
+    /// What reading it gave.
+    pub text: Result<String, std::io::Error>,
+}
+
+/// The files of one provider directory, in file-name order, with whose directory it is.
+#[derive(Debug)]
+pub struct ProviderDir {
+    /// Whose the directory is.
+    pub layer: Layer,
+    /// Its `.toml` files; none when the directory is missing.
+    pub files: Vec<ProviderFile>,
+}
+
+/// The providers in `dirs`, later directories winning.
 #[must_use]
-pub fn load_specs(dirs: &[(Layer, PathBuf)]) -> Loaded {
+pub fn load_specs(dirs: Vec<ProviderDir>) -> Loaded {
     let mut out = Loaded::default();
-    for (layer, dir) in dirs {
-        let mut files: Vec<PathBuf> = std::fs::read_dir(dir).map_or_default(|entries| {
-            entries
-                .filter_map(Result::ok)
-                .map(|e| e.path())
-                .filter(|p| p.extension().is_some_and(|e| e == "toml"))
-                .collect()
-        });
-        files.sort();
-        for file in files {
-            let checked = read(&file).and_then(|spec| match layer {
+    for ProviderDir { layer, files } in dirs {
+        for ProviderFile { path, text } in files {
+            let checked = read(&path, text).and_then(|spec| match layer {
                 Layer::Person => keeps_shipped_trust(&out.specs, spec),
                 Layer::Shipped | Layer::Named => Ok(spec),
             });
@@ -102,7 +113,7 @@ pub fn load_specs(dirs: &[(Layer, PathBuf)]) -> Loaded {
                     out.specs.retain(|s| s.id != spec.id);
                     out.specs.push(spec);
                 }
-                Err(why) => out.skipped.push((file, why)),
+                Err(why) => out.skipped.push((path, why)),
             }
         }
     }
@@ -176,9 +187,8 @@ fn widened(shipped: &ProviderSpec, file: &ProviderSpec) -> Option<&'static str> 
     None
 }
 
-fn read(file: &Path) -> Result<ProviderSpec, SkipError> {
-    let text = std::fs::read_to_string(file)?;
-    let spec = parse_provider(&text)?;
+fn read(file: &Path, text: Result<String, std::io::Error>) -> Result<ProviderSpec, SkipError> {
+    let spec = parse_provider(&text?)?;
     let stem = file
         .file_stem()
         .and_then(|s| s.to_str())
@@ -347,14 +357,43 @@ pub fn local_runtimes(unserved: &[ProviderSpec]) -> Vec<ProviderSpec> {
 mod tests {
     use super::*;
     use account_provider::Provider;
-    use base_testkit::Scratch;
-
-    fn scratch(name: &str) -> Scratch {
-        Scratch::new(&format!("families-set-{name}"))
-    }
 
     fn shipped() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../providers")
+    }
+
+    /// A provider file named `name` holding `text`.
+    fn file(name: &str, text: impl Into<String>) -> ProviderFile {
+        ProviderFile {
+            path: PathBuf::from(format!("/providers/{name}")),
+            text: Ok(text.into()),
+        }
+    }
+
+    fn dir(layer: Layer, files: Vec<ProviderFile>) -> ProviderDir {
+        ProviderDir { layer, files }
+    }
+
+    /// The shipped files, read from the source tree.
+    fn shipped_dir() -> ProviderDir {
+        let mut paths: Vec<PathBuf> = std::fs::read_dir(shipped())
+            .expect("the shipped directory")
+            .map(|entry| entry.expect("entry").path())
+            .filter(|path| path.extension().is_some_and(|e| e == "toml"))
+            .collect();
+        paths.sort();
+        let files = paths
+            .into_iter()
+            .map(|path| ProviderFile {
+                text: std::fs::read_to_string(&path),
+                path,
+            })
+            .collect();
+        dir(Layer::Shipped, files)
+    }
+
+    fn shipped_text(name: &str) -> String {
+        std::fs::read_to_string(shipped().join(name)).expect("file")
     }
 
     fn io_over(specs: &[ProviderSpec]) -> FamilyIo {
@@ -375,7 +414,7 @@ mod tests {
 
     #[test]
     fn the_shipped_files_load_and_each_is_served_or_named_unserved() {
-        let loaded = load_specs(&[(Layer::Shipped, shipped())]);
+        let loaded = load_specs(vec![shipped_dir()]);
         assert!(loaded.skipped.is_empty(), "{:?}", loaded.skipped);
         let io = io_over(&loaded.specs);
         let (families, unserved) = served(loaded.specs, &io);
@@ -402,24 +441,34 @@ mod tests {
 
     #[test]
     fn a_later_directory_replaces_a_file_of_the_same_id_and_bad_files_are_skipped() {
-        let (system, user) = (scratch("system"), scratch("user"));
-        let nextcloud = std::fs::read_to_string(shipped().join("nextcloud.toml")).expect("file");
-        std::fs::write(system.join("nextcloud.toml"), &nextcloud).expect("write");
-        std::fs::write(
-            user.join("nextcloud.toml"),
-            nextcloud.replace("label = \"Nextcloud\"", "label = \"Mine\""),
-        )
-        .expect("write");
-        std::fs::write(user.join("broken.toml"), "id = ").expect("write");
-        std::fs::write(user.join("mismatch.toml"), nextcloud.clone()).expect("write");
-        let loaded = load_specs(&[
-            (Layer::Shipped, system.to_path_buf()),
-            (Layer::Person, user.to_path_buf()),
-            (Layer::Named, PathBuf::from("/nonexistent")),
+        let nextcloud = shipped_text("nextcloud.toml");
+        let loaded = load_specs(vec![
+            dir(Layer::Shipped, vec![file("nextcloud.toml", &nextcloud)]),
+            dir(
+                Layer::Person,
+                vec![
+                    file("broken.toml", "id = "),
+                    file("mismatch.toml", &nextcloud),
+                    file(
+                        "nextcloud.toml",
+                        nextcloud.replace("label = \"Nextcloud\"", "label = \"Mine\""),
+                    ),
+                ],
+            ),
+            dir(Layer::Named, Vec::new()),
         ]);
         assert_eq!(loaded.specs.len(), 1);
         assert_eq!(loaded.specs[0].label, "Mine");
         assert_eq!(loaded.skipped.len(), 2);
+        let broken = ProviderFile {
+            path: PathBuf::from("/providers/gone.toml"),
+            text: Err(std::io::Error::other("gone")),
+        };
+        let loaded_gone = load_specs(vec![dir(Layer::Named, vec![broken])]);
+        assert!(matches!(
+            loaded_gone.skipped.as_slice(),
+            [(_, SkipError::Unreadable(_))]
+        ));
         // Each reason keeps what failed, not its text.
         let reasons: Vec<&SkipError> = loaded.skipped.iter().map(|(_, why)| why).collect();
         assert!(
@@ -440,17 +489,14 @@ mod tests {
     /// (`oauth_mints_key`), a family that does not exist, under a new id.
     #[test]
     fn a_persons_file_asking_for_an_unbuilt_family_is_not_served_and_names_why() {
-        let own = scratch("unbuilt");
-        let text = std::fs::read_to_string(shipped().join("openrouter.toml"))
-            .expect("file")
+        let text = shipped_text("openrouter.toml")
             .replace("id = \"openrouter\"", "id = \"my-router\"")
             .replace(
                 "kind = \"api_key\"",
                 "kind = \"oauth_mints_key\"\nissuer = \"openrouter\"",
             );
         assert!(text.contains("oauth_mints_key"), "{text}");
-        std::fs::write(own.join("my-router.toml"), text).expect("write");
-        let loaded = load_specs(&[(Layer::Person, own.to_path_buf())]);
+        let loaded = load_specs(vec![dir(Layer::Person, vec![file("my-router.toml", text)])]);
         assert!(loaded.skipped.is_empty(), "{:?}", loaded.skipped);
         assert_eq!(loaded.specs.len(), 1);
         let io = io_over(&loaded.specs);
@@ -469,12 +515,13 @@ mod tests {
     /// the generic family's to serve.
     #[test]
     fn a_password_file_whose_discovery_no_lookup_uses_is_not_served() {
-        let text = std::fs::read_to_string(shipped().join("generic-imap.toml")).expect("file");
+        let text = shipped_text("generic-imap.toml");
         let changed = text.replace("kind = \"autoconfig\"", "kind = \"nextcloud_ocs\"");
         assert_ne!(changed, text, "the line was found");
-        let own = scratch("discovery");
-        std::fs::write(own.join("generic-imap.toml"), changed).expect("write");
-        let loaded = load_specs(&[(Layer::Named, own.to_path_buf())]);
+        let loaded = load_specs(vec![dir(
+            Layer::Named,
+            vec![file("generic-imap.toml", changed)],
+        )]);
         assert!(loaded.skipped.is_empty(), "{:?}", loaded.skipped);
         let io = io_over(&loaded.specs);
         let (families, unserved) = served(loaded.specs, &io);
@@ -483,23 +530,20 @@ mod tests {
     }
 
     fn microsoft() -> String {
-        std::fs::read_to_string(shipped().join("microsoft.toml")).expect("file")
+        shipped_text("microsoft.toml")
     }
 
     /// Loads the shipped `microsoft.toml` from a system directory (or none), then `mine` as the
     /// same id from a directory of `layer`.
-    fn over_microsoft(name: &str, system: bool, layer: Layer, mine: &str) -> Loaded {
-        let (sys, over) = (
-            scratch(&format!("{name}-sys")),
-            scratch(&format!("{name}-over")),
-        );
-        if system {
-            std::fs::write(sys.join("microsoft.toml"), microsoft()).expect("write");
-        }
-        std::fs::write(over.join("microsoft.toml"), mine).expect("write");
-        load_specs(&[
-            (Layer::Shipped, sys.to_path_buf()),
-            (layer, over.to_path_buf()),
+    fn over_microsoft(system: bool, layer: Layer, mine: &str) -> Loaded {
+        let installed = if system {
+            vec![file("microsoft.toml", microsoft())]
+        } else {
+            Vec::new()
+        };
+        load_specs(vec![
+            dir(Layer::Shipped, installed),
+            dir(layer, vec![file("microsoft.toml", mine)]),
         ])
     }
 
@@ -536,7 +580,7 @@ mod tests {
             // Over the system's file (kept), and with none installed (the compiled-in file is
             // the shipped one; nothing serves the id).
             for system in [true, false] {
-                let loaded = over_microsoft(name, system, Layer::Person, &mine);
+                let loaded = over_microsoft(system, Layer::Person, &mine);
                 if system {
                     assert_eq!(
                         microsoft_of(&loaded),
@@ -564,12 +608,12 @@ mod tests {
     fn the_persons_file_may_reword_a_shipped_provider_and_a_named_directory_may_move_it() {
         let reworded = microsoft().replace("label = \"Microsoft\"", "label = \"Work\"");
         assert_ne!(reworded, microsoft());
-        let loaded = over_microsoft("reword", true, Layer::Person, &reworded);
+        let loaded = over_microsoft(true, Layer::Person, &reworded);
         assert!(loaded.skipped.is_empty(), "{:?}", loaded.skipped);
         assert_eq!(microsoft_of(&loaded).label, "Work");
 
         let moved = microsoft().replace("https://graph.microsoft.com", "https://127.0.0.1:4443");
-        let loaded = over_microsoft("named", true, Layer::Named, &moved);
+        let loaded = over_microsoft(true, Layer::Named, &moved);
         assert!(loaded.skipped.is_empty(), "{:?}", loaded.skipped);
         let graph = microsoft_of(&loaded)
             .capabilities

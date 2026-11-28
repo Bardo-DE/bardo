@@ -22,7 +22,6 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 account-match = {path = "../account-match"}
-account-capability = {path = "../account-capability", features = ["testing"]}
 
 [lints]
 workspace = true

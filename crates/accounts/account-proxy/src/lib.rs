@@ -18,7 +18,7 @@
 //!   here, never forwarded.
 //!
 //! Each protocol is a pure machine (`step`: input in, effects out) over frozen types; the
-//! `relay` drives one over two [`account_core::stream::ByteStream`]s and a [`Connect`] the host
+//! `relay` drives one over two [`base_stream::ByteStream`]s and a [`Connect`] the host
 //! passes in (TCP, and the TLS check against system roots). TLS and certificate checks live in
 //! the connector, never in the app. Nothing here reads the clock or the environment.
 

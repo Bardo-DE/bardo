@@ -93,13 +93,6 @@ pub use system::{
     TABLE_DIRS, held_by, held_under, root_held,
 };
 
-/// The systemd manager's bus name.
-pub const SYSTEMD: &str = "org.freedesktop.systemd1";
-/// The systemd manager's object.
-pub const SYSTEMD_PATH: &str = "/org/freedesktop/systemd1";
-/// The interface of the systemd manager's object.
-pub const SYSTEMD_MANAGER: &str = "org.freedesktop.systemd1.Manager";
-
 use account_core::{AppId, AppName, Isolation};
 use caller_role_types::CallerRole;
 use serde::{Deserialize, Serialize};

@@ -29,7 +29,6 @@ mod session_token;
 mod space;
 mod space_record;
 pub mod store;
-pub mod stream;
 pub mod token;
 mod web_request;
 
@@ -48,7 +47,7 @@ pub use family::Family;
 pub use grant_key::{GrantKey, decide_key};
 pub use helper_id::HelperId;
 pub use identities::{Identity, IdentityAddress, IdentityId, IdentityKind, IdentityName};
-pub use identity::{CgroupPath, ClaimedId, PeerFacts, PeerIdentity, SandboxFacts, identity_of};
+pub use identity::{ClaimedId, PeerFacts, PeerIdentity, SandboxFacts, identity_of};
 pub use ids::{AccountId, GrantId, ProviderId};
 pub use llm::{AiAccountRow, LlmVerdict, OWN_SERVER_PROVIDER, OwnServerRow};
 pub use process_credential::ProcessCredentialId;

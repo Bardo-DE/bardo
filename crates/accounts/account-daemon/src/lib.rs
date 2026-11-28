@@ -90,6 +90,7 @@ pub mod launcher;
 mod manager;
 mod open_sheets;
 pub mod paths;
+mod provider_files;
 mod publish;
 mod relay;
 mod request;

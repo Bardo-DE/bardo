@@ -56,7 +56,8 @@ impl AppKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_core::{CgroupPath, PeerFacts, SandboxFacts, identity_of};
+    use account_core::{PeerFacts, SandboxFacts, identity_of};
+    use caller_identity_core::CgroupPath;
 
     fn facts(cgroup: &str, sandbox: SandboxFacts) -> PeerFacts {
         PeerFacts {

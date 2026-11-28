@@ -12,6 +12,7 @@ publish.workspace = true
 base64 = { workspace = true }
 httparse = { workspace = true }
 account-core = {path = "../account-core"}
+base-stream = { path = "../../base/base-stream" }
 account-capability = {path = "../account-capability"}
 base-url = { path = "../../base/base-url" }
 rustls-native-certs = { workspace = true, optional = true }

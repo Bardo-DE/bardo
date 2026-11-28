@@ -282,6 +282,7 @@ members = [
     "crates/base/base-process",
     "crates/base/base-random",
     "crates/base/base-secret",
+    "crates/base/base-stream",
     "crates/base/base-spawn",
     "crates/base/base-testkit",
     "crates/base/base-time",

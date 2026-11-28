@@ -1,12 +1,10 @@
-//! Capabilities and claims the tests of this crate and of account-match build from (feature
-//! `testing`; always there in this crate's own tests).
+//! Capabilities and claims this crate's tests build from.
 
 use crate::offer::{Claim, Offer, Provenance, Subject};
 use crate::{
-    Access, Capability, Delta, HashKind, LabelModel, LlmCap, LlmFeature, LlmWire, MailCap,
-    MailTransport, StorageCap, StorageScope,
+    Access, Capability, Delta, HashKind, LabelModel, MailCap, MailTransport, StorageCap,
+    StorageScope,
 };
-use base_ids::Tokens;
 
 /// A storage capability with the given access, change feed and reach.
 #[must_use]
@@ -31,17 +29,6 @@ pub fn mail(send: bool) -> Capability {
         delta: Delta::Push,
         transport: MailTransport::Imap,
         labels: LabelModel::Folders,
-    })
-}
-
-/// A language model with the given features and context window.
-#[must_use]
-pub fn llm(features: &[LlmFeature], context: u32) -> Capability {
-    Capability::Llm(LlmCap {
-        features: features.iter().copied().collect(),
-        context: Tokens(context),
-        max_output: Tokens(4096),
-        wire: LlmWire::ChatCompletions,
     })
 }
 

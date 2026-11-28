@@ -9,10 +9,10 @@
 //!
 //! DAV does not come through here: `dav::discover` already sends a PROPFIND with the password.
 
-use account_core::stream::ByteStream;
 use account_core::{Credential, RelayPlan, ServiceEndpoint};
 use account_proxy::{Connect, RelayEnd, RelayFault, RustlsConnect, relay};
 use account_sheet::SignInFault;
+use base_stream::ByteStream;
 use std::io;
 use std::pin::Pin;
 use std::sync::Arc;

@@ -1,13 +1,47 @@
 use super::*;
 use crate::need::AgentNeed;
 use crate::need::{ComputerUseNeed, LlmNeed, MailNeed, PhotosNeed, StorageNeed};
-use account_capability::fixtures::{llm, mail, storage};
 use account_capability::{
     Access, Albums, CapabilityKind, Delta, LibraryRead, LlmFeature, PhotosCap, StorageScope,
 };
 use account_capability::{AgentCap, AgentProgram, AgentProtocol, EnvName};
 use account_capability::{ComputerUseBatching, ComputerUseCap, ComputerUseEnv, LlmWire};
+use account_capability::{HashKind, LabelModel, LlmCap, MailCap, MailTransport, StorageCap};
 use base_ids::{Px, Tokens};
+
+/// A storage capability with the given access, change feed and reach.
+fn storage(access: Access, delta: Delta, scope: StorageScope) -> Capability {
+    Capability::Storage(StorageCap {
+        access,
+        delta,
+        quota: true,
+        scope,
+        hashes: HashKind::Sha1,
+        ranges: true,
+        chunked_upload: false,
+    })
+}
+
+/// A mail capability that offers `send` as given.
+fn mail(send: bool) -> Capability {
+    Capability::Mail(MailCap {
+        access: Access::ReadWrite,
+        send,
+        delta: Delta::Push,
+        transport: MailTransport::Imap,
+        labels: LabelModel::Folders,
+    })
+}
+
+/// A language model with the given features and context window.
+fn llm(features: &[LlmFeature], context: u32) -> Capability {
+    Capability::Llm(LlmCap {
+        features: features.iter().copied().collect(),
+        context: Tokens(context),
+        max_output: Tokens(4096),
+        wire: LlmWire::ChatCompletions,
+    })
+}
 
 fn agent(program: &str, base_url_env: Option<&str>, protocols: &[AgentProtocol]) -> Offer {
     present(Capability::Agent(Box::new(AgentCap {

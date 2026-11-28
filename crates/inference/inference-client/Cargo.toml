@@ -18,7 +18,7 @@ account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 inference-core = {path = "../inference-core"}
-account-callers = {optional = true, path = "../../accounts/account-callers"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], optional = true, path = "../../identity/caller-identity-dbus"}
 account-dbus = {optional = true, path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../inference-dbus", optional = true}
 base-fs = {optional = true, path = "../../base/base-fs"}
@@ -58,7 +58,7 @@ default = []
 lending = ["dep:base-fs", "dep:base-xdg"]
 # The D-Bus transport (Linux, the desktop's inferd). It reads the session `Open` returns as
 # frames over a Unix stream socket with descriptors riding on them, so it pulls in the runtime.
-dbus = ["dep:rustix", "dep:serde", "dep:tokio", "dep:account-callers", "dep:account-dbus", "dep:inference-dbus", "dep:serde_json", "dep:zbus"]
+dbus = ["dep:rustix", "dep:serde", "dep:tokio", "dep:caller-identity-dbus", "dep:account-dbus", "dep:inference-dbus", "dep:serde_json", "dep:zbus"]
 
 [[example]]
 name = "guests"

@@ -13,8 +13,5 @@ account-capability = {path = "../account-capability"}
 base-ids = { path = "../../base/base-ids" }
 serde = { workspace = true, features = ["derive"] }
 
-[dev-dependencies]
-account-capability = {path = "../account-capability", features = ["testing"]}
-
 [lints]
 workspace = true

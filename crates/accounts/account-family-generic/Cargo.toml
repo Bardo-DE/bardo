@@ -13,6 +13,7 @@ base-clock = { path = "../../base/base-clock" }
 account-family-kit = {path = "../account-family-kit"}
 account-generic-proto = {path = "../account-generic-proto"}
 account-core = {path = "../account-core"}
+base-stream = { path = "../../base/base-stream" }
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}

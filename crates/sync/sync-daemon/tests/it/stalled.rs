@@ -5,7 +5,7 @@
 //! the pieces' spacing are virtual; with no kernel I/O the clock can only advance when every
 //! task waits on a timer), so a loaded machine cannot make a gap longer than the idle time.
 
-use account_core::stream::{ByteStream, duplex};
+use base_stream::{ByteStream, duplex};
 use base_url::WebUrl;
 use http_core::http::{Method, Request};
 use http_core::{Http, HttpError, request};

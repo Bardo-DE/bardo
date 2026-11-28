@@ -310,6 +310,8 @@ unsafe = true
 kind = "unclassified"
 [crate.base-secret]
 kind = "unclassified"
+[crate.base-stream]
+kind = "core"
 [crate.base-spawn]
 kind = "unclassified"
 [crate.base-testkit]
@@ -1378,6 +1380,12 @@ exactly = []
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
+crate = "base-stream"
+features = "all"
+exactly = []
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
 crate = "base-url"
 features = "all"
 exactly = ["base-ids"]
@@ -1512,7 +1520,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-client"
 features = "all"
-exactly = ["account-capability", "account-core", "account-match", "account-sheet", "account-wire", "base-ids"]
+exactly = ["account-capability", "account-core", "account-match", "account-sheet", "account-wire", "base-ids", "base-stream"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1524,7 +1532,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-client-inproc"
 features = "all"
-exactly = ["account-capability", "account-client", "account-core", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-service-grants", "account-sheet", "account-wire", "base-time", "base-clock"]
+exactly = ["account-capability", "account-client", "account-core", "account-match", "account-provider", "account-proxy", "account-secrets", "account-service", "account-service-accounts", "account-service-core", "account-service-grants", "account-sheet", "account-wire", "base-time", "base-clock", "base-stream"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1572,13 +1580,13 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "http-relay"
 features = "all"
-exactly = ["account-client", "account-core", "account-wire", "base-url", "http-core"]
+exactly = ["account-client", "account-core", "account-wire", "base-url", "http-core", "base-stream"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "account-proxy"
 features = "all"
-exactly = ["account-capability", "account-core", "base-url"]
+exactly = ["account-capability", "account-core", "base-url", "base-stream"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -1650,7 +1658,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "account-family-generic"
 features = "all"
-exactly = ["account-family-kit", "account-generic-proto", "account-core", "account-capability", "account-sheet", "account-provider", "http-core", "account-discover", "account-proxy", "base-clock"]
+exactly = ["account-family-kit", "account-generic-proto", "account-core", "account-capability", "account-sheet", "account-provider", "http-core", "account-discover", "account-proxy", "base-clock", "base-stream"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -3122,7 +3130,7 @@ features = "default"
 forbid = []
 forbid-features = ["compositor-app/testing", "compositor-app/debug-inject", "compositor-backend/testing",
   "compositor-backend/debug-inject", "compositor-ipc/debug-inject", "compositor-render/testing",
-  "account-capability/testing", "account-secrets/testing", "settings-dbus/testing", "ui-core/testing"]
+  "account-secrets/testing", "settings-dbus/testing", "ui-core/testing"]
 why = "B10 the release compositor enables neither testing nor debug-inject"
 
 # B16 the excluded crates are never members: wlcs-compositor (the wlcs shim, a cdylib with its own

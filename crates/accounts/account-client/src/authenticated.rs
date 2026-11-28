@@ -4,7 +4,7 @@
 //! `SCM_RIGHTS` descriptor (a Unix stream socket), and for an app hosting the accounts service in process an
 //! in-memory duplex.
 
-use account_core::stream::DuplexEnd;
+use base_stream::DuplexEnd;
 #[cfg(unix)]
 use std::os::fd::OwnedFd;
 

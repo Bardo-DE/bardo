@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 action-wire = {path = "../action-wire"}
-account-core = {path = "../../accounts/account-core"}
+caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
 
 [dev-dependencies]
 tempfile = { workspace = true }

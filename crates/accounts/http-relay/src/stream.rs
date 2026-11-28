@@ -1,7 +1,7 @@
 //! [`RelayStream`]: the app's end of a relay as a tokio stream.
 
 use account_client::AuthenticatedStream;
-use account_core::stream::DuplexEnd;
+use base_stream::DuplexEnd;
 use std::io;
 use std::pin::Pin;
 use std::task::{Context, Poll};
@@ -41,7 +41,7 @@ impl RelayStream {
     }
 
     /// A stream over an in-memory end the caller holds (a test's end of
-    /// [`account_core::stream::duplex`]: no kernel I/O, so a paused clock is safe with it).
+    /// [`base_stream::duplex`]: no kernel I/O, so a paused clock is safe with it).
     #[must_use]
     pub fn from_memory(end: DuplexEnd) -> Self {
         Self(End::Memory(end))

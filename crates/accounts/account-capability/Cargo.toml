@@ -15,9 +15,5 @@ serde = { workspace = true, features = ["derive"] }
 [dev-dependencies]
 serde_json = { workspace = true }
 
-[features]
-# `fixtures`: the capabilities and claims the tests of this crate and of account-match build from.
-testing = []
-
 [lints]
 workspace = true
