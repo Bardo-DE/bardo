@@ -13,8 +13,9 @@
 //!
 //! ```no_run
 //! use anyview_archive::{EntryLimit, ExtractLimits, extract, list};
-//! use anyview_core::{ArchiveFormat, ByteLen, FilePath};
+//! use anyview_core::{ByteLen, FilePath};
 //! use anyview_fs::OnDisk;
+//! use file_types::ArchiveFormat;
 //!
 //! let file = FilePath::new("/home/me/photos.zip")?;
 //! let listing = list(file.on_disk(), ArchiveFormat::Zip, EntryLimit(50), ByteLen(8 << 20))?;
