@@ -225,6 +225,7 @@ members = [
     "crates/identity/caller-identity-dev",
     "crates/identity/caller-roles",
     "crates/identity/seat-guard",
+    "crates/identity/seat-guard-core",
     "crates/identity/peers-callers",
     "crates/accounts/account-daemon",
     "crates/accounts/account-dav-proto",

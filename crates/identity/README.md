@@ -15,6 +15,7 @@ Licensed under either of MIT or Apache-2.0, at your option.
 | `caller-identity-dbus` | async adapter | `BusPeers` over zbus: the sender's process, the unit manager's facts, `require`, `owner_of`, `watch_owner` |
 | `peers-callers` | adapter | the desktop's table from its files, the unit manager's requirement and `peers_on` for every service that asks over a bus |
 | `seat-guard` | sync I/O | the guards of a socket every local account reaches (the seat's user, the shell check) |
+| `seat-guard-core` | pure | the plain values of the seat guards |
 | `caller-roles` | pure | the role names that services of every layer name (shell, portal, portal frontend, agent tier, Settings); the other roles are constants in the crate of the service that owns them |
 | `caller-identity-dev` | dev only | developer rows (see below); never in a shipped program |
 

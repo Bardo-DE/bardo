@@ -14,7 +14,8 @@ updater, a root input service) then say which roles a method accepts.
 | `caller-identity-linux` | sync I/O | `Pinned` (pidfd), `RealProc` (the real `ProcFs`; the fixture tree under `fake`), `TableFiles` (the loader), `unit_facts` (the unit files a service without a manager reads), `fake` | caller-identity-core, rustix, nix (`SO_PEERPIDFD` only), thiserror |
 | `caller-identity-dbus` | async adapter | `BusPeers`: credentials, the manager's unit facts (`UnitSource`, `ManagerLink`), `require`, `owner_of`, `watch_owner`, `Offload` | caller-identity-linux, caller-identity-core, zbus 5, thiserror |
 | `peers-callers` | adapter | the desktop's table from its files, the requirement the unit manager must meet, `peers_on(connection, table)` | caller-identity-dbus, caller-identity-linux |
-| `seat-guard` | sync I/O | the guards of a socket every local account reaches: the seat's user, the shell check (built on `Requirement`), how a failed accept is handled | caller-identity-core, caller-identity-linux, rustix |
+| `seat-guard` | sync I/O | the guards of a socket every local account reaches: the seat's user, the shell check (built on `Requirement`), how a failed accept is handled | caller-identity-core, caller-identity-linux, seat-guard-core, rustix |
+| `seat-guard-core` | pure | the plain values of those guards (what a connection claims, what a failed accept means, how loudly a refusal is logged), so a state machine can use them without the system calls | none |
 | `caller-roles` | pure | the role names that services of every layer name: shell, portal, portal frontend, agent tier, Settings | caller-identity-core |
 | `caller-identity-dev` | dev only | `DevRows`: developer rows read from a file the person owns (section 8); never in a shipped program | caller-identity-core, caller-identity-linux |
 

@@ -15,7 +15,7 @@ path = "tests/it/main.rs"
 [dependencies]
 mouse-gestures-proto = { path = "../mouse-gestures-proto" }
 key-types = {path = "../../keymap/key-types"}
-seat-guard = {path = "../../identity/seat-guard"}
+seat-guard-core = {path = "../../identity/seat-guard-core"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

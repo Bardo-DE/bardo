@@ -9,7 +9,7 @@ mod step;
 use super::FromSocket;
 use super::model::{ClientId, SocketEffect, SocketEvent, Subscribers};
 use mouse_gestures_proto::ToHost;
-use seat_guard::Claim;
+use seat_guard_core::Claim;
 use std::time::Instant;
 
 /// The person at the seat in the pure tests.

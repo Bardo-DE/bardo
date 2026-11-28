@@ -22,6 +22,7 @@ settings-store-fs = { path = "../../settings/settings-store-fs" }
 rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 seat-guard = {path = "../../identity/seat-guard"}
+seat-guard-core = {path = "../../identity/seat-guard-core"}
 caller-roles = {path = "../../identity/caller-roles"}
 caller-identity-core = {path = "../../identity/caller-identity-core"}
 input-broker-client = {path = "../input-broker-client"}

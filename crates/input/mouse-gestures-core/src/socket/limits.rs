@@ -3,7 +3,7 @@
 //! thread that serves layer-shell-host. (The per-pass bounds of the thread's own loop are the
 //! daemon's.)
 
-use seat_guard::{COMPLAINT_INTERVAL, Voice};
+use seat_guard_core::{COMPLAINT_INTERVAL, Voice};
 use std::time::Instant;
 
 /// Subscribers connected at once. layer-shell-host is the only one in practice; a few more cover a

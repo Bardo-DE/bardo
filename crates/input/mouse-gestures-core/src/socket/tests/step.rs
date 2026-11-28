@@ -7,7 +7,7 @@ use crate::socket::model::{SocketEffect, SocketEvent, Subscribers};
 use mouse_gestures_proto::{
     DeviceInfo, Filter, HostAction, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
 };
-use seat_guard::{ACCEPT_PAUSE, AcceptFailure, COMPLAINT_INTERVAL};
+use seat_guard_core::{ACCEPT_PAUSE, AcceptFailure, COMPLAINT_INTERVAL};
 use std::time::{Duration, Instant};
 
 fn nobody() -> DeviceInfo {

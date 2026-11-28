@@ -466,6 +466,8 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.seat-guard]
 kind = "unclassified"
+[crate.seat-guard-core]
+kind = "core"
 
 # inference
 [crate.inference-agent-proto]
@@ -4277,7 +4279,7 @@ why = "direct normal and build dependencies (ours and third-party, all features)
 scope = "all"
 crate = "key-remap-daemon"
 features = "all"
-exactly = ["key-types", "keymap", "key-remap-client", "key-remap-core", "key-remap-proto", "key-remap-evdev", "notify", "caller-identity-linux", "caller-identity-core", "caller-roles", "seat-guard", "rustix", "thiserror", "input-broker-client", "settings-store-fs"]
+exactly = ["key-types", "keymap", "key-remap-client", "key-remap-core", "key-remap-proto", "key-remap-evdev", "notify", "caller-identity-linux", "caller-identity-core", "caller-roles", "seat-guard", "seat-guard-core", "rustix", "thiserror", "input-broker-client", "settings-store-fs"]
 why = "also links caller-identity (who the socket's peer is) and input-broker-client (makes its virtual devices); neither brings a bus or an async runtime; settings-store-fs is the shared settings file watch the daemon follows"
 
 [[edges]]

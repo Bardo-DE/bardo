@@ -5,7 +5,8 @@ use caller_identity_core::{
 };
 use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned};
 use rustix::io::Errno;
-use seat_guard::{AcceptFailure, Claim, ShellCheck, accept_failure, active_uid};
+use seat_guard::{ShellCheck, accept_failure, active_uid};
+use seat_guard_core::{AcceptFailure, Claim};
 
 const PID: u32 = 4242;
 const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";

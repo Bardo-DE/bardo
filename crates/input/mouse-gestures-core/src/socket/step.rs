@@ -5,7 +5,7 @@
 
 use super::model::{ClientId, SocketEffect, SocketEvent, Subscribers};
 use super::seat::Peer;
-use seat_guard::{ACCEPT_PAUSE, AcceptFailure, Claim};
+use seat_guard_core::{ACCEPT_PAUSE, AcceptFailure, Claim};
 use std::collections::BTreeMap;
 use std::time::Instant;
 

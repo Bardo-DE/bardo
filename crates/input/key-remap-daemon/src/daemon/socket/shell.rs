@@ -79,7 +79,7 @@ mod tests {
     use super::*;
     use caller_identity_core::{FileTrust, Pid, Pin, Prober, Uid, Writer};
     use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned};
-    use seat_guard::Claim;
+    use seat_guard_core::Claim;
 
     const PID: u32 = 4242;
     const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";

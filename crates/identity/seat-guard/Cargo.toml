@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 caller-identity-core = {path = "../caller-identity-core"}
 caller-identity-linux = {path = "../caller-identity-linux"}
+seat-guard-core = {path = "../seat-guard-core"}
 rustix = {workspace = true, features = ["std"]}
 
 [dev-dependencies]

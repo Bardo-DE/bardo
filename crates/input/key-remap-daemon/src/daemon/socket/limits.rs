@@ -3,7 +3,7 @@
 //! merely broken. Pure: instants are arguments.
 
 use crate::Mono;
-use seat_guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL, Voice};
+use seat_guard_core::{ACCEPT_PAUSE, COMPLAINT_INTERVAL, Voice};
 use std::collections::BTreeMap;
 use std::collections::btree_map::Entry;
 use std::time::Duration;

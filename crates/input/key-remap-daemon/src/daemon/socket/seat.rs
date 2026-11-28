@@ -2,7 +2,7 @@
 //! file is the one effect.
 
 use key_remap_proto::Steer;
-use seat_guard::Claim;
+use seat_guard_core::Claim;
 
 use crate::daemon::inbox::{ClientId, Request};
 

@@ -22,6 +22,7 @@ hidraw-ioctl = {path = "../hidraw-ioctl"}
 input-broker-client = {path = "../input-broker-client"}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 seat-guard = {path = "../../identity/seat-guard"}
+seat-guard-core = {path = "../../identity/seat-guard-core"}
 caller-roles = {path = "../../identity/caller-roles"}
 caller-identity-core = {path = "../../identity/caller-identity-core"}
 

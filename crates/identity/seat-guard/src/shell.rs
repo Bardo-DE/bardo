@@ -11,6 +11,7 @@
 use caller_identity_core::{CgroupPath, Prober, ProcFs, Requirement, Standing, Table, judge};
 use caller_identity_linux::{Alive, Pinned, RealProc};
 use rustix::fd::OwnedFd;
+use seat_guard_core::Claim;
 
 /// A process we hold, running as the shell, under the manager of `user`.
 #[derive(Debug)]
@@ -26,18 +27,6 @@ pub struct Held {
 pub enum Origin {
     /// In a trusted unit, under this user's manager.
     Shell(Held),
-    /// Anything else.
-    Other,
-}
-
-/// What a connection claims right now.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Claim {
-    /// The shell of this user, and its process is still the one we held.
-    Shell {
-        /// The user whose shell it is.
-        user: u32,
-    },
     /// Anything else.
     Other,
 }

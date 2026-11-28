@@ -1,0 +1,12 @@
+[package]
+name = "seat-guard-core"
+description = "The plain values of the seat guards: what a connection claims, what a failed accept means and how loudly a refusal is logged"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true

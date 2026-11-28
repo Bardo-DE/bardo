@@ -7,7 +7,7 @@ use super::limits::Complaints;
 use super::seat::{Peer, peer_of};
 use super::{FromSocket, ToSocket};
 use mouse_gestures_proto::{DeviceInfo, Filter, ToDaemon, ToHost};
-use seat_guard::{AcceptFailure, Claim};
+use seat_guard_core::{AcceptFailure, Claim};
 use std::collections::BTreeMap;
 use std::time::Instant;
 

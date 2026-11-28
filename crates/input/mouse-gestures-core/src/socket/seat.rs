@@ -3,7 +3,7 @@
 //! believed about the lock screen and the pointer. The decisions are pure; the seat file is
 //! `seat_guard::SeatFile`.
 
-use seat_guard::Claim;
+use seat_guard_core::Claim;
 
 /// What a connection is to the daemon.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
