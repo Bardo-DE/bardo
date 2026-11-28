@@ -5,11 +5,10 @@
 //! in.
 //!
 //! What belongs here is a type a caller names to *start* (an [`Input`], a [`Source`], a
-//! [`PeekBudget`]) or to read an answer (a [`FormatKind`], [`Facts`]). Units, export options and the
+//! [`PeekBudget`]) or to read an answer (a `file_types::FormatKind`, [`Facts`]). Units, export options and the
 //! sequence are reached from the crate root by the code that needs them.
 
 pub use crate::{
     Facts, FileAction, FileHead, FileName, FilePath, FileStamp, Input, PeekBudget, ReadAt, Resume,
     Sniffed, Source, sniff,
 };
-use file_types::FormatKind;

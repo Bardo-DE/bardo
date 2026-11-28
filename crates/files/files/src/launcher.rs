@@ -7,7 +7,7 @@ use base_xdg::Xdg;
 use files_desktop::{
     Activate, ActivationToken, Catalog, DesktopLauncher, StartError, installed_check, load_apps,
 };
-use xdg_core::mime::{Associations, MimeDb};
+use xdg_core::mime::MimeDb;
 use xdg_fs::{XdgDirs, load_associations, load_mime_db};
 
 use crate::icons::ThemeIcons;

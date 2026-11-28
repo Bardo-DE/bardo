@@ -53,7 +53,10 @@ fn mimes_of(kind: FormatKind) -> Vec<&'static str> {
 /// to a file it cannot show.
 #[must_use]
 pub fn opened_mimes() -> Vec<MimeType> {
-    opened_texts().into_iter().map(MimeType::known).collect()
+    opened_texts()
+        .into_iter()
+        .map(MimeType::from_static)
+        .collect()
 }
 
 fn opened_texts() -> Vec<&'static str> {
@@ -105,7 +108,7 @@ pub fn claimed_mimes() -> Vec<MimeType> {
         .collect();
     texts.sort_unstable();
     texts.dedup();
-    texts.into_iter().map(MimeType::known).collect()
+    texts.into_iter().map(MimeType::from_static).collect()
 }
 
 /// The file name patterns of the opened formats the registry has no media type for.

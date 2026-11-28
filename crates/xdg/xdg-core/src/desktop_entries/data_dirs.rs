@@ -11,8 +11,9 @@ const FLATPAK_SYSTEM: &str = "/var/lib/flatpak/exports/share/applications";
 /// Snap's exports.
 const SNAP: &str = "/var/lib/snapd/desktop/applications";
 
-/// The three environment values that decide where entries are, as the caller read them
-/// (`xdg_fs::process_xdg_env` reads this process's). Keeping them in a value makes the resolution
+/// The three environment values that decide where entries are, as the caller read them.
+///
+/// `xdg_fs::process_xdg_env` reads this process's. Keeping them in a value makes the resolution
 /// pure: a test hands in what it wants.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct XdgEnv {
