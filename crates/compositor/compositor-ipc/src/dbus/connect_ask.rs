@@ -12,8 +12,9 @@ use zbus::fdo;
 pub const NOT_THE_CALLER: &str = "not the caller this method answers";
 
 /// Who the caller proved to be on the bus thread: the app and the role of the table row it
-/// matched, with the proof and the pin it was held at. Never read from the caller's own words.
-/// [`Proven::standing`] is the caller-identity library's standing again, so a second line of
+/// matched, with the proof and the pin it was held at.
+///
+/// Never read from the caller's own words. [`Proven::standing`] is the caller-identity library's standing again, so a second line of
 /// defence checks it as the first did (`Requirement` and `Standing::holds`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Proven {
