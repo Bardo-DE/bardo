@@ -22,7 +22,6 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
 sync-fake-graph = {path = "../sync-fake-graph"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 http-relay = {path = "../../accounts/http-relay"}

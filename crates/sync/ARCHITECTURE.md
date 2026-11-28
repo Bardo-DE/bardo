@@ -55,7 +55,7 @@ The crates of the accounts service (`accounts-*`, `account-dav-proto`, `base-tes
 | `drive-fuse` | `drive-fs`, `drive-mount-daemon` (its client, re-exported as `mountd`), fuser (default features off: no libfuse), rustix, thiserror, tokio (used by syncd) |
 | `drive-mount-daemon` | rustix only (`cargo xtask check layers` forbids it every effect crate and every crate of the accounts service's; used by drive-fuse) |
 | `sync-fakes` | `account-dbus`, clap, tokio (with `signal` and `io-std`), zbus |
-| `sync-engine` | `account-capability`, `base-ids`, `base-time`, `sync-core`, hex, sha2, thiserror (no tokio, zbus or rusqlite: `cargo xtask check layers`) |
+| `sync-engine` | `account-capability`, `base-time`, `sync-core`, hex, sha2, thiserror (no tokio, zbus or rusqlite: `cargo xtask check layers`) |
 | `sync-journal-sqlite` | `base-ids`, `base-time`, `drive-fs` (its `Listing`), `sync-core`, `sync-engine`, rusqlite, serde, serde_json, thiserror |
 | `sync-xdg` | `account-callers` (the system caller table's file name), `base-xdg` |
 | `sync-driver` | `account-callers`, `account-core`, `base-time`, `sync-core`, `sync-engine`, `sync-xdg`, tokio |

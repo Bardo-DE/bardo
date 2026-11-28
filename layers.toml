@@ -5765,7 +5765,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-engine"
 features = "all"
-exactly = ["account-capability", "base-ids", "base-time", "sync-core"]
+exactly = ["account-capability", "base-time", "sync-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
