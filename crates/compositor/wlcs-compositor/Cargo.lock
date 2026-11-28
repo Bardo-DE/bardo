@@ -878,7 +878,6 @@ dependencies = [
  "compositor-wayland",
  "desktop-protocols",
  "image",
- "key-types",
  "proptest",
  "rustix 1.1.5",
  "serde",
