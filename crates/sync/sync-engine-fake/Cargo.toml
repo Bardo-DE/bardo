@@ -1,0 +1,17 @@
+[package]
+name = "sync-engine-fake"
+description = "Test tooling, never a normal dependency: a dataset held in memory for the engine's tests, and the scheduler settings the test rigs poll with."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-ids = { path = "../../base/base-ids" }
+sync-core = {path = "../sync-core"}
+sync-engine = {path = "../sync-engine"}
+
+[lints]
+workspace = true

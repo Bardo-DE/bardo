@@ -11,8 +11,8 @@ use crate::replica::GraphReplica;
 use http_core::http::header::{ACCEPT, CONTENT_TYPE, HeaderValue};
 use http_core::http::{Method, Request, Response};
 use http_core::{Http, request};
+use replica_http::{refused, write_unreached};
 use sync_core::DELETED;
-use sync_core::status::{refused, write_unreached};
 use sync_core::{
     BaseVersion, Conflict, PutError, PutItem, PutTarget, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter,

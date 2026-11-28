@@ -9,8 +9,9 @@ use sync_core::{
     LocalId, PutError, RemoteId, RemoteItem, RemoteSide, RemoteVersion, ReplicaError, Resolution,
     RetryAfter, Scanned,
 };
-use sync_engine::dataset::{Dataset, DatasetError, DatasetId, MemoryDataset};
+use sync_engine::dataset::{Dataset, DatasetError, DatasetId};
 use sync_engine::engine::{Engine, Outcome};
+use sync_engine_fake::MemoryDataset;
 use sync_journal_sqlite::Journal;
 
 fn files(pairs: &[(&str, &str)]) -> BTreeMap<String, Vec<u8>> {
@@ -20,8 +21,8 @@ fn files(pairs: &[(&str, &str)]) -> BTreeMap<String, Vec<u8>> {
         .collect()
 }
 
-fn states(engine: &TestEngine) -> Vec<(String, ItemState)> {
-    engine
+fn states(world: &World) -> Vec<(String, ItemState)> {
+    world
         .journal()
         .items()
         .expect("items")
@@ -42,7 +43,7 @@ async fn a_first_sync_lists_everything_and_a_later_feed_pages_until_done() {
     let first = engine.sync_once().await.expect("cycle");
     assert_eq!((first.fetched, first.outcome), (5, Outcome::Done));
     assert_eq!(world.dataset.snapshot(), world.remote_files().await);
-    assert!(engine.journal().anchor().expect("anchor").is_some());
+    assert!(world.journal().anchor().expect("anchor").is_some());
 
     for n in 5..10 {
         world
@@ -56,7 +57,7 @@ async fn a_first_sync_lists_everything_and_a_later_feed_pages_until_done() {
     assert_eq!((idle.fetched, idle.uploaded), (0, 0));
     assert_eq!(world.puts(), 0, "nothing was uploaded");
     assert_eq!(world.fetches(), 10, "and nothing fetched twice");
-    assert!(states(&engine).iter().all(|(_, s)| *s == ItemState::Synced));
+    assert!(states(&world).iter().all(|(_, s)| *s == ItemState::Synced));
 }
 
 #[tokio::test]
@@ -98,7 +99,7 @@ async fn a_folder_and_an_item_that_lives_online_are_not_fetched_or_kept() {
         files(&[("a.txt", "a"), ("b.txt", "b")])
     );
     assert_eq!(world.fetches(), 2);
-    let mut kept: Vec<String> = states(&engine).into_iter().map(|(path, _)| path).collect();
+    let mut kept: Vec<String> = states(&world).into_iter().map(|(path, _)| path).collect();
     kept.sort();
     assert_eq!(kept, ["a.txt", "b.txt"]);
 }
@@ -111,7 +112,7 @@ async fn a_new_local_file_uploads_once_on_an_absent_base_and_its_echo_is_ignored
     let report = engine.sync_once().await.expect("cycle");
     assert_eq!(report.uploaded, 1);
     assert_eq!(world.remote_files().await, files(&[("a.txt", "one")]));
-    let rows = engine.journal().items().expect("items");
+    let rows = world.journal().items().expect("items");
     let row = &rows[0];
     assert_eq!(row.state, ItemState::Synced);
     assert!(row.remote.is_some());
@@ -130,14 +131,14 @@ async fn a_local_edit_uploads_over_the_version_it_was_based_on() {
     let engine = world.engine();
     world.dataset.put("a.txt", b"one");
     settle(&engine, 4).await;
-    let before = engine.journal().items().expect("items")[0]
+    let before = world.journal().items().expect("items")[0]
         .remote_version
         .clone();
     world.dataset.put("a.txt", b"two");
     let report = engine.sync_once().await.expect("cycle");
     assert_eq!(report.uploaded, 1);
     assert_eq!(world.remote_files().await, files(&[("a.txt", "two")]));
-    let after = engine.journal().items().expect("items")[0]
+    let after = world.journal().items().expect("items")[0]
         .remote_version
         .clone();
     assert_ne!(before, after);
@@ -162,14 +163,14 @@ async fn crossing_edits_are_a_stored_conflict_and_neither_side_is_overwritten() 
     assert_eq!(world.dataset.get("a.txt"), Some(b"mine".to_vec()));
     assert_eq!(world.remote_files().await, files(&[("a.txt", "theirs")]));
     assert_eq!(
-        states(&engine),
+        states(&world),
         [("a.txt".to_owned(), ItemState::Conflicted)]
     );
-    assert_eq!(engine.journal().conflicts().expect("conflicts").len(), 1);
+    assert_eq!(world.journal().conflicts().expect("conflicts").len(), 1);
     // It stays: a later cycle neither piles up conflicts nor touches either side.
     let later = settle(&engine, 3).await;
     assert!(later.conflicts.is_empty());
-    assert_eq!(engine.journal().conflicts().expect("conflicts").len(), 1);
+    assert_eq!(world.journal().conflicts().expect("conflicts").len(), 1);
     assert_eq!(world.dataset.get("a.txt"), Some(b"mine".to_vec()));
 }
 
@@ -186,7 +187,7 @@ async fn a_conflict_settles_either_way_and_the_sides_converge() {
         world.remote_edit(&id, b"theirs").await;
         world.dataset.put("a.txt", b"mine");
         engine.sync_once().await.expect("cycle");
-        let number = engine.journal().conflicts().expect("conflicts")[0]
+        let number = world.journal().conflicts().expect("conflicts")[0]
             .number
             .expect("number");
         assert!(engine.resolve(number, how).expect("resolve"));
@@ -205,8 +206,8 @@ async fn a_conflict_settles_either_way_and_the_sides_converge() {
             files(&[("a.txt", winner)]),
             "{how:?}"
         );
-        assert!(engine.journal().conflicts().expect("conflicts").is_empty());
-        assert!(states(&engine).iter().all(|(_, s)| *s == ItemState::Synced));
+        assert!(world.journal().conflicts().expect("conflicts").is_empty());
+        assert!(states(&world).iter().all(|(_, s)| *s == ItemState::Synced));
     }
 }
 
@@ -261,11 +262,7 @@ async fn remote_changes_and_deletions_arrive_and_a_deletion_is_acknowledged_then
     assert_eq!((report.fetched, report.discarded), (1, 1));
     assert_eq!(world.dataset.snapshot(), files(&[("a.txt", "two")]));
     assert!(
-        engine
-            .journal()
-            .tombstones()
-            .expect("tombstones")
-            .is_empty(),
+        world.journal().tombstones().expect("tombstones").is_empty(),
         "applied, acknowledged, compacted"
     );
 }
@@ -280,17 +277,13 @@ async fn a_local_delete_removes_remotely_keeps_a_tombstone_until_the_feed_shows_
     let report = engine.sync_once().await.expect("cycle");
     assert_eq!(report.removed, 1);
     assert!(world.remote_files().await.is_empty());
-    let kept = engine.journal().tombstones().expect("tombstones");
+    let kept = world.journal().tombstones().expect("tombstones");
     assert_eq!(kept.len(), 1, "kept until acknowledged");
     assert_eq!(kept[0].ack, Acknowledgement::Pending);
-    assert!(engine.journal().items().expect("items").is_empty());
+    assert!(world.journal().items().expect("items").is_empty());
     engine.sync_once().await.expect("cycle");
     assert!(
-        engine
-            .journal()
-            .tombstones()
-            .expect("tombstones")
-            .is_empty(),
+        world.journal().tombstones().expect("tombstones").is_empty(),
         "the feed showed it: compacted"
     );
 }
@@ -328,7 +321,7 @@ async fn an_expired_anchor_is_a_full_listing_reconciled_by_content_with_no_reupl
         ])
     );
     assert!(
-        engine.journal().anchor().expect("anchor").is_some(),
+        world.journal().anchor().expect("anchor").is_some(),
         "the listing's anchor is stored"
     );
     let later = settle(&engine, 3).await;
@@ -369,11 +362,11 @@ async fn an_empty_listing_after_a_full_one_discards_nothing_until_the_person_con
             "the local files are kept"
         );
         assert!(
-            states(&engine).iter().all(|(_, s)| *s == ItemState::Synced),
+            states(&world).iter().all(|(_, s)| *s == ItemState::Synced),
             "the journal is untouched"
         );
         assert!(
-            engine.journal().anchor().expect("anchor").is_none(),
+            world.journal().anchor().expect("anchor").is_none(),
             "so the listing is asked for again next cycle"
         );
     }
@@ -467,7 +460,7 @@ async fn the_same_new_path_with_the_same_bytes_is_adopted_and_with_other_bytes_a
     assert_eq!(report.conflicts[0].conflict.base, BaseVersion::Absent);
     assert_eq!(world.dataset.get("diff.txt"), Some(b"mine".to_vec()));
     assert_eq!(world.remote_files().await["diff.txt"], b"theirs");
-    let by_path: BTreeMap<_, _> = states(&engine).into_iter().collect();
+    let by_path: BTreeMap<_, _> = states(&world).into_iter().collect();
     assert_eq!(by_path["same.txt"], ItemState::Synced);
     assert_eq!(by_path["diff.txt"], ItemState::Conflicted);
 }
@@ -483,7 +476,7 @@ async fn a_transient_or_unauthorized_replica_stops_the_cycle_and_changes_nothing
     let stopped = engine.sync_once().await.expect("a stop is not an error");
     assert_eq!(stopped.outcome, Outcome::Retry(RetryAfter(120)));
     assert!(world.dataset.snapshot().is_empty());
-    assert!(engine.journal().anchor().expect("anchor").is_none());
+    assert!(world.journal().anchor().expect("anchor").is_none());
     world.replica.fail_next_changes(ReplicaError::Unauthorized);
     assert_eq!(
         engine.sync_once().await.expect("cycle").outcome,
@@ -510,7 +503,7 @@ async fn a_transient_or_unauthorized_replica_stops_the_cycle_and_changes_nothing
     let retry = engine.sync_once().await.expect("cycle");
     assert_eq!(retry.outcome, Outcome::Retry(RetryAfter(30)));
     assert_eq!(
-        states(&engine)[1],
+        states(&world)[1],
         ("b.txt".to_owned(), ItemState::PendingUpload)
     );
     let done = engine.sync_once().await.expect("cycle");
@@ -538,7 +531,7 @@ async fn a_full_replica_holds_uploads_back_but_removals_and_pulls_go_on_and_quot
     assert_eq!(report.quota.map(|q| q.total), Some(Some(Bytes(10))));
     assert!(world.dataset.get("pulled.txt").is_some());
     assert_eq!(
-        engine
+        world
             .journal()
             .items()
             .expect("items")
@@ -559,7 +552,7 @@ async fn a_forbidden_write_stays_pending_and_is_counted() {
     let report = engine.sync_once().await.expect("cycle");
     assert_eq!((report.refused, report.uploaded), (1, 0));
     assert_eq!(
-        states(&engine),
+        states(&world),
         [("a.txt".to_owned(), ItemState::PendingUpload)]
     );
     assert_eq!(engine.sync_once().await.expect("cycle").uploaded, 1);

@@ -201,15 +201,15 @@ async fn acceptance_5_an_expired_anchor_reconciles_with_zero_re_uploads() {
     let anchors = |m: &Machine| {
         (
             m.originals
-                .journal()
-                .anchor()
+                .standing()
                 .expect("journal")
+                .anchor
                 .expect("anchor")
                 .anchor,
             m.metadata
-                .journal()
-                .anchor()
+                .standing()
                 .expect("journal")
+                .anchor
                 .expect("anchor")
                 .anchor,
         )

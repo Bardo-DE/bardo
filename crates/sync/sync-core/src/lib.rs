@@ -23,12 +23,9 @@ mod folders;
 mod item;
 mod journal;
 mod journal_reconcile;
-#[cfg(feature = "testing")]
-mod memory;
 mod quota;
 mod refusal;
 mod replica;
-pub mod status;
 mod transfer;
 
 pub use anchor::{Anchor, Cursor};
@@ -47,8 +44,6 @@ pub use journal::{
 pub use journal_reconcile::{
     LocalChange, MASS_DELETE_FLOOR, MassDelete, Scanned, local_changes, mass_delete, reconcile,
 };
-#[cfg(feature = "testing")]
-pub use memory::MemoryReplica;
 pub use quota::Quota;
 pub use refusal::{Cause, Conflict, ExportError, PutError, RemoteSide, ReplicaError, RetryAfter};
 pub use replica::Replica;

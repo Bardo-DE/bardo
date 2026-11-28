@@ -22,9 +22,9 @@ use account_dav_proto::{
 use base_ids::Bytes;
 use http_core::Http;
 use http_core::http::Response;
+use replica_http::{read_error, unreached};
 use std::collections::{BTreeMap, BTreeSet};
 use sync_core::DELETED;
-use sync_core::status::{read_error, unreached};
 use sync_core::{
     Anchor, Change, ChangePage, Cursor, More, RemoteId, RemoteVersion, ReplicaError, RetryAfter,
     Tombstone,

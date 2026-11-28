@@ -5,10 +5,10 @@ use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, ChangePage, Conflict, Cursor, ItemPath, MemoryReplica,
-    More, PutError, PutItem, PutTarget, Quota, RemoteId, RemoteSide, Replica, ReplicaError,
-    Tombstone,
+    BaseVersion, Blob, ByteRange, Change, ChangePage, Conflict, Cursor, ItemPath, More, PutError,
+    PutItem, PutTarget, Quota, RemoteId, RemoteSide, Replica, ReplicaError, Tombstone,
 };
+use sync_core_fake::MemoryReplica;
 
 fn replica(page: usize) -> MemoryReplica {
     let features = StorageCap {

@@ -5,11 +5,13 @@ use base_time::ManualClock;
 use base_time::UnixSeconds;
 use std::sync::Arc;
 use sync_core::{
-    BaseVersion, Blob, ByteRange, ChangePage, ConflictRule, Cursor, ItemPath, MemoryReplica,
-    PutError, PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
+    BaseVersion, Blob, ByteRange, ChangePage, ConflictRule, Cursor, ItemPath, PutError, PutItem,
+    PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
 };
-use sync_engine::dataset::{MemoryDataset, replica_hash};
+use sync_core_fake::MemoryReplica;
+use sync_engine::dataset::replica_hash;
 use sync_engine::engine::Engine;
+use sync_engine_fake::MemoryDataset;
 use sync_journal_sqlite::Journal;
 
 pub fn sha() -> StorageCap {

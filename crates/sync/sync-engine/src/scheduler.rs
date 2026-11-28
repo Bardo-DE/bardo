@@ -80,23 +80,6 @@ impl Default for Settings {
     }
 }
 
-#[cfg(any(test, feature = "testing"))]
-impl Settings {
-    /// What every test rig polls with: every second, never batched, and the scheduler's clock
-    /// ten times the real one, so a poll takes a tenth of a second.
-    #[must_use]
-    pub fn quick() -> Self {
-        Self {
-            poll_base: 1,
-            poll_max: 1,
-            push_window: 0,
-            batch_window: 0,
-            metered: MeteredPolicy::Pause,
-            time_scale: 10,
-        }
-    }
-}
-
 /// How the last cycle went.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Last {

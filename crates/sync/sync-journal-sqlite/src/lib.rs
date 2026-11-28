@@ -5,8 +5,8 @@
 //! - `drive`: [`DriveJournal`], the listing file of one account's drive that Files shows (entries
 //!   by id, the feed's anchor and the folder tree), each page written in one transaction.
 //!
-//! `Journal::open_unflushed` (feature `testing`) skips the disk flush for tests that make
-//! thousands of commits.
+//! `Journal::open_unflushed` skips the disk flush of each commit for runs that make thousands of
+//! them.
 
 pub mod drive;
 pub mod journal;

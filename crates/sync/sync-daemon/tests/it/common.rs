@@ -118,12 +118,12 @@ pub async fn a_cycle_of_each(hub: &sync_driver::hub::Hub) {
 }
 
 /// How long the rigs take for what a daemon would take `ms` for: their scheduler seconds are
-/// `Settings::quick().time_scale` to the real one. Only for waits that "nothing happens" in, and
+/// `sync_engine_fake::quick_settings().time_scale` to the real one. Only for waits that "nothing happens" in, and
 /// nothing is running to ask (use [`a_cycle_of_each`] where a dataset runs): a loaded machine
 /// runs fewer polls in that time, which makes the proof thinner, never the test flaky. A wait
 /// for something to happen is [`eventually`].
 pub fn poll_time(ms: u64) -> std::time::Duration {
-    std::time::Duration::from_millis(ms) / sync_engine::scheduler::Settings::quick().time_scale
+    std::time::Duration::from_millis(ms) / sync_engine_fake::quick_settings().time_scale
 }
 
 pub use base_testkit::eventually;

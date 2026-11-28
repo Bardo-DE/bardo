@@ -9,13 +9,13 @@ use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, ChangePage, ConflictRule, Cursor, ItemPath,
-    MemoryReplica, PutError, PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
-    ReplicaError,
+    BaseVersion, Blob, ByteRange, Change, ChangePage, ConflictRule, Cursor, ItemPath, PutError,
+    PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
 };
-use sync_engine::dataset::MemoryDataset;
+use sync_core_fake::MemoryReplica;
 use sync_engine::engine::{Engine, Report};
 use sync_engine::journal::{JournalError, JournalStore, Op};
+use sync_engine_fake::MemoryDataset;
 use sync_journal_sqlite::Journal;
 
 pub fn caps(hashes: HashKind, quota: bool, delta: Delta) -> StorageCap {
@@ -163,6 +163,17 @@ impl World {
             CutHandle(journal),
             Arc::clone(&self.clock),
         )
+    }
+
+    /// The journal of the engine made last, to read what it stored.
+    pub fn journal(&self) -> Box<dyn JournalStore> {
+        let cutting = self
+            .cutting
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+            .expect("an engine was made");
+        Box::new(CutHandle(cutting))
     }
 
     /// Makes the `n`th journal write from now (0 is the next) of the engine made last fail

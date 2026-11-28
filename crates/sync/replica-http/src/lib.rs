@@ -1,14 +1,15 @@
-//! What an HTTP status the replica did not expect means to the contract.
+//! What an HTTP status the replica did not expect means to the contract, written once for the
+//! replicas that speak HTTP (and the feeds that read through them): the part of the contract that
+//! is about HTTP.
 //!
-//! It is written once for the replicas that speak HTTP: a read that failed ([`ReplicaError`]) or a
-//! write that was refused ([`PutError`]). The statuses every server answers alike are here; a
-//! vendor's own reasons (a throttle spelled as a `403`, a locked item) stay in that vendor's crate,
-//! on top of these.
+//! A read that failed is a [`ReplicaError`], a write that was refused a [`PutError`]. The statuses
+//! every server answers alike are here; a vendor's own reasons (a throttle spelled as a `403`, a
+//! locked item) stay in that vendor's crate, on top of these.
 
-use crate::refusal::{PutError, ReplicaError, RetryAfter};
 use base_time::UnixSeconds;
 use http_core::http::Response;
 use http_core::{HeaderText, HttpError};
+use sync_core::{PutError, ReplicaError, RetryAfter};
 
 /// How long to wait when the server did not say.
 pub const RETRY: RetryAfter = RetryAfter(30);

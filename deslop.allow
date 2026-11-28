@@ -912,14 +912,9 @@ field-leak shell_ui_kit::links::edge::EdgeFeed::full_screen
 field-leak speech_pipewire::capture::FrameQueue::arrived
 field-leak sync_daemon::settings::SyncSettings::keep
 field-leak sync_daemon::settings::SyncSettings::served
-field-leak sync_engine::engine::Engine::dataset
-field-leak sync_engine::engine::Engine::journal
-field-leak sync_engine::engine::Engine::replica
 field-leak sync_fake_graph::drive::Drive::limit
 field-leak sync_fakes::storage::World::items
 field-leak sync_photos::google::ledger::Kept::ledger
-field-leak sync_photos::hlc::Hlc::counter
-field-leak sync_photos::hlc::Hlc::wall
 field-leak sync_pim_feed::source::google::event::Event::attendees
 field-leak sync_pim_feed::source::google::event::Event::end
 field-leak sync_pim_feed::source::google::event::Event::organizer
@@ -1262,7 +1257,6 @@ wide-directory crates/shell/shell-ui-kit/src/hooks/
 wide-directory crates/shell/shell-ui-kit/src/links/
 wide-directory crates/speech/speech-daemon/src/
 wide-directory crates/sync/
-wide-directory crates/sync/sync-core/src/
 wide-directory crates/sync/sync-daemon/tests/it/
 wide-directory crates/ui/
 wide-directory crates/ui/ui-blitz/src/

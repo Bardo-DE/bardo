@@ -5,7 +5,6 @@
 
 use crate::common;
 
-use base_testkit::Scratch;
 use common::{Replica, Server};
 use replica_graph::{CHUNK_UNIT, Root, Uploads};
 use std::sync::Mutex;
@@ -18,10 +17,8 @@ fn drive(server: &Server, uploads: Uploads) -> Replica {
     server.replica_at(Root::Drive, "", 50, uploads)
 }
 
-fn content(dir: &Scratch, name: &str, bytes: &[u8]) -> Content {
-    let path = dir.join(name);
-    std::fs::write(&path, bytes).expect("write");
-    Content::new(path, bytes.len() as u64)
+fn content(bytes: &[u8]) -> Vec<u8> {
+    bytes.to_vec()
 }
 
 fn at(written: &Written) -> BaseVersion {
@@ -36,7 +33,7 @@ async fn send(
     replica: &Replica,
     to: UploadTo,
     base: BaseVersion,
-    content: &Content,
+    content: &dyn Content,
 ) -> Result<Written, PutError> {
     replica
         .upload(Upload {
@@ -111,7 +108,6 @@ impl Kept {
 #[tokio::test]
 async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base() {
     let server = Server::start().await;
-    let dir = Scratch::new("graph-drive-write");
     let replica = drive(&server, Uploads::default());
     let work = replica
         .make_folder(&place(None, "Work"))
@@ -121,7 +117,7 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
         &replica,
         UploadTo::New(place(Some(&work), "a.txt")),
         BaseVersion::Absent,
-        &content(&dir, "a", b"one"),
+        &content(b"one"),
     )
     .await
     .expect("a new file");
@@ -131,7 +127,7 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
         &replica,
         UploadTo::Replace(file.id.clone()),
         at(&file),
-        &content(&dir, "b", b"two"),
+        &content(b"two"),
     )
     .await
     .expect("new content");
@@ -141,7 +137,7 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
         &replica,
         UploadTo::Replace(file.id.clone()),
         at(&file),
-        &content(&dir, "c", b"three"),
+        &content(b"three"),
     )
     .await;
     let Err(PutError::Conflict(conflict)) = &stale else {
@@ -184,9 +180,8 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
 )]
 async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_replica() {
     let server = Server::start().await;
-    let dir = Scratch::new("graph-drive-resume");
     let bytes: Vec<u8> = (0..CHUNK_UNIT * 3 + 10).map(|i| (i % 251) as u8).collect();
-    let big = content(&dir, "big", &bytes);
+    let big = content(&bytes);
     // Every file in a session, one unit a chunk.
     let uploads = Uploads::new(0, 1);
     server.graph.cut_upload_after(1);
@@ -232,19 +227,18 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
 )]
 async fn a_session_replacing_a_file_changed_meanwhile_is_given_up_before_its_last_chunk() {
     let server = Server::start().await;
-    let dir = Scratch::new("graph-drive-changed");
     let uploads = Uploads::new(0, 1);
     let replica = drive(&server, uploads);
     let file = send(
         &replica,
         UploadTo::New(place(None, "big.bin")),
         BaseVersion::Absent,
-        &content(&dir, "a", b"old"),
+        &content(b"old"),
     )
     .await
     .expect("a file");
     let bytes: Vec<u8> = (0..CHUNK_UNIT * 2 + 5).map(|i| (i % 251) as u8).collect();
-    let big = content(&dir, "big", &bytes);
+    let big = content(&bytes);
     let graph = (*server.graph).clone();
     let changing = Changing::new(move || graph.put_root_file("big.bin", b"theirs"));
     let stale = replica
@@ -286,18 +280,17 @@ async fn a_session_replacing_a_file_changed_meanwhile_is_given_up_before_its_las
 )]
 async fn a_resumed_session_asks_first_whether_the_file_it_replaces_changed() {
     let server = Server::start().await;
-    let dir = Scratch::new("graph-drive-resume-changed");
     let uploads = Uploads::new(0, 1);
     let file = send(
         &drive(&server, uploads),
         UploadTo::New(place(None, "big.bin")),
         BaseVersion::Absent,
-        &content(&dir, "a", b"old"),
+        &content(b"old"),
     )
     .await
     .expect("a file");
     let bytes: Vec<u8> = (0..CHUNK_UNIT * 3).map(|i| (i % 251) as u8).collect();
-    let big = content(&dir, "big", &bytes);
+    let big = content(&bytes);
     let kept = Kept::default();
     let upload = |resume| Upload {
         to: UploadTo::Replace(file.id.clone()),
@@ -323,13 +316,12 @@ async fn a_resumed_session_asks_first_whether_the_file_it_replaces_changed() {
 #[tokio::test]
 async fn look_says_what_the_drive_has_and_the_path_limit_is_onedrives() {
     let server = Server::start().await;
-    let dir = Scratch::new("graph-drive-look");
     let replica = drive(&server, Uploads::default());
     let file = send(
         &replica,
         UploadTo::New(place(None, "a.txt")),
         BaseVersion::Absent,
-        &content(&dir, "a", b"hello"),
+        &content(b"hello"),
     )
     .await
     .expect("a file");

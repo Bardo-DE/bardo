@@ -3,8 +3,8 @@
 
 use base_time::UnixSeconds;
 use http_core::http::Response;
+use replica_http::retry_after;
 use sync_core::PutError;
-use sync_core::status::retry_after;
 
 /// A write answered with `response`, which was not a success or a precondition failure.
 pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutError {
@@ -18,8 +18,8 @@ pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use replica_http::RETRY;
     use sync_core::RetryAfter;
-    use sync_core::status::RETRY;
 
     fn answer(status: u16, retry: Option<&str>) -> Response<Vec<u8>> {
         retry

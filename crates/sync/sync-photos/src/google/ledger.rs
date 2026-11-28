@@ -4,7 +4,7 @@
 //! One small JSON file beside the account's journals, replaced whole.
 
 use super::api::AlbumId;
-use crate::cas;
+use crate::disk;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
@@ -76,7 +76,7 @@ impl Ledger {
     pub fn save(&self, path: &Path) -> Result<(), LedgerError> {
         let bytes =
             serde_json::to_vec_pretty(self).map_err(|e| LedgerError::Unsaved(e.to_string()))?;
-        cas::write_atomic(path, &bytes).map_err(|e| LedgerError::Unsaved(e.to_string()))
+        disk::write_atomic(path, &bytes).map_err(|e| LedgerError::Unsaved(e.to_string()))
     }
 }
 

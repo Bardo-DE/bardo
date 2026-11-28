@@ -2,7 +2,7 @@
 //! this computer sends when a person changes it. Items are named by id and placed by a parent id
 //! and a name (never a path: a drive's names are shown through naming rules this crate does not
 //! know). Every change of an existing item carries the version it was made against, and a stale
-//! one is a [`PutError::Conflict`], never an overwrite. Uploads read their file a chunk at a
+//! one is a [`PutError::Conflict`], never an overwrite. Uploads read their bytes a chunk at a
 //! time; a large one runs in an upload session that can be resumed after a restart. A delete
 //! sends the item to the drive's recycle bin, never a permanent delete.
 //!
@@ -14,7 +14,6 @@
 use crate::item::{BaseVersion, ContentHash, RemoteId, RemoteVersion};
 use crate::refusal::PutError;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 
 /// Where an item goes: a folder by id (`None`: the top of the drive) and its name there.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -76,37 +75,30 @@ impl std::fmt::Debug for Session {
     }
 }
 
-/// What an upload sends: a file of `size` bytes, read a chunk at a time, never whole.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Content {
-    path: PathBuf,
-    size: u64,
-}
-
-impl Content {
-    /// The first `size` bytes of the file at `path`.
-    #[must_use]
-    pub fn new(path: PathBuf, size: u64) -> Self {
-        Self { path, size }
-    }
-
+/// What an upload sends: `size` bytes, read a span at a time, never whole. Where they live (a
+/// file on this computer) is the runner's: this crate only asks for spans.
+pub trait Content: std::fmt::Debug + Send + Sync {
     /// How many bytes it is.
-    #[must_use]
-    pub fn size(&self) -> u64 {
-        self.size
-    }
+    fn size(&self) -> u64;
 
     /// `len` bytes from `offset` (fewer at its end).
     ///
     /// # Errors
-    /// The file could not be read, or is shorter than its size.
-    pub fn read(&self, offset: u64, len: u64) -> std::io::Result<Vec<u8>> {
-        use std::os::unix::fs::FileExt;
-        let end = offset.saturating_add(len).min(self.size);
-        let len = usize::try_from(end.saturating_sub(offset)).map_err(std::io::Error::other)?;
-        let mut buffer = vec![0; len];
-        std::fs::File::open(&self.path)?.read_exact_at(&mut buffer, offset)?;
-        Ok(buffer)
+    /// The bytes could not be read.
+    fn read(&self, offset: u64, len: u64) -> std::io::Result<Vec<u8>>;
+}
+
+/// Bytes held in memory.
+impl Content for Vec<u8> {
+    fn size(&self) -> u64 {
+        self.len() as u64
+    }
+
+    fn read(&self, offset: u64, len: u64) -> std::io::Result<Vec<u8>> {
+        let start = usize::try_from(offset).map_or(self.len(), |at| at.min(self.len()));
+        let end =
+            usize::try_from(offset.saturating_add(len)).map_or(self.len(), |at| at.min(self.len()));
+        Ok(self[start..end].to_vec())
     }
 }
 
@@ -143,7 +135,7 @@ pub struct Upload<'a> {
     /// What a replaced file was when the change was made (`Absent` for a new file).
     pub base: BaseVersion,
     /// The bytes.
-    pub content: &'a Content,
+    pub content: &'a dyn Content,
     /// A session from before, resumed when the drive still has it.
     pub resume: Option<Session>,
     /// Told of the session and of the bytes sent.
@@ -262,13 +254,12 @@ mod tests {
     }
 
     #[test]
-    fn content_is_read_a_span_at_a_time_and_stops_at_its_size() {
-        let dir = base_testkit::Scratch::new("sync-content");
-        let path = dir.join("f");
-        std::fs::write(&path, b"0123456789").expect("write");
-        let content = Content::new(path, 8);
+    fn bytes_in_memory_are_read_a_span_at_a_time_and_stop_at_their_end() {
+        let content = b"0123456789".to_vec();
+        assert_eq!(content.size(), 10);
         assert_eq!(content.read(2, 3).expect("read"), b"234");
-        assert_eq!(content.read(6, 10).expect("read"), b"67");
-        assert_eq!(content.read(9, 1).expect("read"), b"");
+        assert_eq!(content.read(6, 10).expect("read"), b"6789");
+        assert_eq!(content.read(10, 1).expect("read"), b"");
+        assert_eq!(content.read(99, 1).expect("read"), b"");
     }
 }

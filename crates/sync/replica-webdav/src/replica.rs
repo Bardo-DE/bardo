@@ -10,9 +10,9 @@ use base_url::WebUrl;
 use http_core::http::header::RANGE;
 use http_core::http::{Method, Request, Response};
 use http_core::{Http, request};
+use replica_http::{read_error, unreached};
 use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
-use sync_core::status::{read_error, unreached};
 use sync_core::{
     BaseVersion, Blob, ByteRange, ChangePage, Cursor, PutError, PutItem, Quota, RemoteId,
     RemoteVersion, Replica, ReplicaError,

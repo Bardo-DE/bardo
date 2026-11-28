@@ -34,8 +34,8 @@ use base_url::WebUrl;
 use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Response};
 use http_core::{Http, request};
+use replica_http::{refused, write_unreached};
 use sync_core::DELETED;
-use sync_core::status::{refused, write_unreached};
 use sync_core::{
     BaseVersion, Conflict, DriveWrite, Found, Place, PutError, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter, Session, Upload, UploadTo, Written,

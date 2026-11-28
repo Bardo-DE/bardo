@@ -853,19 +853,26 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.replica-graph]
 kind = "unclassified"
+[crate.replica-http]
+kind = "unclassified"
 [crate.replica-webdav]
 kind = "unclassified"
 [crate.sync-bus]
 kind = "unclassified"
 lints = "baseline"
 [crate.sync-core]
-kind = "unclassified"
+# pure: the contract and its rules as values; the HTTP part of it is replica-http, the in-memory replica sync-core-fake
+kind = "core"
+[crate.sync-core-fake]
+kind = "test-support"
 [crate.sync-daemon]
 kind = "unclassified"
 [crate.sync-driver]
 kind = "unclassified"
 [crate.sync-engine]
-kind = "unclassified"
+kind = "core"
+[crate.sync-engine-fake]
+kind = "test-support"
 [crate.sync-fake-graph]
 kind = "unclassified"
 [crate.sync-fakes]
@@ -5497,6 +5504,16 @@ forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyri
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, accounts service internals)"
 
 [[reach]]
+crate = "replica-http"
+forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "account-dbus", "account-callers", "account-service", "account-service-core", "account-service-accounts", "account-secrets", "account-store", "account-sheets", "account-client", "account-client-dbus", "account-client-inproc"]
+why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, accounts service internals)"
+
+[[reach]]
+crate = "replica-http"
+forbid = ["account-service", "account-service-core", "account-service-accounts", "account-service-grants", "account-secrets", "account-store", "account-sheets", "account-families", "account-family-oauth", "account-provider", "account-client-inproc", "account-identities", "account-settings"]
+why = "accounts are reached only through account-client, never through the accounts service's own stack"
+
+[[reach]]
 crate = "replica-gdrive"
 forbid = ["zbus", "zvariant", "tokio", "reqwest", "hyper", "ureq", "oo7", "keyring", "secret-service", "interprocess", "service-locator", "ui-settings", "account-dbus", "account-callers", "account-service", "account-service-core", "account-service-accounts", "account-secrets", "account-store", "account-sheets", "account-client", "account-client-dbus", "account-client-inproc"]
 why = "crate stays free of what its table row forbids (bus, runtime, HTTP client, keyring, accounts service internals)"
@@ -5669,25 +5686,37 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-core"
 features = "all"
-exactly = ["account-capability", "base-ids", "base-time", "base-url", "http-core"]
+exactly = ["account-capability", "base-ids", "base-time", "base-url"]
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "sync-core-fake"
+features = "all"
+exactly = ["account-capability", "base-ids", "base-time", "sync-core"]
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
+crate = "replica-http"
+features = "all"
+exactly = ["base-time", "http-core", "sync-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "replica-webdav"
 features = "all"
-exactly = ["account-capability", "account-dav-proto", "base-ids", "base-time", "base-url", "http-core", "sync-core"]
+exactly = ["account-capability", "account-dav-proto", "base-ids", "base-time", "base-url", "http-core", "replica-http", "sync-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "replica-graph"
 features = "all"
-exactly = ["account-capability", "base-ids", "base-time", "base-url", "http-core", "sync-core"]
+exactly = ["account-capability", "base-ids", "base-time", "base-url", "http-core", "replica-http", "sync-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
 crate = "replica-gdrive"
 features = "all"
-exactly = ["account-capability", "base-ids", "base-time", "base-url", "http-core", "sync-core"]
+exactly = ["account-capability", "base-ids", "base-time", "base-url", "http-core", "replica-http", "sync-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
@@ -5739,6 +5768,12 @@ exactly = ["account-capability", "base-ids", "base-time", "sync-core"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]
+crate = "sync-engine-fake"
+features = "all"
+exactly = ["base-ids", "sync-core", "sync-engine"]
+why = "the table of allowed direct edges between workspace crates"
+
+[[edges]]
 crate = "sync-journal-sqlite"
 features = "all"
 exactly = ["base-ids", "base-time", "drive-fs", "sync-core", "sync-engine"]
@@ -5765,7 +5800,7 @@ why = "the table of allowed direct edges between workspace crates"
 [[edges]]
 crate = "sync-pim-feed"
 features = "all"
-exactly = ["account-capability", "account-client", "account-core", "account-dav-proto", "base-ids", "base-time", "base-url", "http-core", "http-relay", "replica-webdav", "sync-core", "sync-engine", "sync-relay", "windows-zones"]
+exactly = ["account-capability", "account-client", "account-core", "account-dav-proto", "base-ids", "base-time", "base-url", "http-core", "http-relay", "replica-http", "replica-webdav", "sync-core", "sync-engine", "sync-relay", "windows-zones"]
 why = "the table of allowed direct edges between workspace crates"
 
 [[edges]]

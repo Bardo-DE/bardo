@@ -12,7 +12,7 @@
 //! The names and the session id come from Google and are never trusted as paths: a session id is
 //! a plain token or refused, a file name is cut to its last component and made unique.
 
-use crate::cas;
+use crate::disk;
 use base_url::WebUrl;
 use http_core::http::request::Builder;
 use http_core::http::{Method, Response};
@@ -348,7 +348,8 @@ impl<H: Http> PhotosPicker<H> {
                 let wanted = safe_name(file.filename.as_deref().unwrap_or(&item.id));
                 let name = unique(&wanted, &names);
                 let target = dir.join(&name);
-                cas::write_atomic(&target, &bytes).map_err(|e| PickerError::Disk(e.to_string()))?;
+                disk::write_atomic(&target, &bytes)
+                    .map_err(|e| PickerError::Disk(e.to_string()))?;
                 names.push(name);
                 files.push(target);
             }

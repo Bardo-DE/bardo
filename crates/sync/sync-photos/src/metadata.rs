@@ -6,7 +6,7 @@
 //! directory. A file from another device is stored as the replica has it (never parsed here:
 //! one device's damaged file must not stop the rest syncing), and the reader skips it.
 
-use super::cas;
+use super::disk;
 use super::hlc::DeviceId;
 use super::library::{PhotoLibrary, manifest_dir};
 use super::originals::blocking;
@@ -105,7 +105,7 @@ impl Dataset for PhotoMetadata {
         let file = self.file_of(&path.0)?;
         let name = path.0.clone();
         blocking(move || {
-            cas::write_atomic(&file, &content.0)
+            disk::write_atomic(&file, &content.0)
                 .map_err(|e| fail("cannot store the manifest", e))?;
             Ok(Scanned {
                 local: LocalId(name.clone()),

@@ -43,7 +43,7 @@ use sync_daemon::settings::{
     CACHE_LIMIT, FILES_NOT_ON, SETTINGS_PATH, SyncSettings, serve_settings,
 };
 use sync_driver::hub::{Access, Hub};
-use sync_engine::scheduler::{Network, Settings};
+use sync_engine::scheduler::Network;
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use sync_journal_sqlite::DriveJournal;
 use sync_pim_mirror::Wiring;
@@ -199,7 +199,7 @@ async fn build(
         accounts: Arc::clone(&hosted.accounts),
         hub: hub.clone(),
         paths: paths.clone(),
-        settings: Settings::quick(),
+        settings: sync_engine_fake::quick_settings(),
         network,
         owners: Access::default(),
         clock: sync_core::Clock::new(base_clock::SystemClock),

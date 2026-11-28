@@ -11,15 +11,16 @@
 mod pull;
 mod push;
 mod resolve;
-use crate::dataset::{Dataset, DatasetError, Direction, replica_hash};
+use crate::dataset::{Dataset, DatasetError, DatasetId, Direction, replica_hash};
 use crate::journal::{JournalError, JournalStore, Op};
+use account_capability::StorageCap;
 use base_time::Clock;
 use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_core::{
     Acknowledgement, BaseVersion, Blob, ByteRange, Conflict, ItemState, JournalItem, LocalId,
     MassDelete, Quota, RemoteId, RemoteSide, RemoteVersion, Replica, ReplicaError, RetryAfter,
-    StoredConflict, StoredTombstone, Tombstone, TombstoneOrigin,
+    StoredAnchor, StoredConflict, StoredTombstone, Tombstone, TombstoneOrigin,
 };
 
 /// Why a cycle stopped without finishing; the next cycle starts over from the journal.
@@ -65,6 +66,17 @@ pub struct Report {
     pub conflicts: Vec<StoredConflict>,
     /// The replica's quota, when it reports one.
     pub quota: Option<Quota>,
+}
+
+/// Where a dataset stands now, from its journal.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Standing {
+    /// The replica's position the journal last stored, with when.
+    pub anchor: Option<StoredAnchor>,
+    /// Items waiting to be sent or fetched.
+    pub pending: usize,
+    /// Conflicts stored and not yet resolved.
+    pub conflicts: usize,
 }
 
 /// A cycle that could not run at all: the journal or the local side failed.
@@ -148,19 +160,42 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
         self.mass_delete_confirmed.store(true, Ordering::SeqCst);
     }
 
-    /// The journal, for status and tests.
-    pub fn journal(&self) -> &dyn JournalStore {
-        &*self.journal
+    /// The dataset's name.
+    pub fn dataset_id(&self) -> DatasetId {
+        self.dataset.id()
     }
 
-    /// The replica.
-    pub fn replica(&self) -> &R {
-        &self.replica
+    /// What the replica offers.
+    pub fn features(&self) -> StorageCap {
+        self.replica.features()
     }
 
-    /// The local side.
-    pub fn dataset(&self) -> &D {
-        &self.dataset
+    /// The journal's stored conflicts, numbered.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the journal cannot be read.
+    pub fn conflicts(&self) -> Result<Vec<StoredConflict>, JournalError> {
+        self.journal.conflicts()
+    }
+
+    /// Where the dataset stands: what a status line says.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the journal cannot be read.
+    pub fn standing(&self) -> Result<Standing, JournalError> {
+        let pending = self
+            .journal
+            .items()?
+            .iter()
+            .filter(|row| row.state.is_pending())
+            .count();
+        Ok(Standing {
+            anchor: self.journal.anchor()?,
+            pending,
+            conflicts: self.journal.conflicts()?.len(),
+        })
     }
 
     /// Runs one cycle. A stop the replica asked for is the report's `outcome`; only a journal or

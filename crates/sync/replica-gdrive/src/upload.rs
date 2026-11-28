@@ -13,7 +13,7 @@ use crate::replica::GdriveReplica;
 use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Response};
 use http_core::{HeaderText, Http, request};
-use sync_core::status::write_unreached;
+use replica_http::write_unreached;
 use sync_core::{PutError, RetryAfter};
 
 impl<H: Http> GdriveReplica<H> {

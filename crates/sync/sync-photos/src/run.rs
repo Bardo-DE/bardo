@@ -90,7 +90,7 @@ fn run_one<R: Replica + 'static, D: Dataset + 'static>(
     let handle = wiring.hub.register(
         DatasetName {
             account: account.clone(),
-            dataset: engine.dataset().id(),
+            dataset: engine.dataset_id(),
         },
         wiring.owners.clone(),
     );

@@ -11,8 +11,9 @@
 //!   needs no conflict handling: the view is the field-wise merge of every file.
 //! - `device`: this machine's name, kept so it is the same after a restart.
 
-use super::cas::{self, ContentId};
-use super::hlc::{DeviceId, HlcClock};
+use super::cas::ContentId;
+use super::disk;
+use super::hlc::{DeviceId, Hlc};
 use super::manifest::{Edit, Manifest};
 use base_time::Clock;
 use std::io;
@@ -65,7 +66,7 @@ struct Inner {
     root: PathBuf,
     device: DeviceId,
     wall: Arc<dyn Clock>,
-    clock: Mutex<HlcClock>,
+    clock: Mutex<Hlc>,
 }
 
 /// One account's library. Cheap to clone: the clones are one library, and its edits are
@@ -111,13 +112,13 @@ impl PhotoLibrary {
         let device = if let Some(stored) = stored {
             stored
         } else {
-            cas::write_atomic(&root.join("device"), device.as_str().as_bytes())
+            disk::write_atomic(&root.join("device"), device.as_str().as_bytes())
                 .map_err(|e| io_error("cannot keep the device name", &e))?;
             device
         };
         let library = Self {
             inner: Arc::new(Inner {
-                clock: Mutex::new(HlcClock::new(device.clone())),
+                clock: Mutex::new(Hlc::start(device.clone())),
                 root,
                 device,
                 wall,
@@ -144,7 +145,7 @@ impl PhotoLibrary {
         &self.inner.root
     }
 
-    fn clock(&self) -> MutexGuard<'_, HlcClock> {
+    fn clock(&self) -> MutexGuard<'_, Hlc> {
         self.inner
             .clock
             .lock()
@@ -197,12 +198,12 @@ impl PhotoLibrary {
         let mut names = Vec::new();
         for path in paths {
             let what = |step: &str| format!("{step} {}", path.display());
-            let (id, _) = cas::hash_file(path).map_err(|e| io_error(what("cannot read"), &e))?;
+            let (id, _) = disk::hash_file(path).map_err(|e| io_error(what("cannot read"), &e))?;
             let target = originals_dir(self.root()).join(id.rel());
             let stored = if target.is_file() {
                 Stored::Duplicate
             } else {
-                cas::copy_atomic(path, &target).map_err(|e| io_error(what("cannot store"), &e))?;
+                disk::copy_atomic(path, &target).map_err(|e| io_error(what("cannot store"), &e))?;
                 let name = path
                     .file_name()
                     .map_or_default(|n| n.to_string_lossy().into_owned());
@@ -225,7 +226,7 @@ impl PhotoLibrary {
         let source = self
             .original(id)
             .ok_or_else(|| PhotosError::Missing(id.clone()))?;
-        cas::copy_atomic(&source, dest).map_err(|e| io_error("cannot export", &e))?;
+        disk::copy_atomic(&source, dest).map_err(|e| io_error("cannot export", &e))?;
         std::fs::metadata(dest)
             .map(|m| m.len())
             .map_err(|e| io_error("cannot export", &e))
@@ -263,7 +264,7 @@ impl PhotoLibrary {
             why: e.to_string(),
         })?;
         let file = manifest_dir(self.root()).join(manifest_file(self.device()));
-        cas::write_atomic(&file, &json).map_err(|e| io_error("cannot write the manifest", &e))
+        disk::write_atomic(&file, &json).map_err(|e| io_error("cannot write the manifest", &e))
     }
 }
 

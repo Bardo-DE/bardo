@@ -13,10 +13,10 @@ use base_time::UnixSeconds;
 use common::{Replica, Server};
 use replica_graph::{Root, Uploads};
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, MemoryReplica, More,
-    PutError, PutItem, PutTarget, Quota, RemoteId, RemoteSide, Replica as _, ReplicaError,
-    Tombstone,
+    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, More, PutError, PutItem,
+    PutTarget, Quota, RemoteId, RemoteSide, Replica as _, ReplicaError, Tombstone,
 };
+use sync_core_fake::MemoryReplica;
 use sync_fake_graph::Knobs;
 
 /// A replica under test, its server, and the two knobs the contract needs from a server: an

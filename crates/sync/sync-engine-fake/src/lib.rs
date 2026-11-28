@@ -1,11 +1,15 @@
-//! A dataset held in memory, for the engine's tests (and for tests of the daemon that need one
-//! running). Local ids are paths; a test edits files through `put` and `remove`.
+//! Test tooling, never a normal dependency: a dataset held in memory and the scheduler settings
+//! the test rigs poll with, for the engine's tests (and for tests of the driver and the daemon
+//! that need an engine running).
+//!
+//! `MemoryDataset`: local ids are paths; a test edits files through `put` and `remove`.
 
-use super::{Dataset, DatasetError, DatasetId, fingerprint};
 use base_ids::Bytes;
 use std::collections::BTreeMap;
 use std::sync::{Mutex, PoisonError};
 use sync_core::{Blob, ConflictRule, ItemPath, LocalId, Scanned};
+use sync_engine::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
+use sync_engine::scheduler::{MeteredPolicy, Settings};
 
 /// Files by path.
 #[derive(Debug)]
@@ -123,5 +127,19 @@ impl Dataset for MemoryDataset {
     async fn discard(&self, item: &LocalId) -> Result<(), DatasetError> {
         self.files().remove(&item.0);
         Ok(())
+    }
+}
+
+/// What every test rig polls with: every second, never batched, and the scheduler's clock ten
+/// times the real one, so a poll takes a tenth of a second.
+#[must_use]
+pub fn quick_settings() -> Settings {
+    Settings {
+        poll_base: 1,
+        poll_max: 1,
+        push_window: 0,
+        batch_window: 0,
+        metered: MeteredPolicy::Pause,
+        time_scale: 10,
     }
 }

@@ -6,7 +6,8 @@
 //! reads; `store` checks the bytes against the name before it writes, so a replica's wrong file
 //! is refused rather than kept under a name it does not have.
 
-use super::cas::{self, ContentId};
+use super::cas::ContentId;
+use super::disk;
 use super::library::{PhotoLibrary, originals_dir};
 use base_ids::Bytes;
 use std::io;
@@ -135,7 +136,7 @@ impl Dataset for PhotoOriginals {
             if std::fs::metadata(&file).is_ok_and(|m| m.len() == size) {
                 return Ok(scanned(&id, size));
             }
-            cas::write_atomic(&file, &content.0)
+            disk::write_atomic(&file, &content.0)
                 .map_err(|e| fail("cannot store the original", e))?;
             Ok(scanned(&id, size))
         })

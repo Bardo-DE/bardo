@@ -29,8 +29,7 @@ tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "tim
 
 [dev-dependencies]
 base-url = { path = "../../base/base-url" }
-sync-core = {path = "../sync-core", features = ["testing"]}
-sync-engine = {path = "../sync-engine", features = ["testing"]}
+sync-core-fake = {path = "../sync-core-fake"}
 tempfile = { workspace = true }
 
 [lints]

@@ -24,8 +24,8 @@ use base_url::WebUrl;
 use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Response};
 use http_core::{Http, request};
+use replica_http::unreached;
 use sync_core::DELETED;
-use sync_core::status::unreached;
 use sync_core::{
     Anchor, Change, ChangePage, Cursor, Folder, ItemKind, ItemPath, More, RemoteId, RemoteItem,
     RemoteVersion, ReplicaError, RetryAfter, Tombstone,

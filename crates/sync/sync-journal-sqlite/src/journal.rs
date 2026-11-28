@@ -64,16 +64,16 @@ impl Journal {
         Self::open_synchronous(path, "FULL")
     }
 
-    /// A journal whose commits are not flushed to the disk, for tests.
+    /// A journal whose commits are not flushed to the disk one by one: a power cut may lose the
+    /// last ones (the process dying does not), which the next cycle redoes from the replica.
     ///
-    /// For the tests that make thousands of commits (the thousand photos), which prove the
-    /// engine, not the disk. The crash tests keep `open`.
+    /// For runs that make thousands of commits (the thousand photos) and prove the engine, not the
+    /// disk. The crash tests keep `open`.
     ///
     /// # Errors
     ///
     /// Returns a [`SqliteError`] when the directory or the database cannot be created, opened or
     /// set up.
-    #[cfg(any(test, feature = "testing"))]
     pub fn open_unflushed(path: &Path) -> Result<Self, SqliteError> {
         Self::open_synchronous(path, "OFF")
     }

@@ -88,7 +88,7 @@ v = { library_read = "picker_only", upload = "present", albums = "app_created", 
 "#;
 
 pub fn quick() -> Settings {
-    Settings::quick()
+    sync_engine_fake::quick_settings()
 }
 
 /// The real grants, until the test hides them (a revoked grant, a removed account), by kind.

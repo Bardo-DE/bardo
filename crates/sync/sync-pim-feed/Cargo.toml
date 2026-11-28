@@ -19,6 +19,7 @@ base-url = { path = "../../base/base-url" }
 http-core = {path = "../../network/http-core"}
 http-relay = {path = "../../accounts/http-relay"}
 replica-webdav = {path = "../replica-webdav"}
+replica-http = {path = "../replica-http"}
 sync-core = {path = "../sync-core"}
 sync-engine = {path = "../sync-engine"}
 sync-relay = {path = "../sync-relay"}

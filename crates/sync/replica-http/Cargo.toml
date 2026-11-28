@@ -1,0 +1,17 @@
+[package]
+name = "replica-http"
+description = "What an HTTP status or a failed request means to the sync contract (a read error, a refused write, a retry wait), written once for the replicas that speak HTTP and the feeds beside them."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-time = { path = "../../base/base-time" }
+http-core = {path = "../../network/http-core"}
+sync-core = {path = "../sync-core"}
+
+[lints]
+workspace = true

@@ -23,8 +23,8 @@ tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "tim
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
-sync-core = {path = "../sync-core", features = ["testing"]}
-sync-engine = {path = "../sync-engine", features = ["testing"]}
+sync-core-fake = {path = "../sync-core-fake"}
+sync-engine-fake = {path = "../sync-engine-fake"}
 sync-journal-sqlite = {path = "../sync-journal-sqlite"}
 tempfile = { workspace = true }
 tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "test-util", "time"]}

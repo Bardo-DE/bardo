@@ -34,7 +34,9 @@ impl std::fmt::Display for DeviceId {
     }
 }
 
-/// One stamp. The derived order is the clock's: wall, counter, device.
+/// One stamp, and the clock of one device: the latest stamp it made or saw. The derived order
+/// is the clock's: wall, counter, device. [`Hlc::tick`] makes the next stamp, strictly later
+/// than every one it made or [`observe`](Hlc::observe)d, whatever the wall clock does.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Hlc {
     wall: u64,
@@ -51,6 +53,31 @@ impl Hlc {
             counter,
             device,
         }
+    }
+
+    /// A clock for `device` that has made and seen nothing.
+    #[must_use]
+    pub fn start(device: DeviceId) -> Self {
+        Self::new(0, 0, device)
+    }
+
+    /// Notes a stamp from anywhere: the next one is later than it.
+    pub fn observe(&mut self, seen: &Hlc) {
+        if (seen.wall, seen.counter) > (self.wall, self.counter) {
+            self.wall = seen.wall;
+            self.counter = seen.counter;
+        }
+    }
+
+    /// The next stamp, the wall clock reading `now_ms`.
+    pub fn tick(&mut self, now_ms: u64) -> Hlc {
+        if now_ms > self.wall {
+            self.wall = now_ms;
+            self.counter = 0;
+        } else {
+            self.counter = self.counter.saturating_add(1);
+        }
+        self.clone()
     }
 
     /// Milliseconds since the epoch, as the writing device read its clock (or a later one it
@@ -96,42 +123,6 @@ impl<'de> Deserialize<'de> for Hlc {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let text = String::deserialize(deserializer)?;
         Hlc::parse(&text).ok_or_else(|| serde::de::Error::custom("not a clock stamp"))
-    }
-}
-
-/// The generator of one device's stamps: strictly increasing, and later than every stamp it was
-/// told it saw, whatever its wall clock does.
-#[derive(Debug, Clone)]
-pub struct HlcClock {
-    last: Hlc,
-}
-
-impl HlcClock {
-    /// A clock for `device` that has made and seen nothing.
-    #[must_use]
-    pub fn new(device: DeviceId) -> Self {
-        Self {
-            last: Hlc::new(0, 0, device),
-        }
-    }
-
-    /// Notes a stamp from anywhere: the next one is later than it.
-    pub fn observe(&mut self, seen: &Hlc) {
-        if (seen.wall, seen.counter) > (self.last.wall, self.last.counter) {
-            self.last.wall = seen.wall;
-            self.last.counter = seen.counter;
-        }
-    }
-
-    /// The next stamp, the wall clock reading `now_ms`.
-    pub fn tick(&mut self, now_ms: u64) -> Hlc {
-        if now_ms > self.last.wall {
-            self.last.wall = now_ms;
-            self.last.counter = 0;
-        } else {
-            self.last.counter = self.last.counter.saturating_add(1);
-        }
-        self.last.clone()
     }
 }
 
@@ -198,7 +189,7 @@ mod tests {
 
     #[test]
     fn the_clock_never_repeats_or_goes_back_even_when_the_wall_clock_does() {
-        let mut clock = HlcClock::new(device("a"));
+        let mut clock = Hlc::start(device("a"));
         let first = clock.tick(1_000);
         let same_ms = clock.tick(1_000);
         let back = clock.tick(500);
@@ -209,7 +200,7 @@ mod tests {
 
     #[test]
     fn a_stamp_seen_from_another_device_puts_the_next_one_after_it() {
-        let mut clock = HlcClock::new(device("a"));
+        let mut clock = Hlc::start(device("a"));
         let theirs = Hlc::new(9_000, 3, device("b"));
         clock.observe(&theirs);
         let next = clock.tick(1_000);

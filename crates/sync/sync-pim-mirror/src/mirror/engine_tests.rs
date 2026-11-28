@@ -10,9 +10,10 @@ use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_core::RemoteId;
 use sync_core::{
-    BaseVersion, ByteRange, ChangePage, Cursor, MemoryReplica, PutError, PutItem, PutTarget, Quota,
-    RemoteVersion, Replica, ReplicaError,
+    BaseVersion, ByteRange, ChangePage, Cursor, PutError, PutItem, PutTarget, Quota, RemoteVersion,
+    Replica, ReplicaError,
 };
+use sync_core_fake::MemoryReplica;
 use sync_engine::engine::Engine;
 use sync_vdir::items_in;
 

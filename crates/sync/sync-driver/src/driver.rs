@@ -89,7 +89,7 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
             }
             let now = self.engine_now();
             let inputs = Inputs {
-                delta: self.engine.replica().features().delta,
+                delta: self.engine.features().delta,
                 last: self.last,
                 push: self.waiting,
                 pausing: self.handle.pausing(),
@@ -295,7 +295,7 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
                 uploaded: report.uploaded as u64,
             });
         }
-        let stored = self.engine.journal().conflicts().unwrap_or_default();
+        let stored = self.engine.conflicts().unwrap_or_default();
         for conflict in &report.conflicts {
             self.handle.tell(Event::Conflict {
                 dataset: dataset.clone(),
@@ -305,20 +305,14 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
     }
 
     fn publish(&self, now: base_time::UnixSeconds) {
-        let journal = self.engine.journal();
-        let anchor_age = journal
-            .anchor()
-            .ok()
-            .flatten()
+        let standing = self.engine.standing().unwrap_or_default();
+        let anchor_age = standing
+            .anchor
             .map(|stored| now.0.saturating_sub(stored.at.0).max(0));
-        let pending = journal.items().map_or(0, |rows| {
-            rows.iter().filter(|row| row.state.is_pending()).count()
-        });
-        let conflicts = journal.conflicts().map_or(0, |all| all.len());
         self.handle.publish(StatusSnapshot {
             anchor_age,
-            pending: pending as u64,
-            conflicts: conflicts as u64,
+            pending: standing.pending as u64,
+            conflicts: standing.conflicts as u64,
             pausing: self.handle.pausing(),
             quota: self.quota,
             needs_confirmation: self.held,

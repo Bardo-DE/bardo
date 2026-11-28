@@ -30,7 +30,7 @@ use base_url::percent::encode_unreserved;
 use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Response};
 use http_core::{HeaderText, Http, request};
-use sync_core::status::{refused, write_unreached};
+use replica_http::{refused, write_unreached};
 use sync_core::{
     BaseVersion, Conflict, DriveWrite, Found, Place, PutError, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter, Session, Upload, UploadTo, Written,

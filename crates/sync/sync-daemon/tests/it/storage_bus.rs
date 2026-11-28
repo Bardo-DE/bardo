@@ -72,7 +72,7 @@ v = { access = "read_write", delta = "poll", quota = "reported", scope = "app_fo
 "#;
 
 fn quick() -> Settings {
-    Settings::quick()
+    sync_engine_fake::quick_settings()
 }
 
 /// The real grants, until the test hides them (a revoked grant, a removed account).

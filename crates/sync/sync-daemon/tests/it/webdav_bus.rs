@@ -39,9 +39,9 @@ use sync_daemon::service::serve;
 use sync_driver::Driver;
 use sync_driver::clock::Wall;
 use sync_driver::hub::{Access as Visible, DatasetName, Hub};
-use sync_engine::dataset::MemoryDataset;
 use sync_engine::engine::Engine;
 use sync_engine::scheduler::{Network, Settings};
+use sync_engine_fake::MemoryDataset;
 use sync_journal_sqlite::Journal;
 use sync_relay::webdav::webdav_replica;
 use tokio::sync::{Notify, watch};
@@ -52,7 +52,7 @@ const GRANT: &str = "sync-grant";
 const PHOTOS: &str = "org.bardo.Photos";
 
 fn quick() -> Settings {
-    Settings::quick()
+    sync_engine_fake::quick_settings()
 }
 
 async fn status_quota(sync: &SyncProxy<'_>, dataset: &str) -> Option<(u64, Option<u64>)> {

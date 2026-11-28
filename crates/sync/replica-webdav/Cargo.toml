@@ -15,6 +15,7 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 http-core = {path = "../../network/http-core"}
+replica-http = {path = "../replica-http"}
 sync-core = {path = "../sync-core"}
 tracing = { workspace = true }
 
@@ -22,7 +23,7 @@ tracing = { workspace = true }
 base64 = { workspace = true }
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 http-relay = {path = "../../accounts/http-relay"}
-sync-core = {path = "../sync-core", features = ["testing"]}
+sync-core-fake = {path = "../sync-core-fake"}
 roxmltree = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

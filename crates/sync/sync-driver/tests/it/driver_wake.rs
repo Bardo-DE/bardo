@@ -81,7 +81,7 @@ async fn a_pause_made_while_a_cycle_waits_for_its_turn_lets_no_cycle_through() {
     let driver = Driver::new(
         world.engine(),
         handle,
-        Settings::quick(),
+        sync_engine_fake::quick_settings(),
         network,
         Arc::new(Notify::new()),
         1,

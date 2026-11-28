@@ -36,7 +36,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use sync_daemon::keep::sync_app as syncd_app;
 use sync_driver::hub::{Access, Hub};
-use sync_engine::scheduler::{Network, Settings};
+use sync_engine::scheduler::Network;
 use sync_pim_feed::{PimKind, is_complete};
 use sync_pim_mirror::{ClientGrants, PimConfig, PimSupervisor, Wiring};
 use sync_vdir::{COLOR, DISPLAYNAME, items_in};
@@ -268,7 +268,7 @@ async fn rig(kinds: &[PimKind]) -> Rig {
         accounts: Arc::clone(&accounts),
         hub: hub.clone(),
         paths: paths.clone(),
-        settings: Settings::quick(),
+        settings: sync_engine_fake::quick_settings(),
         network,
         owners: Access::default(),
         clock: sync_core::Clock::new(base_clock::SystemClock),

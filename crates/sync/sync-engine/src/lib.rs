@@ -5,8 +5,6 @@
 //! - `journal`: the journal contract (`Op`, `JournalStore`); `sync-journal-sqlite` is the store.
 //! - `scheduler`: the pure rules of when a dataset looks next (poll, backoff, push window,
 //!   metered networks), over inputs the driver reads.
-//!
-//! `MemoryDataset` and `Settings::quick` are behind the `testing` feature.
 
 pub mod dataset;
 pub mod engine;

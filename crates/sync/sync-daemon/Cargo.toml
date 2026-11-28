@@ -54,8 +54,8 @@ base-stream = { path = "../../base/base-stream" }
 sync-daemon = {path = ".", features = ["test-system-callers", "test-proc-root"]}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
-sync-engine = {path = "../sync-engine", features = ["testing"]}
-sync-journal-sqlite = {path = "../sync-journal-sqlite", features = ["testing"]}
+sync-engine-fake = {path = "../sync-engine-fake"}
+sync-journal-sqlite = {path = "../sync-journal-sqlite"}
 sync-relay = {path = "../sync-relay"}
 base-url = { path = "../../base/base-url" }
 http-core = {path = "../../network/http-core"}
@@ -77,7 +77,7 @@ account-secrets = {features = ["testing"], path = "../../accounts/account-secret
 account-service = {path = "../../accounts/account-service"}
 account-service-core = {path = "../../accounts/account-service-core"}
 drive-fs = {path = "../drive-fs", features = ["testing"]}
-sync-core = {path = "../sync-core", features = ["testing"]}
+sync-core-fake = {path = "../sync-core-fake"}
 # The words the fake of Storage1 gives are held to the live ones (tests/it/fake_words.rs).
 sync-fakes = {path = "../sync-fakes"}
 # A paused clock for the stop wait's timing test.

@@ -7,7 +7,7 @@
 use crate::json::ErrorBody;
 use base_time::UnixSeconds;
 use http_core::http::Response;
-use sync_core::status::{self, retry_after};
+use replica_http::retry_after;
 use sync_core::{ExportError, PutError, ReplicaError, RetryAfter};
 
 /// How long to wait when a day's limit is used up: an hour, then again.
@@ -39,7 +39,7 @@ pub fn read_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> ReplicaErro
         403 if throttled(reason(response).as_deref()) => {
             ReplicaError::Transient(retry_after(response, now))
         }
-        _ => status::read_error(response, now),
+        _ => replica_http::read_error(response, now),
     }
 }
 
@@ -73,7 +73,7 @@ pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sync_core::status::RETRY;
+    use replica_http::RETRY;
 
     fn answer(status: u16, retry: Option<&str>, reason: Option<&str>) -> Response<Vec<u8>> {
         let body = reason.map_or_default(|r| {

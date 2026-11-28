@@ -19,16 +19,11 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 base-url = { path = "../../base/base-url" }
-sync-core = {path = "../sync-core", features = ["testing"]}
-sync-engine = { path = ".", features = ["testing"] }
-sync-journal-sqlite = {path = "../sync-journal-sqlite", features = ["testing"]}
+sync-core-fake = {path = "../sync-core-fake"}
+sync-engine-fake = {path = "../sync-engine-fake"}
+sync-journal-sqlite = {path = "../sync-journal-sqlite"}
 tempfile = { workspace = true }
 tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "time"]}
-
-[features]
-# `MemoryDataset`, the in-memory local side the engine's tests (and the daemon's tests) drive,
-# and `Settings::quick`.
-testing = []
 
 [lints]
 workspace = true

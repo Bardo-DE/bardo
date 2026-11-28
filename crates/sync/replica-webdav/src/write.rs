@@ -12,8 +12,8 @@ use account_dav_proto::parse_multistatus;
 use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Request, Response};
 use http_core::{HeaderText, Http, request, webdav};
+use replica_http::write_unreached;
 use sync_core::DELETED;
-use sync_core::status::write_unreached;
 use sync_core::{
     BaseVersion, Conflict, PutError, PutItem, PutTarget, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter,

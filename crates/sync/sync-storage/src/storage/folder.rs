@@ -4,7 +4,7 @@
 //! The replica is untrusted input: a path that is empty, absolute or climbs (`..`) is refused
 //! before any file is touched. Files are written whole under a dot-temporary name and renamed
 //! over their place, so a reader (or the scan) never sees half a file; the temporary names
-//! (`.tmp-*`, see `cas`) are never listed. Symbolic links are not followed or listed. Empty
+//! (`.tmp-*`, see `disk`) are never listed. Symbolic links are not followed or listed. Empty
 //! folders are not items.
 
 use base_ids::Bytes;
@@ -12,7 +12,7 @@ use std::io;
 use std::path::{Component, Path, PathBuf};
 use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};
 use sync_engine::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
-use sync_photos::cas::{self, hash_file};
+use sync_photos::disk::{self, hash_file};
 
 /// The dataset's name.
 pub const SLUG: &str = "storage_app_folder";
@@ -189,7 +189,8 @@ impl Dataset for FolderDataset {
         let rel = path.0.clone();
         blocking(move || {
             let (hash, size) = (fingerprint(&content.0), content.0.len() as u64);
-            cas::write_atomic(&target, &content.0).map_err(|e| fail("cannot store the file", e))?;
+            disk::write_atomic(&target, &content.0)
+                .map_err(|e| fail("cannot store the file", e))?;
             if let Some(old) = moved_from {
                 let _ = std::fs::remove_file(&old);
                 if let Some(parent) = old.parent() {

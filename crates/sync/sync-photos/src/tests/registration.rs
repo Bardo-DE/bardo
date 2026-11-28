@@ -10,10 +10,10 @@ use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
 use std::path::Path;
 use std::sync::Arc;
-use sync_core::MemoryReplica;
+use sync_core_fake::MemoryReplica;
 use sync_driver::hub::{Access, DatasetName, Hub};
 use sync_driver::removal::wipe;
-use sync_engine::scheduler::{Network, Settings};
+use sync_engine::scheduler::Network;
 use sync_xdg::{AccountDir, Paths};
 
 fn replica() -> MemoryReplica {
@@ -46,7 +46,7 @@ fn wiring(root: &Path) -> PhotosWiring {
             drive_cache: root.join("cache/bardo/sync/drives"),
             settings: root.join("config/bardo/sync/syncd.toml"),
         },
-        settings: Settings::quick(),
+        settings: sync_engine_fake::quick_settings(),
         network,
         owners: Access::default(),
     }

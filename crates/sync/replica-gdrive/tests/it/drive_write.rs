@@ -5,7 +5,6 @@
 
 use crate::common;
 
-use base_testkit::Scratch;
 use common::{Replica, Server};
 use replica_gdrive::{CHUNK_UNIT, Root, Uploads};
 use std::sync::Mutex;
@@ -18,10 +17,8 @@ fn drive(server: &Server, uploads: Uploads) -> Replica {
     server.replica_at(Root::Drive, "", 50, uploads)
 }
 
-fn content(dir: &Scratch, name: &str, bytes: &[u8]) -> Content {
-    let path = dir.join(name);
-    std::fs::write(&path, bytes).expect("write");
-    Content::new(path, bytes.len() as u64)
+fn content(bytes: &[u8]) -> Vec<u8> {
+    bytes.to_vec()
 }
 
 fn at(written: &Written) -> BaseVersion {
@@ -36,7 +33,7 @@ async fn send(
     replica: &Replica,
     to: UploadTo,
     base: BaseVersion,
-    content: &Content,
+    content: &dyn Content,
 ) -> Result<Written, PutError> {
     replica
         .upload(Upload {
@@ -111,7 +108,6 @@ impl Kept {
 #[tokio::test]
 async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
     let server = Server::start().await;
-    let dir = Scratch::new("gdrive-drive-write");
     let replica = drive(&server, Uploads::default());
     let work = replica
         .make_folder(&place(None, "Work"))
@@ -121,7 +117,7 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
         &replica,
         UploadTo::New(place(Some(&work), "a.txt")),
         BaseVersion::Absent,
-        &content(&dir, "a", b"one"),
+        &content(b"one"),
     )
     .await
     .expect("a new file");
@@ -134,7 +130,7 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
         &replica,
         UploadTo::Replace(file.id.clone()),
         at(&file),
-        &content(&dir, "b", b"two"),
+        &content(b"two"),
     )
     .await
     .expect("new content");
@@ -144,7 +140,7 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
         &replica,
         UploadTo::Replace(file.id.clone()),
         at(&file),
-        &content(&dir, "c", b"three"),
+        &content(b"three"),
     )
     .await;
     let Err(PutError::Conflict(conflict)) = &stale else {
@@ -189,9 +185,8 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
 )]
 async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_replica() {
     let server = Server::start().await;
-    let dir = Scratch::new("gdrive-drive-resume");
     let bytes: Vec<u8> = (0..CHUNK_UNIT * 3 + 10).map(|i| (i % 251) as u8).collect();
-    let big = content(&dir, "big", &bytes);
+    let big = content(&bytes);
     // Every file in a session, one unit a chunk.
     let uploads = Uploads::new(0, 1);
     server.google.drive_cut_upload_after(1);
@@ -233,7 +228,6 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
 #[tokio::test]
 async fn an_item_made_under_a_reserved_id_is_found_again_and_never_made_twice() {
     let server = Server::start().await;
-    let dir = Scratch::new("gdrive-drive-reserved");
     let replica = drive(&server, Uploads::default());
     let ids = replica.reserve_ids(2).await.expect("ids");
     assert_eq!(ids.len(), 2);
@@ -258,7 +252,7 @@ async fn an_item_made_under_a_reserved_id_is_found_again_and_never_made_twice() 
             file.name = "b.txt".into();
         }
         let replica = drive(&server, uploads);
-        let bytes = content(&dir, &file.name, b"one");
+        let bytes = content(b"one");
         let sent = send(
             &replica,
             UploadTo::New(file.clone()),
@@ -304,19 +298,18 @@ async fn an_item_made_under_a_reserved_id_is_found_again_and_never_made_twice() 
 )]
 async fn a_session_replacing_a_file_changed_meanwhile_stops_before_its_last_chunk() {
     let server = Server::start().await;
-    let dir = Scratch::new("gdrive-drive-changed");
     let uploads = Uploads::new(0, 1);
     let replica = drive(&server, uploads);
     let file = send(
         &replica,
         UploadTo::New(place(None, "big.bin")),
         BaseVersion::Absent,
-        &content(&dir, "a", b"old"),
+        &content(b"old"),
     )
     .await
     .expect("a file");
     let bytes: Vec<u8> = (0..CHUNK_UNIT * 2 + 5).map(|i| (i % 251) as u8).collect();
-    let big = content(&dir, "big", &bytes);
+    let big = content(&bytes);
     let google = (*server.google).clone();
     let changing = Changing::new(move || google.my_drive_put_file("big.bin", b"theirs"));
     let stale = replica

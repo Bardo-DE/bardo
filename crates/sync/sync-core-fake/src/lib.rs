@@ -1,18 +1,17 @@
 //! The reference replica: the contract's semantics in memory, for the contract tests and for
-//! syncd's tests. Anchors are `seq-<n>` positions in its log; `compact` expires them all.
+//! syncd's tests (test tooling, never a normal dependency). Anchors are `seq-<n>` positions in
+//! its log; `compact` expires them all.
 
-use crate::anchor::{Anchor, Cursor};
-use crate::change::{Change, ChangePage, More, Tombstone};
-use crate::item::{BaseVersion, ItemKind, RemoteId, RemoteItem, RemoteVersion};
-use crate::quota::Quota;
-use crate::refusal::{Conflict, PutError, RemoteSide, ReplicaError};
-use crate::replica::Replica;
-use crate::transfer::{Blob, ByteRange, PutItem, PutTarget};
 use account_capability::StorageCap;
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use std::collections::BTreeMap;
 use std::sync::{Mutex, MutexGuard};
+use sync_core::{
+    Anchor, BaseVersion, Blob, ByteRange, Change, ChangePage, Conflict, Cursor, ItemKind, More,
+    PutError, PutItem, PutTarget, Quota, RemoteId, RemoteItem, RemoteSide, RemoteVersion, Replica,
+    ReplicaError, Tombstone,
+};
 
 /// A replica held in memory.
 #[derive(Debug)]

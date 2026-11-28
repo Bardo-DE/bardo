@@ -13,8 +13,9 @@
 //!
 //! - `desk`: [`desk::Pickers`], the Google Photos Pickers of the accounts syncd runs, and
 //!   [`desk::PickerDesk`], the seam the bus object asks through.
-//! - `cas`: [`ContentId`] and the atomic file writes.
-//! - `hlc`: [`Hlc`], [`HlcClock`] and [`DeviceId`].
+//! - `cas`: [`ContentId`], pure.
+//! - `disk`: hashing a file and the atomic file writes.
+//! - `hlc`: [`Hlc`], the stamp and one device's clock, and [`DeviceId`].
 //! - `manifest`: [`Manifest`], its merge and the [`Edit`]s.
 //! - `library`: [`PhotoLibrary`], the API the Photos app will call (`import`, `export`,
 //!   `manifest`, `edit`).
@@ -29,6 +30,7 @@
 
 pub mod cas;
 pub mod desk;
+pub mod disk;
 pub mod google;
 mod hlc;
 mod library;
@@ -42,7 +44,7 @@ mod testing;
 mod tests;
 
 pub use cas::ContentId;
-pub use hlc::{DeviceId, Hlc, HlcClock};
+pub use hlc::{DeviceId, Hlc};
 pub use library::{Imported, PhotoLibrary, PhotosError, Stored};
 pub use manifest::{Edit, Manifest, Mark, Photo, PhotoMeta, Stamped};
 pub use metadata::PhotoMetadata;

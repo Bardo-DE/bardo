@@ -111,6 +111,51 @@ impl Op {
     }
 }
 
+/// The first `size` bytes of a snapshot file, read a span at a time (what an upload sends).
+#[derive(Debug)]
+struct FileContent {
+    path: PathBuf,
+    size: u64,
+}
+
+impl FileContent {
+    fn new(path: PathBuf, size: u64) -> Self {
+        Self { path, size }
+    }
+}
+
+impl Content for FileContent {
+    fn size(&self) -> u64 {
+        self.size
+    }
+
+    fn read(&self, offset: u64, len: u64) -> std::io::Result<Vec<u8>> {
+        use std::os::unix::fs::FileExt;
+        let end = offset.saturating_add(len).min(self.size);
+        let len = usize::try_from(end.saturating_sub(offset)).map_err(std::io::Error::other)?;
+        let mut buffer = vec![0; len];
+        std::fs::File::open(&self.path)?.read_exact_at(&mut buffer, offset)?;
+        Ok(buffer)
+    }
+}
+
+#[cfg(test)]
+mod file_content_tests {
+    use super::*;
+
+    #[test]
+    fn a_file_is_read_a_span_at_a_time_and_stops_at_its_size() {
+        let dir = base_testkit::Scratch::new("drive-content");
+        let path = dir.join("f");
+        std::fs::write(&path, b"0123456789").expect("write");
+        let content = FileContent::new(path, 8);
+        assert_eq!(content.size(), 8);
+        assert_eq!(content.read(2, 3).expect("read"), b"234");
+        assert_eq!(content.read(6, 10).expect("read"), b"67");
+        assert_eq!(content.read(9, 1).expect("read"), b"");
+    }
+}
+
 /// A test's way to know the sender has looked again at what is to send: it asks with a number,
 /// and the sender, each time it finds nothing ready, says the last number it saw before looking.
 #[cfg(test)]
@@ -953,7 +998,7 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                 resume,
                 ..
             } => {
-                let content = Content::new(snapshot.clone(), *size);
+                let content = FileContent::new(snapshot.clone(), *size);
                 let upload = Upload {
                     to: to.clone(),
                     base: base.clone(),

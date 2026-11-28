@@ -32,9 +32,9 @@ use http_core::http::{Method, Response};
 use http_core::{Http, HttpError, request};
 use http_relay::{RelayDial, RelayHttp};
 use json::{Calendar, CalendarPage, Event, EventPage};
+use replica_http::retry_after;
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
-use sync_core::status::retry_after;
 use sync_core::{Clock, DELETED};
 use sync_core::{
     ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter,

@@ -12,7 +12,7 @@ use base_testkit::PrivateBus;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_driver::hub::{Access, Hub};
-use sync_engine::scheduler::{Network, Settings};
+use sync_engine::scheduler::Network;
 use sync_pim_feed::PimKind;
 use sync_pim_mirror::{AccountdUnavailableError, PimConfig, PimGrants, PimSupervisor, Wiring};
 use sync_xdg::Paths;
@@ -62,7 +62,7 @@ async fn a_look_that_could_not_ask_for_grants_says_it_was_not_whole_and_the_next
         accounts: hosted.accounts,
         hub: Hub::default(),
         paths,
-        settings: Settings::quick(),
+        settings: sync_engine_fake::quick_settings(),
         network,
         owners: Access::default(),
         clock: sync_core::Clock::new(base_clock::SystemClock),

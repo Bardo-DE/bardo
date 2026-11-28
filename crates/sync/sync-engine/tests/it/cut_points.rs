@@ -49,25 +49,21 @@ fn converged() -> Files {
     .collect()
 }
 
-async fn assert_converged(world: &World, engine: &TestEngine, what: &str) {
+async fn assert_converged(world: &World, what: &str) {
     assert_eq!(world.dataset.snapshot(), converged(), "{what}: local side");
     assert_eq!(world.remote_files().await, converged(), "{what}: replica");
-    let rows = engine.journal().items().expect("items");
+    let rows = world.journal().items().expect("items");
     assert!(
         rows.iter().all(|r| r.state == ItemState::Synced),
         "{what}: {rows:?}"
     );
     assert_eq!(rows.len(), converged().len(), "{what}: one row per file");
     assert!(
-        engine.journal().conflicts().expect("conflicts").is_empty(),
+        world.journal().conflicts().expect("conflicts").is_empty(),
         "{what}"
     );
     assert!(
-        engine
-            .journal()
-            .tombstones()
-            .expect("tombstones")
-            .is_empty(),
+        world.journal().tombstones().expect("tombstones").is_empty(),
         "{what}: compacted"
     );
 }
@@ -77,11 +73,11 @@ async fn every_cut_point_converges(name: &str, features: StorageCap) {
     let world = World::new(name, features.clone(), 3);
     let (engine, ids) = setup(&world).await;
     mutate(&world, &ids).await;
-    let before = engine.journal().writes();
+    let before = world.journal().writes();
     engine.sync_once().await.expect("clean cycle");
-    let writes = engine.journal().writes() - before;
+    let writes = world.journal().writes() - before;
     settle(&engine, 4).await;
-    assert_converged(&world, &engine, "clean").await;
+    assert_converged(&world, "clean").await;
     assert!(
         writes >= 8,
         "the scenario should have many cut points, has {writes}"
@@ -100,7 +96,7 @@ async fn every_cut_point_converges(name: &str, features: StorageCap) {
         drop(engine);
         let restarted = world.engine();
         settle(&restarted, 6).await;
-        assert_converged(&world, &restarted, &format!("cut {cut} of {writes}")).await;
+        assert_converged(&world, &format!("cut {cut} of {writes}")).await;
     }
 }
 
