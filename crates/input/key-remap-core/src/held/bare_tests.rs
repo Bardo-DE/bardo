@@ -1,16 +1,16 @@
 use super::bare::NEUTRAL;
 use super::*;
 use crate::event::{DeviceId, Edge, Logical, OutEvent, Physical};
-use crate::key::Key;
+use key_types::KeyCode;
 
 const D0: DeviceId = DeviceId(0);
-const OPTION: At = (D0, Physical(Key::LEFTALT));
-const LEFT: At = (D0, Physical(Key::from_code(105)));
-const LETTER: At = (D0, Physical(Key::from_code(30)));
-const ALT: Logical = Logical(Key::LEFTALT);
-const SUPER: Logical = Logical(Key::LEFTMETA);
-const CTRL: Logical = Logical(Key::LEFTCTRL);
-const HOME: Logical = Logical(Key::from_code(102));
+const OPTION: At = (D0, Physical(KeyCode::LEFTALT));
+const LEFT: At = (D0, Physical(KeyCode::from_code(105)));
+const LETTER: At = (D0, Physical(KeyCode::from_code(30)));
+const ALT: Logical = Logical(KeyCode::LEFTALT);
+const SUPER: Logical = Logical(KeyCode::LEFTMETA);
+const CTRL: Logical = Logical(KeyCode::LEFTCTRL);
+const HOME: Logical = Logical(KeyCode::from_code(102));
 
 fn down(key: Logical) -> OutEvent {
     OutEvent::Key {

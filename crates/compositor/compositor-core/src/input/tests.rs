@@ -1,14 +1,15 @@
 //! Properties over every origin, target and use (the tables in `tests/input.rs` pin examples),
-//! and the keysym names behind the chord text.
+//! and the chord text.
 
 use super::{
     Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget, InputUse,
-    Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
+    Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
 };
 use crate::ids::{ClientKey, LayerKey, LeaseId, WindowId};
 use crate::lock::{LockHolder, LockState, LockSurfaces};
 use crate::time::Mono;
 use desktop_protocols::vocab::HeldMods;
+use key_types::Keysym;
 use proptest::prelude::*;
 use std::time::Duration;
 
@@ -167,50 +168,10 @@ proptest! {
     }
 
     #[test]
-    fn every_keysym_reads_back_from_its_name(code in any::<u32>()) {
-        let keysym = Keysym(code);
-        prop_assert_eq!(Keysym::named(&keysym.name()), Some(keysym));
-    }
-
-    #[test]
     fn every_chord_reads_back_from_its_text(mods in 0u32..64, key in any::<u32>()) {
         let held = HeldMods(mods & !HeldMods::CAPS_LOCK.0);
         let chord = Chord { mods: held, key: Keysym(key) };
         prop_assert_eq!(Chord::parse(&chord.text()), Ok(chord));
-    }
-}
-
-/// A text, the keysym it names.
-const NAMES: &[(&str, Option<u32>)] = &[
-    ("a", Some(0x61)),
-    ("A", Some(0x41)),
-    ("0", Some(0x30)),
-    ("space", Some(0x20)),
-    ("plus", Some(0x2b)),
-    ("grave", Some(0x60)),
-    ("Return", Some(0xff0d)),
-    ("Page_Down", Some(0xff56)),
-    ("F1", Some(0xffbe)),
-    ("F24", Some(0xffd5)),
-    ("F0", None),
-    ("F25", None),
-    ("F05", None),
-    ("U20AC", Some(0x0100_20ac)),
-    ("U20ac", Some(0x0100_20ac)),
-    ("U0041", None),
-    ("0xff09", Some(0xff09)),
-    ("0x", None),
-    ("0x+5", None),
-    ("+", None),
-    ("Hyper_L", None),
-    ("", None),
-    ("ab", None),
-];
-
-#[test]
-fn keysym_names_table() {
-    for (text, want) in NAMES {
-        assert_eq!(Keysym::named(text), want.map(Keysym), "{text:?}");
     }
 }
 

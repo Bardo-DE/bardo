@@ -1,9 +1,9 @@
 //! `struct input_event` and the two directions of translation: what a grabbed device sent
 //! (`decode`) and what the key remap daemon writes (`encode`). Pure.
 
-use crate::Key;
 use crate::{Edge, Logical, OutEvent, Physical};
 use key_remap_evdev::EVENT_BYTES;
+use key_types::KeyCode;
 
 pub(crate) const EV_SYN: u16 = 0x00;
 pub(crate) const EV_KEY: u16 = 0x01;
@@ -92,7 +92,7 @@ pub(crate) fn decode(e: InputEvent) -> Decoded {
         (EV_KEY, code) if is_button(code) => Decoded::Pointer(e),
         (EV_KEY, 0) => Decoded::Other,
         (EV_KEY, code) => Edge::from_value(e.value).map_or(Decoded::Other, |edge| {
-            Decoded::Key(Physical(Key::from_code(code)), edge)
+            Decoded::Key(Physical(KeyCode::from_code(code)), edge)
         }),
         _ => Decoded::Other,
     }
@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn decode_table() {
-        let key = |code, edge| Decoded::Key(Physical(Key::from_code(code)), edge);
+        let key = |code, edge| Decoded::Key(Physical(KeyCode::from_code(code)), edge);
         let ptr = |kind, code, value| Decoded::Pointer(ev(kind, code, value));
         let cases: &[(&str, InputEvent, Decoded)] = &[
             ("a pressed", ev(EV_KEY, 30, 1), key(30, Edge::Press)),
@@ -216,7 +216,7 @@ mod tests {
     #[test]
     fn encode_writes_keys_with_their_edge_and_sync_as_report() {
         let key = |code, edge| OutEvent::Key {
-            key: Logical(Key::from_code(code)),
+            key: Logical(KeyCode::from_code(code)),
             edge,
         };
         let batch = [
@@ -244,12 +244,12 @@ mod tests {
         for code in [1u16, 30, 57, 125, 248, 0x160, 0x2bf] {
             for edge in [Edge::Press, Edge::Release, Edge::Repeat] {
                 let out = OutEvent::Key {
-                    key: Logical(Key::from_code(code)),
+                    key: Logical(KeyCode::from_code(code)),
                     edge,
                 };
                 let wire = encode(&[out])[0];
                 let back = decode(InputEvent::from_bytes(&wire.to_bytes()));
-                assert_eq!(back, Decoded::Key(Physical(Key::from_code(code)), edge));
+                assert_eq!(back, Decoded::Key(Physical(KeyCode::from_code(code)), edge));
             }
         }
         let sync = encode(&[OutEvent::Sync])[0];

@@ -3,7 +3,13 @@
 //! bind (letters, digits, punctuation, the editing and function keys, the media keys) and
 //! reaches any other keysym by its code: `0x1008ff13`, or `U20AC` for a Unicode character.
 
-use super::Keysym;
+use keyboard_types::{Key, Location};
+
+use crate::logical;
+
+/// An XKB keysym: what a key means after the layout (`0x20` is space).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct Keysym(pub u32);
 
 /// The first keysym of the Unicode range: `0x0100_0000 + code point`.
 const UNICODE_BASE: u32 = 0x0100_0000;
@@ -86,6 +92,21 @@ impl Keysym {
             .map(Keysym)
     }
 
+    /// The logical key a press of this keysym means: the named key if there is one, else the
+    /// text the press produced (`text` is xkb's UTF-8 for it), else the keysym's own character,
+    /// else `Unidentified`. Control characters in `text` (Ctrl+C yields U+0003) are not text, so
+    /// they fall through to the keysym's character, which is what a shortcut matcher wants.
+    #[must_use]
+    pub fn logical_key(self, text: Option<&str>) -> Key {
+        logical::logical_key(xkeysym::Keysym::new(self.0), text)
+    }
+
+    /// Where on the keyboard the key that produced this keysym sits.
+    #[must_use]
+    pub fn location(self) -> Location {
+        logical::location(xkeysym::Keysym::new(self.0))
+    }
+
     /// The keysym's name as `named` reads it back: its own character, its table name, `F<n>`,
     /// `U<hex>`, else `0x<hex>`.
     #[must_use]
@@ -156,4 +177,56 @@ fn hex_digits(digits: &str) -> Option<u32> {
     only_digits
         .then(|| u32::from_str_radix(digits, 16).ok())
         .flatten()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A text, the keysym it names.
+    const NAMES: &[(&str, Option<u32>)] = &[
+        ("a", Some(0x61)),
+        ("A", Some(0x41)),
+        ("0", Some(0x30)),
+        ("space", Some(0x20)),
+        ("plus", Some(0x2b)),
+        ("grave", Some(0x60)),
+        ("Return", Some(0xff0d)),
+        ("Page_Down", Some(0xff56)),
+        ("F1", Some(0xffbe)),
+        ("F24", Some(0xffd5)),
+        ("F0", None),
+        ("F25", None),
+        ("F05", None),
+        ("U20AC", Some(0x0100_20ac)),
+        ("U20ac", Some(0x0100_20ac)),
+        ("U0041", None),
+        ("0xff09", Some(0xff09)),
+        ("0x", None),
+        ("0x+5", None),
+        ("+", None),
+        ("Hyper_L", None),
+        ("", None),
+        ("ab", None),
+    ];
+
+    #[test]
+    fn keysym_names_table() {
+        for (text, want) in NAMES {
+            assert_eq!(Keysym::named(text), want.map(Keysym), "{text:?}");
+        }
+    }
+
+    #[test]
+    fn every_sampled_keysym_reads_back_from_its_name() {
+        let sampled = (0..0x3000)
+            .chain(0xfe00..0x1_0000)
+            .chain(0x0100_0000..0x0100_3000)
+            .chain(0x1008_ff00..0x1008_ff20)
+            .chain([u32::MAX]);
+        for code in sampled {
+            let keysym = Keysym(code);
+            assert_eq!(Keysym::named(&keysym.name()), Some(keysym), "{code:#x}");
+        }
+    }
 }

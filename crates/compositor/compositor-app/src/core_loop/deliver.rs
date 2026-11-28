@@ -20,7 +20,7 @@ use compositor_core::focus::{HitPart, Press};
 use compositor_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use compositor_core::input::{
     AxisFrame, BindingAction, Chord, DesktopCommand, InputEvent, InputKind, InputTarget, InputUse,
-    KeyCode, Keysym, Origin, TouchStep, resolve,
+    KeyCode, Origin, TouchStep, resolve,
 };
 use compositor_core::lock::LockState;
 use compositor_core::shell::ShellNote;
@@ -34,6 +34,7 @@ use compositor_wayland::shortcuts_inhibit;
 use compositor_wayland::{ClientState, text_input};
 use desktop_protocols::vocab::HeldMods;
 use desktop_protocols::vocab::PressEdge;
+use key_types::Keysym;
 use smithay::input::keyboard::{FilterResult, ModifiersState};
 use smithay::input::{Seat, pointer::PointerHandle};
 use smithay::reexports::wayland_server::Resource;

@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 computer-use-action = {path = "../../models/computer-use-action"}
+key-types = {path = "../../keymap/key-types"}
 computer-use-geometry = {path = "../../models/computer-use-geometry"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-types = {path = "../computer-use-types"}

@@ -32,8 +32,8 @@ mod text;
 pub use action::{ActionClass, ComputerUseAction, Extracted, FinishOutcome, ScrollBy};
 pub use gate::{RunMode, WindowClass, WindowTrust};
 pub use keys::{
-    Button, Chord, ChordError, ClickCount, Modifier, Notches, Repeat, RepeatError, ScrollDir,
-    WaitError, WaitMs,
+    Button, Chord, ChordError, ClickCount, Notches, Repeat, RepeatError, ScrollDir, WaitError,
+    WaitMs,
 };
 pub use target::{NodeId, Target};
 pub use text::{Choice, ExtractedText, FieldName, Summary, TextError, TypedText};

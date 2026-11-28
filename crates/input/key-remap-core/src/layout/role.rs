@@ -2,8 +2,8 @@
 
 use super::Layout;
 use crate::event::Physical;
-use crate::key::Key;
 use crate::role::Role;
+use key_types::KeyCode;
 
 /// The role of `key` on `layout`, or `None` if it is not a modifier.
 ///
@@ -13,12 +13,12 @@ use crate::role::Role;
 pub fn role(layout: Layout, key: Physical) -> Option<Role> {
     let (beside_space, next_out) = match layout {
         Layout::Apple => (
-            [Key::LEFTMETA, Key::RIGHTMETA],
-            [Key::LEFTALT, Key::RIGHTALT],
+            [KeyCode::LEFTMETA, KeyCode::RIGHTMETA],
+            [KeyCode::LEFTALT, KeyCode::RIGHTALT],
         ),
         Layout::Pc => (
-            [Key::LEFTALT, Key::RIGHTALT],
-            [Key::LEFTMETA, Key::RIGHTMETA],
+            [KeyCode::LEFTALT, KeyCode::RIGHTALT],
+            [KeyCode::LEFTMETA, KeyCode::RIGHTMETA],
         ),
     };
     let key = key.0;
@@ -26,9 +26,9 @@ pub fn role(layout: Layout, key: Physical) -> Option<Role> {
         Some(Role::Command)
     } else if next_out.contains(&key) {
         Some(Role::Option)
-    } else if [Key::LEFTCTRL, Key::RIGHTCTRL].contains(&key) {
+    } else if [KeyCode::LEFTCTRL, KeyCode::RIGHTCTRL].contains(&key) {
         Some(Role::Control)
-    } else if [Key::LEFTSHIFT, Key::RIGHTSHIFT].contains(&key) {
+    } else if [KeyCode::LEFTSHIFT, KeyCode::RIGHTSHIFT].contains(&key) {
         Some(Role::Shift)
     } else {
         None

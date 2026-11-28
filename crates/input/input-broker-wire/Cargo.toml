@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-time = { path = "../../base/base-time" }
 caller-identity-core = {default-features = false, path = "../../identity/caller-identity-core"}
+key-types = {path = "../../keymap/key-types"}
 thiserror = { workspace = true }
 
 [dev-dependencies]

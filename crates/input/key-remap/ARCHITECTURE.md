@@ -32,7 +32,7 @@ never name `daemon` modules.
 
 | Layer | Modules | Nature | Visibility |
 |---|---|---|---|
-| L0 vocabulary | `key` (`Key`, `Modifier`, `Side`, `Mods`), `event` (`Edge`, `KeyEvent`, `Physical`, `Logical`), `time` (`Mono`) | newtypes | `pub` |
+| L0 vocabulary | `event` (`Edge`, `KeyEvent`, `Physical`, `Logical`), `time` (`Mono`) | newtypes | `pub` |
 | L1 layout | `layout` (`Layout`, `role`) | pure tables | `pub` |
 | L2 profiles | `profile` (`Trigger`, `Stroke`, `RuleAction`, `Profile`, `Profiles`), `config` (`ConfigLayer`, `resolve`, `lenient`, `load`, `vendor`, `watch`) | pure except `load`, `vendor` and `watch` (file reads, inotify; `load` and `vendor` share the root-only reader `trusted`) | `pub` |
 | L2 keymap | `keymap` (`read`, `settle`, `spawn`): the person's keymap file in the chord keymap's overrides format, judged against the last good copy by the pure `settle`; its watch is `config::watch::spawn_reading` | pure except `read` and `spawn` | `pub(crate)` |
@@ -105,7 +105,7 @@ Two outside parties decide what the key remap daemon trusts, and both are in the
 
 | Concept | Home |
 |---|---|
-| Evdev key codes and names | `key::Key` (the name table) |
+| Evdev key codes and names | `key_types::KeyCode` (the name table; the `key-types` crate) |
 | Pressed key vs sent key | `event::{Physical, Logical}` |
 | Modifier positions on Apple and PC keyboards | `layout` |
 | What a chord becomes | `profile::{Trigger, Stroke, RuleAction}` |
@@ -216,9 +216,8 @@ The `key-remap-devtest` modules:
 - **No `unsafe`:** the workspace lint is `forbid`. The ioctls in `key-remap-evdev`, which the daemon and
   the test harness share, go through `input-linux`'s safe handles.
 - **The layering rule:** core modules never name daemon modules.
-- **Units and ids are newtypes:** `Key`, `Physical`, `Logical`, `ProfileName`, `Mono`. `Key` is
-  the one bare generic root export, kept deliberately: it is the evdev code vocabulary and every
-  other name here is built on it. Every other root export carries its concept in its name
+- **Units and ids are newtypes:** `Physical`, `Logical`, `ProfileName`, `Mono`, over `key_types::KeyCode`,
+  the evdev code vocabulary every name here is built on. Every root export carries its concept in its name
   (`RemapInput`, `RemapOut`, `ConfigSource`, `ConfigLayer`, `RuleAction`).
 - **`bool` is fine for a field, a return or a private function.** A public function that would read as `f(true, false)`, a third state, or a value written to disk or the bus gets an enum.
 - **Release is exact:** a key's release sends what its press sent (`Held`), and `drain` empties
@@ -252,13 +251,13 @@ the types keep them apart.
 
 | Side | Type | Values |
 |---|---|---|
-| In | `Physical(Key)` | the evdev code the keyboard sent |
+| In | `Physical(KeyCode)` | the evdev code the keyboard sent |
 | In | `Role` | `Command`, `Option`, `Control`, `Shift`: what a modifier key *means*, by position |
 | In | `Roles` | bitset of held roles |
-| Out | `Logical(Key)` | the evdev code the key remap daemon writes |
-| Out | `OutMod` | `Ctrl`, `Alt`, `Super`, `Shift`: written as the left-hand key |
-| Out | `OutMods` | bitset of written modifiers |
-| Both | `Key(u16)` | an evdev code, constructed only from the name table |
+| Out | `Logical(KeyCode)` | the evdev code the key remap daemon writes |
+| Out | `key_types::Modifier` | `Ctrl`, `Alt`, `Shift`, `Super`: written as the left-hand key |
+| Out | `key_types::Modifiers` | bitset of written modifiers |
+| Both | `key_types::KeyCode(u16)` | an evdev code, named through the table |
 | Both | `DeviceId(u32)`, `Mono(u64)` ns, `Edge { Press, Release, Repeat }` | |
 
 `layout::role(Layout, Physical) -> Option<Role>` works by position: the key beside the space
@@ -268,9 +267,9 @@ Alt; PC: Meta), Control is `Control`, Shift is `Shift`. `Layout` comes from the 
 ### Profiles
 
 ```rust
-pub struct ModMap { pub command: OutMod, pub option: OutMod, pub control: OutMod } // Shift -> Shift
-pub struct Trigger { pub roles: Roles, pub key: Key }        // exact match on held roles
-pub struct Stroke { pub mods: OutMods, pub key: Key }
+pub struct ModMap { pub command: Modifier, pub option: Modifier, pub control: Modifier } // Shift -> Shift
+pub struct Trigger { pub roles: Roles, pub key: KeyCode }        // exact match on held roles
+pub struct Stroke { pub mods: Modifiers, pub key: KeyCode }
 pub enum Hold { Restore, WhileHeld }
 pub enum RuleAction {
     Map(Stroke, Hold),       // held while the physical key is held (so it repeats)

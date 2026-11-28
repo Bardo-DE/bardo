@@ -8,9 +8,10 @@ use serde::{Deserialize, Serialize};
 use computer_use_geometry::{CoordSpace, Length, Point, Rect, Size};
 
 use crate::{
-    Button, Choice, Chord, ClickCount, ExtractedText, FieldName, Modifier, Notches, Repeat,
-    ScrollDir, Summary, Target, TypedText, WaitMs,
+    Button, Choice, Chord, ClickCount, ExtractedText, FieldName, Notches, Repeat, ScrollDir,
+    Summary, Target, TypedText, WaitMs,
 };
+use key_types::Modifier;
 
 /// One thing a model asks the computer to do, in space `S`.
 ///

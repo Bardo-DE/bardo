@@ -5,7 +5,7 @@ use smithay_client_toolkit::seat::keyboard::Modifiers as SctkModifiers;
 
 /// The keyboard-types set for sctk's modifier state. The logo key is `META`: on our
 /// desktop it is Command, and Blitz's text actions and the UI kit's normaliser read Command as
-/// `META`. Matches `keysym::named_key`'s `Key::Named(NamedKey::Meta)`.
+/// `META`. Matches `key_types::Keysym::logical_key`'s `Key::Named(NamedKey::Meta)`.
 pub(crate) fn modifiers_from(state: SctkModifiers) -> Modifiers {
     [
         (state.ctrl, Modifiers::CONTROL),

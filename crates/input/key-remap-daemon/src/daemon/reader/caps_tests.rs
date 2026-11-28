@@ -3,10 +3,10 @@
 
 use super::tests::Rig;
 use crate::Edge;
-use crate::Key;
 use crate::daemon::events::{EV_KEY, EV_LED, InputEvent};
 use crate::daemon::leds::{Led, LedEvent};
 use crate::daemon::settings::{Layers, parse_user};
+use key_types::KeyCode;
 
 /// Caps Lock as the input-method switch, Shift+Caps Lock as the real Caps Lock.
 const SWITCH: &str = "[profile.default]\nrules = [\n  { when = \"capslock\", then = \"ctrl+space\" },\n  { when = \"shift+capslock\", then = \"capslock\" },\n]\n";
@@ -44,7 +44,7 @@ fn written(rig: &Rig) -> Vec<(u16, i32)> {
 }
 
 fn code(name: &str) -> u16 {
-    Key::named(name).unwrap().code()
+    KeyCode::named(name).unwrap().code()
 }
 
 fn taps(rig: &Rig) -> usize {

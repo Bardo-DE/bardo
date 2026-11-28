@@ -1,4 +1,4 @@
-//! The one bitset shape shared by `Roles` and `OutMods`.
+//! The bitset shape of `Roles`.
 
 /// Declares a set newtype over `u8` for a fieldless enum with `ALL` and a `bit` method.
 macro_rules! bitset {

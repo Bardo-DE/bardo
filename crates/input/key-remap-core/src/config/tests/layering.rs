@@ -1,6 +1,6 @@
 use super::*;
 use crate::profile::ModMap;
-use crate::role::OutMod;
+use key_types::Modifier;
 
 #[test]
 fn later_layers_override_per_field_and_per_trigger() {
@@ -23,9 +23,9 @@ fn later_layers_override_per_field_and_per_trigger() {
     assert_eq!(
         p.modmap,
         ModMap {
-            command: OutMod::Ctrl,
-            option: OutMod::Super,
-            control: OutMod::Super
+            command: Modifier::Ctrl,
+            option: Modifier::Super,
+            control: Modifier::Super
         }
     );
     assert_eq!(rule(p, "command+left"), Some(&map("ctrl+home")));
@@ -40,7 +40,7 @@ fn later_layers_override_per_field_and_per_trigger() {
         rule(reversed.default_profile(), "command+left"),
         Some(&map("home"))
     );
-    assert_eq!(reversed.default_profile().modmap.option, OutMod::Alt);
+    assert_eq!(reversed.default_profile().modmap.option, Modifier::Alt);
 }
 
 #[test]

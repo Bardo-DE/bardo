@@ -5,9 +5,9 @@ use key_remap_proto::ProfileName;
 use super::*;
 use crate::config::{ConfigLayer, ConfigSource, resolve};
 use crate::event::{DeviceId, Edge, OutEvent, Physical};
-use crate::key::Key;
 use crate::layout::Layout;
 use crate::time::Mono;
+use key_types::KeyCode;
 
 const CONFIG: &str = r#"
 [profile.default]
@@ -34,7 +34,7 @@ fn run(script: &[&str]) -> Vec<String> {
         let input = RemapInput::Key {
             device: DeviceId(0),
             layout: Layout::Apple,
-            key: Physical(Key::named(name).expect("a key name")),
+            key: Physical(KeyCode::named(name).expect("a key name")),
             edge,
             at: Mono::default(),
         };

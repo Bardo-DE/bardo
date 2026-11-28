@@ -6,7 +6,6 @@ mod chord;
 mod event;
 pub mod gesture_route;
 mod key;
-mod keysym_names;
 mod lease;
 pub mod lift;
 mod maker;
@@ -21,7 +20,7 @@ pub use event::{
     AxisFrame, AxisSource, GestureStep, InputEvent, InputKind, PinchDelta, SwipeDelta, SwitchStep,
     TouchStep,
 };
-pub use key::{ButtonCode, KeyCode, Keysym};
+pub use key::{ButtonCode, KeyCode};
 pub use lease::Leases;
 pub use maker::Maker;
 pub use origin::{BUS_VIRTUAL, DeviceClass, KernelIds, Origin, PortalSessionId};

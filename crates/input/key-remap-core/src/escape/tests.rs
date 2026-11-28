@@ -1,11 +1,11 @@
 use super::*;
 use crate::event::{DeviceId, Edge, Physical};
-use crate::key::Key;
+use key_types::KeyCode;
 
-const LS: Physical = Physical(Key::LEFTSHIFT);
-const RS: Physical = Physical(Key::RIGHTSHIFT);
-const ESC: Physical = Physical(Key::ESC);
-const A: Physical = Physical(Key::from_code(30));
+const LS: Physical = Physical(KeyCode::LEFTSHIFT);
+const RS: Physical = Physical(KeyCode::RIGHTSHIFT);
+const ESC: Physical = Physical(KeyCode::ESC);
+const A: Physical = Physical(KeyCode::from_code(30));
 
 const D0: DeviceId = DeviceId(0);
 const D1: DeviceId = DeviceId(1);

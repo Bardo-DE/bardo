@@ -14,6 +14,7 @@ key-remap-proto = { path = "../key-remap-proto" }
 key-remap-client = { path = "../key-remap-client" }
 key-remap-evdev = { path = "../key-remap-evdev" }
 # The broker that makes the virtual devices, and the device vocabulary its requests are written in.
+key-types = {path = "../../keymap/key-types"}
 keymap = {path = "../../keymap/keymap"}
 thiserror = { workspace = true }
 notify = { workspace = true }

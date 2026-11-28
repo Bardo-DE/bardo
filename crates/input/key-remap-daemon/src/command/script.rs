@@ -15,8 +15,9 @@
 //! `#` starts a comment; blank lines are skipped.
 
 use crate::daemon::leds::{Led, LedEvent};
-use crate::{DeviceId, Edge, Key, Layout, Mono, Physical, RemapInput};
+use crate::{DeviceId, Edge, Layout, Mono, Physical, RemapInput};
 use key_remap_proto::{NameError, ProfileName};
+use key_types::KeyCode;
 
 /// One input of the script, with the line it came from as written (comments and extra
 /// whitespace removed) so a replay can print it back.
@@ -134,7 +135,9 @@ fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, LineError> {
             Ok(RemapInput::Key {
                 device: device_of(device)?,
                 layout: layout_of(layout)?,
-                key: Physical(Key::named(key).ok_or_else(|| LineError::Key((*key).to_owned()))?),
+                key: Physical(
+                    KeyCode::named(key).ok_or_else(|| LineError::Key((*key).to_owned()))?,
+                ),
                 edge,
                 at,
             })
@@ -194,7 +197,7 @@ mod tests {
         Input::Remap(RemapInput::Key {
             device: DeviceId(device),
             layout,
-            key: Physical(Key::named(name).unwrap()),
+            key: Physical(KeyCode::named(name).unwrap()),
             edge,
             at: Mono::from_millis(ms),
         })

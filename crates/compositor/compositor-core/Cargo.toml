@@ -14,6 +14,7 @@ base-words = { path = "../../base/base-words" }
 base-time = { path = "../../base/base-time" }
 base-machine = { path = "../../base/base-machine" }
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
+key-types = {path = "../../keymap/key-types"}
 account-core = {path = "../../accounts/account-core"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
 ui-motion = {path = "../../ui/ui-motion", default-features = false}

@@ -4,8 +4,9 @@
 use super::*;
 use base_testkit::PrivateBus;
 use compositor_core::geometry::LogicalPoint;
-use compositor_core::input::{ButtonCode, Keysym};
+use compositor_core::input::ButtonCode;
 use desktop_protocols::vocab::PressEdge;
+use key_types::Keysym;
 use std::thread::JoinHandle;
 
 type Answer = Box<dyn Fn(&DebugRequest) -> DebugReply + Send>;

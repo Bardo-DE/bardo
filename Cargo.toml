@@ -74,6 +74,7 @@ members = [
     "crates/wayland/outputs-dbus",
     "crates/wayland/shell-verbs",
     "crates/wayland/wayland-raw-handle",
+    "crates/keymap/key-types",
     "crates/keymap/keymap",
     "crates/keymap/keymap-gnome",
     "crates/keymap/keymap-kde",
@@ -826,6 +827,7 @@ widestring = "1"
 windows-native-keyring-store = "1"
 x11rb = "0.14"
 xkbcommon = "0.9"
+xkeysym = "0.2"
 zbus = { version = "5.19", default-features = false }
 zeroize = "1"
 zip = { version = "9", default-features = false }

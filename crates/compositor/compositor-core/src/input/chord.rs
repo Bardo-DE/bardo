@@ -1,9 +1,9 @@
 //! A key chord: held modifiers and a keysym. Stored and configured in its text form
 //! (`"cmd+space"`); the modifiers are the Mac view of the keyboard, before per-app remapping.
 
-use super::Keysym;
 use crate::error::CoreError;
 use desktop_protocols::vocab::HeldMods;
+use key_types::Keysym;
 use serde::{Deserialize, Serialize};
 
 /// Held modifiers and one key.

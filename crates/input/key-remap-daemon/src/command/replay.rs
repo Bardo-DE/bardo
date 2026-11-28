@@ -244,9 +244,10 @@ mod tests {
 
     #[test]
     fn render_table() {
-        use crate::{Key, Logical};
+        use crate::Logical;
+        use key_types::KeyCode;
         let key = |name: &str, edge| OutEvent::Key {
-            key: Logical(Key::named(name).unwrap()),
+            key: Logical(KeyCode::named(name).unwrap()),
             edge,
         };
         let cases: &[(&str, Vec<RemapOut>, &str)] = &[

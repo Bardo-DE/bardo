@@ -7,7 +7,8 @@
 //! restates a chord. `Super` is not banned as a whole: on our desktop it is the Command key, and
 //! Command+C is an ordinary write.
 
-use computer_use_action::{Chord, Modifier};
+use computer_use_action::Chord;
+use key_types::Modifier;
 use keymap::keyboard_types::Modifiers;
 use keymap::{
     Action, Chord as KeyChord, Context, Desktop, Key as ChordKey, Keymap, Platform, StandardAction,

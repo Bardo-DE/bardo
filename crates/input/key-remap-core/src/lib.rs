@@ -1,6 +1,6 @@
 //! key-remap-core: the pure remap core of the key remap daemon.
 //!
-//! The core is vocabulary (`Key`, `Physical`, `Logical`, `Role`, `OutMod`, `Edge`, `Mono`) and
+//! The core is vocabulary (`Physical`, `Logical`, `Role`, `Edge`, `Mono`, over `key_types`' `KeyCode` and `Modifier`) and
 //! the layout tables that say which physical key plays which role. Input and output speak
 //! different vocabularies and the types keep them apart; see ARCHITECTURE.md section 8.
 //!
@@ -22,7 +22,6 @@ mod event;
 mod gate;
 mod handled;
 mod held;
-mod key;
 mod layout;
 mod profile;
 mod remap;
@@ -40,9 +39,8 @@ pub use event::{DeviceId, Edge, Logical, OutEvent, Physical};
 pub use gate::{Decision, KEYS_DOWN_BYTES, KeysDown, check_gate};
 pub use handled::{Handler, handled_actions, handler};
 pub use held::{Held, Record};
-pub use key::Key;
 pub use layout::{Layout, role};
 pub use profile::{ChordError, Hold, ModMap, Profile, Profiles, RuleAction, Stroke, Trigger};
 pub use remap::{RemapInput, RemapOut, Remapper};
-pub use role::{OutMod, OutMods, Role, Roles};
+pub use role::{Role, Roles};
 pub use time::Mono;

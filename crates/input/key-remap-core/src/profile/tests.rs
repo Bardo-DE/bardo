@@ -1,17 +1,18 @@
 use super::*;
-use crate::key::Key;
-use crate::role::{OutMod, OutMods, Role, Roles};
+use crate::role::{Role, Roles};
+use key_types::KeyCode;
+use key_types::{Modifier, Modifiers};
 
 fn roles(rs: &[Role]) -> Roles {
     rs.iter().copied().collect()
 }
 
-fn mods(ms: &[OutMod]) -> OutMods {
+fn mods(ms: &[Modifier]) -> Modifiers {
     ms.iter().copied().collect()
 }
 
-fn key(name: &str) -> Key {
-    Key::named(name).expect("test key names exist")
+fn key(name: &str) -> KeyCode {
+    KeyCode::named(name).expect("test key names exist")
 }
 
 #[test]
@@ -63,11 +64,14 @@ fn trigger_parse_table() {
 #[test]
 fn stroke_parse_table() {
     type Want<'a, M> = Result<(&'a [M], &'a str), ChordError>;
-    const CASES: &[(&str, Want<OutMod>)] = &[
+    const CASES: &[(&str, Want<Modifier>)] = &[
         ("home", Ok((&[], "home"))),
-        ("ctrl+shift+c", Ok((&[OutMod::Ctrl, OutMod::Shift], "c"))),
-        ("super+space", Ok((&[OutMod::Super], "space"))),
-        ("alt+f4", Ok((&[OutMod::Alt], "f4"))),
+        (
+            "ctrl+shift+c",
+            Ok((&[Modifier::Ctrl, Modifier::Shift], "c")),
+        ),
+        ("super+space", Ok((&[Modifier::Super], "space"))),
+        ("alt+f4", Ok((&[Modifier::Alt], "f4"))),
         ("command+c", Err(ChordError::RoleName(String::new()))),
         ("ctrl+control+c", Err(ChordError::RoleName(String::new()))),
         ("ctrl+ctrl+c", Err(ChordError::Duplicate(String::new()))),
@@ -139,8 +143,8 @@ fn an_empty_sequence_is_a_swallow() {
 #[test]
 fn modmap_writes_shift_for_shift() {
     let m = ModMap::IDENTITY;
-    assert_eq!(m.out(Role::Shift), OutMod::Shift);
-    assert_eq!(m.out(Role::Command), OutMod::Super);
-    assert_eq!(m.out(Role::Option), OutMod::Alt);
-    assert_eq!(m.out(Role::Control), OutMod::Ctrl);
+    assert_eq!(m.out(Role::Shift), Modifier::Shift);
+    assert_eq!(m.out(Role::Command), Modifier::Super);
+    assert_eq!(m.out(Role::Option), Modifier::Alt);
+    assert_eq!(m.out(Role::Control), Modifier::Ctrl);
 }

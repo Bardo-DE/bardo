@@ -2,7 +2,7 @@
 
 use super::model::Escape;
 use crate::event::{DeviceId, Edge, Physical};
-use crate::key::Key;
+use key_types::KeyCode;
 
 impl Escape {
     /// Nothing held.
@@ -16,7 +16,10 @@ impl Escape {
     /// change nothing.
     #[must_use]
     pub fn step(mut self, device: DeviceId, key: Physical, edge: Edge) -> (Self, bool) {
-        if !matches!(key.0, Key::LEFTSHIFT | Key::RIGHTSHIFT | Key::ESC) {
+        if !matches!(
+            key.0,
+            KeyCode::LEFTSHIFT | KeyCode::RIGHTSHIFT | KeyCode::ESC
+        ) {
             return (self, false);
         }
         match edge {
@@ -25,9 +28,9 @@ impl Escape {
             Edge::Repeat => return (self, false),
         };
         let fired = edge == Edge::Press
-            && key.0 == Key::ESC
-            && self.is_down(Key::LEFTSHIFT)
-            && self.is_down(Key::RIGHTSHIFT);
+            && key.0 == KeyCode::ESC
+            && self.is_down(KeyCode::LEFTSHIFT)
+            && self.is_down(KeyCode::RIGHTSHIFT);
         (self, fired)
     }
 
@@ -39,7 +42,7 @@ impl Escape {
     }
 
     /// Whether `key` is down on some keyboard.
-    fn is_down(&self, key: Key) -> bool {
+    fn is_down(&self, key: KeyCode) -> bool {
         self.down.iter().any(|(_, physical)| physical.0 == key)
     }
 }

@@ -4,12 +4,13 @@ use crate::{key, sync};
 use input_broker_wire::codes::*;
 use input_broker_wire::limits::{MAX_KEY_CODES, MAX_KEYS_DOWN};
 use input_broker_wire::{BadCapsError, Create, Denial, Event, Filter, Route, plan};
+use key_types::KeyCode;
 
 const A: u16 = 30;
 const ENTER: u16 = 28;
 const LEFT: u16 = 105;
 const F5: u16 = 63;
-const SHIFT: u16 = KEY_LEFTSHIFT;
+const SHIFT: u16 = KeyCode::LEFTSHIFT.code();
 
 fn filter(codes: &[u16]) -> Filter {
     let planned = plan(&Create::keys(codes.to_vec())).expect("within the ceiling");
@@ -25,13 +26,13 @@ fn verdict(f: &mut Filter, event: Event) -> Result<(), Denial> {
 
 #[test]
 fn what_mouse_gestures_writes_for_alt_left_passes() {
-    let mut f = filter(&[KEY_LEFTALT, LEFT]);
+    let mut f = filter(&[KeyCode::LEFTALT.code(), LEFT]);
     let out = f.apply(&[
-        key(KEY_LEFTALT, 1),
+        key(KeyCode::LEFTALT.code(), 1),
         key(LEFT, 1),
         sync(),
         key(LEFT, 0),
-        key(KEY_LEFTALT, 0),
+        key(KeyCode::LEFTALT.code(), 0),
         sync(),
     ]);
     assert!(out.denied.is_empty(), "{out:?}");
@@ -52,9 +53,9 @@ fn typing_is_refused_and_shortcuts_are_not() {
         LEFT,
         158,
         SHIFT,
-        KEY_LEFTCTRL,
-        KEY_LEFTALT,
-        KEY_LEFTMETA,
+        KeyCode::LEFTCTRL.code(),
+        KeyCode::LEFTALT.code(),
+        KeyCode::LEFTMETA.code(),
     ]);
     // Without a chord modifier only the free keys go down.
     assert_eq!(verdict(&mut f, key(A, 1)), Err(Denial::NeedsChord));
@@ -88,7 +89,11 @@ fn typing_is_refused_and_shortcuts_are_not() {
     assert_eq!(verdict(&mut f, key(A, 1)), Err(Denial::NeedsChord));
     assert_eq!(verdict(&mut f, key(SHIFT, 0)), Ok(()));
     // Each chord modifier lets a letter through, and only while it is down.
-    for chord in [KEY_LEFTCTRL, KEY_LEFTALT, KEY_LEFTMETA] {
+    for chord in [
+        KeyCode::LEFTCTRL.code(),
+        KeyCode::LEFTALT.code(),
+        KeyCode::LEFTMETA.code(),
+    ] {
         assert_eq!(verdict(&mut f, key(chord, 1)), Ok(()));
         assert_eq!(verdict(&mut f, key(A, 1)), Ok(()), "{chord}");
         assert_eq!(verdict(&mut f, key(A, 0)), Ok(()));
@@ -103,10 +108,10 @@ fn typing_is_refused_and_shortcuts_are_not() {
 
 #[test]
 fn a_key_already_down_stays_releasable_after_its_modifier_lifts() {
-    let mut f = filter(&[KEY_LEFTCTRL, A]);
-    assert_eq!(verdict(&mut f, key(KEY_LEFTCTRL, 1)), Ok(()));
+    let mut f = filter(&[KeyCode::LEFTCTRL.code(), A]);
+    assert_eq!(verdict(&mut f, key(KeyCode::LEFTCTRL.code(), 1)), Ok(()));
     assert_eq!(verdict(&mut f, key(A, 1)), Ok(()));
-    assert_eq!(verdict(&mut f, key(KEY_LEFTCTRL, 0)), Ok(()));
+    assert_eq!(verdict(&mut f, key(KeyCode::LEFTCTRL.code(), 0)), Ok(()));
     assert_eq!(
         verdict(&mut f, key(A, 0)),
         Ok(()),
@@ -116,7 +121,7 @@ fn a_key_already_down_stays_releasable_after_its_modifier_lifts() {
 
 #[test]
 fn repeat_other_values_and_other_types_are_refused() {
-    let mut f = filter(&[KEY_LEFTCTRL, LEFT]);
+    let mut f = filter(&[KeyCode::LEFTCTRL.code(), LEFT]);
     assert_eq!(
         verdict(&mut f, key(LEFT, 2)),
         Err(Denial::BadValue),
@@ -192,12 +197,17 @@ fn requests_outside_the_name_table_are_refused() {
 
 #[test]
 fn the_device_registers_exactly_the_requested_keys_once() {
-    let spec = plan(&Create::keys(vec![LEFT, KEY_LEFTALT, LEFT, 106]))
-        .expect("plans")
-        .spec;
+    let spec = plan(&Create::keys(vec![
+        LEFT,
+        KeyCode::LEFTALT.code(),
+        LEFT,
+        106,
+    ]))
+    .expect("plans")
+    .spec;
     assert_eq!(spec.name, "mouse-gestures keys");
     assert_eq!((spec.vendor, spec.product), (0x0001, 0x0003));
-    assert_eq!(spec.keys, [KEY_LEFTALT, LEFT, 106]);
+    assert_eq!(spec.keys, [KeyCode::LEFTALT.code(), LEFT, 106]);
     assert!(spec.rels.is_empty() && spec.abs.is_empty() && spec.leds.is_empty());
     assert_eq!(spec.event_types(), [EV_KEY]);
 }

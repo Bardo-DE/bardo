@@ -1,6 +1,6 @@
 //! VT switching as ordinary code (P1-Z; filled by P1-D1): the chord that asks for another VT.
 
-use compositor_core::input::Keysym;
+use key_types::Keysym;
 
 /// A virtual terminal number, from 1.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -11,7 +11,7 @@ pub struct VtNumber(pub u32);
 ///
 /// ```
 /// use compositor_backend::tty::{VtNumber, vt_of_keysym};
-/// use compositor_core::input::Keysym;
+/// use key_types::Keysym;
 ///
 /// assert_eq!(vt_of_keysym(Keysym(0x1008fe01)), Some(VtNumber(1)));
 /// assert_eq!(vt_of_keysym(Keysym(0x20)), None);
@@ -41,7 +41,7 @@ const LAST_SWITCH_SYM: u32 = 0x1008_fe0c;
 ///
 /// ```
 /// use compositor_backend::tty::{VtNumber, vt_of_chord};
-/// use compositor_core::input::Keysym;
+/// use key_types::Keysym;
 ///
 /// let f2 = [Keysym(0xffbf)];
 /// assert_eq!(vt_of_chord(true, &[], &f2), Some(VtNumber(2)));

@@ -1,15 +1,14 @@
-//! A keyboard press or release -> `BlitzKeyEvent`, combining the keysym table, the evdev table
-//! and the modifier state.
+//! A keyboard press or release -> `BlitzKeyEvent`, combining `key_types`' keysym and evdev
+//! tables with the modifier state.
 
 use blitz_traits::SmolStr;
 use blitz_traits::events::{BlitzKeyEvent, KeyState};
-use keyboard_types::{Key, Modifiers};
+use key_types::{KeyCode, Keysym};
+use keyboard_types::{Code, Key, Modifiers};
 use smithay_client_toolkit::seat::keyboard::KeyEvent;
 
-use crate::input::{keycode, keysym};
-
-/// The Blitz event for `event`: `key` from `keysym::logical_key`, `code` from
-/// `keycode::code_from_evdev(event.raw_code)`, `location` from `keysym::location`, `text` from
+/// The Blitz event for `event`: `key` from `Keysym::logical_key`, `code` from
+/// `KeyCode::dom_code` of `event.raw_code`, `location` from `Keysym::location`, `text` from
 /// the printable part of `event.utf8` (presses only). `repeat`: a compositor/sctk key repeat
 /// rather than the first press. `composing`: an IME composition is in progress on the focused
 /// surface (`BlitzKeyEvent::is_composing`).
@@ -24,13 +23,16 @@ pub(crate) fn key_event(
         KeyState::Pressed => printable(event.utf8.as_deref()).map(SmolStr::from),
         KeyState::Released => None,
     };
-    let key = keysym::logical_key(event.keysym, event.utf8.as_deref());
+    let keysym = Keysym(event.keysym.raw());
+    let key = keysym.logical_key(event.utf8.as_deref());
     BlitzKeyEvent {
         key_without_modifiers: unshifted(&key),
         key,
-        code: keycode::code_from_evdev(event.raw_code),
+        code: u16::try_from(event.raw_code).map_or(Code::Unidentified, |code| {
+            KeyCode::from_code(code).dom_code()
+        }),
         modifiers: mods,
-        location: keysym::location(event.keysym),
+        location: keysym.location(),
         is_auto_repeating: repeat,
         is_composing: composing,
         state,

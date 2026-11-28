@@ -13,6 +13,7 @@ computer-use-geometry = {path = "../computer-use-geometry"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 keyboard-types = {workspace = true, features = ["serde"]}
+key-types = {path = "../../keymap/key-types", features = ["serde"]}
 
 [dev-dependencies]
 serde_json = { workspace = true }

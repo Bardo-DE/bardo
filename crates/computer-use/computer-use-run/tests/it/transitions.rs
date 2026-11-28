@@ -1096,7 +1096,7 @@ fn the_same_input_on_a_screen_that_did_not_change_is_refused_before_it_is_asked(
 }
 
 fn press(
-    mods: &[computer_use_action::Modifier],
+    mods: &[key_types::Modifier],
     key: keyboard_types::Key,
 ) -> ComputerUseAction<computer_use_geometry::WindowSpace> {
     ComputerUseAction::Key {
@@ -1108,7 +1108,7 @@ fn press(
 #[test]
 fn a_chord_for_a_control_the_tree_shows_is_refused_and_one_without_a_tree_is_not() {
     use computer_use_a11y_tree::Role;
-    use computer_use_action::Modifier::Ctrl;
+    use key_types::Modifier::Ctrl;
     let ctrl_n = || press(&[Ctrl], keyboard_types::Key::Character("n".into()));
     let ctrl_c = || press(&[Ctrl], keyboard_types::Key::Character("c".into()));
     let new_tab = || {

@@ -13,6 +13,7 @@ caller-identity-core = {default-features = false, path = "../../identity/caller-
 base-ids = { path = "../../base/base-ids" }
 base-spawn = { path = "../../base/base-spawn" }
 compositor-core = {path = "../compositor-core"}
+key-types = {path = "../../keymap/key-types"}
 compositor-dbus = {path = "../compositor-dbus"}
 # Only `VirtualOutputSpec` for the Debug1 object: a release build links neither the backend nor
 # smithay.

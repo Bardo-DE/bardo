@@ -1,6 +1,6 @@
 use super::*;
 use crate::profile::ModMap;
-use crate::role::OutMod;
+use key_types::Modifier;
 
 #[test]
 fn inheritance_flattens_transitively_child_over_parent() {
@@ -27,9 +27,9 @@ fn inheritance_flattens_transitively_child_over_parent() {
     assert_eq!(
         leaf.modmap,
         ModMap {
-            command: OutMod::Ctrl,
-            option: OutMod::Super,
-            control: OutMod::Ctrl
+            command: Modifier::Ctrl,
+            option: Modifier::Super,
+            control: Modifier::Ctrl
         }
     );
     for (when, then) in [("left", "a"), ("right", "d"), ("up", "f"), ("down", "e")] {

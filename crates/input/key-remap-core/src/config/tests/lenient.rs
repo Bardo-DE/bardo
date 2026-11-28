@@ -1,6 +1,6 @@
 use super::*;
 use crate::profile::ModMap;
-use crate::role::OutMod;
+use key_types::Modifier;
 
 #[test]
 fn a_bad_key_in_one_rule_costs_only_that_rule() {
@@ -48,7 +48,7 @@ fn a_bad_key_in_one_rule_costs_only_that_rule() {
         ModMap::IDENTITY.command,
         "bad modmap key keeps the base"
     );
-    assert_eq!(p.modmap.control, OutMod::Ctrl, "its sibling key is read");
+    assert_eq!(p.modmap.control, Modifier::Ctrl, "its sibling key is read");
     let wanted: Vec<_> = p.rules.keys().copied().collect();
     let mut expect = vec![trigger("command+left"), trigger("command+right")];
     expect.sort();

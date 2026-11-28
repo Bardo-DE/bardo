@@ -7,10 +7,9 @@
 //! the Super keys map to `Key::Named(NamedKey::Meta)` (as in winit), which our desktop treats as the Command
 //! key and which pairs with `Modifiers::META`; `space` is `Key::Character(" ")`,
 //! because keyboard-types has no named Space; commented-out rows of the original are omitted.
-//! FINDINGS.md has the licence note.
 
 use keyboard_types::{Key, Location, NamedKey};
-use smithay_client_toolkit::seat::keyboard::Keysym;
+use xkeysym::Keysym;
 
 /// The named key for `keysym`, or `None` when the keysym stands for text (or for nothing we
 /// name).

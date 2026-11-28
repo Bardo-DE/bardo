@@ -132,11 +132,11 @@ use crate::input::{Applied, DeviceSettings, FedInput, InputFeed, PollContext, Pr
 use compositor_core::gpu::{
     DisplayKind, GpuChoice, OutputRoute, RenderPlan, keep_displays, plan_for,
 };
-use compositor_core::input::Keysym;
 use compositor_core::output::{Mode, OutputConfig};
 use compositor_core::settings::PointerSettings;
 use compositor_core::time::Mono;
 use compositor_core::{DeviceId, OutputName};
+use key_types::Keysym;
 use std::collections::BTreeMap;
 
 /// Everything the tty backend is injected with.

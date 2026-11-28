@@ -4,7 +4,7 @@ use key_remap_proto::{ProfileName, Warning};
 use toml::{Table, Value};
 
 use crate::profile::{Hold, Stroke, Trigger};
-use crate::role::OutMod;
+use key_types::Modifier;
 
 /// A value that can be read from one TOML value.
 pub(super) trait Setting: Sized {
@@ -66,10 +66,10 @@ fn text<T>(
         .ok()
 }
 
-impl Setting for OutMod {
+impl Setting for Modifier {
     fn read(v: &Value, key: &str, warn: &mut Vec<Warning>) -> Option<Self> {
         text(v, key, warn, |s| {
-            OutMod::named(s)
+            Modifier::named(s)
                 .ok_or_else(|| format!("{s:?} is not an output modifier (ctrl, alt, super, shift)"))
         })
     }

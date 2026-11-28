@@ -1,7 +1,8 @@
 //! A chord keymap chord as a compositor chord (pure).
 
-use compositor_core::input::{Chord, Keysym};
+use compositor_core::input::Chord;
 use desktop_protocols::vocab::HeldMods;
+use key_types::Keysym;
 use keymap::Key;
 use keymap::keyboard_types::{Modifiers, NamedKey};
 

@@ -3,12 +3,13 @@
 use account_core::SandboxFacts;
 use compositor_core::input::{
     Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget, InputUse,
-    Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
+    Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
 };
 use compositor_core::lock::{LockHolder, LockState, LockSurfaces};
 use compositor_core::policy::{ConnectionRole, GlobalKind, advertised};
 use compositor_core::{ClientKey, LayerKey, LeaseId, WindowId};
 use desktop_protocols::vocab::HeldMods;
+use key_types::Keysym;
 
 const KEYBOARD: Origin = Origin::Physical(DeviceClass::Keyboard);
 const POINTER: Origin = Origin::Physical(DeviceClass::Pointer);

@@ -2,6 +2,7 @@
 
 use std::collections::BTreeSet;
 
+use key_types::Modifier;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -18,15 +19,6 @@ pub enum ClickCount {
     One,
     Two,
     Three,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Modifier {
-    Ctrl,
-    Alt,
-    Shift,
-    Super,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

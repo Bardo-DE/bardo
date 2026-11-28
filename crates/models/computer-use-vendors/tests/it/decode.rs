@@ -2,11 +2,12 @@
 //! Anthropic toolset and `computer_20251124`, `OpenAI`'s `computer_call`, Gemini's computer use.
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Modifier, Notches, ScrollBy, ScrollDir, Target,
+    Button, ClickCount, ComputerUseAction, Notches, ScrollBy, ScrollDir, Target,
 };
 use computer_use_geometry::{Coord, GridMax, GridSpace, ImageSpace};
 use computer_use_parse::{DropReason, InSpace, Parsed};
 use computer_use_vendors::{WireCodec, WireError};
+use key_types::Modifier;
 use model_types::WireDialect;
 use model_types::{JsonText, SafetySignal, ToolCall, ToolCallId, ToolName};
 use proptest::prelude::*;

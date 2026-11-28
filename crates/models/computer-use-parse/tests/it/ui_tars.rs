@@ -6,10 +6,11 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Notches, Repeat,
-    ScrollBy, ScrollDir, Summary, TypedText, WaitMs,
+    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Notches, Repeat, ScrollBy,
+    ScrollDir, Summary, TypedText, WaitMs,
 };
 use computer_use_parse::{ByteOffset, DropReason, ParseError};
+use key_types::Modifier;
 use keyboard_types::{Key, NamedKey};
 
 fn fixture(name: &str) -> String {

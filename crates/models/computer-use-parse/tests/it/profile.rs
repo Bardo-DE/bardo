@@ -8,11 +8,12 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Repeat, ScrollBy,
-    ScrollDir, Summary, Target, WaitMs,
+    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Repeat, ScrollBy, ScrollDir,
+    Summary, Target, WaitMs,
 };
 use computer_use_geometry::{Coord, GridMax, GridSpace, Length, ModelSpace};
 use computer_use_parse::{CursorAt, DropReason, Parsed, ToolContext, parse_tool_calls_with};
+use key_types::Modifier;
 use keyboard_types::{Key, NamedKey};
 use model_types::{ActionProfile, DragStyle, ScrollAxis, ToolDialect, VerbAlias};
 

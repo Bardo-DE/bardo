@@ -21,6 +21,7 @@ base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 base-time = { path = "../../base/base-time" }
 compositor-app = {path = "../compositor-app", default-features = false, features = ["testing"]}
 compositor-core = {path = "../compositor-core"}
+key-types = {path = "../../keymap/key-types"}
 compositor-layout = {path = "../compositor-layout"}
 compositor-render = {path = "../compositor-render", features = ["testing"]}
 compositor-backend = {path = "../compositor-backend", features = ["testing"]}

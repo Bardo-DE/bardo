@@ -9,14 +9,19 @@
 use super::model::Held;
 use super::step::key_event;
 use crate::event::{Edge, Logical, OutEvent};
-use crate::key::Key;
+use key_types::KeyCode;
 
 /// The key tapped to cancel a modifier tap. F24 is on no keyboard and rarely bound, so a tap of
 /// it does nothing but end the compositor's "was this modifier alone" test.
-pub(super) const NEUTRAL: Logical = Logical(Key::F24);
+pub(super) const NEUTRAL: Logical = Logical(KeyCode::F24);
 
 /// The written keys a bare release would turn into a desktop shortcut.
-const TAP_SENSITIVE: [Key; 4] = [Key::LEFTALT, Key::RIGHTALT, Key::LEFTMETA, Key::RIGHTMETA];
+const TAP_SENSITIVE: [KeyCode; 4] = [
+    KeyCode::LEFTALT,
+    KeyCode::RIGHTALT,
+    KeyCode::LEFTMETA,
+    KeyCode::RIGHTMETA,
+];
 
 impl Held {
     /// Write a press of `key`: every bare key is no longer bare, and `key` is bare if it is an

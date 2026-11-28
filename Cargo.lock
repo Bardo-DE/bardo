@@ -4311,6 +4311,7 @@ dependencies = [
  "jiff",
  "key-remap-client",
  "key-remap-core",
+ "key-types",
  "keymap",
  "nix 0.31.3",
  "rustix 1.1.6",
@@ -4339,6 +4340,7 @@ dependencies = [
  "compositor-egl",
  "compositor-render",
  "desktop-protocols",
+ "key-types",
  "rustix 1.1.6",
  "serde",
  "smithay",
@@ -4369,6 +4371,7 @@ dependencies = [
  "base-time",
  "base-words",
  "desktop-protocols",
+ "key-types",
  "proptest",
  "serde",
  "serde_json",
@@ -4444,6 +4447,7 @@ dependencies = [
  "compositor-dbus",
  "dbus-kit",
  "desktop-protocols",
+ "key-types",
  "peers-callers",
  "settings-dbus",
  "settings-portal",
@@ -4556,6 +4560,7 @@ dependencies = [
  "compositor-wayland",
  "desktop-protocols",
  "image",
+ "key-types",
  "proptest",
  "rustix 1.1.6",
  "serde",
@@ -4622,6 +4627,7 @@ name = "computer-use-action"
 version = "0.1.0"
 dependencies = [
  "computer-use-geometry",
+ "key-types",
  "keyboard-types",
  "serde",
  "serde_json",
@@ -4791,6 +4797,7 @@ dependencies = [
  "computer-use-session",
  "computer-use-vendors",
  "inference-core",
+ "key-types",
  "keyboard-types",
  "keymap",
  "model-catalog",
@@ -4912,6 +4919,7 @@ version = "0.1.0"
 dependencies = [
  "computer-use-action",
  "computer-use-geometry",
+ "key-types",
  "keyboard-types",
  "model-types",
  "proptest",
@@ -4952,6 +4960,7 @@ dependencies = [
  "computer-use-geometry",
  "computer-use-seat-input",
  "inference-core",
+ "key-types",
  "keyboard-types",
  "keymap",
  "model-types",
@@ -4987,6 +4996,7 @@ dependencies = [
  "computer-use-desktop",
  "computer-use-geometry",
  "computer-use-types",
+ "key-types",
  "keyboard-types",
  "serde",
  "serde_json",
@@ -5068,6 +5078,7 @@ dependencies = [
  "computer-use-action",
  "computer-use-geometry",
  "computer-use-parse",
+ "key-types",
  "model-types",
  "proptest",
  "serde",
@@ -8424,6 +8435,7 @@ version = "0.1.0"
 dependencies = [
  "base-time",
  "caller-identity-core",
+ "key-types",
  "thiserror 2.0.21",
 ]
 
@@ -8966,6 +8978,7 @@ version = "0.1.0"
 dependencies = [
  "base-time",
  "key-remap-proto",
+ "key-types",
  "keymap",
  "shell-verbs",
  "thiserror 2.0.21",
@@ -8986,6 +8999,7 @@ dependencies = [
  "key-remap-devtest",
  "key-remap-evdev",
  "key-remap-proto",
+ "key-types",
  "keymap",
  "notify",
  "rustix 1.1.6",
@@ -9021,6 +9035,15 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "key-types"
+version = "0.1.0"
+dependencies = [
+ "keyboard-types",
+ "serde",
+ "xkeysym",
 ]
 
 [[package]]
@@ -9207,6 +9230,7 @@ dependencies = [
  "dioxus-document",
  "dioxus-native-dom",
  "image",
+ "key-types",
  "keyboard-types",
  "layer-shell-hooks",
  "layer-shell-host",
@@ -10413,6 +10437,7 @@ dependencies = [
  "input-broker-client",
  "input-broker-wire",
  "input-linux",
+ "key-types",
  "mouse-gestures-proto",
  "notify",
  "rustix 1.1.6",

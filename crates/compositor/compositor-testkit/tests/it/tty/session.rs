@@ -6,11 +6,11 @@ use compositor_backend::tty::{
     TtySession, VtNumber, vt_of_chord, vt_of_keysym,
 };
 use compositor_core::gpu::{DrmNodeId, GpuChoice};
-use compositor_core::input::Keysym;
 use compositor_testkit::fakes::logind::manager::SleepPhase;
 use compositor_testkit::fakes::{
     FakeKms, FakeKmsOpener, FakeSession, FakeUdev, SessionFixture, SharedSession, SyntheticTopology,
 };
+use key_types::Keysym;
 use std::path::PathBuf;
 
 fn card0() -> DevicePath {

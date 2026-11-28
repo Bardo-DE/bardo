@@ -12,6 +12,7 @@ repository.workspace = true
 base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }
 mouse-gestures-proto = { path = "../mouse-gestures-proto" }
+key-types = {path = "../../keymap/key-types"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 serde_json = { workspace = true }

@@ -115,7 +115,8 @@ pub(crate) fn route(
 mod tests {
     use super::*;
     use crate::daemon::events::{EV_KEY, EV_REL, EV_SYN, REL_X, SYN_DROPPED, SYN_REPORT};
-    use crate::{Edge, Key, Physical};
+    use crate::{Edge, Physical};
+    use key_types::KeyCode;
 
     const DEV: DeviceId = DeviceId(7);
     const AT: Mono = Mono(std::time::Duration::from_nanos(5));
@@ -133,7 +134,7 @@ mod tests {
         Routed::Remap(RemapInput::Key {
             device: DEV,
             layout: Layout::Pc,
-            key: Physical(Key::from_code(code)),
+            key: Physical(KeyCode::from_code(code)),
             edge,
             at: AT,
         })

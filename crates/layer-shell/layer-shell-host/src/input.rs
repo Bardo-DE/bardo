@@ -4,8 +4,6 @@
 pub(crate) mod capability;
 pub(crate) mod focus;
 pub(crate) mod key;
-pub(crate) mod keycode;
-pub(crate) mod keysym;
 pub(crate) mod modifiers;
 pub(crate) mod mouse_gestures;
 pub(crate) mod pointer;

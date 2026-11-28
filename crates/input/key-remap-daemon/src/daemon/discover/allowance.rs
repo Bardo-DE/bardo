@@ -39,9 +39,9 @@ mod tests {
     use super::super::caps::{Bits, Caps};
     use super::super::classify::{Eligibility, Identity, classify};
     use super::*;
-    use crate::Key;
     use crate::daemon::events::{EV_KEY, EV_SYN};
     use crate::daemon::uinput;
+    use key_types::KeyCode;
     use std::path::PathBuf;
 
     const HARDWARE: bool = false;
@@ -52,7 +52,7 @@ mod tests {
         let mut words = [0u64; 12];
         let letters = ('a'..='z').map(|c| c.to_string());
         for name in letters.chain(["space".to_owned()]) {
-            let code = usize::from(Key::named(&name).expect("a key name").code());
+            let code = usize::from(KeyCode::named(&name).expect("a key name").code());
             words[code / 64] |= 1 << (code % 64);
         }
         let key = words

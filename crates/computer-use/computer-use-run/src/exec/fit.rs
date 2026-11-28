@@ -203,8 +203,9 @@ mod tests {
 
     #[test]
     fn keys_and_a_click_with_modifiers_take_the_keyboard() {
-        use computer_use_action::{Button, ClickCount, Modifier, Target};
+        use computer_use_action::{Button, ClickCount, Target};
         use computer_use_geometry::Point;
+        use key_types::Modifier;
         let click = |mods: &[Modifier]| ComputerUseAction::Click {
             at: Target::Point(Point::new(Coord(1), Coord(1))),
             button: Button::Left,

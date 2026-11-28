@@ -14,11 +14,12 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    Button, ClickCount, ComputerUseAction, Modifier, Notches, Repeat, ScrollBy, ScrollDir, Target,
-    TypedText, WaitMs,
+    Button, ClickCount, ComputerUseAction, Notches, Repeat, ScrollBy, ScrollDir, Target, TypedText,
+    WaitMs,
 };
 use computer_use_geometry::{ImageSpace, Rect, Size};
 use computer_use_parse::{DropReason, bounded, chord_from_words};
+use key_types::Modifier;
 use serde_json::Value;
 
 use crate::args::{Args, Verdict, field, number, pair, point, string};

@@ -1,0 +1,21 @@
+[package]
+publish.workspace = true
+name = "key-types"
+description = "The shared key vocabulary: evdev key codes, modifiers and keysyms, with their names and the logical keys they mean."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+keyboard-types = { workspace = true, features = ["std"] }
+serde = { workspace = true, features = ["derive"], optional = true }
+xkeysym = { workspace = true }
+
+[features]
+# `Serialize`/`Deserialize` for `Modifier`, as the snake_case words of its names.
+serde = ["dep:serde"]
+
+[lints]
+workspace = true

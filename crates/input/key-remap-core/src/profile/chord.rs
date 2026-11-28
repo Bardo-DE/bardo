@@ -2,8 +2,9 @@
 
 use thiserror::Error;
 
-use crate::key::Key;
-use crate::role::{OutMod, OutMods, Role, Roles};
+use crate::role::{Role, Roles};
+use key_types::KeyCode;
+use key_types::{Modifier, Modifiers};
 
 /// Why a chord string is not a `Trigger` or a `Stroke`.
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
@@ -32,14 +33,14 @@ pub enum ChordError {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Trigger {
     pub roles: Roles,
-    pub key: Key,
+    pub key: KeyCode,
 }
 
 /// What a rule writes: the key, with these modifiers held.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Stroke {
-    pub mods: OutMods,
-    pub key: Key,
+    pub mods: Modifiers,
+    pub key: KeyCode,
 }
 
 impl Trigger {
@@ -69,14 +70,14 @@ impl Stroke {
 }
 
 fn trigger_modifier(name: &str) -> Result<Role, ChordError> {
-    Role::named(name).ok_or_else(|| match OutMod::named(name) {
+    Role::named(name).ok_or_else(|| match Modifier::named(name) {
         Some(_) => ChordError::OutputModifier(name.to_owned()),
         None => ChordError::UnknownModifier(name.to_owned()),
     })
 }
 
-fn stroke_modifier(name: &str) -> Result<OutMod, ChordError> {
-    OutMod::named(name).ok_or_else(|| match Role::named(name) {
+fn stroke_modifier(name: &str) -> Result<Modifier, ChordError> {
+    Modifier::named(name).ok_or_else(|| match Role::named(name) {
         Some(_) => ChordError::RoleName(name.to_owned()),
         None => ChordError::UnknownModifier(name.to_owned()),
     })
@@ -86,7 +87,7 @@ fn stroke_modifier(name: &str) -> Result<OutMod, ChordError> {
 fn parse_chord<M, S>(
     text: &str,
     modifier: impl Fn(&str) -> Result<M, ChordError>,
-) -> Result<(S, Key), ChordError>
+) -> Result<(S, KeyCode), ChordError>
 where
     M: Copy + PartialEq,
     S: FromIterator<M>,
@@ -116,9 +117,9 @@ where
 }
 
 /// A key name, where a modifier name in key position is a chord missing its key.
-fn key_named(name: &str) -> Result<Key, ChordError> {
-    if Role::named(name).is_some() || OutMod::named(name).is_some() {
+fn key_named(name: &str) -> Result<KeyCode, ChordError> {
+    if Role::named(name).is_some() || Modifier::named(name).is_some() {
         return Err(ChordError::MissingKey(name.to_owned()));
     }
-    Key::named(name).ok_or_else(|| ChordError::UnknownKey(name.to_owned()))
+    KeyCode::named(name).ok_or_else(|| ChordError::UnknownKey(name.to_owned()))
 }

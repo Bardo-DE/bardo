@@ -104,7 +104,7 @@ pure decision behind an effectful handler), `wire.rs` (mapping to protocol enums
 | `scroll/engine.rs` (401) | `blitz_embed::scroll::engine::{mod.rs (Engine, step), types.rs (ScrollIn, ScrollOut, Motion, Track, Flight, ...), phases.rs (may_begin, began, changed, lifted)}` |
 | `inject.rs` (308) + `inject/stdin.rs` | `inject/{mod.rs, request.rs (Inject, Injected, KeyStroke), deliver.rs, command.rs, stdin.rs}` |
 
-`input/keysym.rs` (507) is a table and stays whole. Tests that move with a split go beside the
+`key-types` holds the keysym and evdev tables (they came out of `input/keysym.rs` and `input/keycode.rs`) and they stay whole. Tests that move with a split go beside the
 piece they test, never into a catch-all.
 
 ## 3. Public API
@@ -202,7 +202,7 @@ neither side names the other's types. Tests for each module live in the kit agai
 | Bounds on sizes, scales and counts from the compositor, peers and the GPU | `scale`, and FINDINGS F84's table |
 | Removing a surface and its per-surface protocol objects | `HostState::remove_surface` (`handlers/surface_objects`) |
 | Wayland pointer to Blitz pointer events | `input/pointer` |
-| Keysym and keycode tables | `input/keysym`, `input/keycode` |
+| Keysym and keycode tables | the `key-types` crate (`Keysym::logical_key`, `KeyCode::dom_code`) |
 | Key event assembly, key repeat | `input/key`, `handlers/keyboard` |
 | Seat capability decision | `input/capability` |
 | Input modality (keyboard vs pointer) | `modality` |

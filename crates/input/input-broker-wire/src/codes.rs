@@ -59,14 +59,6 @@ pub const BTN_TOOL_QUADTAP: u16 = 0x14f;
 
 /// The highest key or button code a keyboard device registers.
 pub const KEY_MAX: u16 = 0x2ff;
-/// Left control.
-pub const KEY_LEFTCTRL: u16 = 29;
-/// Left shift.
-pub const KEY_LEFTSHIFT: u16 = 42;
-/// Left alt.
-pub const KEY_LEFTALT: u16 = 56;
-/// Left super (`KEY_LEFTMETA`).
-pub const KEY_LEFTMETA: u16 = 125;
 
 /// Keyboard light: num lock.
 pub const LED_NUML: u16 = 0;

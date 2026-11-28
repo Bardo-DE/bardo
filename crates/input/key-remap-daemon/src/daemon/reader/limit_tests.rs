@@ -4,12 +4,13 @@
 use super::tests::Rig;
 use crate::daemon::inbox::{ClientId, Request};
 use crate::daemon::socket::client::recv;
-use crate::{Edge, Key, MAX_PROFILES};
+use crate::{Edge, MAX_PROFILES};
 use key_remap_proto::ToClient;
+use key_types::KeyCode;
 use std::fmt::Write as _;
 
 fn code(name: &str) -> u16 {
-    Key::named(name).unwrap().code()
+    KeyCode::named(name).unwrap().code()
 }
 
 fn command_c(rig: &mut Rig) -> Vec<(u16, i32)> {

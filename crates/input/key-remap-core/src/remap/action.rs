@@ -4,7 +4,7 @@ use super::batch::Batch;
 use crate::event::Logical;
 use crate::held::At;
 use crate::profile::{Hold, RuleAction, Stroke};
-use crate::role::{OutMod, OutMods};
+use key_types::{Modifier, Modifiers};
 
 /// Apply `action` for the physical key `at`. `owner` is the held non-Shift role key that keeps a
 /// `WhileHeld` stroke's modifiers; without one the stroke behaves as `Restore`.
@@ -47,13 +47,13 @@ fn tap(batch: Batch, stroke: Stroke, at: At) -> Batch {
         .then(|held| held.release_record(at))
 }
 
-fn mod_keys(mods: OutMods) -> Vec<Logical> {
+fn mod_keys(mods: Modifiers) -> Vec<Logical> {
     mods.iter().map(|m| Logical(m.key())).collect()
 }
 
 /// The written modifiers `mods` leaves out, as keys.
-fn unwanted(mods: OutMods) -> Vec<Logical> {
-    OutMod::ALL
+fn unwanted(mods: Modifiers) -> Vec<Logical> {
+    Modifier::ALL
         .into_iter()
         .filter(|m| !mods.contains(*m))
         .map(|m| Logical(m.key()))

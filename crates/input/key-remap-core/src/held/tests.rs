@@ -2,17 +2,17 @@ use std::collections::BTreeSet;
 
 use super::*;
 use crate::event::{DeviceId, Edge, Logical, OutEvent, Physical};
-use crate::key::Key;
+use key_types::KeyCode;
 
 const D0: DeviceId = DeviceId(0);
 const D1: DeviceId = DeviceId(1);
 
 fn at(device: DeviceId, code: u16) -> (DeviceId, Physical) {
-    (device, Physical(Key::from_code(code)))
+    (device, Physical(KeyCode::from_code(code)))
 }
 
 fn l(code: u16) -> Logical {
-    Logical(Key::from_code(code))
+    Logical(KeyCode::from_code(code))
 }
 
 fn press(code: u16) -> OutEvent {

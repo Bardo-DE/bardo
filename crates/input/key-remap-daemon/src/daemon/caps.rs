@@ -12,7 +12,8 @@
 //! desktop may not have opened a freshly created virtual keyboard yet, and events written before
 //! that are lost; a key typed proves it has. Pure; the reads and the writes belong to the reader.
 
-use crate::{Edge, Key, Layout, Logical, OutEvent, Physical, Profile, RemapInput, Trigger, role};
+use crate::{Edge, Layout, Logical, OutEvent, Physical, Profile, RemapInput, Trigger, role};
+use key_types::KeyCode;
 
 /// Whether a rule of `profile` takes the Caps Lock key pressed alone, so pressing it no longer
 /// toggles the lock. Without one it reaches the desktop as Caps Lock.
@@ -116,8 +117,8 @@ impl CapsFix {
     }
 }
 
-fn caps_lock() -> Option<Key> {
-    Key::named("capslock")
+fn caps_lock() -> Option<KeyCode> {
+    KeyCode::named("capslock")
 }
 
 /// Caps Lock pressed and released, each in its own frame.

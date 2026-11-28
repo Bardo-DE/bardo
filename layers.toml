@@ -529,6 +529,8 @@ kind = "unclassified"
 lints = "baseline"
 
 # keymap
+[crate.key-types]
+kind = "core"
 [crate.keymap]
 kind = "unclassified"
 [crate.keymap-gnome]
@@ -4235,7 +4237,7 @@ why = "the protocol crate: no device, socket, runtime, bus, file-watching crate 
 scope = "all"
 crate = "key-remap-core"
 features = "all"
-exactly = ["base-time", "key-remap-proto", "keymap", "shell-verbs", "thiserror", "toml"]
+exactly = ["base-time", "key-remap-proto", "key-types", "keymap", "shell-verbs", "thiserror", "toml"]
 why = "direct normal and build dependencies (ours and third-party, all features) are exactly these; the pure core also names keymap and shell-verbs for the table of handled actions that moved here from key-remap-client"
 
 [[edges]]
@@ -4249,7 +4251,7 @@ why = "direct normal and build dependencies (ours and third-party, all features)
 scope = "all"
 crate = "key-remap-daemon"
 features = "all"
-exactly = ["keymap", "key-remap-client", "key-remap-core", "key-remap-proto", "key-remap-evdev", "notify", "caller-identity-linux", "caller-identity-core", "caller-roles", "seat-guard", "rustix", "thiserror", "input-broker-client", "settings-store-fs"]
+exactly = ["key-types", "keymap", "key-remap-client", "key-remap-core", "key-remap-proto", "key-remap-evdev", "notify", "caller-identity-linux", "caller-identity-core", "caller-roles", "seat-guard", "rustix", "thiserror", "input-broker-client", "settings-store-fs"]
 why = "also links caller-identity (who the socket's peer is) and input-broker-client (makes its virtual devices); neither brings a bus or an async runtime; settings-store-fs is the shared settings file watch the daemon follows"
 
 [[edges]]

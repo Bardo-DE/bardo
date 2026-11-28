@@ -27,6 +27,7 @@ base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }
 base-clock = { path = "../../base/base-clock" }
 compositor-core = {path = "../compositor-core"}
+key-types = {path = "../../keymap/key-types"}
 compositor-layout = {path = "../compositor-layout"}
 compositor-motion = {path = "../compositor-motion"}
 compositor-render = {path = "../compositor-render"}

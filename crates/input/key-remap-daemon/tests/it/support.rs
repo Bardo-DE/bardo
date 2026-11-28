@@ -9,10 +9,11 @@
 use std::collections::BTreeSet;
 
 use key_remap_daemon::{
-    DeviceId, Edge, Key, Layout, Logical, Mono, OutEvent, Physical, Profiles, RemapInput, RemapOut,
+    DeviceId, Edge, Layout, Logical, Mono, OutEvent, Physical, Profiles, RemapInput, RemapOut,
     Remapper, builtin, resolve,
 };
 use key_remap_proto::ProfileName;
+use key_types::KeyCode;
 
 /// The shipped profiles, resolved; the built-in layer must parse without a warning.
 pub fn real_profiles() -> Profiles {
@@ -22,7 +23,7 @@ pub fn real_profiles() -> Profiles {
 }
 
 fn physical(name: &str) -> Physical {
-    Physical(Key::named(name).unwrap_or_else(|| panic!("no key named {name:?}")))
+    Physical(KeyCode::named(name).unwrap_or_else(|| panic!("no key named {name:?}")))
 }
 
 fn key_input(layout: Layout, dev: u32, name: &str, edge: Edge) -> RemapInput {

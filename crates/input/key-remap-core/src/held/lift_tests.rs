@@ -1,14 +1,14 @@
 use super::*;
 use crate::event::{DeviceId, Edge, Logical, OutEvent, Physical};
-use crate::key::Key;
+use key_types::KeyCode;
 
 const D0: DeviceId = DeviceId(0);
-const CMD: At = (D0, Physical(Key::LEFTMETA));
-const CMD_RIGHT: At = (D0, Physical(Key::RIGHTMETA));
-const LEFT: At = (D0, Physical(Key::from_code(105)));
-const CTRL: Logical = Logical(Key::LEFTCTRL);
-const ALT: Logical = Logical(Key::LEFTALT);
-const HOME: Logical = Logical(Key::from_code(102));
+const CMD: At = (D0, Physical(KeyCode::LEFTMETA));
+const CMD_RIGHT: At = (D0, Physical(KeyCode::RIGHTMETA));
+const LEFT: At = (D0, Physical(KeyCode::from_code(105)));
+const CTRL: Logical = Logical(KeyCode::LEFTCTRL);
+const ALT: Logical = Logical(KeyCode::LEFTALT);
+const HOME: Logical = Logical(KeyCode::from_code(102));
 
 fn up(key: Logical) -> OutEvent {
     OutEvent::Key {
@@ -126,7 +126,7 @@ fn drain_releases_lifted_holds_without_pressing_anything_back() {
 
 #[test]
 fn device_gone_restores_keys_other_devices_still_hold() {
-    let other = (DeviceId(1), Physical(Key::RIGHTMETA));
+    let other = (DeviceId(1), Physical(KeyCode::RIGHTMETA));
     let (held, _) = with_command()
         .press(other, vec![CTRL])
         .0

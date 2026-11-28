@@ -60,7 +60,7 @@ fn enter() -> ComputerUseAction<WindowSpace> {
 }
 
 fn chord_press(
-    mods: &[computer_use_action::Modifier],
+    mods: &[key_types::Modifier],
     key: keyboard_types::Key,
 ) -> ComputerUseAction<WindowSpace> {
     ComputerUseAction::Key {
@@ -244,7 +244,7 @@ fn classify_effect_table() {
         Row {
             name: "Command+C stays an ordinary write",
             action: chord_press(
-                &[computer_use_action::Modifier::Super],
+                &[key_types::Modifier::Super],
                 keyboard_types::Key::Character("c".into()),
             ),
             class: Ordinary,
@@ -253,7 +253,7 @@ fn classify_effect_table() {
         Row {
             name: "Command+Tab leaves the window, so the router asks",
             action: chord_press(
-                &[computer_use_action::Modifier::Super],
+                &[key_types::Modifier::Super],
                 keyboard_types::Key::Named(keyboard_types::NamedKey::Tab),
             ),
             class: Ordinary,
@@ -262,7 +262,7 @@ fn classify_effect_table() {
         Row {
             name: "the desktop's chord is outbound in any window",
             action: chord_press(
-                &[computer_use_action::Modifier::Super],
+                &[key_types::Modifier::Super],
                 keyboard_types::Key::Named(keyboard_types::NamedKey::Tab),
             ),
             class: Terminal,

@@ -6,9 +6,10 @@ use crate::error::IpcError;
 use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use compositor_core::input::{
-    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, Keysym, PinchDelta, TouchStep,
+    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, PinchDelta, TouchStep,
 };
 use desktop_protocols::vocab::PressEdge;
+use key_types::Keysym;
 use std::time::Duration;
 
 /// One detent is `value120` 120; fake-input.sh's `axis vertical 15` is one detent of 15 px, so a

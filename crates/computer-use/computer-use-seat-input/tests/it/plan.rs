@@ -1,8 +1,8 @@
 //! What `plan` produces: structure, not timing (the size of a `Gap` is the fill's to choose).
 
 use computer_use_action::{
-    Button, Chord, ClickCount, ComputerUseAction, Modifier, NodeId, Notches, Repeat, ScrollBy,
-    ScrollDir, Target,
+    Button, Chord, ClickCount, ComputerUseAction, NodeId, Notches, Repeat, ScrollBy, ScrollDir,
+    Target,
 };
 use computer_use_desktop::SeatIsolation;
 use computer_use_geometry::{Coord, Length, Point, Size, WindowSpace};
@@ -10,6 +10,7 @@ use computer_use_seat_input::{
     InputOp, Keycode, Keymap, KeymapEntry, PlanError, PlannedAction, Press, Produces,
     ResolvedPoints, SeatCaps, ShiftLevel, plan,
 };
+use key_types::Modifier;
 use std::collections::BTreeSet;
 
 fn at(x: u32, y: u32) -> Point<WindowSpace> {

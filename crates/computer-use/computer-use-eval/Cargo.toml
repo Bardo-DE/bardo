@@ -20,6 +20,7 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 computer-use-action = {path = "../../models/computer-use-action"}
+key-types = {path = "../../keymap/key-types"}
 computer-use-geometry = {path = "../../models/computer-use-geometry"}
 model-core = {path = "../../models/model-core"}
 model-types = {path = "../../models/model-types"}

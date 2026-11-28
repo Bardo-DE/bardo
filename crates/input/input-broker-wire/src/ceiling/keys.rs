@@ -6,15 +6,20 @@
 
 use super::filter::{Denial, Filter};
 use super::{BadCapsError, Plan, Route};
-use crate::codes::{EV_KEY, EV_SYN, KEY_LEFTALT, KEY_LEFTCTRL, KEY_LEFTMETA, SYN_REPORT};
+use crate::codes::{EV_KEY, EV_SYN, SYN_REPORT};
 use crate::event::Event;
 use crate::keytable::{KeyClass, class_of};
 use crate::limits::{MAX_KEY_CODES, MAX_KEYS_DOWN};
 use crate::maker::Maker;
 use crate::spec::DeviceSpec;
+use key_types::KeyCode;
 
 /// The modifiers that turn a key press into a shortcut. Shift alone does not.
-const CHORD_MODIFIERS: [u16; 3] = [KEY_LEFTCTRL, KEY_LEFTALT, KEY_LEFTMETA];
+const CHORD_MODIFIERS: [u16; 3] = [
+    KeyCode::LEFTCTRL.code(),
+    KeyCode::LEFTALT.code(),
+    KeyCode::LEFTMETA.code(),
+];
 
 pub(super) fn plan(maker: Maker, requested: &[u16]) -> Result<Plan, BadCapsError> {
     if requested.is_empty() {

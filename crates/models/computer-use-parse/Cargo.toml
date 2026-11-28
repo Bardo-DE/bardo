@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../computer-use-action"}
+key-types = {path = "../../keymap/key-types"}
 computer-use-geometry = {path = "../computer-use-geometry"}
 model-types = {path = "../model-types"}
 serde = { workspace = true, features = ["derive"] }

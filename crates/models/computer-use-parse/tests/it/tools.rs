@@ -6,11 +6,12 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    Button, Choice, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Notches, Repeat,
-    ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs,
+    Button, Choice, Chord, ClickCount, ComputerUseAction, FinishOutcome, Notches, Repeat, ScrollBy,
+    ScrollDir, Summary, Target, TypedText, WaitMs,
 };
 use computer_use_geometry::{Coord, ImageSpace, Length};
 use computer_use_parse::{DropReason, ParseError};
+use key_types::Modifier;
 use keyboard_types::{Key, NamedKey};
 use model_types::ToolDialect;
 use serde_json::Value;

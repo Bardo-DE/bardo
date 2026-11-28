@@ -2,9 +2,9 @@
 
 use super::allowance::VirtualAllowance;
 use super::caps::Caps;
-use crate::Key;
 use crate::daemon::events::{ABS_MT_POSITION_X, ABS_X, EV_ABS, EV_KEY, EV_REL, REL_X};
 use crate::daemon::{pointer, uinput};
+use key_types::KeyCode;
 use std::path::{Path, PathBuf};
 
 /// Name prefix of the mouse gestures daemon's virtual devices, which the key remap daemon must never grab.
@@ -55,7 +55,7 @@ fn is_ours_or_mouse_gestures(id: &Identity) -> bool {
 /// Whether the key mask has every letter and the space bar: what separates a keyboard from a
 /// power button, a lid switch, a media remote or a mouse with a few keys.
 fn has_typing_keys(caps: &Caps) -> bool {
-    let has = |name: &str| Key::named(name).is_some_and(|k| caps.key.has(u32::from(k.code())));
+    let has = |name: &str| KeyCode::named(name).is_some_and(|k| caps.key.has(u32::from(k.code())));
     ('a'..='z').all(|c| has(c.encode_utf8(&mut [0; 4]))) && has("space")
 }
 

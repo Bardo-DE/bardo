@@ -1,29 +1,29 @@
 use super::*;
 use crate::event::Physical;
-use crate::key::Key;
 use crate::role::Role;
+use key_types::KeyCode;
 
 #[test]
 fn role_by_position() {
-    const CASES: &[(Layout, Key, Option<Role>)] = &[
-        (Layout::Apple, Key::LEFTMETA, Some(Role::Command)),
-        (Layout::Apple, Key::RIGHTMETA, Some(Role::Command)),
-        (Layout::Apple, Key::LEFTALT, Some(Role::Option)),
-        (Layout::Apple, Key::RIGHTALT, Some(Role::Option)),
-        (Layout::Pc, Key::LEFTALT, Some(Role::Command)),
-        (Layout::Pc, Key::RIGHTALT, Some(Role::Command)),
-        (Layout::Pc, Key::LEFTMETA, Some(Role::Option)),
-        (Layout::Pc, Key::RIGHTMETA, Some(Role::Option)),
-        (Layout::Apple, Key::LEFTCTRL, Some(Role::Control)),
-        (Layout::Apple, Key::RIGHTCTRL, Some(Role::Control)),
-        (Layout::Pc, Key::LEFTCTRL, Some(Role::Control)),
-        (Layout::Pc, Key::RIGHTCTRL, Some(Role::Control)),
-        (Layout::Apple, Key::LEFTSHIFT, Some(Role::Shift)),
-        (Layout::Apple, Key::RIGHTSHIFT, Some(Role::Shift)),
-        (Layout::Pc, Key::LEFTSHIFT, Some(Role::Shift)),
-        (Layout::Pc, Key::RIGHTSHIFT, Some(Role::Shift)),
-        (Layout::Apple, Key::ESC, None),
-        (Layout::Pc, Key::ESC, None),
+    const CASES: &[(Layout, KeyCode, Option<Role>)] = &[
+        (Layout::Apple, KeyCode::LEFTMETA, Some(Role::Command)),
+        (Layout::Apple, KeyCode::RIGHTMETA, Some(Role::Command)),
+        (Layout::Apple, KeyCode::LEFTALT, Some(Role::Option)),
+        (Layout::Apple, KeyCode::RIGHTALT, Some(Role::Option)),
+        (Layout::Pc, KeyCode::LEFTALT, Some(Role::Command)),
+        (Layout::Pc, KeyCode::RIGHTALT, Some(Role::Command)),
+        (Layout::Pc, KeyCode::LEFTMETA, Some(Role::Option)),
+        (Layout::Pc, KeyCode::RIGHTMETA, Some(Role::Option)),
+        (Layout::Apple, KeyCode::LEFTCTRL, Some(Role::Control)),
+        (Layout::Apple, KeyCode::RIGHTCTRL, Some(Role::Control)),
+        (Layout::Pc, KeyCode::LEFTCTRL, Some(Role::Control)),
+        (Layout::Pc, KeyCode::RIGHTCTRL, Some(Role::Control)),
+        (Layout::Apple, KeyCode::LEFTSHIFT, Some(Role::Shift)),
+        (Layout::Apple, KeyCode::RIGHTSHIFT, Some(Role::Shift)),
+        (Layout::Pc, KeyCode::LEFTSHIFT, Some(Role::Shift)),
+        (Layout::Pc, KeyCode::RIGHTSHIFT, Some(Role::Shift)),
+        (Layout::Apple, KeyCode::ESC, None),
+        (Layout::Pc, KeyCode::ESC, None),
     ];
     for &(layout, key, want) in CASES {
         assert_eq!(
@@ -37,7 +37,10 @@ fn role_by_position() {
 
 #[test]
 fn unnamed_codes_are_not_modifiers() {
-    assert_eq!(role(Layout::Apple, Physical(Key::from_code(0xffff))), None);
+    assert_eq!(
+        role(Layout::Apple, Physical(KeyCode::from_code(0xffff))),
+        None
+    );
 }
 
 #[test]

@@ -4,32 +4,33 @@ use std::collections::BTreeMap;
 
 use super::action::RuleAction;
 use super::chord::Trigger;
-use crate::role::{OutMod, Role};
+use crate::role::Role;
+use key_types::Modifier;
 
 /// The modifier each role writes when it is pressed. Shift always writes Shift.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ModMap {
-    pub command: OutMod,
-    pub option: OutMod,
-    pub control: OutMod,
+    pub command: Modifier,
+    pub option: Modifier,
+    pub control: Modifier,
 }
 
 impl ModMap {
     /// Each role writes the modifier it is named after: no remapping.
     pub const IDENTITY: ModMap = ModMap {
-        command: OutMod::Super,
-        option: OutMod::Alt,
-        control: OutMod::Ctrl,
+        command: Modifier::Super,
+        option: Modifier::Alt,
+        control: Modifier::Ctrl,
     };
 
     /// What `role` writes when pressed.
     #[must_use]
-    pub const fn out(self, role: Role) -> OutMod {
+    pub const fn out(self, role: Role) -> Modifier {
         match role {
             Role::Command => self.command,
             Role::Option => self.option,
             Role::Control => self.control,
-            Role::Shift => OutMod::Shift,
+            Role::Shift => Modifier::Shift,
         }
     }
 }

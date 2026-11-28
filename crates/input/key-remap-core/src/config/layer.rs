@@ -6,7 +6,7 @@ use std::fmt;
 use key_remap_proto::ProfileName;
 
 use crate::profile::{ModMap, RuleAction, Trigger};
-use crate::role::OutMod;
+use key_types::Modifier;
 
 /// Where a layer came from, so a warning says whose file to fix.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -69,9 +69,9 @@ pub(super) struct ProfileLayer {
 /// The modmap fields a file set.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub(super) struct PartialModMap {
-    pub(super) command: Option<OutMod>,
-    pub(super) option: Option<OutMod>,
-    pub(super) control: Option<OutMod>,
+    pub(super) command: Option<Modifier>,
+    pub(super) option: Option<Modifier>,
+    pub(super) control: Option<Modifier>,
 }
 
 impl PartialModMap {

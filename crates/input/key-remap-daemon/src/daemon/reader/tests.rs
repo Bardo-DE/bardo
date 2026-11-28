@@ -9,9 +9,10 @@ use crate::daemon::route::Routed;
 use crate::daemon::socket::client::{connect, recv};
 use crate::daemon::socket::{SeatFile, bind, socket_path, spawn, vouch};
 use crate::daemon::uinput::RecordingEmitter;
-use crate::{Edge, Key, Layout, Mono, Physical, RemapInput};
+use crate::{Edge, Layout, Mono, Physical, RemapInput};
 use base_testkit::Scratch;
 use key_remap_proto::{ProfileName, ToClient};
+use key_types::KeyCode;
 use rustix::fd::OwnedFd;
 
 pub(super) struct Rig {
@@ -71,7 +72,7 @@ impl Rig {
         self.reader.apply(Routed::Remap(RemapInput::Key {
             device: DeviceId(0),
             layout: Layout::Apple,
-            key: Physical(Key::named(name).unwrap()),
+            key: Physical(KeyCode::named(name).unwrap()),
             edge,
             at: Mono::default(),
         }));
@@ -111,7 +112,7 @@ impl Rig {
 const BTN_LEFT: u16 = 0x110;
 
 fn code(name: &str) -> u16 {
-    Key::named(name).unwrap().code()
+    KeyCode::named(name).unwrap().code()
 }
 
 #[test]

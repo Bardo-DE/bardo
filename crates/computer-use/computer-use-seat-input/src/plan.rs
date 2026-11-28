@@ -6,10 +6,11 @@ use crate::keymap::{Keymap, ShiftLevel};
 use crate::op::InputOp;
 use crate::op::{Keycode, Press};
 use computer_use_action::{
-    Chord, ClickCount, ComputerUseAction, Modifier, Notches, Repeat, ScrollBy, Target,
+    Chord, ClickCount, ComputerUseAction, Notches, Repeat, ScrollBy, Target,
 };
 use computer_use_desktop::Ms;
 use computer_use_geometry::{Coord, Point, Size, WindowSpace};
+use key_types::Modifier;
 use keyboard_types::{Key, NamedKey};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;

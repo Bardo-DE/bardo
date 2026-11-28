@@ -3,55 +3,18 @@
 //! A `Key` can only come from the name table below, so every key the daemon may press is one
 //! it knows the evdev code of; the keyboard device registers exactly the keys in use.
 
+use key_types::{KeyCode, Modifier};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-/// A modifier held while the key is pressed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Modifier {
-    Ctrl,
-    Alt,
-    Shift,
-    Super,
-}
-
-impl Modifier {
-    /// The evdev code of the left-hand key.
-    #[must_use]
-    pub fn code(self) -> u16 {
-        match self {
-            Self::Ctrl => 29,
-            Self::Alt => 56,
-            Self::Shift => 42,
-            Self::Super => 125,
-        }
-    }
-
-    /// Whether holding this key makes the next key a shortcut. Shift alone does not.
-    fn makes_a_shortcut(self) -> bool {
-        matches!(self, Self::Ctrl | Self::Alt | Self::Super)
-    }
-
-    fn name(self) -> &'static str {
-        match self {
-            Self::Ctrl => "ctrl",
-            Self::Alt => "alt",
-            Self::Shift => "shift",
-            Self::Super => "super",
-        }
-    }
-
-    fn parse(s: &str) -> Option<Self> {
-        [Self::Ctrl, Self::Alt, Self::Shift, Self::Super]
-            .into_iter()
-            .find(|m| m.name() == s)
-    }
+/// Whether holding `modifier` makes the next key a shortcut. Shift alone does not.
+fn makes_a_shortcut(modifier: Modifier) -> bool {
+    matches!(modifier, Modifier::Ctrl | Modifier::Alt | Modifier::Super)
 }
 
 /// A non-modifier key, by evdev code; constructible only from `NAMES`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Key(u16);
+pub struct Key(KeyCode);
 
 /// Every key name the settings file may use, with its evdev code.
 #[rustfmt::skip]
@@ -70,17 +33,22 @@ pub const NAMES: &[(&str, u16)] = &[
 ];
 
 impl Key {
-    pub const LEFT: Key = Key(105);
-    pub const RIGHT: Key = Key(106);
+    /// The left arrow.
+    pub const LEFT: Key = Key(KeyCode::LEFT);
+    /// The right arrow.
+    pub const RIGHT: Key = Key(KeyCode::RIGHT);
 
     /// The evdev code.
     #[must_use]
     pub fn code(self) -> u16 {
-        self.0
+        self.0.code()
     }
 
     fn parse(s: &str) -> Option<Self> {
-        NAMES.iter().find(|(n, _)| *n == s).map(|&(_, c)| Key(c))
+        NAMES
+            .iter()
+            .find(|(n, _)| *n == s)
+            .map(|&(_, c)| Key(KeyCode::from_code(c)))
     }
 
     /// Whether the key is sent only together with ctrl, alt or super: a letter, digit,
@@ -89,13 +57,13 @@ impl Key {
     /// Back and Forward go out freely. The service keeps the same table.
     #[must_use]
     pub fn needs_a_shortcut_modifier(self) -> bool {
-        !matches!(self.0, 59..=68 | 87 | 88 | 102..=110 | 158 | 159)
+        !matches!(self.0.code(), 59..=68 | 87 | 88 | 102..=110 | 158 | 159)
     }
 
     fn name(self) -> &'static str {
         NAMES
             .iter()
-            .find(|&&(_, c)| c == self.0)
+            .find(|&&(_, c)| c == self.0.code())
             .map_or("?", |(n, _)| n)
     }
 }
@@ -122,14 +90,14 @@ impl KeyCombo {
     /// ctrl, alt or super.
     #[must_use]
     pub fn is_sendable(&self) -> bool {
-        !self.key.needs_a_shortcut_modifier() || self.mods.iter().any(|m| m.makes_a_shortcut())
+        !self.key.needs_a_shortcut_modifier() || self.mods.iter().any(|m| makes_a_shortcut(*m))
     }
 
     /// Every evdev code this combo presses.
     pub fn codes(&self) -> impl Iterator<Item = u16> + '_ {
         self.mods
             .iter()
-            .map(|m| m.code())
+            .map(|m| m.key().code())
             .chain(std::iter::once(self.key.code()))
     }
 }
@@ -144,7 +112,7 @@ impl TryFrom<String> for KeyCombo {
         let (key, mods) = parts.split_last().ok_or_else(err)?;
         let mods = mods
             .iter()
-            .map(|m| Modifier::parse(m))
+            .map(|m| Modifier::named(m))
             .collect::<Option<Vec<_>>>()
             .ok_or_else(err)?;
         Ok(Self {
@@ -234,7 +202,7 @@ mod tests {
     fn the_keys_that_type_are_exactly_the_ones_outside_navigation_and_function_keys() {
         let free: Vec<&str> = NAMES
             .iter()
-            .filter(|&&(_, c)| !Key(c).needs_a_shortcut_modifier())
+            .filter(|&&(_, c)| !Key(KeyCode::from_code(c)).needs_a_shortcut_modifier())
             .map(|&(n, _)| n)
             .collect();
         assert_eq!(

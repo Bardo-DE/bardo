@@ -3,11 +3,11 @@ use key_remap_proto::ProfileName;
 use super::*;
 use crate::config::{ConfigLayer, ConfigSource, resolve};
 use crate::event::{DeviceId, Edge, OutEvent, Physical};
-use crate::key::Key;
 use crate::layout::Layout;
 use crate::profile::Profiles;
 use crate::role::{Role, Roles};
 use crate::time::Mono;
+use key_types::KeyCode;
 
 const CONFIG: &str = r#"
 [profile.default]
@@ -28,7 +28,7 @@ fn profiles() -> Profiles {
 }
 
 fn key(name: &str) -> Physical {
-    Physical(Key::named(name).expect("a key name"))
+    Physical(KeyCode::named(name).expect("a key name"))
 }
 
 fn input(dev: u32, name: &str, edge: Edge) -> RemapInput {

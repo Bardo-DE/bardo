@@ -2,7 +2,8 @@
 //! typed key the tap goes before.
 
 use super::caps::{CapsFix, remaps_caps};
-use crate::{Edge, Key, Layout, Logical, OutEvent, Physical, builtin, resolve};
+use crate::{Edge, Layout, Logical, OutEvent, Physical, builtin, resolve};
+use key_types::KeyCode;
 
 /// One thing that happens to the rule.
 #[derive(Debug, Clone, Copy)]
@@ -25,7 +26,7 @@ enum Out {
 }
 
 fn caps_press() -> Vec<OutEvent> {
-    let key = Logical(Key::named("capslock").unwrap());
+    let key = Logical(KeyCode::named("capslock").unwrap());
     let edge = |edge| OutEvent::Key { key, edge };
     vec![
         edge(Edge::Press),
@@ -45,7 +46,7 @@ fn run(key: bool, steps: &[Step]) -> Vec<Out> {
             Step::Led(lamp) => state.reported(lamp),
             Step::Wrote => state.wrote(&caps_press()),
             Step::Press(name) => {
-                let pressed = Physical(Key::named(name).unwrap());
+                let pressed = Physical(KeyCode::named(name).unwrap());
                 let (next, tap) = state.pressed(Layout::Apple, pressed, key);
                 outs.push(match tap.as_slice() {
                     [] => Out::Quiet,
@@ -194,7 +195,7 @@ fn stray_is_a_lit_lock_nothing_asked_for_with_a_key_that_cannot_clear_it() {
 
 #[test]
 fn only_caps_lock_presses_count_as_asking() {
-    let shift = Logical(Key::named("leftshift").unwrap());
+    let shift = Logical(KeyCode::named("leftshift").unwrap());
     let other = [
         OutEvent::Key {
             key: shift,

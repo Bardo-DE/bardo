@@ -4,7 +4,7 @@
 
 /// Every named key, ordered by code.
 #[rustfmt::skip]
-pub(super) const NAMES: &[(&str, u16)] = &[
+pub(crate) const NAMES: &[(&str, u16)] = &[
     ("esc", 1), ("1", 2), ("2", 3), ("3", 4), ("4", 5), ("5", 6), ("6", 7),
     ("7", 8), ("8", 9), ("9", 10), ("0", 11), ("minus", 12), ("equal", 13), ("backspace", 14),
     ("tab", 15), ("q", 16), ("w", 17), ("e", 18), ("r", 19), ("t", 20), ("y", 21), ("u", 22),

@@ -2,11 +2,11 @@ use super::caps::Caps;
 use super::classify::{Eligibility, classify, is_virtual};
 use super::hotplug::{concerns_us, hotplug_of, hotplugs_of};
 use super::*;
-use crate::Key;
 use crate::daemon::events::{EV_ABS, EV_KEY, EV_REL, EV_SYN, REL_X, REL_Y};
 use crate::daemon::pointer::twin_name;
 use crate::daemon::uinput;
 use base_testkit::Scratch;
+use key_types::KeyCode;
 use notify::EventKind;
 use notify::event::{CreateKind, Flag, MetadataKind, ModifyKind, RemoveKind, RenameMode};
 use std::path::{Path, PathBuf};
@@ -34,7 +34,7 @@ fn mask(bits: &[u16]) -> String {
 fn codes(names: &[&str]) -> Vec<u16> {
     names
         .iter()
-        .map(|n| Key::named(n).expect("a key name").code())
+        .map(|n| KeyCode::named(n).expect("a key name").code())
         .collect()
 }
 
@@ -111,9 +111,9 @@ fn classify_table() {
     let mut combo_keys = typing_keys();
     combo_keys.extend([0x110, 0x111]);
     let mut no_space = typing_keys();
-    no_space.retain(|&c| c != Key::named("space").unwrap().code());
+    no_space.retain(|&c| c != KeyCode::named("space").unwrap().code());
     let mut no_z = typing_keys();
-    no_z.retain(|&c| c != Key::named("z").unwrap().code());
+    no_z.retain(|&c| c != KeyCode::named("z").unwrap().code());
 
     let cases: Vec<(&str, Caps, Identity, bool, Eligibility)> = vec![
         (

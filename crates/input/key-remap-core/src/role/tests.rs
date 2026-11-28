@@ -1,5 +1,4 @@
 use super::*;
-use crate::key::Key;
 
 #[test]
 fn role_names_round_trip() {
@@ -16,25 +15,6 @@ fn role_names_round_trip() {
         assert_eq!(Role::named(name), want, "{name:?}");
         if let Some(role) = want {
             assert_eq!(role.name(), name);
-        }
-    }
-}
-
-#[test]
-fn out_mod_names_and_keys() {
-    const CASES: &[(&str, Option<(OutMod, Key)>)] = &[
-        ("ctrl", Some((OutMod::Ctrl, Key::LEFTCTRL))),
-        ("alt", Some((OutMod::Alt, Key::LEFTALT))),
-        ("super", Some((OutMod::Super, Key::LEFTMETA))),
-        ("shift", Some((OutMod::Shift, Key::LEFTSHIFT))),
-        ("command", None),
-        ("control", None),
-    ];
-    for &(name, want) in CASES {
-        assert_eq!(OutMod::named(name), want.map(|(m, _)| m), "{name:?}");
-        if let Some((m, key)) = want {
-            assert_eq!(m.name(), name);
-            assert_eq!(m.key(), key);
         }
     }
 }
@@ -73,19 +53,4 @@ fn roles_set_with_without_contains_order_and_bits() {
     }
     let all: Roles = Role::ALL.into_iter().collect();
     assert_eq!(all.iter().count(), Role::ALL.len());
-}
-
-#[test]
-fn out_mods_set_operations() {
-    let a = OutMods::EMPTY.with(OutMod::Ctrl).with(OutMod::Alt);
-    let b = OutMods::EMPTY.with(OutMod::Alt).with(OutMod::Super);
-    assert_eq!(
-        a.union(b).iter().collect::<Vec<_>>(),
-        [OutMod::Ctrl, OutMod::Alt, OutMod::Super]
-    );
-    assert_eq!(a.difference(b).iter().collect::<Vec<_>>(), [OutMod::Ctrl]);
-    assert_eq!(b.difference(a).iter().collect::<Vec<_>>(), [OutMod::Super]);
-    assert_eq!(a.difference(a), OutMods::EMPTY);
-    assert!(a.contains(OutMod::Ctrl) && !a.contains(OutMod::Shift));
-    assert!(!a.without(OutMod::Ctrl).contains(OutMod::Ctrl));
 }

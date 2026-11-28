@@ -11,6 +11,7 @@ repository.workspace = true
 [dependencies]
 base-time = { path = "../../base/base-time" }
 key-remap-proto = { path = "../key-remap-proto" }
+key-types = {path = "../../keymap/key-types"}
 keymap = {path = "../../keymap/keymap"}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 thiserror = { workspace = true }

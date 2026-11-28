@@ -1,6 +1,6 @@
 use super::*;
 use crate::profile::ModMap;
-use crate::role::{OutMod, OutMods};
+use key_types::{Modifier, Modifiers};
 
 #[test]
 fn defaults_toml_parses_with_zero_warnings() {
@@ -17,15 +17,15 @@ fn defaults_resolve_spot_checks() {
     let terminal = profiles.resolve(&name("terminal"));
 
     let mac = ModMap {
-        command: OutMod::Ctrl,
-        option: OutMod::Alt,
-        control: OutMod::Super,
+        command: Modifier::Ctrl,
+        option: Modifier::Alt,
+        control: Modifier::Super,
     };
     assert_eq!(default.modmap, mac);
     assert_eq!(
         terminal.modmap,
         ModMap {
-            control: OutMod::Ctrl,
+            control: Modifier::Ctrl,
             ..mac
         }
     );
@@ -132,7 +132,7 @@ fn no_layers_still_has_a_default() {
 
 /// What `trigger` writes in `profile` when no rule rewrites it: each held role as its modifier.
 fn as_typed(profile: &Profile, trigger: Trigger) -> RuleAction {
-    let mods = trigger.roles.iter().fold(OutMods::EMPTY, |mods, role| {
+    let mods = trigger.roles.iter().fold(Modifiers::EMPTY, |mods, role| {
         mods.with(profile.modmap.out(role))
     });
     RuleAction::Map(
@@ -163,9 +163,9 @@ fn keymap_aware_writes_command_as_super_and_control_as_control() {
     assert_eq!(
         aware.modmap,
         ModMap {
-            command: OutMod::Super,
-            option: OutMod::Alt,
-            control: OutMod::Ctrl,
+            command: Modifier::Super,
+            option: Modifier::Alt,
+            control: Modifier::Ctrl,
         }
     );
     assert_eq!(rule(aware, "command+d"), None, "no rewrite of Cmd+D");

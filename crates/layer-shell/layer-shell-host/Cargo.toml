@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 layer-shell-types = { path = "../layer-shell-types" }
 layer-shell-hooks = { path = "../layer-shell-hooks" }
+key-types = { path = "../../keymap/key-types" }
 base-fs = { path = "../../base/base-fs" }
 base-xdg = { path = "../../base/base-xdg" }
 # Wayland

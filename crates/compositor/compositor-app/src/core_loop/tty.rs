@@ -15,7 +15,7 @@ use compositor_backend::tty::{
     Health, PresentOutcome, SeatState, SessionNote, TtyBackend, TtyNote, VtNumber, vt_of_chord,
 };
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
-use compositor_core::input::{DeviceClass, InputEvent, Keysym, Origin};
+use compositor_core::input::{DeviceClass, InputEvent, Origin};
 use compositor_core::output::OutputConfig;
 use compositor_core::settings::PointerSettings;
 use compositor_core::time::Mono;
@@ -23,6 +23,7 @@ use compositor_core::{Effect, Event, OutputKey, OutputName};
 use compositor_wayland::image_capture::CaptureBook;
 use compositor_wayland::screencopy::ScreencopyPart;
 use desktop_protocols::vocab::PressEdge;
+use key_types::Keysym;
 use smithay::input::keyboard::Keysym as XkbKeysym;
 use smithay::input::keyboard::ModifiersState;
 

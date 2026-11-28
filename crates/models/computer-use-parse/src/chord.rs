@@ -3,7 +3,8 @@
 use std::collections::BTreeSet;
 use std::str::FromStr;
 
-use computer_use_action::{Chord, Modifier};
+use computer_use_action::Chord;
+use key_types::Modifier;
 use keyboard_types::{Key, NamedKey};
 
 use crate::DropReason;

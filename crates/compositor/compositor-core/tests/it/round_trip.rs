@@ -6,14 +6,15 @@ use base_ids::Fraction;
 use compositor_core::app::AppKey;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::{
-    Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, DeviceClass, Keysym,
-    Origin, PortalSessionId, SpaceStep,
+    Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, DeviceClass, Origin,
+    PortalSessionId, SpaceStep,
 };
 use compositor_core::output::{EdidFacts, EdidSerial, OutputConfig, SavedOutputs, ScalePolicy};
 use compositor_core::space::{Space, SpaceContent, SpaceIndex, SplitPair, TaskToken};
 use compositor_core::{LeaseId, WindowId};
 use desktop_protocols::vocab::Transform;
 use desktop_protocols::vocab::{HeldMods, PlaceTarget, SplitSide};
+use key_types::Keysym;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::collections::BTreeMap;

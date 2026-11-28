@@ -8,6 +8,7 @@ the resolver. `CONVENTIONS.md` points to the shared style guides,
 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
+| `key-types` | `crates/keymap/key-types` | the key vocabulary: evdev `KeyCode` and its names and DOM codes, `Modifier`/`Modifiers`, `Keysym` with its names and the logical keys it means | `keyboard-types`, `xkeysym`; `serde` behind the `serde` feature |
 | `keymap` | `crates/keymap` | the pure core | `thiserror`; `serde` behind the `serde` feature |
 | `keymap-kde` | `crates/keymap-kde` | `KdeSource`, `parse_kdeglobals` | `keymap` |
 | `keymap-gnome` | `crates/keymap-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `keymap` |

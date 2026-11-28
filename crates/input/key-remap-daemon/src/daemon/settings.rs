@@ -134,18 +134,25 @@ mod tests {
         let base = Layers::builtin_only();
         let with_system = base.with_system(system);
         let with_user = with_system.with_user(user);
-        assert_eq!(command_of(&base), crate::OutMod::Ctrl, "built-in modmap");
+        assert_eq!(
+            command_of(&base),
+            key_types::Modifier::Ctrl,
+            "built-in modmap"
+        );
         assert_eq!(
             command_of(&with_system),
-            crate::OutMod::Alt,
+            key_types::Modifier::Alt,
             "system over built-in"
         );
         assert_eq!(
             command_of(&with_user),
-            crate::OutMod::Super,
+            key_types::Modifier::Super,
             "user over system"
         );
-        assert_eq!(command_of(&with_user.without_user()), crate::OutMod::Alt);
+        assert_eq!(
+            command_of(&with_user.without_user()),
+            key_types::Modifier::Alt
+        );
     }
 
     #[test]

@@ -24,9 +24,10 @@
 
 use compositor_core::geometry::{LogicalPoint, SubPoint};
 use compositor_core::input::{
-    AxisFrame, ButtonCode, DeviceClass, GestureStep, Keysym, PinchDelta, TouchStep,
+    AxisFrame, ButtonCode, DeviceClass, GestureStep, PinchDelta, TouchStep,
 };
 use desktop_protocols::vocab::PressEdge;
+use key_types::Keysym;
 use std::time::Duration;
 
 /// One inject line.
