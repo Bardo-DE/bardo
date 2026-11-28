@@ -142,6 +142,7 @@ dependencies = [
  "base-time",
  "base-words",
  "desktop-protocols",
+ "key-types",
  "serde",
  "serde_json",
  "thiserror",
@@ -346,6 +347,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "875a5a69ac2bab1a891711cf5eccbec1ce0341ea805560dcd90b7a2e925132e8"
 dependencies = [
  "jiff-tzdb",
+]
+
+[[package]]
+name = "key-types"
+version = "0.1.0"
+dependencies = [
+ "keyboard-types",
+ "xkeysym",
 ]
 
 [[package]]
@@ -727,6 +736,12 @@ checksum = "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81"
 dependencies = [
  "memchr",
 ]
+
+[[package]]
+name = "xkeysym"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b9cc00251562a284751c9973bace760d86c0276c471b4be569fe6b068ee97a56"
 
 [[package]]
 name = "zeroize"

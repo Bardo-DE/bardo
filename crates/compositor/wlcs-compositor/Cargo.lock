@@ -659,6 +659,7 @@ dependencies = [
  "desktop-protocols",
  "jiff",
  "key-remap-client",
+ "key-types",
  "keymap",
  "nix 0.31.3",
  "rustix 1.1.5",
@@ -685,6 +686,7 @@ dependencies = [
  "compositor-egl",
  "compositor-render",
  "desktop-protocols",
+ "key-types",
  "rustix 1.1.5",
  "serde",
  "smithay",
@@ -715,6 +717,7 @@ dependencies = [
  "base-time",
  "base-words",
  "desktop-protocols",
+ "key-types",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -769,6 +772,7 @@ dependencies = [
  "compositor-dbus",
  "dbus-kit",
  "desktop-protocols",
+ "key-types",
  "peers-callers",
  "settings-dbus",
  "settings-portal",
@@ -874,6 +878,7 @@ dependencies = [
  "compositor-wayland",
  "desktop-protocols",
  "image",
+ "key-types",
  "proptest",
  "rustix 1.1.5",
  "serde",
@@ -1890,6 +1895,14 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "key-types"
+version = "0.1.0"
+dependencies = [
+ "keyboard-types",
+ "xkeysym",
 ]
 
 [[package]]
