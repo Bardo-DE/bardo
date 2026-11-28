@@ -156,6 +156,7 @@ dependencies = [
  "account-sheet",
  "account-wire",
  "base-ids",
+ "base-stream",
  "futures-core",
  "futures-util",
  "thiserror 2.0.21",
@@ -205,6 +206,7 @@ dependencies = [
  "account-sheet",
  "account-wire",
  "base-clock",
+ "base-stream",
  "base-time",
  "http-core",
  "http-reqwest",
@@ -443,6 +445,7 @@ dependencies = [
  "account-proxy",
  "account-sheet",
  "base-clock",
+ "base-stream",
  "http-core",
  "tokio",
 ]
@@ -620,6 +623,7 @@ dependencies = [
  "account-fake",
  "account-fake-servers",
  "account-proxy",
+ "base-stream",
  "base-testkit",
  "base-url",
  "base64 0.22.1",
@@ -1396,8 +1400,8 @@ dependencies = [
 name = "action-procroot"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "action-wire",
+ "caller-identity-core",
  "tempfile",
 ]
 
@@ -3067,6 +3071,10 @@ name = "base-spawn"
 version = "0.1.0"
 
 [[package]]
+name = "base-stream"
+version = "0.1.0"
+
+[[package]]
 name = "base-testkit"
 version = "0.1.0"
 dependencies = [
@@ -4330,6 +4338,7 @@ dependencies = [
  "base-time",
  "base-words",
  "base-xdg",
+ "caller-identity-core",
  "caller-identity-dev",
  "calloop",
  "compositor-agent",
@@ -4406,6 +4415,7 @@ dependencies = [
  "base-machine",
  "base-time",
  "base-words",
+ "caller-identity-core",
  "desktop-protocols",
  "key-types",
  "proptest",
@@ -7641,6 +7651,7 @@ dependencies = [
  "account-client",
  "account-core",
  "account-wire",
+ "base-stream",
  "base-url",
  "http-body-util",
  "http-core",
@@ -8092,7 +8103,6 @@ dependencies = [
 name = "inference-client"
 version = "0.1.0"
 dependencies = [
- "account-callers",
  "account-capability",
  "account-core",
  "account-dbus",
@@ -8103,6 +8113,7 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-xdg",
+ "caller-identity-dbus",
  "computer-use-action",
  "computer-use-geometry",
  "dbus-kit",
@@ -15818,6 +15829,7 @@ dependencies = [
  "account-wire",
  "base-clock",
  "base-ids",
+ "base-stream",
  "base-testkit",
  "base-time",
  "base-url",

@@ -643,6 +643,7 @@ dependencies = [
  "base-time",
  "base-words",
  "base-xdg",
+ "caller-identity-core",
  "caller-identity-dev",
  "calloop",
  "compositor-agent",
