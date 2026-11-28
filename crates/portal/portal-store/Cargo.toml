@@ -1,0 +1,25 @@
+[package]
+name = "portal-store"
+description = "The files of the Bardo desktop portal backend: the restore file and the book of what the person let apps share or control without asking again."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-clock = { path = "../../base/base-clock" }
+base-fs = { path = "../../base/base-fs" }
+base-random = { path = "../../base/base-random" }
+base-time = { path = "../../base/base-time" }
+portal-core = { path = "../portal-core" }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["rt"] }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[lints]
+workspace = true

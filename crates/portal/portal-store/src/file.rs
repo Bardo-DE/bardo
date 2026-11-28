@@ -8,10 +8,9 @@ use base_fs::{NewFileMode, ReadCap, ReadError, move_aside, read_text_capped, wri
 use base_time::Clock;
 
 use portal_core::{
-    DeviceKinds, Grant, InputGrant, Keep, RestoreBook, RestoreToken, Screens, StandingGrant,
+    CastSource, DeviceKinds, Grant, InputGrant, Keep, RestoreBook, RestoreToken, Screens,
+    StandingGrant,
 };
-
-use crate::chooser::source_from_wire;
 
 /// The largest restore file that is read. Far more than [`portal_core::MAX_GRANTS`] grants need;
 /// a bigger file is not one this program wrote.
@@ -280,7 +279,7 @@ fn decode_line(line: &str) -> Option<Line> {
         .into_iter()
         .map(|field| {
             let (kind, name) = field.split_once(':')?;
-            source_from_wire(kind, &unescape(name)?)
+            CastSource::from_wire(kind, &unescape(name)?)
         })
         .collect::<Option<Vec<_>>>()?;
     Some(Line::Screen(

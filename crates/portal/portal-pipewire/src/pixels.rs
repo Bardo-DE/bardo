@@ -4,7 +4,7 @@
 //! compositor hands over whichever it likes. [`convert`] copies a frame into a destination
 //! buffer in the layout the consumer picked.
 
-use crate::capture::PixelFormat;
+use portal_wayland::PixelFormat;
 
 /// Where each channel sits among the four bytes of a pixel.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

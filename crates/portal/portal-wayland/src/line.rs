@@ -5,20 +5,19 @@
 //! chooser. The compositor hands the portal a connection of its own instead, over the session bus
 //! (`org.bardo.Compositor1.Connect("portal")`), where the portal is proven all the way; that
 //! connection is trusted for the screen and the windows and for nothing else. [`PortalLine`] is
-//! the seam that asks for it, [`CompositorLine`] the real one and [`FakeLine`] a test's. When no such
+//! the seam that asks for it, [`FakeLine`] a test's. The real one is `CompositorLine` in the portal
+//! daemon, which holds the bus connection it asks through. When no such
 //! connection can be had (another compositor, an older compositor) the capture connects the way any
 //! Wayland client does, and the portal's own sheet is the only question ([`super::DisplayName`]).
 //! The compositor limits how often one caller may ask, so a capture job asks once and runs all its
 //! steps on the connection it gets ([`super::Job`]).
 
-mod compositor;
 mod fake;
 
 use std::fmt;
 use std::os::fd::OwnedFd;
 use std::time::Duration;
 
-pub use self::compositor::CompositorLine;
 pub use self::fake::FakeLine;
 
 /// How long the compositor has to hand out the connection before the attempt is dropped: it is a

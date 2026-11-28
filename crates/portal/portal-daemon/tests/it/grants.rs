@@ -8,9 +8,9 @@ use caller_identity_dbus::caller_identity_core::{Pin, Proof};
 use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};
 use portal_core::restore::Grant;
 use portal_core::{CastSource, Keep, RestoreBook, RestoreToken};
-use portal_daemon::screencast::restore::{FileStore, RestoreStore};
 use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve_on};
+use portal_store::{FileStore, RestoreStore};
 use zbus::Connection;
 
 use crate::guard::{as_frontend, call, introduce, is_refused};

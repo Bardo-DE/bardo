@@ -35,7 +35,6 @@ pub use self::sessions::ConnectError;
 use self::sessions::{Asking, Core, Settled, Verdict, Wanted};
 use crate::access::{Answer, Asker};
 use crate::app_proof::{AppProver, Who};
-use crate::keeper::{Keeper, Kept, unix_now};
 use crate::names::AppNames;
 use crate::peers::{RoleGuard, Tether};
 use crate::response::Response;
@@ -43,6 +42,7 @@ use crate::screencast::Dict;
 use crate::screencast::options::{restore_data, restore_token};
 use crate::table::{Refusal, SessionKey};
 pub use portal_core::DeviceKinds;
+use portal_store::{Keeper, Kept, unix_now};
 
 /// The answer to a call: the portal's response code and its results.
 pub type Reply = (u32, Dict);

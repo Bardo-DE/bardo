@@ -13,17 +13,16 @@ use portal_core::{
 use zbus::Connection;
 
 use super::options;
-use super::restore::RestoreStore;
 use super::run::Share;
 use super::session::{Refusal, Selection, SessionBook, SessionKey};
 use super::{Dict, SessionObject};
 use crate::app_proof::{AppProver, NoProof, Who};
-use crate::capture::{DisplayName, Job};
 use crate::chooser::{Chooser, unavailable_is_cancel};
-use crate::keeper::{Keeper, Kept, unix_now};
 use crate::names::AppNames;
 use crate::peers::{Creator, Tether};
 use crate::response::Response;
+use portal_store::{Keeper, Kept, RestoreStore, unix_now};
+use portal_wayland::{DisplayName, Job};
 
 /// Everything the interface and the session objects share.
 #[derive(Debug)]
@@ -355,7 +354,7 @@ impl Shared {
     }
 
     /// Let `app_id` share without asking, until the person takes it back; see
-    /// [`Keeper::allow`](crate::keeper::Keeper::allow).
+    /// [`Keeper::allow`](portal_store::Keeper::allow).
     pub async fn allow(
         self: &Arc<Self>,
         app_id: &str,

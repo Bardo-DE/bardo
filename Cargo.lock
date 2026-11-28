@@ -12432,7 +12432,6 @@ version = "0.1.0"
 dependencies = [
  "base-clock",
  "base-fs",
- "base-random",
  "base-testkit",
  "base-time",
  "base-xdg",
@@ -12443,9 +12442,11 @@ dependencies = [
  "dbus-kit",
  "image",
  "peers-callers",
- "pipewire",
  "portal-core",
  "portal-dbus",
+ "portal-pipewire",
+ "portal-store",
+ "portal-wayland",
  "rustix 1.1.6",
  "shell-dbus",
  "tempfile",
@@ -12453,8 +12454,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
- "wayland-client",
- "wayland-protocols",
  "zbus",
 ]
 
@@ -12463,6 +12462,44 @@ name = "portal-dbus"
 version = "0.1.0"
 dependencies = [
  "zbus",
+]
+
+[[package]]
+name = "portal-pipewire"
+version = "0.1.0"
+dependencies = [
+ "pipewire",
+ "portal-core",
+ "portal-wayland",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "portal-store"
+version = "0.1.0"
+dependencies = [
+ "base-clock",
+ "base-fs",
+ "base-random",
+ "base-time",
+ "portal-core",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "portal-wayland"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "portal-core",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+ "tracing",
+ "wayland-client",
+ "wayland-protocols",
 ]
 
 [[package]]

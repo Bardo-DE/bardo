@@ -8,7 +8,6 @@ use portal_daemon::BoxFuture;
 use portal_daemon::access::{Answer, Asker, FakeAsker, Question};
 use portal_daemon::app_proof::{AppProof, AppProver, TrustAll, judge_app};
 use portal_daemon::chooser::ShellError;
-use portal_daemon::keeper::{Keeper, unix_now};
 use portal_daemon::names::AppNames;
 use portal_daemon::peers::Tether;
 use portal_daemon::remote_desktop::{
@@ -16,8 +15,9 @@ use portal_daemon::remote_desktop::{
 };
 use portal_daemon::screencast::Dict;
 use portal_daemon::screencast::options::{restore_data, restore_token};
-use portal_daemon::screencast::restore::MemoryStore;
 use portal_daemon::screencast::session::SessionKey;
+use portal_store::MemoryStore;
+use portal_store::{Keeper, unix_now};
 use zbus::zvariant::{OwnedValue, Value};
 
 use crate::app_proof::{REMOTE, REMOTE_ID, REMOTE_PROGRAM, names_with_entries, program};

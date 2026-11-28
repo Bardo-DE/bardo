@@ -9,26 +9,41 @@ backend (see `dist/bardo-portals.conf`).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `portal-core` | the screen-cast session machine (`step`), restore tokens and book, the source choice, the inhibit book, the layout of a picture of all outputs, when a held picture is sent again (`pacing`), the settings values and their wire numbers | none |
-| `bardo-portal` | the six D-Bus interfaces (zbus), the seams and their real and fake implementations, `serve`, the binary | D-Bus, Wayland, PipeWire, files |
+| `portal-core` | the screen-cast session machine (`step`), restore tokens and book, the source choice and its wire form, the inhibit book, the layout of a picture of all outputs, when a held picture is sent again (`pacing`), the settings values and their wire numbers | none |
+| `portal-wayland` | where pixels come from: `CaptureSource`, `ExtCapture` (a client of the compositor's image-capture protocols), `Job` (one connection per start), the portal's own line to the compositor (`PortalLine`), and the fakes | Wayland |
+| `portal-pipewire` | where pixels go: `FrameSink`, `PipewireSink` (the stream apps read), `Pump` (the loop between a capture and a sink) and the pixel conversion | PipeWire |
+| `portal-store` | what is kept: `RestoreStore` over the restore file (`FileStore`, `MemoryStore`) and `Keeper`, the one book of screen and input grants behind one lock | files |
+| `portal-dbus` | the portal's bus name, object path and the one proxy of `org.bardo.Portal1` | D-Bus (client) |
+| `portal-daemon` | the six D-Bus interfaces (zbus), the seams that ask the shell and the compositor, `serve`, the binary `bardo-portal` | D-Bus, files |
+
+Edges: `portal-wayland` and `portal-store` depend on `portal-core`; `portal-pipewire` on `portal-core` and
+`portal-wayland` (it takes frames from a `CaptureSource`); `portal-daemon` on all of them. No crate depends
+on `portal-daemon`.
 
 `portal-core` depends on `thiserror` only. It reaches no zbus, tokio, pipewire, wayland, image
 or tracing (row T1 of the portal rules in `layers.toml`, checked by `cargo xtask check layers`) and reads no clock, environment or file (T5).
 
-Inside `bardo-portal` only these modules name the heavy crates: `capture/` the Wayland crates (T2),
-`screencast/pipewire.rs` the PipeWire crate (T3), `screenshot.rs` the image encoder (T4); only
-`main.rs` reads the environment (T6).
+Each kind of I/O has one crate, so the rules are structural: only `portal-wayland` names the Wayland crates (T2),
+only `portal-pipewire/src/sink.rs` the PipeWire crate (T3), only `portal-daemon/src/screenshot.rs` the image encoder
+(T4); `portal-wayland` and `portal-pipewire` reach no bus, `portal-store` no Wayland or PipeWire. Only
+`portal-daemon/src/main.rs` reads the environment (T6).
+
+The remote-control socket (`remote_desktop/eis.rs`, `CompositorEis`) is a call on the bus and nothing else, so it
+stays in `portal-daemon`: a crate of its own would have the daemon's dependency set.
 
 ## 2. Layout
 
 ```
-crates/bardo-portal-core/src/{lib, screencast, restore, devices, choice, inhibit, layout, pacing, settings_values}.rs
-crates/bardo-portal/src/{lib, main, error, link, peers, table, dev_rows (feature debug), shell, names, fsread, random, chooser, screenshot, settings, access, keeper}.rs
+crates/portal/portal-core/src/{lib, screencast, restore, standing, devices, choice, inhibit, layout, pacing, settings_values}.rs
+crates/portal/portal-wayland/src/{lib, display, fake, job, line, pool, wl}.rs  line/fake.rs  wl/{outputs, wait, wire}.rs
+crates/portal/portal-pipewire/src/{lib, sink, stream, pixels}.rs
+crates/portal/portal-store/src/{lib, file, keeper}.rs
+crates/portal/portal-dbus/src/lib.rs
+crates/portal/portal-daemon/src/{lib, main, error, link, peers, table, dev_rows (feature debug), shell, names, app_proof, response, chooser, screenshot, settings, access, compositor_line}.rs
                    screenshot/{layout, color, service}.rs
                    remote_desktop/{mod, book, sessions, object, consent, eis}.rs
                    inhibit/{mod, hub, effect}.rs
-                   screencast/{mod, flow, options, run, session, stream, pipewire, pixels, restore}.rs
-                   capture/{mod, display, fake, job, line, output, toplevel, wl}.rs  capture/line/{the compositor, fake}.rs  capture/wl/{outputs, wait, wire}.rs
+                   screencast/{mod, flow, options, run, session, grants}.rs
 dist/   bardo.portal  bardo-portals.conf  org.freedesktop.impl.portal.desktop.bardo.service  bardo-portal.service
 scripts/install.sh   installs the binary, the unit, the D-Bus file and the portal file (standalone; --prefix, --destdir, --bin-dir)
 dev/    up.sh down.sh lib/{jail,chain}.sh accept/*.sh        (the jailed portal chain)
@@ -38,9 +53,9 @@ dev/    up.sh down.sh lib/{jail,chain}.sh accept/*.sh        (the jailed portal 
 
 | Trait | Real | Fake | Fill lane |
 | --- | --- | --- | --- |
-| `capture::CaptureSource` | `ExtCapture` | `FakeCapture` | P2-T2 |
-| `screencast::stream::FrameSink` | `PipewireSink` | `FakeSink` | P2-T2 |
-| `screencast::restore::RestoreStore` | `FileStore` | `MemoryStore` | P2-T2 |
+| `portal_wayland::CaptureSource` | `ExtCapture` | `FakeCapture` | P2-T2 |
+| `portal_pipewire::FrameSink` | `PipewireSink` | `FakeSink` | P2-T2 |
+| `portal_store::RestoreStore` | `FileStore` | `MemoryStore` | P2-T2 |
 | `screenshot::OutputLayout` | `LiveLayout` (asks the compositor at each screenshot) | `FixedLayout` | bardo-portal-shot |
 | `screenshot::ColorPicker` | `ShellColorPicker` (`org.bardo.Shell1.PickColor`) | `FakeColorPicker` | bardo-portal-shot |
 | `chooser::Chooser` | `ShellChooser` (calls the shell's picker) | `FakeChooser` | P2-T2 (chooser client) |
@@ -49,9 +64,9 @@ dev/    up.sh down.sh lib/{jail,chain}.sh accept/*.sh        (the jailed portal 
 | `access::Asker` | `ShellAsker` (`org.bardo.Shell1.AskPermission`) | `FakeAsker` | bardo-portal-access |
 | `access::Asker` (remote control) | `ShellAsker` (its own `AskPermission` question naming the input, built by `remote_control_question`) | `FakeAsker` | P2-T3 |
 | `remote_desktop::EisHandout` | `CompositorEis` (`org.bardo.Compositor1.ConnectEis` and `EndEis`) | `FakeEis` | P2-T3 |
-| `capture::PortalLine` | `CompositorLine` (`org.bardo.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; the compositor limits how often a caller may ask, so a capture job, `capture::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
+| `portal_wayland::PortalLine` | `compositor_line::CompositorLine` (`org.bardo.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; the compositor limits how often a caller may ask, so a capture job, `portal_wayland::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
 
-`Pump` (`screencast/stream.rs`) is the loop body between a `CaptureSource` and a `FrameSink`, and
+`Pump` (`portal-pipewire`) is the loop body between a `CaptureSource` and a `FrameSink`, and
 is implemented and tested against the fakes. A turn waits at most `QUIET_TURN` for a frame and reports
 `Quiet` if the picture did not change; the sink, not the pump, keeps the newest picture and sends it
 again at the stream's negotiated pace (`portal_core::decide`), so a still screen still gives a stream.
@@ -64,7 +79,7 @@ again at the stream's negotiated pace (`portal_core::decide`), so a still screen
    resolves to now (`RestoreBook::resolve`). The machine answers `AskChooser` or `OpenStream`.
 4. The chooser's answer is checked by `ChoiceRequest::accept` and fed back as `CastIn::Picked`.
 5. `OpenStream` builds an `ExtCapture` and a `PipewireSink` for each source and runs a `Pump` on its own thread;
-   `NodeReady` returns the node and the reply carries it. The Start is one `capture::Job`: the restore
+   `NodeReady` returns the node and the reply carries it. The Start is one `portal_wayland::Job`: the restore
    lookup and every stream use the one connection to the compositor, asked for once.
 6. A closed window or unplugged display ends the capture (`PumpOutcome::SourceEnded`,
    `CastIn::StreamEnded`).
@@ -126,7 +141,7 @@ recognised, every call is refused and the shell is never asked).
   ends everything tied to it (streams stop, sockets are taken back, holds are released).
 - Counts are capped per caller and in total (`peers::SESSION_LIMITS`, `HOLD_LIMITS`, `MAX_MONITORS`).
   A full book drops sessions that never began and are older than `UNSTARTED_TTL` before it refuses.
-- Every wait on the compositor has a deadline (`capture/wl.rs`, `wl/wire.rs`: connect, round trip, buffer
+- Every wait on the compositor has a deadline (`portal-wayland`'s `wl.rs`, `wl/wire.rs`: connect, round trip, buffer
   constraints, first picture), as have the logind, `ConnectEis`/`EndEis` and `Connect("portal")` calls. Waits on the person
   (the picker, the sheets) have none. One screenshot is taken at a time, within `SHOT_DEADLINE`.
 - A captured picture is at most 16384 pixels on an edge and 256 MiB; a screenshot canvas at most
@@ -187,7 +202,7 @@ the grant is kept under, the restore token is checked against, `Portal1` lists a
 Remote control remembers the same way. `RemoteDesktop.SelectDevices` takes `persist_mode` and `restore_data`; a proven
 app that asks to be remembered gets both back in the `Start` results, and an app that offers a token for the same or
 fewer device kinds than it was given is let in without the question. The grant (`restore::InputGrant`) lives in the
-same book as the screen grants, behind the same `keeper::Keeper` (one lock, one file), so `ListGrants` shows one line
+same book as the screen grants, behind the same `portal_store::Keeper` (one lock, one file), so `ListGrants` shows one line
 per app and `Revoke` takes back both kinds. `serve` gives `RemoteDesktopService::with_memory` the screen-sharing
 service's keeper and prover.
 

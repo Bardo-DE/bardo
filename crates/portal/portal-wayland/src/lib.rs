@@ -1,4 +1,4 @@
-//! Where pixels come from.
+//! Where the portal's pixels come from: the Wayland side of bardo-portal.
 //!
 //! [`CaptureSource`] is the seam. [`ExtCapture`] is the real implementation, a client of the
 //! Wayland image-capture protocols (`ext-image-capture-source` with `ext-image-copy-capture`),
@@ -22,7 +22,7 @@ use portal_core::{CastSource, CursorMode, Extent};
 pub use display::{DisplayName, Route};
 pub use fake::FakeCapture;
 pub use job::Job;
-pub use line::{CompositorLine, FakeLine, LINE_DEADLINE, LineError, PortalLine};
+pub use line::{FakeLine, LINE_DEADLINE, LineError, PortalLine};
 pub use pool::{FramePool, POOL_KEEP, PixelBuffer};
 
 use wl::Copier;

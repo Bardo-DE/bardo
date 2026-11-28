@@ -31,9 +31,9 @@ use pw::spa::pod::{ChoiceValue, Object, Pod, Property, Value};
 use pw::spa::utils::{Choice, ChoiceEnum, ChoiceFlags, Direction, Fraction, Rectangle, SpaTypes};
 use pw::stream::{StreamFlags, StreamRc, StreamState};
 
-use super::pixels::{self, Layout};
-use super::stream::{FrameSink, SinkError};
-use crate::capture::{CapturedFrame, FrameData, PixelFormat};
+use crate::pixels::{self, Layout};
+use crate::stream::{FrameSink, SinkError};
+use portal_wayland::{CapturedFrame, FrameData, PixelBuffer, PixelFormat};
 
 /// How long `open` waits for `PipeWire` to give the stream a node.
 const READY_WITHIN: Duration = Duration::from_secs(5);
@@ -69,7 +69,7 @@ struct Pending {
     size: Extent,
     format: PixelFormat,
     stride: u32,
-    bytes: crate::capture::PixelBuffer,
+    bytes: PixelBuffer,
 }
 
 /// What the sink asks of the loop thread.

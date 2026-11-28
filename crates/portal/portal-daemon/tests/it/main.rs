@@ -3,7 +3,6 @@
 //! install it, without a `dbus-daemon`. The jailed chain's checks live in `dev/accept/`.
 
 mod app_proof;
-mod capture;
 mod chooser;
 mod dev_callers;
 mod grants;
@@ -12,12 +11,9 @@ mod inhibit;
 mod names;
 mod options;
 mod peers;
-mod pixels;
 mod remote_desktop;
-mod restore_file;
 mod screenshot;
 mod session;
 mod settings;
 mod shell_bus;
 mod shell_check;
-mod stream;

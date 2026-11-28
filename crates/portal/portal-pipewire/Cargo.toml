@@ -1,0 +1,18 @@
+[package]
+name = "portal-pipewire"
+description = "The PipeWire side of the Bardo desktop portal backend: the video stream apps read a shared screen from, the loop that feeds it from a capture, and the pixel conversion between."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+pipewire = { workspace = true }
+portal-core = { path = "../portal-core" }
+portal-wayland = { path = "../portal-wayland" }
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

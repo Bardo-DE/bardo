@@ -31,6 +31,25 @@ impl CastSource {
             CastSource::Window(id) => ("window", id),
         }
     }
+
+    /// The source a wire form names; `None` for a kind this version does not know.
+    ///
+    /// ```
+    /// use portal_core::screencast::CastSource;
+    /// assert_eq!(
+    ///     CastSource::from_wire("window", "w1"),
+    ///     Some(CastSource::Window("w1".into()))
+    /// );
+    /// assert_eq!(CastSource::from_wire("region", "x"), None);
+    /// ```
+    #[must_use]
+    pub fn from_wire(kind: &str, name: &str) -> Option<Self> {
+        match kind {
+            "output" => Some(Self::Output(name.to_owned())),
+            "window" => Some(Self::Window(name.to_owned())),
+            _ => None,
+        }
+    }
 }
 
 /// How the pointer appears in the shared picture. The wire values are the portal's: 1, 2, 4.

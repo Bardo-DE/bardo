@@ -1,11 +1,10 @@
 //! The Bardo desktop's portal backend: the D-Bus services `xdg-desktop-portal` forwards to.
 //!
-//! The pure decisions live in `portal-core`; this crate holds the I/O around them, each behind
-//! a seam so tests run on a private bus with fakes:
+//! The pure decisions live in `portal-core`; `portal-wayland` (where pixels come from),
+//! `portal-pipewire` (where they go) and `portal-store` (where restore tokens are kept) hold the
+//! I/O of each kind. This crate is the D-Bus side around them, each part behind a seam so tests run
+//! on a private bus with fakes:
 //!
-//! - [`capture`]: where pixels come from ([`capture::CaptureSource`]).
-//! - [`screencast::stream`]: where pixels go ([`screencast::stream::FrameSink`]).
-//! - [`screencast::restore`]: where restore tokens are kept ([`screencast::restore::RestoreStore`]).
 //! - [`chooser`]: how the person is asked what to share ([`chooser::Chooser`]).
 //! - [`remote_desktop`]: how the person is asked to allow remote control
 //!   ([`remote_desktop::remote_control_question`]) and where an input socket comes from ([`remote_desktop::EisHandout`]).
@@ -23,13 +22,12 @@
 
 pub mod access;
 pub mod app_proof;
-pub mod capture;
 pub mod chooser;
+pub mod compositor_line;
 #[cfg(feature = "debug")]
 pub mod dev_rows;
 pub mod error;
 pub mod inhibit;
-pub mod keeper;
 pub mod link;
 pub mod names;
 pub mod peers;
@@ -43,7 +41,10 @@ pub mod table;
 
 use std::pin::Pin;
 
+use compositor_line::CompositorLine;
 use portal_dbus::{BUS_NAME, PORTAL_PATH};
+use portal_store::{FileStore, RestoreStore};
+use portal_wayland::DisplayName;
 
 pub use error::PortalError;
 
@@ -56,7 +57,7 @@ pub struct Parts {
     /// Asks the person what to share.
     pub chooser: Box<dyn chooser::Chooser>,
     /// Remembers restore tokens.
-    pub restore: Box<dyn screencast::restore::RestoreStore>,
+    pub restore: Box<dyn RestoreStore>,
     /// Reads the appearance.
     pub appearance: Box<dyn settings::AppearanceSource>,
     /// Gets an input socket from the compositor for a remote-desktop session.
@@ -76,7 +77,7 @@ pub struct Parts {
     pub prover: Option<Box<dyn app_proof::AppProver>>,
     /// Where captures connect: the compositor is asked for a connection of the portal's own over
     /// the bus first ([`Parts::real`]), then the session's display is used.
-    pub display: capture::DisplayName,
+    pub display: DisplayName,
     /// The table of the desktop's own programs, which says who the portal frontend and the shell
     /// are. An empty table (the default) recognises nobody, so every call is refused and nobody is
     /// asked.
@@ -88,10 +89,7 @@ impl Parts {
     /// that asks the shell or the compositor asks through one [`link::BusLink`], which [`serve`]
     /// attaches to the connection that owns the portal's name.
     #[must_use]
-    pub fn real(
-        restore: screencast::restore::FileStore,
-        appearance: settings::DesktopAppearance,
-    ) -> Self {
+    pub fn real(restore: FileStore, appearance: settings::DesktopAppearance) -> Self {
         let link = link::BusLink::new();
         Self {
             chooser: Box::new(chooser::ShellChooser::new(link.clone())),
@@ -101,9 +99,8 @@ impl Parts {
             access: Box::new(access::ShellAsker::new(link.clone())),
             screenshots: screenshot::ScreenshotSetup::unconfigured(),
             names: names::AppNames::none(),
-            display: capture::DisplayName::session().with_portal_line(std::sync::Arc::new(
-                capture::CompositorLine::new(link.clone()),
-            )),
+            display: DisplayName::session()
+                .with_portal_line(std::sync::Arc::new(CompositorLine::new(link.clone()))),
             link,
             prover: None,
             callers: caller_identity_dbus::caller_identity_core::Table::empty(),
@@ -143,7 +140,7 @@ impl Parts {
 
     /// Where captures connect, for a seam built outside [`Parts::real`] (the screenshots' setup).
     #[must_use]
-    pub fn display(&self) -> capture::DisplayName {
+    pub fn display(&self) -> DisplayName {
         self.display.clone()
     }
 

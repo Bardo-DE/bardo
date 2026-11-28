@@ -134,3 +134,15 @@ fn a_whole_session_from_pick_to_close() {
     assert_eq!(s, CastSession::Closed);
     assert_eq!(outs, vec![CastOut::CloseStream]);
 }
+
+#[test]
+fn wire_sources_round_trip_and_unknown_kinds_are_refused() {
+    for source in [
+        CastSource::Output("A".into()),
+        CastSource::Window("w".into()),
+    ] {
+        let (kind, name) = source.wire();
+        assert_eq!(CastSource::from_wire(kind, name), Some(source));
+    }
+    assert_eq!(CastSource::from_wire("region", "x"), None);
+}

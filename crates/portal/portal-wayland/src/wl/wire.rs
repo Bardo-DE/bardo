@@ -10,7 +10,7 @@ use wayland_client::globals::{GlobalList, registry_queue_init};
 
 use super::wait::Watchdog;
 use super::{Link, Wl, broken};
-use crate::capture::{CaptureError, DisplayName, Route};
+use crate::{CaptureError, DisplayName, Route};
 
 /// How long the compositor has to accept the connection and list its globals. It does both at
 /// once; a longer wait means it is stalled (a GPU reset, a frozen session).
@@ -21,7 +21,7 @@ const CONNECT_DEADLINE: Duration = Duration::from_secs(5);
 /// asked for a connection once however many outputs or windows the job touches. It closes when the
 /// job and every capture running on it are gone.
 #[derive(Debug)]
-pub(in crate::capture) struct Wire {
+pub(crate) struct Wire {
     pub(super) conn: Connection,
     pub(super) globals: GlobalList,
 }

@@ -5,19 +5,15 @@
 //! this interface moves the wire values in and out and drives the seams.
 
 mod flow;
-pub mod options;
-pub mod pipewire;
-pub use self::pipewire::PipewireSink;
 pub mod grants;
-pub mod pixels;
-pub mod restore;
+pub mod options;
 pub mod run;
 pub mod session;
-pub mod stream;
 
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use portal_store::RestoreStore;
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::zvariant::{ObjectPath, OwnedValue};
@@ -26,7 +22,6 @@ use crate::chooser::Chooser;
 use crate::peers::{RoleGuard, Tether};
 use crate::response::Response;
 use flow::Shared;
-use restore::RestoreStore;
 use session::SessionKey;
 
 /// The wire shape of an options or results dictionary.
@@ -97,14 +92,14 @@ impl ScreenCastService {
     /// The book of what is remembered, for the remote-control interface to remember in too, so
     /// there is one list and one way to take an app's access back.
     #[must_use]
-    pub fn keeper(&self) -> Arc<crate::keeper::Keeper> {
+    pub fn keeper(&self) -> Arc<portal_store::Keeper> {
         Arc::clone(&self.shared.keeper)
     }
 
     /// This service capturing on `display` (the connection the compositor hands this portal, when
     /// it is set up to ask for one). Call it before the service is shared.
     #[must_use]
-    pub fn with_display(mut self, display: crate::capture::DisplayName) -> Self {
+    pub fn with_display(mut self, display: portal_wayland::DisplayName) -> Self {
         if let Some(shared) = Arc::get_mut(&mut self.shared) {
             shared.display = display;
         }

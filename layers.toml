@@ -693,11 +693,17 @@ kind = "unclassified"
 
 # portal
 [crate.portal-core]
-kind = "unclassified"
+kind = "core"
 [crate.portal-daemon]
-kind = "unclassified"
+kind = "service"
 [crate.portal-dbus]
 kind = "unclassified"
+[crate.portal-pipewire]
+kind = "io"
+[crate.portal-store]
+kind = "io"
+[crate.portal-wayland]
+kind = "io"
 
 # provenance
 [crate.provenance]
@@ -4846,19 +4852,40 @@ why = "T1 portal-core is pure: no bus, runtime, pipewire, wayland, image or trac
 # The script read every .rs file under crates/portal, test files and test code included, so these
 # rules set tests = true.
 
+# The crates that hold one kind of I/O stay free of the others: the Wayland side has no bus or
+# runtime, the PipeWire side no bus, runtime or Wayland of its own, the store no bus, Wayland or PipeWire.
+
+[[reach]]
+crate = "portal-wayland"
+build = false
+forbid = ["zbus*", "zvariant*", "tokio*", "pipewire*", "libspa*", "image"]
+why = "portal-wayland is the Wayland side only: no bus, runtime, pipewire or image encoder"
+
+[[reach]]
+crate = "portal-pipewire"
+build = false
+forbid = ["zbus*", "zvariant*", "tokio*", "image"]
+why = "portal-pipewire is the PipeWire side only: no bus, runtime or image encoder"
+
+[[reach]]
+crate = "portal-store"
+build = false
+forbid = ["zbus*", "zvariant*", "wayland-*", "pipewire*", "libspa*", "image"]
+why = "portal-store keeps files only: no bus, wayland, pipewire or image encoder"
+
 [[source]]
 path = "crates/portal"
 pattern = '\bwayland_(client|protocols|backend)\b'
-except = ["crates/portal/portal-daemon/src/capture"]
+except = ["crates/portal/portal-wayland/src"]
 tests = true
-why = "T2 only portal-daemon/src/capture/ names the wayland crates"
+why = "T2 only portal-wayland names the wayland crates"
 
 [[source]]
 path = "crates/portal"
 pattern = '(^|[^:[:alnum:]_])(pipewire|libspa)::'
-except = ["crates/portal/portal-daemon/src/screencast/pipewire.rs"]
+except = ["crates/portal/portal-pipewire/src/sink.rs"]
 tests = true
-why = "T3 only portal-daemon/src/screencast/pipewire.rs names the pipewire crate (a path through the daemon's own pipewire module is not the crate)"
+why = "T3 only portal-pipewire/src/sink.rs names the pipewire crate"
 
 [[source]]
 path = "crates/portal"

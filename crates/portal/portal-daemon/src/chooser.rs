@@ -175,21 +175,11 @@ pub fn answer_from_wire(
     }
     let sources = sources
         .iter()
-        .map(|(kind, name)| source_from_wire(kind, name))
+        .map(|(kind, name)| CastSource::from_wire(kind, name))
         .collect::<Option<Vec<_>>>()
         .ok_or(ShellError::BadAnswer)?;
     let cursor = CursorMode::from_wire(cursor).ok_or(ShellError::BadAnswer)?;
     Ok(Some(Choice { sources, cursor }))
-}
-
-/// Map one wire source to a [`CastSource`]; `None` for a kind we do not know.
-#[must_use]
-pub fn source_from_wire(kind: &str, name: &str) -> Option<CastSource> {
-    match kind {
-        "output" => Some(CastSource::Output(name.to_owned())),
-        "window" => Some(CastSource::Window(name.to_owned())),
-        _ => None,
-    }
 }
 
 /// One scripted answer: the sources and cursor picked, or `None` for a cancel.

@@ -4,9 +4,9 @@ use std::os::fd::OwnedFd;
 use std::sync::mpsc;
 use std::time::Duration;
 
-use super::{LINE_DEADLINE, LineError, PortalLine};
 use crate::link::BusLink;
 use compositor_dbus::Compositor1Proxy;
+use portal_wayland::{LINE_DEADLINE, LineError, PortalLine};
 
 /// The role the compositor knows this portal's connection by.
 const ROLE: &str = "portal";

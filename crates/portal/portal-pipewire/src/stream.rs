@@ -1,6 +1,6 @@
 //! Moving frames from a [`CaptureSource`] to a [`FrameSink`].
 //!
-//! The sink is the seam in front of `PipeWire`: the real one is [`super::pipewire::PipewireSink`],
+//! The sink is the seam in front of `PipeWire`: the real one is [`PipewireSink`](crate::PipewireSink),
 //! [`FakeSink`] records what it was given. [`Pump`] is the whole loop body, so the logic between
 //! them is tested without either.
 
@@ -8,7 +8,7 @@ use std::time::Duration;
 
 use portal_core::{CursorMode, Extent, PwNode};
 
-use crate::capture::{Arrival, CaptureError, CaptureSource, CapturedFrame};
+use portal_wayland::{Arrival, CaptureError, CaptureSource, CapturedFrame};
 
 /// How long one turn waits for a change before it gives the loop a chance to look around (to
 /// notice it was told to stop).

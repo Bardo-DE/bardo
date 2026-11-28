@@ -2,16 +2,16 @@ use std::sync::Arc;
 
 use portal_core::{Extent, OutputFacts, Point, Rgb, Tile, Turn, arrange};
 use portal_daemon::access::{Answer, FakeAsker};
-use portal_daemon::capture::{
-    CaptureError, CaptureSource, CapturedFrame, DisplayName, FakeCapture, FrameData, Job,
-    PixelFormat,
-};
 use portal_daemon::screencast::Dict;
 use portal_daemon::screenshot::{
     FakeColorPicker, FakeOpen, FixedLayout, OpenCapture, OutputGrab, OutputLayout, Placed,
     ScreenshotService, ScreenshotSetup, ShotError, color_from_wire, compose, file_uri, take,
 };
 use portal_daemon::{BoxFuture, chooser::ShellError};
+use portal_wayland::{
+    CaptureError, CaptureSource, CapturedFrame, DisplayName, FakeCapture, FrameData, Job,
+    PixelFormat,
+};
 
 fn size(width: u32, height: u32) -> Extent {
     Extent { width, height }

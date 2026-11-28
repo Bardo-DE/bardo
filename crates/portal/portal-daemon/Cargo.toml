@@ -28,10 +28,12 @@ compositor-dbus = { path = "../../compositor/compositor-dbus" }
 dbus-kit = { path = "../../bus/dbus-kit" }
 base-clock = { path = "../../base/base-clock" }
 base-fs = { path = "../../base/base-fs" }
-base-random = { path = "../../base/base-random" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 portal-core = {path = "../portal-core"}
+portal-pipewire = { path = "../portal-pipewire" }
+portal-store = { path = "../portal-store" }
+portal-wayland = { path = "../portal-wayland" }
 thiserror = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
@@ -41,11 +43,7 @@ peers-callers = {path = "../../identity/peers-callers"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
-# Named now so the fill lanes edit no manifest (P2-T1: image; P2-T2: the other three).
-wayland-client = { workspace = true }
-rustix = {workspace = true, features = ["std", "event", "fs", "process"]}
-wayland-protocols = { workspace = true, features = ["client", "staging"] }
-pipewire = { workspace = true }
+rustix = {workspace = true, features = ["std", "process"]}
 image = { workspace = true, features = ["png"] }
 
 [dev-dependencies]

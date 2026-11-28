@@ -3,8 +3,7 @@ use portal_core::{
 };
 use portal_daemon::access::{AccessService, Answer, FakeAsker, Question, response_of};
 use portal_daemon::chooser::{
-    Chooser, FakeChooser, ShellError, answer_from_wire, nobody_answers, source_from_wire,
-    unavailable_is_cancel,
+    Chooser, FakeChooser, ShellError, answer_from_wire, nobody_answers, unavailable_is_cancel,
 };
 use portal_daemon::names::AppNames;
 use portal_daemon::screencast::Dict;
@@ -20,18 +19,6 @@ fn request() -> ChoiceRequest {
         app_label: "Meet".to_owned(),
         remembered: PersistMode::DoNot,
     }
-}
-
-#[test]
-fn wire_sources_round_trip_and_unknown_kinds_are_refused() {
-    for source in [
-        CastSource::Output("A".into()),
-        CastSource::Window("w".into()),
-    ] {
-        let (kind, name) = source.wire();
-        assert_eq!(source_from_wire(kind, name), Some(source));
-    }
-    assert_eq!(source_from_wire("region", "x"), None);
 }
 
 #[tokio::test]

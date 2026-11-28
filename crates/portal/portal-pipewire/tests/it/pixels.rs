@@ -1,5 +1,5 @@
-use portal_daemon::capture::PixelFormat;
-use portal_daemon::screencast::pixels::{Layout, convert};
+use portal_pipewire::{Layout, convert};
+use portal_wayland::PixelFormat;
 
 fn layout(format: PixelFormat, stride: usize) -> Layout {
     Layout { format, stride }

@@ -7,10 +7,9 @@ use std::thread::JoinHandle;
 
 use portal_core::{CastSource, CursorMode, PwNode};
 
-use super::PipewireSink;
 use super::options::StreamInfo;
-use super::stream::{FrameSink, Pump, PumpOutcome};
-use crate::capture::{CaptureError, CaptureSource, ExtCapture, Job};
+use portal_pipewire::{FrameSink, PipewireSink, Pump, PumpOutcome, SinkError};
+use portal_wayland::{CaptureError, CaptureSource, ExtCapture, Job};
 
 /// Why a share could not be opened.
 #[derive(Debug, thiserror::Error)]
@@ -20,7 +19,7 @@ pub enum OpenError {
     Capture(#[from] CaptureError),
     /// A stream could not be created.
     #[error("stream: {0}")]
-    Stream(#[from] super::stream::SinkError),
+    Stream(#[from] SinkError),
     /// A thread could not be started.
     #[error("thread: {0}")]
     Thread(#[from] std::io::Error),

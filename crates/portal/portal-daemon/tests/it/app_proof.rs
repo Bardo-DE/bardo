@@ -11,9 +11,9 @@ use portal_core::{CastSource, Keep};
 use portal_daemon::app_proof::{
     AppProof, AppProver, PeerProver, RootHeld, TrustAll, Why, judge_app, sender_of,
 };
-use portal_daemon::keeper::{Keeper, Kept, unix_now};
 use portal_daemon::names::{AppNames, exec_program, listed};
-use portal_daemon::screencast::restore::MemoryStore;
+use portal_store::MemoryStore;
+use portal_store::{Keeper, Kept, unix_now};
 
 use crate::guard::start_portal;
 

@@ -12,11 +12,11 @@ use portal_core::{
 };
 use portal_daemon::access::{Answer, Asker, Question, ShellAsker};
 use portal_daemon::chooser::{Chooser, ShellChooser};
-use portal_daemon::screencast::restore::FileStore;
 use portal_daemon::screenshot::{ColorPicker, ShellColorPicker};
 use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve_on};
 use portal_dbus::BUS_NAME;
+use portal_store::FileStore;
 use shell_dbus::Shell1Proxy;
 use zbus::message::Header;
 use zbus::names::BusName;

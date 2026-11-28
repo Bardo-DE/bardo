@@ -1,4 +1,4 @@
-use portal_daemon::screencast::restore::{MemoryStore, RestoreStore};
+use portal_store::{MemoryStore, RestoreStore};
 use std::time::{Duration, Instant};
 
 use portal_core::Keep;

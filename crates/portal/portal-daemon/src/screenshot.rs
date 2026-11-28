@@ -23,11 +23,11 @@ use base_fs::{NewFileMode, write_new};
 use portal_core::{Extent, Point, Tile};
 
 use crate::access::{Asker, NoAsker};
-use crate::capture::{
+use crate::names::AppNames;
+use portal_wayland::{
     CaptureError, CaptureSource, CapturedFrame, DisplayName, ExtCapture, FrameData, Job,
     PixelFormat,
 };
-use crate::names::AppNames;
 
 /// Why a screenshot could not be made.
 #[derive(Debug, thiserror::Error)]

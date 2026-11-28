@@ -11,10 +11,10 @@ use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing};
 use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};
 use portal_daemon::link::BusLink;
 use portal_daemon::peers::Peers;
-use portal_daemon::screencast::restore::FileStore;
 use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve_on};
 use portal_dbus::{BUS_NAME, PORTAL_PATH};
+use portal_store::FileStore;
 use zbus::zvariant::{ObjectPath, OwnedValue};
 use zbus::{Connection, Message, fdo};
 

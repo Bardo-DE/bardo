@@ -3,7 +3,7 @@
 use portal_core::{Tile, arrange};
 
 use super::ShotError;
-use crate::capture::Job;
+use portal_wayland::Job;
 
 /// The seam: which outputs exist and where they sit.
 pub trait OutputLayout: Send + Sync + std::fmt::Debug {

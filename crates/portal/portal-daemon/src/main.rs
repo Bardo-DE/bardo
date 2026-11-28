@@ -9,15 +9,15 @@ use base_time::Clock;
 use base_xdg::Xdg;
 use caller_identity_dbus::caller_identity_core::Table;
 use portal_daemon::access::ShellAsker;
-use portal_daemon::capture::DisplayName;
 use portal_daemon::link::BusLink;
 use portal_daemon::names::AppNames;
-use portal_daemon::screencast::restore::FileStore;
 use portal_daemon::screenshot::{
     ExtOpen, LiveLayout, OutputGrab, ScreenshotSetup, ShellColorPicker,
 };
 use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve};
+use portal_store::FileStore;
+use portal_wayland::DisplayName;
 
 #[tokio::main]
 async fn main() -> ExitCode {

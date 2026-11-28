@@ -13,7 +13,7 @@ use portal_core::{
     Screens, StandingGrant,
 };
 
-use crate::screencast::restore::{RestoreStore, StoreError};
+use crate::file::{RestoreStore, StoreError};
 
 /// What a grant to remember is for.
 #[derive(Clone, Debug)]
