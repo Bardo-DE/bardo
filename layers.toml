@@ -870,7 +870,8 @@ kind = "unclassified"
 [crate.sync-driver]
 kind = "unclassified"
 [crate.sync-engine]
-kind = "core"
+# pure in its own code (no fs, net, clock or threads); stays unclassified because sha2 reaches libc through cpufeatures (CPU feature detection), which the core kind forbids
+kind = "unclassified"
 [crate.sync-engine-fake]
 kind = "test-support"
 [crate.sync-fake-graph]
