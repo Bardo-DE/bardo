@@ -12,10 +12,11 @@ use crate::error::PeekError;
 use crate::frames::cover_picture;
 use anyview_core::work::Interrupt;
 use anyview_core::{
-    ByteLen, Deadline, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input,
-    MediaContainer, Peek, PeekBudget, PixelArea, PixelSize, Sniffed,
+    ByteLen, Deadline, FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget,
+    PixelArea, PixelSize, Sniffed,
 };
 use anyview_image::{ImagePeek, encode_png};
+use file_types::{FormatKind, MediaContainer};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 

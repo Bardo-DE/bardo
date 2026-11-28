@@ -5,7 +5,8 @@
 use crate::support;
 
 use anyview_archive::{ArchiveError, EntryLimit, ExtractLimits, extract, list};
-use anyview_core::{ArchiveFormat, ByteLen};
+use anyview_core::ByteLen;
+use file_types::ArchiveFormat;
 use support::{ENTRIES, sevenz_of, write};
 
 const SIGNATURE: [u8; 6] = [b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C];

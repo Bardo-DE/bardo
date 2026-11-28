@@ -1,9 +1,10 @@
 //! The second step: what a zip archive is, from its entries.
 
 use super::{Sniffed, ZipProbe};
-use crate::kind::{
-    ArchiveFormat, BookFormat, Family, FormatDetail, FormatKind, Mime, OfficeFormat, RasterFormat,
-    from_extension,
+use crate::kind::FormatDetail;
+use file_types::{
+    ArchiveFormat, BookFormat, Family, FormatKind, MimeType, OfficeFormat, RasterFormat,
+    from_extension, from_mime,
 };
 
 /// How much of the `mimetype` entry is read: the longest media type is far shorter.
@@ -119,11 +120,6 @@ const OPEN_XML: &[(&str, OfficeFormat)] = &[
     ("ppt", OfficeFormat::Pptx),
 ];
 
-/// The format of family `F` whose media type is `text`.
-fn from_mime<F: Family>(text: &str) -> Option<F> {
-    F::ALL.iter().copied().find(|format| format.mime() == text)
-}
-
 fn is_iwork(format: OfficeFormat) -> bool {
     matches!(
         format,
@@ -134,7 +130,7 @@ fn is_iwork(format: OfficeFormat) -> bool {
 fn office(format: OfficeFormat) -> Sniffed {
     Sniffed::new(
         format.kind(),
-        Mime::known(format.mime()),
+        MimeType::from_static(format.mime()),
         FormatDetail::Office(format),
     )
 }
@@ -142,7 +138,7 @@ fn office(format: OfficeFormat) -> Sniffed {
 fn book(format: BookFormat) -> Sniffed {
     Sniffed::new(
         FormatKind::Book,
-        Mime::known(format.mime()),
+        MimeType::from_static(format.mime()),
         FormatDetail::Book(format),
     )
 }
@@ -150,7 +146,7 @@ fn book(format: BookFormat) -> Sniffed {
 fn archive(format: ArchiveFormat) -> Sniffed {
     Sniffed::new(
         FormatKind::Archive,
-        Mime::known(format.mime()),
+        MimeType::from_static(format.mime()),
         FormatDetail::Archive(format),
     )
 }

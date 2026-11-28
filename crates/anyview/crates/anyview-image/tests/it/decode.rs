@@ -167,7 +167,7 @@ fn a_file_that_is_not_an_image_is_refused_by_kind() {
     assert_eq!(
         result,
         Err(ImageError::WrongKind {
-            kind: anyview_core::FormatKind::PlainText
+            kind: file_types::FormatKind::PlainText
         })
     );
 }
@@ -209,7 +209,7 @@ fn an_avif_says_the_feature_is_missing_without_it() {
     assert_eq!(
         decode(&src, &sniffed),
         Err(ImageError::NotCompiledIn {
-            format: anyview_core::RasterFormat::Avif
+            format: file_types::RasterFormat::Avif
         })
     );
 }

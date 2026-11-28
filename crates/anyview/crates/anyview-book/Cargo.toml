@@ -13,6 +13,7 @@ anyview-archive = {path = "../anyview-archive"}
 anyview-core = {path = "../anyview-core"}
 roxmltree = { workspace = true }
 thiserror = { workspace = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 ui-core = {path = "../../../ui/ui-core"}

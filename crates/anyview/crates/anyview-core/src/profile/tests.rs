@@ -3,8 +3,8 @@
 use super::{actions_for, edits_for, has_stage, mime_for};
 use crate::action::{FileAction, Reach, reach};
 use crate::edit::EditKind;
-use crate::kind::FormatKind;
 use base_words::Word;
+use file_types::FormatKind;
 
 const COMMON: &[FileAction] = &[
     FileAction::Open,
@@ -261,6 +261,6 @@ fn every_kind_has_a_media_type_that_names_it_back() {
         } else {
             *kind
         };
-        assert_eq!(crate::kind_of_mime(&mime), want, "{kind:?} gave {mime:?}");
+        assert_eq!(file_types::of_mime(&mime), want, "{kind:?} gave {mime:?}");
     }
 }

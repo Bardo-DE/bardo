@@ -6,7 +6,8 @@ use crate::error::ArchiveError;
 use crate::limit::pull;
 use crate::{sevenz, stream, zip_archive};
 use anyview_core::work::Interrupt;
-use anyview_core::{ArchiveFormat, ByteLen, Deadline, Input};
+use anyview_core::{ByteLen, Deadline, Input};
+use file_types::ArchiveFormat;
 use std::io::{BufReader, Cursor, Read};
 use tar::Archive;
 

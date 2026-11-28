@@ -5,7 +5,8 @@ use crate::entry::{Entry, EntryCount, EntryKind, EntryLimit, Listing, Tally};
 use crate::error::ArchiveError;
 use crate::{sevenz, stream, tar, zip_archive};
 use anyview_core::work::Interrupt;
-use anyview_core::{ArchiveFormat, ByteLen, Deadline, Input};
+use anyview_core::{ByteLen, Deadline, Input};
+use file_types::ArchiveFormat;
 use std::io::Cursor;
 
 /// The start of the index of the archive `src`, whose format `format` was sniffed.

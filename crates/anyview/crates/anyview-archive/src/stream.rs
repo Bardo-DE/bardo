@@ -4,8 +4,9 @@
 use crate::container::Codec;
 use crate::error::ArchiveError;
 use crate::limit::pull;
+use anyview_core::Input;
 use anyview_core::work::Interrupt;
-use anyview_core::{ArchiveFormat, Input};
+use file_types::ArchiveFormat;
 use std::io::{BufReader, Read};
 
 /// The start of an unpacked stream.

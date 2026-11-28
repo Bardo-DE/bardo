@@ -5,9 +5,8 @@
 //! pretended: no duration, no cover. A back end replaces its marker's `Peek` impl
 //! with a real one and the registry's arm names the new type.
 
-use anyview_core::{
-    FactLabel, FactValue, Facts, FormatKind, Input, Peek, PeekBudget, Sniffed, kind_name_of,
-};
+use anyview_core::{FactLabel, FactValue, Facts, Input, Peek, PeekBudget, Sniffed, kind_name_of};
+use file_types::FormatKind;
 use std::convert::Infallible;
 use std::marker::PhantomData;
 

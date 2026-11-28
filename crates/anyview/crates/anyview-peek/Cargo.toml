@@ -43,6 +43,7 @@ thiserror = { workspace = true }
 matroska-demuxer = { workspace = true, optional = true }
 mp4parse = { workspace = true, optional = true }
 symphonia = { workspace = true, features = ["aac", "aiff", "alac", "flac", "id3v1", "id3v2", "ape", "isomp4", "mp3", "ogg", "pcm", "vorbis", "wav"], optional = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 # The crate's own tests need its test-only features.

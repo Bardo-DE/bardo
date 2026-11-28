@@ -40,7 +40,6 @@ module-cycle agent_planner::busy_text,agent_planner::meta_reply,agent_planner::m
 module-cycle agent_session::backend,agent_session::desk
 module-cycle anyview_archive::extract,anyview_archive::list,anyview_archive::sevenz
 module-cycle anyview_core::action::reach,anyview_core::action::spec
-module-cycle anyview_core::kind,anyview_core::profile
 module-cycle anyview_core::peek::budget,anyview_core::peek::deadline
 module-cycle anyview_image::exif,anyview_image::resolution
 module-cycle anyview_peek::any,anyview_peek::body,anyview_peek::book,anyview_peek::card,anyview_peek::error,anyview_peek::folder,anyview_peek::looking,anyview_peek::media,anyview_peek::office,anyview_peek::pdf,anyview_peek::probe,anyview_peek::registry,anyview_peek::unavailable
@@ -266,7 +265,6 @@ module-cycle ui_gallery::sheet,ui_gallery::snapshot
 module-cycle ui_harness::fake_window,ui_harness::frame_view,ui_harness::harness,ui_harness::harness_backend,ui_harness::harness_clock,ui_harness::harness_config,ui_harness::harness_drop,ui_harness::harness_edit,ui_harness::harness_frames,ui_harness::harness_pointer,ui_harness::harness_style,ui_harness::harness_wheel,ui_harness::headless,ui_harness::headless_step,ui_harness::query,ui_harness::snapshot
 module-cycle ui_harness::gpu_paint,ui_harness::painter
 module-cycle ui_harness::harness_input,ui_harness::input
-module-cycle ui_helpers::desktop_file::file,ui_helpers::desktop_file::parse
 module-cycle ui_lint::animation,ui_lint::declaration,ui_lint::details,ui_lint::hairline
 module-cycle ui_lint::markup,ui_lint::markup_hig
 module-cycle ui_motion::detail,ui_motion::timeline
@@ -363,7 +361,6 @@ tangle ui_core::colour::oklab::Oklab,ui_core::colour::oklab::Oklch,ui_core::colo
 tangle ui_core::palette::model::PaletteState,ui_core::palette::step::Step,ui_core::palette::step::closed,ui_core::palette::step::open,ui_core::palette::step::run
 tangle ui_desktop::desktop::Desktop,ui_desktop::watch::Watch
 tangle ui_harness::harness::Harness,ui_harness::harness_clock::advance
-tangle ui_helpers::desktop_file::file::DesktopFile,ui_helpers::desktop_file::parse::parse_text
 tangle ui_lint::rule::Rule,ui_lint::severity::WARNINGS
 tangle ui_style::icon::Icon,ui_style::icon::geometry_control::shapes,ui_style::icon::geometry_files::shapes,ui_style::icon::geometry_markup::shapes,ui_style::icon::geometry_shell::shapes,ui_style::icon::native::TABLE,ui_style::icon::solid_fan::shapes,ui_style::icon::solid_files::shapes,ui_style::icon::solid_mailo::shapes,ui_style::icon::solid_markup::shapes,ui_style::icon::solid_more::shapes,ui_style::icon::solid_shell::shapes,ui_style::icon::style::GlyphStyle,ui_style::icon::style::PAIR_ON
 tangle ui_style::kit::kits::Kits,ui_style::kit::model::Kit,ui_style::kit::model::Section
@@ -982,7 +979,6 @@ field-leak ui_harness::headless::Headless::painter
 field-leak ui_harness::headless::Headless::scroll
 field-leak ui_harness::headless::Headless::shell
 field-leak ui_harness::headless::Headless::wakeup
-field-leak ui_helpers::mime::globs::GlobEntry::mime
 field-leak ui_motion::drag::Drag::phase
 field-leak ui_motion::hover_intent::HoverIntent::phase
 field-leak ui_motion::roster::model::RosterState::entries
@@ -997,6 +993,7 @@ field-leak updater_daemon::service::engine::Engine::ctx
 field-leak updater_root::apply::staged::Staged::release
 field-leak updater_root::layout::Layout::root
 field-leak updater_root::report::Report::conflicts
+field-leak xdg_core::mime::globs::GlobEntry::mime
 shallow-module account_capability
 shallow-module account_client
 shallow-module account_core
@@ -1292,7 +1289,6 @@ wide-directory crates/ui/ui-gallery/src/
 wide-directory crates/ui/ui-gallery/src/pages/
 wide-directory crates/ui/ui-gallery/src/pages/structure/
 wide-directory crates/ui/ui-harness/src/
-wide-directory crates/ui/ui-helpers/src/
 wide-directory crates/ui/ui-icon-tool/src/
 wide-directory crates/ui/ui-lint/src/
 wide-directory crates/ui/ui-motion/src/

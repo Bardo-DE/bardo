@@ -17,7 +17,7 @@ agent-install = {path = "../../actions/agent-install"}
 action-settings = {path = "../../actions/action-settings"}
 action-settings-fs = {path = "../../actions/action-settings-fs"}
 ui-extensions = {path = "../../ui/ui-extensions"}
-ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+xdg-core = { path = "../../xdg/xdg-core" }
 freedesktop-icons = { workspace = true }
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }

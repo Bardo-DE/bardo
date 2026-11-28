@@ -6,10 +6,10 @@ use crate::encoding::TextCodec;
 use crate::error::TextError;
 use crate::table::{HeaderMode, RowIndex, Table, Workbook};
 use anyview_core::{
-    Delimiter, Fact, FactGroup, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input,
-    OfficeFormat, Peek, PeekBudget, Sniffed,
+    Fact, FactGroup, FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed,
 };
 use base_words::Word;
+use file_types::{Delimiter, FormatKind, OfficeFormat};
 
 /// What a peek of a table holds.
 #[derive(Debug, Clone, PartialEq, Eq)]

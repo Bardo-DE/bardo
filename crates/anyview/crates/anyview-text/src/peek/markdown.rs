@@ -7,7 +7,8 @@ use crate::error::TextError;
 use crate::lines::split_start;
 use crate::markdown::{Heading, NoFiles, RenderEnv, render};
 use anyview_core::work::Interrupt;
-use anyview_core::{FactLabel, FactValue, Facts, FormatKind, Input, Peek, PeekBudget, Sniffed};
+use anyview_core::{FactLabel, FactValue, Facts, Input, Peek, PeekBudget, Sniffed};
+use file_types::FormatKind;
 
 /// What a peek of a Markdown file holds.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1,18 +1,3 @@
-//! Missing helpers, and the safe file reader and writer every UI kit crate shares.
-//!
-//! The file half ([`read_capped`], [`write_atomic`], [`update_atomic`], [`move_aside`]) is UI-free:
-//! it needs only `std`, so a core crate with no window,
-//! bus or runtime can read and write a person's files with the same guarantees as Bardo's
-//! settings code. [`DesktopFile`] is the matching reader for the text of a freedesktop `.desktop`
-//! file (pure: the text comes in, capped, from [`read_text_capped`] or anywhere else).
-//!
-//! The desktop-entry layer: where desktop entries are ([`XdgEnv`]), the walk of them
-//! ([`walk_applications`]), the id of one ([`DesktopId`]), the entry a window belongs to
-//! ([`entry_for_window`], [`match_app`]) and the names an app declares ([`AppIdentity`]).
-//!
-//! The file-type layer is the [`mime`] module: a file's type from its name, the apps that open it
-//! and its icon name, per shared-mime-info, `mimeapps.list` and `mimeinfo.cache`.
-//!
 //! Missing helpers (design/27 permission-prompt rules; `bardo/CONSUMING.md`, "Missing helpers").
 //!
 //! An app runs distro tools (mpv, ffmpeg, heif-dec) that may not be installed. This crate lets
@@ -47,8 +32,8 @@
 //! ```
 //!
 //! The distro family comes from `ID`, then each `ID_LIKE` entry, of `/etc/os-release`
-//! ([`Family::detect`], on the fields [`OsRelease::parse`] reads, which also give the release's
-//! `VERSION_ID`; read through [`Environment::os_release`], never written).
+//! ([`Family::detect`], on the fields `xdg_core::OsRelease::parse` reads; read through
+//! [`Environment::os_release`], never written).
 //!
 //! # Why `PackageKit`'s system transaction API, not `Modify2`
 //!
@@ -73,14 +58,10 @@
 
 mod capability;
 mod catalog;
-mod desktop_entries;
-mod desktop_file;
 mod family;
 mod helpers;
 mod install_line;
 mod installer;
-pub mod mime;
-mod os_release;
 mod outcome;
 mod probe;
 mod watch;
@@ -88,18 +69,10 @@ mod watch;
 pub use base_time::deadline::Deadline;
 pub use capability::{CapabilityName, Executable, NameError, PackageName};
 pub use catalog::{Catalog, CatalogError, Entry};
-pub use desktop_entries::{
-    AppIdentity, AppKeys, ApplicationEntry, DesktopId, DesktopIdError, EntryFile, XdgEnv,
-    entry_for_window, first_of_each_id, load_entries, match_app, walk_applications,
-};
-pub use desktop_file::{
-    DESKTOP_ENTRY_CAP, DesktopFile, DesktopFileError, DesktopGroup, EntryLocale,
-};
 pub use family::Family;
 pub use helpers::Helpers;
 pub use install_line::InstallLine;
 pub use installer::{BoxFuture, FakeInstaller, Install, PackageKit, Request, StandIn, Timeouts};
-pub use os_release::OsRelease;
 pub use outcome::{Missing, Outcome};
 pub use probe::Environment;
 pub use watch::{Availability, Subscription};

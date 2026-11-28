@@ -17,8 +17,9 @@ settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 # The kinds, folder kinds, extension label and the type-to-kind table the standard set is.
 ui-style = {path = "../ui-style", default-features = false}
-# The capped file reader (a look's stylesheet is read through it).
-ui-helpers = {path = "../ui-helpers", default-features = false}
+# A file's name and type, for the file icon resolver; the type database it asks.
+file-types = { path = "../../xdg/file-types" }
+xdg-core = { path = "../../xdg/xdg-core" }
 # Manifests and the registry (`plugin-core`), and the folder scan that reads them (`plugin-host`).
 plugin-core = {path = "../../plugin/plugin-core"}
 plugin-host = {path = "../../plugin/plugin-host"}

@@ -5,7 +5,8 @@ use super::tally::Tally;
 use crate::encoding::TextCodec;
 use crate::error::TextError;
 use crate::lines::split_start;
-use anyview_core::{FactLabel, FactValue, Facts, FormatKind, Input, Peek, PeekBudget, Sniffed};
+use anyview_core::{FactLabel, FactValue, Facts, Input, Peek, PeekBudget, Sniffed};
+use file_types::FormatKind;
 
 /// What a peek of a plain text file holds.
 #[derive(Debug, Clone, PartialEq, Eq)]

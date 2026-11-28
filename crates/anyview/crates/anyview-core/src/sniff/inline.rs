@@ -1,8 +1,8 @@
 //! A picture as a `data:` URL, for markup that must not name a file.
 
 use super::{FileHead, SniffStep, sniff};
-use crate::kind::FormatKind;
 use crate::source::FileName;
+use file_types::FormatKind;
 
 /// How much of a file's head decides whether it is a picture.
 const HEAD: usize = 4096;

@@ -9,10 +9,11 @@ use crate::orientation::ExifOrientation;
 use crate::pixels::Rgba8;
 use crate::scale::resized;
 use anyview_core::{
-    Adjust, ExportJob, FileHead, FileName, FilePath, FormatDetail, FormatKind, MetadataCarry,
-    NonEmpty, PdfPages, PixelSize, PixelSource, RasterExport, RasterFormat, RasterTarget, Resize,
-    SniffStep, Sniffed, sniff,
+    Adjust, ExportJob, FileHead, FileName, FilePath, FormatDetail, MetadataCarry, NonEmpty,
+    PdfPages, PixelSize, PixelSource, RasterExport, RasterTarget, Resize, SniffStep, Sniffed,
+    sniff,
 };
+use file_types::{FormatKind, RasterFormat};
 
 /// The jobs that write `choice` for the image `file`.
 ///

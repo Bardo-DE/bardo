@@ -216,7 +216,7 @@ impl Tree {
 mod tests {
     use super::*;
     use crate::tree::RowLabel;
-    use anyview_core::TreeFormat;
+    use file_types::TreeFormat;
 
     const DOC: &str = r#"{"a":[10,20,{"x":1}],"b":"s","c":{"d":null,"e":[]}}"#;
 

@@ -5,11 +5,12 @@
 
 use crate::support;
 
-use anyview_core::{MetadataCarry, Percent, Quality, RasterFormat, RasterTarget};
+use anyview_core::{MetadataCarry, Percent, Quality, RasterTarget};
 use anyview_image::{
     Decoded, ExifFacts, ImageError, Rgba8, decode_bytes, encode, encode_bmp, encode_with_metadata,
 };
 use exif::{Context, In, Rational, Tag, Value};
+use file_types::RasterFormat;
 use img_parts::{Bytes, DynImage, ImageEXIF, ImageICC};
 use support::{bytes, sniffed};
 

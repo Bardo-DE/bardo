@@ -5,9 +5,9 @@ use crate::face::{Face, Variation, read};
 use crate::tables::sparse;
 use anyview_core::work::Interrupt;
 use anyview_core::{
-    ByteLen, FactLabel, FactValue, Facts, FontFormat, FormatDetail, FormatKind, Input, Peek,
-    PeekBudget, Sniffed,
+    ByteLen, FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed,
 };
+use file_types::{FontFormat, FormatKind};
 
 /// What a peek of a font holds.
 #[derive(Debug, Clone, PartialEq, Eq)]

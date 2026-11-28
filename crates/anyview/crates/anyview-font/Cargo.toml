@@ -13,6 +13,7 @@ anyview-core = {path = "../anyview-core"}
 miniz_oxide = { workspace = true, features = ["with-alloc"] }
 skrifa = { workspace = true }
 thiserror = { workspace = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 # `OnDisk`: the input of a fixture on disk (core opens no file).

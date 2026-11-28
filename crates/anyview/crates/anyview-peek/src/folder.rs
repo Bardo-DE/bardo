@@ -6,12 +6,13 @@
 use crate::error::PeekError;
 use anyview_core::work::Interrupt;
 use anyview_core::{
-    ByteLen, Deadline, FactLabel, FactValue, Facts, FileHead, FileName, FilePath, FormatKind,
-    Input, Peek, PeekBudget, SniffStep, Sniffed, ZipEntries, sniff, sniff_zip,
+    ByteLen, Deadline, FactLabel, FactValue, Facts, FileHead, FileName, FilePath, Input, Peek,
+    PeekBudget, SniffStep, Sniffed, ZipEntries, sniff, sniff_zip,
 };
 use anyview_fs::open_regular;
 use anyview_text::Tally;
 use base_words::Word;
+use file_types::FormatKind;
 use std::fs::{self, DirEntry};
 use std::io::Read;
 use std::path::Path;

@@ -6,10 +6,10 @@
 use crate::support;
 
 use anyview_core::{
-    Adjust, Axis, Edit, EditKind, PageIndex, PageRange, PixelLen, PixelRect, PixelSize,
-    QuarterTurn, RasterFormat,
+    Adjust, Axis, Edit, EditKind, PageIndex, PageRange, PixelLen, PixelRect, PixelSize, QuarterTurn,
 };
 use anyview_image::{Decoded, ExifFacts, ImageError, Location, Rgba8, decode_bytes, edited};
+use file_types::RasterFormat;
 use image::{RgbaImage, imageops};
 use support::{bytes, sniffed};
 

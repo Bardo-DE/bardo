@@ -7,7 +7,8 @@ use base_xdg::Xdg;
 use files_desktop::{
     Activate, ActivationToken, Catalog, DesktopLauncher, StartError, installed_check, load_apps,
 };
-use ui_helpers::mime::{Associations, MimeDb, XdgDirs};
+use xdg_core::mime::{Associations, MimeDb};
+use xdg_fs::{XdgDirs, load_associations, load_mime_db};
 
 use crate::icons::ThemeIcons;
 
@@ -36,7 +37,7 @@ pub fn xdg_dirs() -> XdgDirs {
 /// The file type database of the installed system. With none, every file is of an unknown type,
 /// so the window says there is no app for it and draws the standard icon.
 pub fn mime_db(dirs: &XdgDirs) -> MimeDb {
-    MimeDb::load(dirs).map_or_else(|_| MimeDb::from_layers(&[]), |loaded| loaded.value)
+    load_mime_db(dirs).map_or_else(|_| MimeDb::from_layers(&[]), |loaded| loaded.value)
 }
 
 /// The launcher over what is installed, with the types of `db`.
@@ -47,7 +48,7 @@ pub fn launcher(dirs: &XdgDirs, db: &MimeDb, activate: Arc<dyn Activate>) -> Des
         .map(|dir| dir.join("applications"))
         .collect();
     let apps = load_apps(&applications);
-    let associations = Associations::load(dirs, installed_check(&apps));
+    let associations = load_associations(dirs, installed_check(&apps));
     let catalog = Catalog {
         db,
         associations,

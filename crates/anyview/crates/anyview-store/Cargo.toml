@@ -14,6 +14,7 @@ anyview-core = {path = "../anyview-core"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 tempfile = { workspace = true }

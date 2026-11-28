@@ -1,11 +1,12 @@
 //! Table tests for `sniff`, `sniff_zip` and `sniff_folder`, over small real signatures.
 
 use super::*;
-use crate::kind::{
-    ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatDetail, FormatKind, MediaContainer,
-    OfficeFormat, RasterFormat, SyntaxName, TextEncoding, TreeFormat,
-};
+use crate::kind::{FormatDetail, SyntaxName, TextEncoding};
 use crate::source::FileName;
+use file_types::{
+    ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatKind, MediaContainer, OfficeFormat,
+    RasterFormat, TreeFormat,
+};
 
 const PNG: &[u8] = b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR\0\0\0\x01\0\0\0\x01\x08\x06\0\0\0";
 const JPEG: &[u8] = b"\xFF\xD8\xFF\xE0\0\x10JFIF\0\x01\x01\0\0\x01\0\x01\0\0";

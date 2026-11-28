@@ -2,19 +2,33 @@
 
 use std::path::{Path, PathBuf};
 
+use base_xdg::{UserDirs, Xdg};
 use files_core::FolderPath;
 use files_ui::settings::NewWindow;
 use files_ui::{PlaceKind, Places};
 
+/// The person's own folders, read from `user-dirs.dirs`; none are named when the file is missing or
+/// there is no home.
+fn user_dirs(xdg: &Xdg<impl Fn(&str) -> Option<String>>) -> UserDirs {
+    let (Some(home), Ok(file)) = (xdg.home(), xdg.user_dirs_file()) else {
+        return UserDirs::default();
+    };
+    std::fs::read_to_string(file)
+        .map_or_else(|_| UserDirs::default(), |text| UserDirs::parse(&text, home))
+}
+
 /// The folder a new window opens on: the one chosen, or the home folder when that is not a folder
 /// on this computer.
 pub fn new_window(choice: NewWindow) -> Option<PathBuf> {
-    let home = base_xdg::Xdg::process().home().map(Path::to_path_buf);
+    let xdg = Xdg::process();
+    let home = xdg.home().map(Path::to_path_buf);
+    let user = user_dirs(&xdg);
+    let named = |name: &str| user.get(name).map(Path::to_path_buf);
     let chosen = match choice {
         NewWindow::Home => home.clone(),
-        NewWindow::Desktop => dirs::desktop_dir(),
-        NewWindow::Documents => dirs::document_dir(),
-        NewWindow::Downloads => dirs::download_dir(),
+        NewWindow::Desktop => named("XDG_DESKTOP_DIR"),
+        NewWindow::Documents => named("XDG_DOCUMENTS_DIR"),
+        NewWindow::Downloads => named("XDG_DOWNLOAD_DIR"),
         NewWindow::Folder(path) => Some(expanded(&path, home.as_deref())),
     };
     chosen.filter(|folder| folder.is_dir()).or(home)
@@ -30,17 +44,17 @@ fn expanded(path: &Path, home: Option<&Path>) -> PathBuf {
 
 /// Home and the user folders that exist, as the sidebar's favorites.
 pub fn found() -> Places {
+    let xdg = Xdg::process();
+    let user = user_dirs(&xdg);
+    let named = |name: &str| user.get(name).map(Path::to_path_buf);
     let folders = [
-        (
-            PlaceKind::Home,
-            base_xdg::Xdg::process().home().map(Path::to_path_buf),
-        ),
-        (PlaceKind::Desktop, dirs::desktop_dir()),
-        (PlaceKind::Documents, dirs::document_dir()),
-        (PlaceKind::Downloads, dirs::download_dir()),
-        (PlaceKind::Pictures, dirs::picture_dir()),
-        (PlaceKind::Music, dirs::audio_dir()),
-        (PlaceKind::Videos, dirs::video_dir()),
+        (PlaceKind::Home, xdg.home().map(Path::to_path_buf)),
+        (PlaceKind::Desktop, named("XDG_DESKTOP_DIR")),
+        (PlaceKind::Documents, named("XDG_DOCUMENTS_DIR")),
+        (PlaceKind::Downloads, named("XDG_DOWNLOAD_DIR")),
+        (PlaceKind::Pictures, named("XDG_PICTURES_DIR")),
+        (PlaceKind::Music, named("XDG_MUSIC_DIR")),
+        (PlaceKind::Videos, named("XDG_VIDEOS_DIR")),
     ];
     folders
         .into_iter()

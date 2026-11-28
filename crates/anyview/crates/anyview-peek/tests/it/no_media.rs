@@ -4,8 +4,8 @@
 
 use crate::support;
 
-use anyview_core::FormatKind;
 use anyview_peek::peek;
+use file_types::FormatKind;
 use support::{Home, fixture, pane_budget, rows};
 
 #[test]

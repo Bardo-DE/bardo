@@ -1491,7 +1491,7 @@ pacman = ["libheif"]
 Families are `dnf`, `apt`, `pacman`, `zypper`, chosen from `ID` then `ID_LIKE` in
 `/etc/os-release`. A family you leave out, or any other distro, is `Outcome::Unsupported`.
 To know the release too (an app that shows a different command for Ubuntu 24.04 and 26.04), read the same text
-with `ui_helpers::OsRelease::parse(&text)`: `id`, `id_like` and `version_id` (`None` on Arch and Debian testing,
+with `xdg_core::OsRelease::parse(&text)`: `id`, `id_like` and `version_id` (`None` on Arch and Debian testing,
 which carry none); `Family::detect` is built on it.
 
 **The API.**
@@ -1541,24 +1541,24 @@ button says "Copied". The line itself is `ds`'s `CommandLine` (next section). `o
 Escape does nothing while `Installing`. `HelperBody` is the same column without the sheet; both are
 `ds`'s `Alert` column (`AlertColumn`) with the install command or spinner in its content slot.
 
-### File types: `ui_helpers::mime`
+### File types: `xdg_core::mime`
 
 What type a file is, which apps open it, the default one and its icon name, per shared-mime-info,
 `mimeapps.list` and `mimeinfo.cache`. It moved here from the files app so the shell, mailo, anyview and
 the file dialogs do not depend on files. No renderer, no runtime, no feature flag; every parser
-takes text, and only `mime::loader` reads files, from the `XdgDirs` it is given (it never reads the
-environment).
+takes text (`xdg-core`), and only `xdg-fs` reads files, from the `XdgDirs` it is given (it never reads the
+environment). A file's name and type are `file-types`.
 
 | To | Use |
 |---|---|
-| Load the database | `MimeDb::load(&XdgDirs { data_home, data_dirs, config_home, config_dirs, current_desktops })? -> Loaded<MimeDb> { value, skipped }`; or build one from text with `MimeDb::from_layers(&[MimeLayer { globs2, .. }])` |
+| Load the database | `xdg_fs::load_mime_db(&XdgDirs { data_home, data_dirs, config_home, config_dirs, current_desktops })? -> Loaded<MimeDb> { value, skipped }`; or build one from text with `MimeDb::from_layers(&[MimeLayer { globs2, .. }])` |
 | Type of a name | `db.by_name(&FileName::new("Report.PDF")?) -> NameGuess` (`Type(MimeType)`, and the ambiguous / unknown cases) |
 | Parents, aliases, relation | `db.canonical(&mime)`, `db.ancestors(&mime)`, `db.is_a(&child, &parent) -> Relation` |
 | Icon names | `db.icon_name(&mime) -> IconName`: `.specific()` (`application-pdf`), `.generic()` (`x-office-document`), `.in_order()` |
-| Which apps open it | `Associations::load(&dirs, &db, installed)`, `.default_for(&mime, &db)`, `.apps_for(&mime, &db)`, `.file_manager_default()`; `installed` is `Fn(&DesktopId) -> Installed` |
-| The two small types | `MimeType::new("image/png")?` (lower-cased, `.major()`, `MimeType::FOLDER`), `FileName::new(name)?` (`.stem()`, `.extension()`, `.display()`); their errors are `MimeError` and `NameError` (in `ui_helpers::mime` only, since the crate root already has a `NameError`) |
+| Which apps open it | `xdg_fs::load_associations(&dirs, installed)` gives the `Associations`; then `.default_for(&mime, &db)`, `.apps_for(&mime, &db)`, `.file_manager_default()`; `installed` is `Fn(&DesktopId) -> Installed` |
+| The two small types | `MimeType::new("image/png")?` (lower-cased, `.major()`, `MimeType::FOLDER`), `FileName::new(name)?` (`.stem()`, `.extension()`, `.display()`); their errors are `MimeError` and `NameError`; all four are `file_types`', with `FormatKind` (what kind of file a type or an extension names: `of_mime`) |
 
-The id of an app is the desktop-entry layer's `ui_helpers::DesktopId`; `DesktopId::new(text)` is the
+The id of an app is the desktop-entry layer's `xdg_core::DesktopId`; `DesktopId::new(text)` is the
 strict reading (`DesktopIdError`), `DesktopId::parse` the lenient one.
 
 ### Showing a command to copy
@@ -1796,7 +1796,9 @@ The UI kit draws.
 use std::sync::Arc;
 use ds::prelude::*;                                   // FileIcon, FileIconChoice, ImageSource ...
 use ui_extensions::{FileFacts, FileIcons, FolderFacts, IconPick, Search};
-use ui_helpers::mime::{FileName, MimeDb, MimeType, NameGuess, XdgDirs};
+use file_types::{FileName, MimeType};
+use xdg_core::mime::{MimeDb, NameGuess};
+use xdg_fs::XdgDirs;
 
 // Once: the MIME database (an Arc, so a rebuild below does not reload it).
 let db = Arc::new(MimeDb::from_layers(&layers));      // see "File types" above

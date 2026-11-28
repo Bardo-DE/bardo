@@ -3,9 +3,10 @@
 
 use crate::support;
 
-use anyview_core::{FilePath, FormatKind, Input};
+use anyview_core::{FilePath, Input};
 use anyview_fs::OnDisk;
 use anyview_peek::{Body, peek, probe};
+use file_types::FormatKind;
 use std::io::Write;
 use std::path::Path;
 use support::{pane_budget, rows};

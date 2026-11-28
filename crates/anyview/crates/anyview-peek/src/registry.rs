@@ -12,10 +12,10 @@ use crate::media::{AudioPeek, VideoPeek};
 use crate::office::OfficePeek;
 use crate::pdf::PdfPeek;
 use anyview_archive::ArchivePeek;
-use anyview_core::FormatKind;
 use anyview_font::FontPeek;
 use anyview_image::{RasterPeek, VectorPeek};
 use anyview_text::{CodePeek, MarkdownPeek, PlainPeek, TablePeek, TreePeek};
+use file_types::FormatKind;
 
 /// Something to do with the peek of a kind, written once and run for any of them. The visitor
 /// names the type, so a generic body can use `P::peek`, `P::facts` and `P::KIND`.

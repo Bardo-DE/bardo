@@ -18,12 +18,6 @@ pub enum CoreError {
         /// The name as given.
         name: String,
     },
-    /// A MIME type was not `type/subtype`.
-    #[error("not a MIME type: {text:?}")]
-    MimeInvalid {
-        /// The text as given.
-        text: String,
-    },
     /// A syntax name was empty or held a character outside `a-z 0-9 + # - _ .`.
     #[error("not a syntax name: {text:?}")]
     SyntaxNameInvalid {

@@ -20,6 +20,7 @@ sevenz-rust2 = { workspace = true }
 tar = {workspace = true, features = ["default"]}
 thiserror = { workspace = true }
 zip = { workspace = true, features = ["deflate"] }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 # `OnDisk`: the input of a file in the scratch folder (core opens no file).

@@ -2,7 +2,8 @@
 //! file is told apart from a file that is not the image its name says, a format this build cannot
 //! open from one nobody can.
 
-use anyview_core::{EditKind, FormatKind, PixelSize, RasterFormat};
+use anyview_core::{EditKind, PixelSize};
+use file_types::{FormatKind, RasterFormat};
 use std::path::PathBuf;
 
 /// Why an image could not be read, shown, written or rotated.

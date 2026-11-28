@@ -1,11 +1,12 @@
 //! The font peek through the public API, on a real face and on faces built from it.
 
 use anyview_core::{
-    ByteLen, FactLabel, FileHead, FileName, FilePath, FileStamp, FontFormat, FormatKind, Input,
-    ModTime, Peek, PeekBudget, PixelArea, SniffStep, Sniffed, Source, sniff,
+    ByteLen, FactLabel, FileHead, FileName, FilePath, FileStamp, Input, ModTime, Peek, PeekBudget,
+    PixelArea, SniffStep, Sniffed, Source, sniff,
 };
 use anyview_font::{EM, FontError, FontPeek, FontPeeked, Variation};
 use anyview_fs::OnDisk;
+use file_types::{FontFormat, FormatKind};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 

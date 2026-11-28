@@ -10,7 +10,8 @@ publish.workspace = true
 
 [dependencies]
 base-fs = { path = "../../base/base-fs" }
-ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+xdg-core = { path = "../../xdg/xdg-core" }
+xdg-fs = { path = "../../xdg/xdg-fs" }
 freedesktop-icons = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"] }
 resvg = { workspace = true }

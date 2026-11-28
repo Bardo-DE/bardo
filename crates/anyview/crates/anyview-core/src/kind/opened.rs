@@ -1,12 +1,13 @@
 //! The media types of the kinds the viewer opens: the one map from kind to MIME that the desktop
 //! entry's `MimeType` line is built from.
 
-use super::family::Family;
-use super::{
-    BookFormat, Delimiter, FormatKind, MediaContainer, Mime, OfficeFormat, RasterFormat, TreeFormat,
-};
 use crate::profile::has_stage;
 use base_words::Word;
+use file_types::Family;
+use file_types::{
+    BookFormat, Delimiter, FormatKind, MediaContainer, MimeType, OfficeFormat, RasterFormat,
+    TreeFormat,
+};
 
 /// The media types a file of `kind` is sniffed as, in no order and with repeats allowed. Every
 /// kind is answered: a kind with no type of its own (a folder, a file nothing describes) says none.
@@ -51,8 +52,8 @@ fn mimes_of(kind: FormatKind) -> Vec<&'static str> {
 /// A kind the viewer only peeks at is left out, since claiming it would make the viewer the answer
 /// to a file it cannot show.
 #[must_use]
-pub fn opened_mimes() -> Vec<Mime> {
-    opened_texts().into_iter().map(Mime::known).collect()
+pub fn opened_mimes() -> Vec<MimeType> {
+    opened_texts().into_iter().map(MimeType::known).collect()
 }
 
 fn opened_texts() -> Vec<&'static str> {
@@ -92,7 +93,7 @@ const UNREGISTERED_GLOBS: &[&str] = &["*.jsonl", "*.ndjson"];
 ///
 /// A format the registry has no type for is left out here and named by [`opened_globs`] instead.
 #[must_use]
-pub fn claimed_mimes() -> Vec<Mime> {
+pub fn claimed_mimes() -> Vec<MimeType> {
     let mut texts: Vec<&'static str> = opened_texts()
         .into_iter()
         .filter_map(|text| {
@@ -104,7 +105,7 @@ pub fn claimed_mimes() -> Vec<Mime> {
         .collect();
     texts.sort_unstable();
     texts.dedup();
-    texts.into_iter().map(Mime::known).collect()
+    texts.into_iter().map(MimeType::known).collect()
 }
 
 /// The file name patterns of the opened formats the registry has no media type for.
@@ -228,9 +229,9 @@ mod tests {
 
     #[test]
     fn every_opened_type_names_a_kind_with_a_stage() {
-        use crate::kind::kind_of_mime;
+        use file_types::of_mime;
         for mime in opened_mimes() {
-            let kind = kind_of_mime(&mime);
+            let kind = of_mime(&mime);
             assert!(has_stage(kind), "{}", mime.as_str());
         }
     }

@@ -8,9 +8,8 @@ use crate::error::ImageError;
 use crate::exif::ExifFacts;
 use crate::pixels::Rgba8;
 use crate::scale::{fit_area, peek_area, resampled};
-use anyview_core::{
-    Facts, FormatDetail, FormatKind, Input, Peek, PeekBudget, PixelSize, RasterFormat, Sniffed,
-};
+use anyview_core::{Facts, FormatDetail, Input, Peek, PeekBudget, PixelSize, Sniffed};
+use file_types::{FormatKind, RasterFormat};
 
 /// The kind of image a peek looked at, for the facts' first row.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

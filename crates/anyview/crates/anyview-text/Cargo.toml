@@ -25,6 +25,7 @@ serde_json = { workspace = true }
 syntect = { workspace = true, features = ["parsing", "dump-load", "regex-fancy"] }
 thiserror = { workspace = true }
 unicode-segmentation = { workspace = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 tempfile = { workspace = true }

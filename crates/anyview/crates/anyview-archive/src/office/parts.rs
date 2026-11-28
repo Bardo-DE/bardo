@@ -3,7 +3,7 @@
 
 use super::xml::{attribute, count_elements, element_text};
 use super::{OfficeCount, ThumbnailCodec};
-use anyview_core::OfficeFormat;
+use file_types::OfficeFormat;
 
 /// What one metadata part gave.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

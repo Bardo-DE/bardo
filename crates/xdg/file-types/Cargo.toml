@@ -1,0 +1,20 @@
+[package]
+name = "file-types"
+description = "What a file is called and what it is: its name, its MIME type, and the one table from a type or an extension to the kind of file and its format."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-words = { path = "../../base/base-words" }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

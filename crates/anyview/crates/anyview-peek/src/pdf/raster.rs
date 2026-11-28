@@ -9,9 +9,10 @@ use crate::card::page::look;
 use crate::error::PeekError;
 use crate::looking::PANE_FIT;
 use anyview_core::{
-    ByteLen, FactLabel, FactValue, Facts, FormatKind, Input, Peek, PeekBudget, PixelSize, Sniffed,
+    ByteLen, FactLabel, FactValue, Facts, Input, Peek, PeekBudget, PixelSize, Sniffed,
 };
 use base_words::Word;
+use file_types::FormatKind;
 use ui_blitz::{ThumbRequest, pdf_thumb_blocking, pdf_thumb_bytes};
 use ui_core::geometry::scale::Scale;
 use ui_core::geometry::units::{Px, Size};

@@ -3,11 +3,12 @@
 
 use crate::support;
 
-use anyview_core::{Delimiter, FormatDetail, FormatKind, Peek};
+use anyview_core::{FormatDetail, Peek};
 use anyview_fs::OnDisk;
 use anyview_text::{
     Coverage, HeaderMode, Separator, Table, TablePeek, TableSource, Tally, Workbook,
 };
+use file_types::{Delimiter, FormatKind};
 use support::{budget, rows, workbook, written};
 
 #[test]

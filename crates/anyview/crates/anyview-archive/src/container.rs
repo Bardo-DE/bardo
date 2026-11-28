@@ -1,6 +1,6 @@
 //! How each archive format is stored: the one place that matches on `ArchiveFormat`.
 
-use anyview_core::ArchiveFormat;
+use file_types::ArchiveFormat;
 
 /// How a compressed stream is coded.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

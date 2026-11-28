@@ -2,9 +2,10 @@
 
 use crate::support;
 
-use anyview_core::{BookFormat, ByteLen, FilePath, FormatDetail, FormatKind, Input, OfficeFormat};
+use anyview_core::{ByteLen, FilePath, FormatDetail, Input};
 use anyview_fs::OnDisk;
 use anyview_peek::{PeekError, probe};
+use file_types::{BookFormat, FormatKind, OfficeFormat};
 use std::io::Write;
 use std::path::Path;
 use support::{Home, path};
@@ -173,7 +174,7 @@ fn a_zip_is_told_from_a_document_by_what_is_inside() {
             "plain zip",
             plain,
             FormatKind::Archive,
-            Some(FormatDetail::Archive(anyview_core::ArchiveFormat::Zip)),
+            Some(FormatDetail::Archive(file_types::ArchiveFormat::Zip)),
         ),
         (
             "a zip that cannot be opened",

@@ -1,12 +1,12 @@
 //! The fallback: a kind from the file's name, used only when its bytes did not say.
 
 use super::Sniffed;
-use crate::kind::{
-    ArchiveFormat, BookFormat, Delimiter, Family, FontFormat, FormatDetail, FormatKind,
-    MediaContainer, Mime, OfficeFormat, RasterFormat, SyntaxName, TextEncoding, TreeFormat,
-    from_extension, syntax_for_extension, syntax_for_name,
-};
+use crate::kind::{FormatDetail, SyntaxName, TextEncoding, syntax_for_extension, syntax_for_name};
 use crate::source::FileName;
+use file_types::{
+    ArchiveFormat, BookFormat, Delimiter, Family, FontFormat, FormatKind, MediaContainer, MimeType,
+    OfficeFormat, RasterFormat, TreeFormat, from_extension,
+};
 
 /// Extensions of Markdown.
 const MARKDOWN: &[&str] = &["md", "markdown", "mdown", "mkd"];
@@ -17,7 +17,7 @@ pub(super) fn binary(extension: &str) -> Option<Sniffed> {
     if extension.eq_ignore_ascii_case("pdf") {
         return Some(Sniffed::new(
             FormatKind::Pdf,
-            Mime::known("application/pdf"),
+            MimeType::from_static("application/pdf"),
             FormatDetail::None,
         ));
     }
@@ -82,7 +82,7 @@ pub(super) fn text(name: &FileName, encoding: TextEncoding) -> Sniffed {
     if is(MARKDOWN) {
         return Sniffed::new(
             FormatKind::Markdown,
-            Mime::known("text/markdown"),
+            MimeType::from_static("text/markdown"),
             FormatDetail::None,
         );
     }
@@ -95,7 +95,7 @@ pub(super) fn text(name: &FileName, encoding: TextEncoding) -> Sniffed {
     if is(&["svg"]) {
         return Sniffed::new(
             FormatKind::Vector,
-            Mime::known("image/svg+xml"),
+            MimeType::from_static("image/svg+xml"),
             FormatDetail::None,
         );
     }
@@ -109,7 +109,7 @@ pub(super) fn text(name: &FileName, encoding: TextEncoding) -> Sniffed {
         }
         None => Sniffed::new(
             FormatKind::PlainText,
-            Mime::known("text/plain"),
+            MimeType::from_static("text/plain"),
             FormatDetail::Text(encoding),
         ),
     }
@@ -117,20 +117,24 @@ pub(super) fn text(name: &FileName, encoding: TextEncoding) -> Sniffed {
 
 /// The kind of a file that is neither a known binary nor text.
 pub(super) fn unknown() -> Sniffed {
-    Sniffed::new(FormatKind::Other, Mime::OCTET_STREAM, FormatDetail::None)
+    Sniffed::new(
+        FormatKind::Other,
+        MimeType::OCTET_STREAM,
+        FormatDetail::None,
+    )
 }
 
 /// A sniffed file of `kind` in `format`, whose MIME type the family states.
 fn of(kind: FormatKind, format: impl Family, detail: FormatDetail) -> Sniffed {
-    Sniffed::new(kind, Mime::known(format.mime()), detail)
+    Sniffed::new(kind, MimeType::from_static(format.mime()), detail)
 }
 
 /// The media type of source code: a few syntaxes have their own, the rest are `text/plain`.
-fn code_mime(syntax: &SyntaxName) -> Mime {
+fn code_mime(syntax: &SyntaxName) -> MimeType {
     match syntax.as_str() {
-        "html" => Mime::known("text/html"),
-        "css" => Mime::known("text/css"),
-        "xml" => Mime::known("application/xml"),
-        _ => Mime::known("text/plain"),
+        "html" => MimeType::from_static("text/html"),
+        "css" => MimeType::from_static("text/css"),
+        "xml" => MimeType::from_static("application/xml"),
+        _ => MimeType::from_static("text/plain"),
     }
 }

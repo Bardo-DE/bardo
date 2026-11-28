@@ -1,11 +1,12 @@
 //! `FormatDetail`: what a kind of file is more precisely.
 
-use super::{
+use super::{SyntaxName, TextEncoding};
+use file_types::{
     ArchiveFormat, BookFormat, Delimiter, FontFormat, MediaContainer, OfficeFormat, RasterFormat,
-    SyntaxName, TextEncoding, TreeFormat,
+    TreeFormat,
 };
 
-/// The format inside a [`FormatKind`](super::FormatKind): which raster format, which syntax,
+/// The format inside a [`FormatKind`](file_types::FormatKind): which raster format, which syntax,
 /// which delimiter. Each variant belongs to the kinds named in its doc.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum FormatDetail {

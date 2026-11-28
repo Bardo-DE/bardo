@@ -3,7 +3,8 @@
 use crate::error::BookError;
 use anyview_archive::{EntryKind, EntryLimit, ExtractLimits, extract_until, list};
 use anyview_core::work::Interrupt;
-use anyview_core::{ArchiveFormat, ByteLen, Input};
+use anyview_core::{ByteLen, Input};
+use file_types::ArchiveFormat;
 
 /// The most bytes of the zip's index a book reads.
 const INDEX_BUDGET: ByteLen = ByteLen(64 * 1024 * 1024);

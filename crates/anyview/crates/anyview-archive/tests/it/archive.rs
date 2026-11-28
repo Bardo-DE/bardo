@@ -8,10 +8,11 @@ use anyview_archive::{
 };
 use anyview_core::work::{Interrupt, Stop};
 use anyview_core::{
-    ArchiveFormat, ByteLen, FactLabel, FileHead, FileName, FileStamp, FormatKind, ModTime, Peek,
-    PeekBudget, PixelArea, SniffStep, Source, ZipEntries, sniff,
+    ByteLen, FactLabel, FileHead, FileName, FileStamp, ModTime, Peek, PeekBudget, PixelArea,
+    SniffStep, Source, ZipEntries, sniff,
 };
 use anyview_fs::OnDisk;
+use file_types::{ArchiveFormat, FormatKind};
 use std::time::Duration;
 use support::{ENTRIES, bzip2, gzip, sevenz_of, tar_of, write, write_path, xz, zip_of, zstd};
 

@@ -4,7 +4,8 @@ use crate::entry::{Entry, EntryKind, EntryLimit, Listing, Tally};
 use crate::error::ArchiveError;
 use crate::limit::Limited;
 use anyview_core::work::Interrupt;
-use anyview_core::{ArchiveFormat, ByteLen, Input};
+use anyview_core::{ByteLen, Input};
+use file_types::ArchiveFormat;
 use std::io::{BufReader, Read, Seek};
 use tar::{Archive, EntryType};
 

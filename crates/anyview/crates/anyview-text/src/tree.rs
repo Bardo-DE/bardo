@@ -24,10 +24,9 @@ use crate::bytes::read_range;
 use crate::encoding::{Coverage, DETECT_BYTES, TextCodec, detect};
 use crate::error::TextError;
 use anyview_core::work::Interrupt;
-use anyview_core::{
-    ByteLen, Deadline, Input, LineIndex, ReadAt, TextEncoding, TreeFormat, TreePath,
-};
+use anyview_core::{ByteLen, Deadline, Input, LineIndex, ReadAt, TextEncoding, TreePath};
 use cursor::Cursor;
+use file_types::TreeFormat;
 use grammar::{Child, Fault, Form, Shape, Why, bad, shape_at, skip_value};
 use level::{Level, read_window, scan_level};
 use std::collections::HashMap;

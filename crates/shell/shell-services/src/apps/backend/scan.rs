@@ -4,7 +4,8 @@ use std::path::PathBuf;
 
 use shell_desktop_fs::icons::{IconRoots, IconTheme};
 use shell_model::apps::App;
-use ui_helpers::{EntryLocale, load_entries};
+use xdg_core::EntryLocale;
+use xdg_fs::load_entries;
 
 use super::entry::parse_entry;
 
@@ -13,9 +14,9 @@ use super::entry::parse_entry;
 /// Every entry under `dirs` (the applications folders, [`Dirs::applications`](shell_model::dirs::Dirs)),
 /// in precedence order with each id once, icons resolved in `theme` (an absolute `Icon=` only
 /// inside `roots`), with the desktop's current locales. A folder that does not exist, or a
-/// `.desktop` file that cannot be read (or is over [`ui_helpers::DESKTOP_ENTRY_CAP`], or is not text), is
+/// `.desktop` file that cannot be read (or is over [`xdg_core::DESKTOP_ENTRY_CAP`], or is not text), is
 /// skipped rather than failing the scan. The walk, the ids and the shadowing are
-/// [`ui_helpers::load_entries`]'s, the same for every part of the desktop.
+/// [`xdg_fs::load_entries`]'s, the same for every part of the desktop.
 #[must_use]
 pub fn scan(
     dirs: &[PathBuf],

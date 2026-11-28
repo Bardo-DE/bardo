@@ -5,11 +5,12 @@
 
 use std::sync::Arc;
 
+use file_types::{MimeError, MimeType};
 use files_core::{Entry, EntryKind, FileName, FolderPath};
 use files_model::{Opens, opens};
 use ui_components::prelude::{FileIconChoice, FileKind, ImageSource};
 use ui_extensions::{FileFacts, FileIcons, FolderFacts, IconPick};
-use ui_helpers::mime::{MimeDb, MimeType, NameGuess};
+use xdg_core::mime::{MimeDb, NameGuess};
 
 use crate::places::Places;
 
@@ -76,7 +77,7 @@ impl Icons {
     }
 
     /// The type of a file: the one the listing found, else what its name says.
-    fn type_of(&self, entry: &Entry) -> Result<MimeType, ui_helpers::mime::MimeError> {
+    fn type_of(&self, entry: &Entry) -> Result<MimeType, MimeError> {
         match &entry.mime {
             Some(mime) => Ok(mime.clone()),
             None => match self.db.by_name(entry.shown_name()) {
@@ -119,7 +120,7 @@ fn other() -> FileIconChoice {
 mod tests {
     use files_core::ByteSize;
     use ui_components::prelude::FolderKind;
-    use ui_helpers::mime::MimeLayer;
+    use xdg_core::mime::MimeLayer;
 
     use super::*;
     use crate::places::PlaceKind;

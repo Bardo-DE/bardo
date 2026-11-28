@@ -9,6 +9,7 @@
 //! sequence are reached from the crate root by the code that needs them.
 
 pub use crate::{
-    Facts, FileAction, FileHead, FileName, FilePath, FileStamp, FormatKind, Input, PeekBudget,
-    ReadAt, Resume, Sniffed, Source, sniff,
+    Facts, FileAction, FileHead, FileName, FilePath, FileStamp, Input, PeekBudget, ReadAt, Resume,
+    Sniffed, Source, sniff,
 };
+use file_types::FormatKind;

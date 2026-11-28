@@ -1,7 +1,8 @@
 //! The recently-viewed history the viewer writes and the launcher reads: its types.
 
 use crate::label::ResumeLabel;
-use anyview_core::{FilePath, FormatKind};
+use anyview_core::FilePath;
+use file_types::FormatKind;
 
 /// One viewed file, as the launcher needs it: which file, what kind, when, and where it was left.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

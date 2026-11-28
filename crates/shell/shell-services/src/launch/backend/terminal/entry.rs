@@ -4,7 +4,7 @@
 use std::path::{Path, PathBuf};
 
 use shell_model::apps::{ExecArgs, expand_exec};
-use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile};
+use xdg_core::{DESKTOP_ENTRY_CAP, DesktopFile};
 
 /// The argument that introduces a command when the entry names none.
 const DEFAULT_RUN_ARG: &str = "-e";

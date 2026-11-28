@@ -6,7 +6,7 @@ use std::time::Duration;
 use shell_desktop_fs::icons::{IconRoots, icon_theme, icon_theme_path};
 use shell_model::apps::{AppIndex, AppsCommand, AppsEvent, step};
 use tokio::sync::{mpsc, watch};
-use ui_helpers::EntryLocale;
+use xdg_core::EntryLocale;
 
 use super::locales::session_locales;
 use crate::apps::scan;

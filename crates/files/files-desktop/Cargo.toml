@@ -20,7 +20,8 @@ base-ids = { path = "../../base/base-ids" }
 action-provider = {features = ["dbus"], path = "../../actions/action-provider"}
 action-core = {path = "../../actions/action-core"}
 action-dbus = {path = "../../actions/action-dbus"}
-ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+xdg-core = { path = "../../xdg/xdg-core" }
+xdg-fs = { path = "../../xdg/xdg-fs" }
 files-core = {path = "../files-core"}
 files-fs = {path = "../files-fs"}
 futures-util = { workspace = true, features = ["std"] }

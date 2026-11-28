@@ -53,7 +53,7 @@ pub struct PdfKind;
 
 #[cfg(not(feature = "pane"))]
 impl crate::described::Describes for PdfKind {
-    const KIND: anyview_core::FormatKind = anyview_core::FormatKind::Pdf;
+    const KIND: file_types::FormatKind = file_types::FormatKind::Pdf;
 }
 
 /// The facts-only peek of a PDF.

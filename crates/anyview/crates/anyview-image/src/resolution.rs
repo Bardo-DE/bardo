@@ -2,7 +2,8 @@
 //! carries it: EXIF, a PNG's `pHYs` chunk or a JPEG's JFIF block.
 
 use crate::exif::Ratio;
-use anyview_core::{FormatDetail, RasterFormat, Sniffed};
+use anyview_core::{FormatDetail, Sniffed};
+use file_types::RasterFormat;
 
 /// Dots an inch across and down.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

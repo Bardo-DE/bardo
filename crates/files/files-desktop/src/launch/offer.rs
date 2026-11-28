@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use ui_helpers::DesktopId;
+use xdg_core::DesktopId;
 
 use super::desktop::DesktopLauncher;
 

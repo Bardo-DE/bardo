@@ -8,10 +8,11 @@
 //! decodes.
 
 use anyview_core::{
-    FileHead, FileName, FormatDetail, Input, PeekBudget, PixelLen, RasterFormat, Resize, SniffStep,
-    Sniffed, sniff,
+    FileHead, FileName, FormatDetail, Input, PeekBudget, PixelLen, Resize, SniffStep, Sniffed,
+    sniff,
 };
 use anyview_image::{Decoded, ExifFacts, ImagePeek, PeekedFormat, Rgba8, decode_bytes, resized};
+use file_types::RasterFormat;
 use std::fmt::Debug;
 
 /// Where the host finds a small picture of a file it did not decode.

@@ -1,7 +1,8 @@
 //! The first step: the file's own magic bytes.
 
 use super::{FileHead, Sniffed, extension};
-use crate::kind::{FormatDetail, FormatKind, Mime};
+use crate::kind::FormatDetail;
+use file_types::{FormatKind, MimeType};
 use infer::MatcherType;
 
 /// What the magic bytes said.
@@ -30,7 +31,7 @@ pub(super) fn identify(head: &FileHead) -> Option<Magic> {
         return Some(Magic::Zip);
     }
     let sniffed = extension::binary(canonical).unwrap_or_else(|| {
-        let mime = Mime::parse(found.mime_type()).unwrap_or(Mime::OCTET_STREAM);
+        let mime = MimeType::new(found.mime_type()).unwrap_or(MimeType::OCTET_STREAM);
         Sniffed::new(FormatKind::Other, mime, FormatDetail::None)
     });
     Some(Magic::Found(sniffed))

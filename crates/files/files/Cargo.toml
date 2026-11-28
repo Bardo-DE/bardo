@@ -11,9 +11,9 @@ publish.workspace = true
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
 anyview-platform = {path = "../../anyview/crates/anyview-platform"}
-dirs = { workspace = true }
 ui-extensions = {path = "../../ui/ui-extensions"}
-ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+xdg-core = { path = "../../xdg/xdg-core" }
+xdg-fs = { path = "../../xdg/xdg-fs" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 files-core = {path = "../files-core"}

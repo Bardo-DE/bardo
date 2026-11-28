@@ -27,7 +27,7 @@ pub use icons::FakeIcons;
 #[cfg(feature = "testing")]
 pub use spawn::FakeSpawn;
 
-use ui_helpers::DesktopId;
+use xdg_core::DesktopId;
 
 /// Which app opens the files.
 #[derive(Debug, Clone, PartialEq, Eq)]

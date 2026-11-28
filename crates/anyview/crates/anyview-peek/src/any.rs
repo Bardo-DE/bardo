@@ -8,11 +8,10 @@ use crate::looking::Peeking;
 use crate::registry::{KindVisitor, visit};
 use crate::unavailable::Unavailable;
 use crate::when::modified_text;
-use anyview_core::{
-    ByteLen, FactLabel, FactValue, Facts, FormatKind, Input, PeekBudget, PixelSize, Sniffed,
-};
+use anyview_core::{ByteLen, FactLabel, FactValue, Facts, Input, PeekBudget, PixelSize, Sniffed};
 use anyview_fs::is_regular;
 use anyview_image::Rgba8;
+use file_types::FormatKind;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 

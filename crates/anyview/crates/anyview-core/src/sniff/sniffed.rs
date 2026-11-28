@@ -1,7 +1,8 @@
 //! `Sniffed`: proof that a file's type was read from its bytes.
 
-use crate::kind::{FormatDetail, FormatKind, Mime};
+use crate::kind::FormatDetail;
 use crate::source::FileName;
+use file_types::{FormatKind, MimeType};
 
 /// A file whose type was established by `sniff`.
 ///
@@ -11,13 +12,13 @@ use crate::source::FileName;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Sniffed {
     kind: FormatKind,
-    mime: Mime,
+    mime: MimeType,
     detail: FormatDetail,
 }
 
 impl Sniffed {
     /// Only the sniffing code constructs one.
-    pub(super) fn new(kind: FormatKind, mime: Mime, detail: FormatDetail) -> Self {
+    pub(super) fn new(kind: FormatKind, mime: MimeType, detail: FormatDetail) -> Self {
         Sniffed { kind, mime, detail }
     }
 
@@ -29,7 +30,7 @@ impl Sniffed {
 
     /// Its media type.
     #[must_use]
-    pub fn mime(&self) -> &Mime {
+    pub fn mime(&self) -> &MimeType {
         &self.mime
     }
 

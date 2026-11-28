@@ -30,16 +30,16 @@ Layers go lowest first. A crate names only crates in a lower layer, and
 
 | Crate | May depend on |
 | --- | --- |
-| `anyview-core` | `ui-core` |
-| `anyview-store` | `anyview-core`, `base-fs` (`read_capped` for the history file) |
+| `anyview-core` | `ui-core`, `file-types` (the kinds, the format families and the one MIME table) |
+| `anyview-store` | `anyview-core`, `base-fs` (`read_capped` for the history file), `file-types` |
 | `anyview-fs` | `anyview-core`, `base-fs` (`read_capped` behind `read_whole`, the capped whole-file read every reader of the person's files uses) |
-| `anyview-image` | `anyview-core`, `ui-core` (`Word`, for the facts' labels) |
-| `anyview-text` | `anyview-core`, `anyview-fs` (`OpenFile`, for a window of lines read by offset), `ui-core` (`Word` for token classes, and `base64` for `data:` URLs) |
-| `anyview-archive` | `anyview-core`, `ui-core` (`Word` for entry kinds) |
-| `anyview-book` | `anyview-archive`, `anyview-core` (its `data:` URLs through `image_data_url`) |
-| `anyview-font` | `anyview-core` |
+| `anyview-image` | `anyview-core`, `ui-core` (`Word`, for the facts' labels), `file-types` |
+| `anyview-text` | `anyview-core`, `anyview-fs` (`OpenFile`, for a window of lines read by offset), `ui-core` (`Word` for token classes, and `base64` for `data:` URLs), `file-types` |
+| `anyview-archive` | `anyview-core`, `ui-core` (`Word` for entry kinds), `file-types` |
+| `anyview-book` | `anyview-archive`, `anyview-core` (its `data:` URLs through `image_data_url`), `file-types` |
+| `anyview-font` | `anyview-core`, `file-types` |
 | `anyview-platform` | `anyview-core`, `ui-core` (`Word` for `ThumbSize`), `base-fs` (the thumbnail cache's capped reads and atomic writes), `service-locator` (the single-instance socket); with `desktop`, `zbus` and the action crates for the bus name and agent intents |
-| `anyview-peek` | `anyview-archive`, `anyview-book`, `anyview-core`, `anyview-font`, `anyview-fs`, `anyview-image`, `anyview-text`, `ui-core`, and with `pane` Bardo view crates |
+| `anyview-peek` | `anyview-archive`, `anyview-book`, `anyview-core`, `anyview-font`, `anyview-fs`, `anyview-image`, `anyview-text`, `ui-core`, and with `pane` Bardo view crates, `file-types` |
 
 ### Features
 
@@ -99,7 +99,7 @@ no other public path. A module names only modules above it in this list.
 | `units` | page, section (`SectionIndex`, `SectionCount`: the chapter or comic page of a book), media (time, length, volume, speed, chapter, time range, bitrate), ratio, zoom, turn, content-space and pixel newtypes; all integer |
 | `media` | what a player says of a recording: `StreamKind`, `MediaTrack`, `MediaChapter`, `VideoPresence`, `MediaTags` |
 | `source` | `FilePath`, `FileName`, `FileStamp`, `Source` (a file's serialisable identity), `ReadAt` (bytes read by offset: a byte slice, a `Vec`, an `Arc`, an open `File`, or anything a host implements it for) and `ReadAtStream` (a `Read + Seek` over one), and `Input` (what a peek reads: name, stamp, shared bytes and, when they are a file of their own, the path; made from `&FilePath`, `&Source` or a name and a `Vec<u8>`) |
-| `kind` | `FormatKind`, `Mime`, `FormatDetail`, `SyntaxName`, `kind_of_mime` and the format families |
+| `kind` | `FormatDetail`, `SyntaxName`, `TextEncoding` and the media types of the kinds the viewer opens (`FormatKind`, `MimeType`, `of_mime` and the format families are `file-types`) |
 | `sniff` | `sniff`, `sniff_zip`, `sniff_ole`, `Sniffed` and the head, entries and OLE directory names (`OleStreams`) they read; a head that is not UTF-8 but is printable bytes is plain text under a text extension (a legacy encoding) |
 | `sequence` | `NonEmpty`, `Sequence`, `moved`, `neighbours` |
 | `markup` | what a person writes on the pages of a document and the file keeps as standard annotations: `PageRect` and `PagePoint` (thousandths of the displayed page, from the top left), `Mark` (a page, a `MarkColor`, a `MarkShape`: highlight, underline, strike-through, note, rectangle, oval, line, arrow, text box; and `existing`, the `MarkRef` of the annotation the file already held that it stands for; `bounds`, `is_at`, `moved`), `MarkTool`, `FieldFill` and `MarkupSave` (the fields filled, the marks to write, made or changed, and the held marks removed, which the host writes) |

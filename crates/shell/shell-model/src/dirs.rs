@@ -5,7 +5,7 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 use base_xdg::Xdg;
-use ui_helpers::XdgEnv;
+use xdg_fs::process_xdg_env;
 
 /// The folder old icon themes and the few programs that predate the data directories still use:
 /// `/usr/share/pixmaps`, where an icon lookup ends.
@@ -52,7 +52,7 @@ pub struct Dirs {
     pub app_stores: Vec<PathBuf>,
     /// The folders of desktop entries, most important first: the person's, each system data
     /// directory's, then the app stores' exports (Flatpak's installs, snap's; Ubuntu's Firefox is
-    /// a snap). [`ui_helpers::XdgEnv::applications_dirs`] decides it, for every part of the
+    /// a snap). [`xdg_core::XdgEnv::applications_dirs`] decides it, for every part of the
     /// desktop alike.
     pub applications: Vec<PathBuf>,
 }
@@ -67,7 +67,7 @@ impl Dirs {
         let home = base
             .home()
             .map_or_else(|| PathBuf::from("/"), Path::to_path_buf);
-        let xdg = XdgEnv::from_process();
+        let xdg = process_xdg_env();
         Dirs {
             config: base.config_home().unwrap_or_else(|_| home.join(".config")),
             data: xdg.data_home().unwrap_or_else(|| home.join(".local/share")),

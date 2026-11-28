@@ -3,12 +3,13 @@
 
 use crate::support;
 
-use anyview_core::{FormatKind, Peek};
+use anyview_core::Peek;
 use anyview_fs::OnDisk;
 use anyview_text::{
     CodePeek, MarkdownPeek, PEEK_LINES, PlainPeek, RowLabel, TablePeek, Tally, TextCodec,
     TextError, TokenClass, TreePeek,
 };
+use file_types::FormatKind;
 use support::{budget, expected, fixture, rows};
 
 const PLENTY: u64 = 1_000_000;

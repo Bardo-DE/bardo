@@ -3,10 +3,11 @@
 use std::fs;
 use std::path::Path;
 
+use file_types::MimeType;
 use ui_extensions::{
     Capability, ChangeError, Search, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges, choices_for,
 };
-use ui_helpers::mime::{IconName, MimeDb, MimeLayer, MimeType};
+use xdg_core::mime::{IconName, MimeDb, MimeLayer};
 
 use crate::support::{ICONS, Scratch, install_entries, write};
 

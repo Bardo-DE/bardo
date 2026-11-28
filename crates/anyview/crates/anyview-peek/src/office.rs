@@ -7,10 +7,9 @@ use crate::error::PeekError;
 use crate::frames::cover_picture;
 use anyview_archive::{OfficeLook, ThumbnailCodec, office_look_until};
 use anyview_core::work::Interrupt;
-use anyview_core::{
-    FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input, Peek, PeekBudget, Sniffed,
-};
+use anyview_core::{FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed};
 use anyview_image::ImagePeek;
+use file_types::FormatKind;
 use std::sync::Arc;
 
 /// What a peek of an office document holds.

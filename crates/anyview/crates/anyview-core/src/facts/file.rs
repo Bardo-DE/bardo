@@ -3,9 +3,9 @@
 
 use super::{FactTime, FactValue, Facts, LocalZone, kind_name, kind_name_of};
 use crate::facts::FactLabel;
-use crate::kind::FormatKind;
 use crate::sniff::Sniffed;
 use crate::source::{ByteLen, FileName, ModTime};
+use file_types::FormatKind;
 
 /// What the file system says about one file besides its bytes. A field the file system did not
 /// give is absent, and its row is left out.

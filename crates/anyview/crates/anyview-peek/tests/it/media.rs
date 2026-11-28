@@ -5,8 +5,8 @@
 
 use crate::support;
 
-use anyview_core::FormatKind;
 use anyview_peek::{Body, peek};
+use file_types::FormatKind;
 use support::{Home, fixture, pane_budget, rows};
 
 fn peeked(home: Home, name: &str) -> anyview_peek::AnyPeeked {

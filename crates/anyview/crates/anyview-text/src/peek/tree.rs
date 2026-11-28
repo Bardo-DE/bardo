@@ -6,9 +6,10 @@ use crate::encoding::{Coverage, TextCodec};
 use crate::error::TextError;
 use crate::tree::{Tree, TreeRow};
 use anyview_core::{
-    Fact, FactGroup, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input, Peek,
-    PeekBudget, Sniffed, TreeFormat, TreePath,
+    Fact, FactGroup, FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed,
+    TreePath,
 };
+use file_types::{FormatKind, TreeFormat};
 
 /// How many top-level keys the facts name before "and N more".
 const KEYS_NAMED: usize = 8;

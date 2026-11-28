@@ -1,7 +1,8 @@
 //! How to get llama.cpp on this computer: the one command to copy, or where to get it when this
 //! computer's distro has no package.
 
-use ui_helpers::{Family, OsRelease};
+use ui_helpers::Family;
+use xdg_core::OsRelease;
 
 /// How to get llama.cpp here.
 #[derive(Debug, Clone, PartialEq, Eq)]

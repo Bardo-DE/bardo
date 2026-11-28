@@ -1,6 +1,7 @@
 //! The one error `anyview-text` returns, with variants a caller acts on.
 
-use anyview_core::{FormatKind, LineIndex};
+use anyview_core::LineIndex;
+use file_types::FormatKind;
 use std::path::PathBuf;
 
 /// Why text could not be read, windowed, highlighted or parsed.

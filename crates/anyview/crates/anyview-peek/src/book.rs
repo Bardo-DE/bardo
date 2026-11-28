@@ -9,10 +9,10 @@ use crate::frames::cover_picture;
 use anyview_book::{BookError, Comic, Epub, comic_cover, epub_cover};
 use anyview_core::work::Interrupt;
 use anyview_core::{
-    BookFormat, Deadline, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input, Peek,
-    PeekBudget, Sniffed,
+    Deadline, FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed,
 };
 use anyview_image::ImagePeek;
+use file_types::{BookFormat, FormatKind};
 use std::sync::Arc;
 
 /// What a peek of a book holds.

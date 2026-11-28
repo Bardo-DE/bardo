@@ -11,9 +11,8 @@ mod tests;
 use crate::error::ArchiveError;
 use crate::extract::{ExtractLimits, extract_until};
 use anyview_core::work::Interrupt;
-use anyview_core::{
-    ArchiveFormat, ByteLen, Deadline, FactLabel, FactValue, Facts, Input, OfficeFormat, PageCount,
-};
+use anyview_core::{ByteLen, Deadline, FactLabel, FactValue, Facts, Input, PageCount};
+use file_types::{ArchiveFormat, OfficeFormat};
 use parts::{Metadata, parts_of};
 
 /// The largest metadata part that is read.

@@ -8,7 +8,7 @@ use settings_app_model::{DesktopApp, EntryVisibility, OriginRule, ProgramBook, S
 use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile};
+use xdg_core::{DESKTOP_ENTRY_CAP, DesktopFile};
 
 /// The size an entry's icon is looked up at; the page draws it small and the theme gives the
 /// nearest it has.

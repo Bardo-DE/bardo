@@ -10,6 +10,7 @@ domains = [
     "platform",
     "network",
     "wayland",
+    "xdg",
     "settings",
     "keymap",
     "blitz-embed",
@@ -947,6 +948,16 @@ kind = "unclassified"
 [crate.wayland-raw-handle]
 kind = "unclassified"
 unsafe = true
+
+# xdg
+[crate.file-types]
+kind = "types"
+# `unclassified`, not `core`: it takes base-fs's `ReadCap` (a plain size limit), and base-fs reaches
+# rustix, which the core kind forbids. It does no I/O itself.
+[crate.xdg-core]
+kind = "unclassified"
+[crate.xdg-fs]
+kind = "io"
 
 # xtask
 [crate.xtask]
@@ -2699,13 +2710,13 @@ why = "the platform crate reaches the bus, desktop-entry readers and the actions
 [[edges]]
 crate = "anyview-core"
 features = "all"
-exactly = ["base-words", "keymap", "ui-core"]
+exactly = ["base-words", "file-types", "keymap", "ui-core"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
 crate = "anyview-store"
 features = "all"
-exactly = ["anyview-core", "base-fs"]
+exactly = ["anyview-core", "base-fs", "file-types"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
@@ -2717,13 +2728,13 @@ why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md sectio
 [[edges]]
 crate = "anyview-image"
 features = "all"
-exactly = ["anyview-core", "base-words"]
+exactly = ["anyview-core", "base-words", "file-types"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
 crate = "anyview-text"
 features = "all"
-exactly = ["anyview-core", "anyview-fs", "base-words", "ui-core"]
+exactly = ["anyview-core", "anyview-fs", "base-words", "file-types", "ui-core"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
@@ -2735,25 +2746,25 @@ why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md sectio
 [[edges]]
 crate = "anyview-peek"
 features = "all"
-exactly = ["anyview-archive", "anyview-book", "anyview-core", "anyview-font", "anyview-fs", "anyview-image", "anyview-text", "base-words", "ui-blitz", "ui-components", "ui-core"]
+exactly = ["anyview-archive", "anyview-book", "anyview-core", "anyview-font", "anyview-fs", "anyview-image", "anyview-text", "base-words", "file-types", "ui-blitz", "ui-components", "ui-core"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
 crate = "anyview-archive"
 features = "all"
-exactly = ["anyview-core", "base-words"]
+exactly = ["anyview-core", "base-words", "file-types"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
 crate = "anyview-book"
 features = "all"
-exactly = ["anyview-archive", "anyview-core"]
+exactly = ["anyview-archive", "anyview-core", "file-types"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 [[edges]]
 crate = "anyview-font"
 features = "all"
-exactly = ["anyview-core"]
+exactly = ["anyview-core", "file-types"]
 why = "the allowed edges between the viewer's own crates (ARCHITECTURE.md section 1)"
 
 # --- the rest of the script, in the new fields
@@ -2779,7 +2790,8 @@ features = ["media", "pane"]
 # 607 when the machine and stamp code moved out of ui-core into base-machine (phase 3.4, likewise),
 # 608 when ui-blitz took the window protocol from desktop-protocols instead of its own copy (phase 4.4).
 # 609 when the appearance enums moved out of ui-style into appearance-settings (phase 4.1, likewise).
-max = 609
+# 610 when the kinds and format families moved out of anyview-core into file-types (phase 4.7: same code).
+max = 610
 why = "the launcher links the peek, so growth here is growth of its binary"
 
 [[budget]]
@@ -2787,7 +2799,8 @@ crate = "anyview-peek"
 features = "none"
 # 202 in the script; 212 since the monorepo moves, as above.
 # 213 when ui-core's machine and stamp code moved into base-machine (phase 3.4: same code).
-max = 213
+# 214 when the kinds and format families moved out of anyview-core into file-types (phase 4.7: same code).
+max = 214
 why = "the headless peek is what a mail client or a terminal links to look at a file"
 
 # The lock file holds none of the libmpv, libav and picture-codec bindings at all, so a dev-dependency cannot
@@ -3958,15 +3971,13 @@ why = "a crate names only workspace crates of its own layer or below, and files-
 crates = "files-core"
 features = "all"
 forbid = ["tokio*", "async-*", "futures*", "notify*", "trash", "rustix", "nix", "libc", "xattr", "zbus*", "action-*", "agent-*", "companion-*", "permission-*", "dioxus*", "ui-*"]
-allow = ["ui-helpers"]
-why = "a pure crate does no I/O; ui-helpers is allowed for its mime module (names and types as data)"
+why = "a pure crate does no I/O"
 
 [[direct]]
 crates = "files-model"
 features = "all"
 forbid = ["tokio*", "async-*", "futures*", "notify*", "trash", "rustix", "nix", "libc", "xattr", "zbus*", "action-*", "agent-*", "companion-*", "permission-*", "dioxus*", "ui-*"]
-allow = ["ui-helpers"]
-why = "a pure crate does no I/O; ui-helpers is allowed for its mime module (names and types as data)"
+why = "a pure crate does no I/O"
 
 [[direct]]
 crates = "files*"
@@ -3980,8 +3991,8 @@ crates = "files-*"
 except = ["files-ui"]
 features = "all"
 forbid = ["dioxus*", "blitz*", "ui-*"]
-allow = ["ui-helpers", "ui-peer"]
-why = "only files-ui and the binary name Dioxus or Bardo's UI crates; ui-helpers and ui-peer are UI-free and allowed lower"
+allow = ["ui-peer"]
+why = "only files-ui and the binary name Dioxus or Bardo's UI crates; ui-peer is UI-free and allowed lower"
 
 # --- identity (from crates/identity/scripts/check-boundary.sh)
 
@@ -4949,7 +4960,7 @@ features = "all"
 exactly = ["account-capability", "account-core", "account-sheet", "tailscale-types", "action-core",
   "action-manifest", "action-settings", "action-vocab", "base-ids", "base-secret", "base-time",
   "inference-core", "inference-tailnet", "key-remap-core", "keymap", "memory-core",
-  "settings-types", "ui-helpers"]
+  "settings-types", "ui-helpers", "xdg-core"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -4957,7 +4968,7 @@ crate = "settings-app-files"
 features = "all"
 exactly = ["action-settings", "action-settings-fs", "agent-install", "agent-registry", "base-fs",
   "key-remap-client", "keymap", "settings-app-model", "settings-store", "settings-store-fs",
-  "settings-types", "ui-extensions", "ui-helpers", "ui-settings"]
+  "settings-types", "ui-extensions", "ui-settings", "xdg-core"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5207,7 +5218,7 @@ exactly = ["account-capability", "account-core", "account-sheet", "action-core",
   "action-vocab", "action-wire", "base-ids", "base-machine", "base-secret", "base-time", "base-url", "base-words",
   "base-xdg", "companion-model", "companion-wire", "computer-use-action", "computer-use-bus",
   "desktop-protocols", "inference-core", "key-remap-proto", "keymap", "memory-core",
-  "permission-core", "provenance", "shell-launcher", "speech-wire", "ui-core", "ui-helpers"]
+  "permission-core", "provenance", "shell-launcher", "speech-wire", "ui-core", "xdg-core", "xdg-fs"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5237,7 +5248,7 @@ exactly = ["account-client", "account-client-dbus", "account-core", "account-dbu
   "inference-tailnet", "key-remap-proto", "memory-core", "memory-dbus", "networkmanager-proxy",
   "outputs-dbus", "peers-callers", "permission-core", "portal-dbus", "provenance",
   "settings-store", "settings-store-fs", "settings-types", "shell-dbus", "shell-desktop-fs",
-  "shell-launcher", "shell-model", "speech-dbus", "speech-wire", "sync-bus", "ui-core", "ui-helpers"]
+  "shell-launcher", "shell-model", "speech-dbus", "speech-wire", "sync-bus", "ui-core", "xdg-core", "xdg-fs"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
@@ -5254,6 +5265,7 @@ exactly = [
     "base-words",
     "companion-model",
     "companion-wire",
+    "file-types",
     "http-reqwest",
     "memory-core",
     "permission-core",
@@ -6055,14 +6067,32 @@ why = "the crate's direct dependencies on workspace crates are exactly the ones 
 [[edges]]
 crate = "ui-extensions"
 features = "all"
-exactly = ["base-fs", "base-words", "base-xdg", "plugin-core", "plugin-host", "settings-store", "settings-store-fs", "settings-types",
-  "ui-helpers", "ui-style"]
+exactly = ["base-fs", "base-words", "base-xdg", "file-types", "plugin-core", "plugin-host", "settings-store", "settings-store-fs", "settings-types",
+  "ui-style", "xdg-core"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]
 crate = "ui-helpers"
 features = "all"
-exactly = ["base-fs", "base-time", "base-xdg"]
+exactly = ["base-time", "xdg-core"]
+why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
+
+[[edges]]
+crate = "file-types"
+features = "all"
+exactly = ["base-words"]
+why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
+
+[[edges]]
+crate = "xdg-core"
+features = "all"
+exactly = ["base-fs", "base-xdg", "file-types"]
+why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
+
+[[edges]]
+crate = "xdg-fs"
+features = "all"
+exactly = ["base-fs", "xdg-core"]
 why = "the crate's direct dependencies on workspace crates are exactly the ones its table row lists"
 
 [[edges]]

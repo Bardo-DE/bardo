@@ -1,9 +1,9 @@
 //! A text choice as export jobs.
 
 use anyview_core::{
-    ExportJob, FilePath, FormatDetail, FormatKind, HtmlDoc, PrintLayout, Sniffed, TextExport,
-    TextSource,
+    ExportJob, FilePath, FormatDetail, HtmlDoc, PrintLayout, Sniffed, TextExport, TextSource,
 };
+use file_types::FormatKind;
 
 /// The jobs that write `choice` for the text file `file`: a PDF is its page laid out (a source file
 /// is printed highlighted), plain text is the file as it is.

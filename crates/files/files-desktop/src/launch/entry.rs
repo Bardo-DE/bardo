@@ -3,7 +3,7 @@
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
-use ui_helpers::{ApplicationEntry, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId};
+use xdg_core::{ApplicationEntry, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId};
 
 use super::EntryError;
 
@@ -80,7 +80,7 @@ impl AppEntry {
         })
     }
 
-    /// The app of an entry that `ui-helpers` found on disk; `None` when it is not an app.
+    /// The app of an entry that `xdg-fs` found on disk; `None` when it is not an app.
     #[must_use]
     pub fn from_installed(entry: &ApplicationEntry) -> Option<AppEntry> {
         let id = DesktopId::new(entry.id.as_str()).ok()?;
@@ -98,13 +98,13 @@ impl AppEntry {
 /// Every app under the `applications` folders `dirs`, most important first, each id once.
 /// This reads the disk; the folders come from the caller.
 pub fn load_apps(dirs: &[PathBuf]) -> Vec<AppEntry> {
-    ui_helpers::load_entries(dirs)
+    xdg_fs::load_entries(dirs)
         .iter()
         .filter_map(AppEntry::from_installed)
         .collect()
 }
 
-/// The check `ui_helpers::mime::Associations` takes for "is this app installed": it is one of `apps`.
+/// The check `xdg_core::mime::Associations` takes for "is this app installed": it is one of `apps`.
 pub fn installed_check(apps: &[AppEntry]) -> impl Fn(&DesktopId) -> bool + Send + Sync + 'static {
     let known: HashSet<DesktopId> = apps.iter().map(|app| app.id.clone()).collect();
     move |id| known.contains(id)

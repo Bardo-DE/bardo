@@ -1,9 +1,10 @@
 //! The history file through the public read API, in scratch directories.
 
-use anyview_core::{FilePath, FormatKind};
+use anyview_core::FilePath;
 use anyview_store::{
     History, HistoryEntry, HistoryRead, ResumeLabel, StoreError, StoreOp, read_history,
 };
+use file_types::FormatKind;
 use std::fs;
 
 fn sample() -> History {

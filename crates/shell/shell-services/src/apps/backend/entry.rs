@@ -7,7 +7,7 @@ use key_remap_proto::ProfileName;
 use shell_desktop_fs::icons::{IconRoots, IconTheme, resolve_icon};
 use shell_launcher::AppId;
 use shell_model::apps::{App, AppIcon, DbusActivation, DesktopActionEntry, Listing, Terminal};
-use ui_helpers::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLocale};
+use xdg_core::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLocale};
 
 /// The desktop names this scan targets. bardo-shell runs as the desktop's own session
 /// (`bardo`), so `OnlyShowIn`/`NotShowIn` are matched against these constants rather than the
@@ -24,7 +24,7 @@ const RENAMED_FROM_KEY: &str = "X-Flatpak-RenamedFrom";
 /// One loaded `.desktop` file as an [`App`], or `None`.
 ///
 /// One loaded `.desktop` file as an [`App`], its id the entry's desktop id without the suffix
-/// (`kde/foo.desktop` is `kde-foo`, [`ui_helpers::DesktopId`]'s rule); `None` for a
+/// (`kde/foo.desktop` is `kde-foo`, [`xdg_core::DesktopId`]'s rule); `None` for a
 /// non-Application type, an entry without `Name`/`Exec`, or one whose
 /// `TryExec` names a binary not found on `PATH` (the Desktop Entry Specification's own words:
 /// such an entry "may be ignored" — it is not really installed, so it should not occupy a dedup
@@ -186,7 +186,7 @@ mod tests {
     use shell_desktop_fs::icons::{IconRoots, IconTheme};
     use shell_model::apps::{App, Listing};
     use std::path::Path;
-    use ui_helpers::{
+    use xdg_core::{
         AppKeys, ApplicationEntry, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId, EntryLocale,
     };
 

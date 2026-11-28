@@ -2,8 +2,9 @@
 
 use crate::support;
 
-use anyview_core::{FactLabel, FormatKind, Peek, PixelLen, PixelSize};
+use anyview_core::{FactLabel, Peek, PixelLen, PixelSize};
 use anyview_image::{ImageError, RasterPeek, VectorPeek};
+use file_types::FormatKind;
 use support::{budget, fixture};
 
 fn size(width: u32, height: u32) -> PixelSize {

@@ -1,10 +1,11 @@
 //! The two keys of a desktop entry that name an app's icon, and where the entry for an app id is.
 //!
-//! Reading and matching are `ui_helpers`' (the same walk and the same five rules the dock uses),
+//! Reading and matching are `xdg-fs`' and `xdg-core`'s (the same walk and the same five rules the dock uses),
 //! so Mission Control and the dock cannot pick different icons for one window.
 
 use std::path::PathBuf;
-use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile, entry_for_window, load_entries};
+use xdg_core::{DESKTOP_ENTRY_CAP, DesktopFile, entry_for_window};
+use xdg_fs::load_entries;
 
 /// What an app's `.desktop` file says about its icon and its window class.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -39,7 +40,7 @@ pub fn parse(text: &str) -> DesktopEntry {
     }
 }
 
-/// The entry of the app whose windows carry `app_id`, searching `dirs` (the `applications` folders, subfolders too, most important first) by `ui_helpers::match_app`'s five rules.
+/// The entry of the app whose windows carry `app_id`, searching `dirs` (the `applications` folders, subfolders too, most important first) by `xdg_core::match_app`'s five rules.
 ///
 /// The file's id, the id in any case, `StartupWMClass`, the id's last labels, the Flatpak id.
 /// Nothing when no file does.

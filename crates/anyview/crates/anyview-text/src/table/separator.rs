@@ -2,8 +2,8 @@
 //! `.csv` written with semicolons (a locale that writes decimals with a comma) or pipes is read
 //! with the character that splits its first rows into the same number of cells.
 
-use anyview_core::Delimiter;
 use base_words::Word;
+use file_types::Delimiter;
 
 /// The rows looked at.
 const SAMPLE_ROWS: usize = 20;

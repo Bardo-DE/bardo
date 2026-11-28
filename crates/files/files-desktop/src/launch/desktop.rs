@@ -5,7 +5,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use files_core::{FileName, MimeType};
-use ui_helpers::mime::{Associations, DesktopId, MimeDb, NameGuess};
+use xdg_core::DesktopId;
+use xdg_core::mime::{Associations, MimeDb, NameGuess};
 
 use super::activate::Activate;
 use super::build::{Catalog, LauncherBuilder};

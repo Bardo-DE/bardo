@@ -5,12 +5,13 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use file_types::{FileName, MimeType};
 use settings_types::schema::Provided;
 use ui_extensions::{
     ExtensionId, FileFacts, FileIcons, FolderFacts, IconPick, Search, YourChanges,
 };
-use ui_helpers::mime::{FileName, MimeDb, MimeLayer, MimeType, NameGuess};
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};
+use xdg_core::mime::{MimeDb, MimeLayer, NameGuess};
 
 use crate::support::{ICONS, Scratch, install_entries};
 

@@ -4,9 +4,8 @@ use crate::container::kind_name;
 use crate::entry::{EntryLimit, Listing};
 use crate::error::ArchiveError;
 use crate::list::list_until;
-use anyview_core::{
-    FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input, Peek, PeekBudget, Sniffed,
-};
+use anyview_core::{FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed};
+use file_types::FormatKind;
 
 /// The entries a peek keeps; the pane shows about this many.
 pub const PEEK_ENTRIES: EntryLimit = EntryLimit(40);

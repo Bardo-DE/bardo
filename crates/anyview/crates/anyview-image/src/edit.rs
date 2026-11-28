@@ -22,10 +22,8 @@ use crate::error::ImageError;
 use crate::orientation::ExifOrientation;
 use crate::pixels::Rgba8;
 use crate::rotate::{flip_jpeg, rotate_jpeg};
-use anyview_core::{
-    Axis, Edit, FormatDetail, FormatKind, MetadataCarry, QuarterTurn, RasterFormat, RasterTarget,
-    Sniffed,
-};
+use anyview_core::{Axis, Edit, FormatDetail, MetadataCarry, QuarterTurn, RasterTarget, Sniffed};
+use file_types::{FormatKind, RasterFormat};
 
 /// What the person asked for: a clockwise turn or a mirror.
 #[derive(Debug, Clone, Copy)]

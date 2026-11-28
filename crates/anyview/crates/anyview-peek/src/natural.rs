@@ -3,7 +3,8 @@
 //! few milliseconds whatever the file claims; see [`natural_size`].
 
 use crate::media::video_size;
-use anyview_core::{FileHead, FormatKind, Input, PixelSize, SniffStep, sniff};
+use anyview_core::{FileHead, Input, PixelSize, SniffStep, sniff};
+use file_types::FormatKind;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 /// The size of the picture of the file `src` (a path, or any bytes a host injects), in pixels and

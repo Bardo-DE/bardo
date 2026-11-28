@@ -3,7 +3,7 @@
 
 use crate::action::FileAction;
 use crate::edit::EditKind;
-use crate::kind::{FormatKind, Mime};
+use file_types::{FormatKind, MimeType};
 
 /// Everything that varies by kind of file.
 #[derive(Debug, Clone, Copy)]
@@ -207,11 +207,11 @@ pub fn actions_for(kind: FormatKind) -> &'static [FileAction] {
 /// A media type a file of `kind` has, for a row that knows only the kind (a recently viewed file
 /// the history names): the commonest type of the kind.
 ///
-/// `kind_of_mime` of it is `kind`, except that code and plain text share `text/plain`, which names
+/// `of_mime` of it is `kind`, except that code and plain text share `text/plain`, which names
 /// plain text.
 #[must_use]
-pub fn mime_for(kind: FormatKind) -> Mime {
-    Mime::known(profile_of(kind).mime)
+pub fn mime_for(kind: FormatKind) -> MimeType {
+    MimeType::from_static(profile_of(kind).mime)
 }
 
 /// The sorts of edit a file of `kind` can be saved with in place.

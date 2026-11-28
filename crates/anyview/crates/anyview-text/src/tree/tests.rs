@@ -368,7 +368,8 @@ fn a_scan_told_to_stop_is_interrupted_not_a_cut_document() {
 mod editing {
     use crate::edit::EditText;
     use crate::tree::{TreeEditError, TreeSession};
-    use anyview_core::{TreeFormat, TreePath};
+    use anyview_core::TreePath;
+    use file_types::TreeFormat;
 
     fn p(steps: &[u32]) -> TreePath {
         steps.iter().fold(TreePath::root(), |at, s| at.child(*s))

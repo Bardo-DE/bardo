@@ -1,12 +1,13 @@
 //! The name a person gives a kind of file: `JPEG image`, `Rust source`. Finder's "Kind", not the
 //! media type.
 
-use crate::kind::{
-    ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatDetail, FormatKind, MediaContainer,
-    OfficeFormat, RasterFormat, TreeFormat,
-};
+use crate::kind::FormatDetail;
 use crate::sniff::Sniffed;
 use crate::source::FileName;
+use file_types::{
+    ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatKind, MediaContainer, OfficeFormat,
+    RasterFormat, TreeFormat,
+};
 
 /// [`kind_name`] for the file called `name`: a file of no known kind is `BIN file` by its
 /// extension, so a person is told what the name says rather than that it is unknown.

@@ -4,11 +4,12 @@
 use std::fmt;
 use std::sync::Arc;
 
-use anyview_core::{FilePath, FormatKind, Input, PixelLen, PixelSize, Resize};
+use anyview_core::{FilePath, Input, PixelLen, PixelSize, Resize};
 use anyview_fs::OnDisk;
 use anyview_image::{Rgba8, resized};
 use anyview_peek::{Body, PageLook, PdfPeeked, Peeking, StillSource, look, probe};
 use anyview_platform::{ThumbSize, ThumbnailCache};
+use file_types::FormatKind;
 
 /// The size every thumbnail is made at (the cache's `normal`): a tile draws it at most 96 px wide,
 /// so this stays sharp on a screen of twice the density.

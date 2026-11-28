@@ -1,7 +1,7 @@
 //! Why a path or an item is refused, in the words a person reads. (A name's and a type's errors are
 //! Bardo's, re-exported by the crate root.)
 
-use ui_helpers::mime::NameError;
+use file_types::NameError;
 
 /// Why a path is not an item.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

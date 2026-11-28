@@ -27,7 +27,8 @@ base-machine = { path = "../../base/base-machine" }
 shell-launcher = {path = "../shell-launcher"}
 keymap = {path = "../../keymap/keymap"}
 ui-core = {path = "../../ui/ui-core"}
-ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+xdg-core = { path = "../../xdg/xdg-core" }
+xdg-fs = { path = "../../xdg/xdg-fs" }
 key-remap-proto = {path = "../../input/key-remap-proto"}
 action-core = {path = "../../actions/action-core"}
 companion-wire = {path = "../../actions/companion-wire"}

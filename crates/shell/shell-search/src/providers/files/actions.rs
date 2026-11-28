@@ -8,10 +8,9 @@
 //! [`carried`] is the one match on [`FileAction`] here: it says, for each, whether the launcher
 //! does it and what it asks for, so the row's menu and `Provider::activate` cannot disagree.
 
-use anyview_core::{
-    FileAction, FormatKind, Mime as CoreMime, Reach, actions_for, kind_of_mime, reach,
-};
+use anyview_core::{FileAction, Reach, actions_for, reach};
 use base_words::Word;
+use file_types::{FormatKind, MimeType, of_mime};
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, FileFacts, Generation, Mime, OpenTarget, OwnAction,
     ViewerOpen,
@@ -89,7 +88,7 @@ fn open(file: &FileFacts) -> Activation {
 /// one).
 #[must_use]
 pub fn kind_of(file: &FileFacts) -> FormatKind {
-    CoreMime::parse(&file.mime.0).map_or(FormatKind::Other, |mime| kind_of_mime(&mime))
+    MimeType::new(&file.mime.0).map_or(FormatKind::Other, |mime| of_mime(&mime))
 }
 
 /// The actions on `file`'s row, in the shared list's order: those the launcher shows

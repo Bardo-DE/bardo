@@ -6,7 +6,7 @@ use std::sync::Arc;
 use files_core::OnlineUrl;
 use files_desktop::{AppChoice, DesktopLauncher};
 use files_ui::{OpenAs, OpenError, Opener};
-use ui_helpers::DesktopId;
+use xdg_core::DesktopId;
 
 use crate::clouds::Web;
 

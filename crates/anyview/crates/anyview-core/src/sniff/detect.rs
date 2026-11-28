@@ -2,10 +2,9 @@
 
 use super::magic::{self, Magic};
 use super::{FileHead, SniffStep, Sniffed, ZipProbe, extension, text};
-use crate::kind::{
-    Family, FormatDetail, FormatKind, Mime, RasterFormat, TextEncoding, from_extension,
-};
+use crate::kind::{FormatDetail, TextEncoding};
 use crate::source::FileName;
+use file_types::{Family, FormatKind, MimeType, RasterFormat, from_extension};
 
 /// What a file is, from its first bytes and its name.
 ///
@@ -54,7 +53,7 @@ fn raw_over_container(sniffed: Sniffed, name: &FileName) -> Sniffed {
     match (container, raw) {
         (true, Some(format)) => Sniffed::new(
             FormatKind::Raster,
-            Mime::known(format.mime()),
+            MimeType::from_static(format.mime()),
             FormatDetail::Raster(format),
         ),
         (false, _) | (true, None) => sniffed,
@@ -66,7 +65,7 @@ fn raw_over_container(sniffed: Sniffed, name: &FileName) -> Sniffed {
 pub fn sniff_folder() -> Sniffed {
     Sniffed::new(
         FormatKind::Folder,
-        Mime::known("inode/directory"),
+        MimeType::from_static("inode/directory"),
         FormatDetail::None,
     )
 }

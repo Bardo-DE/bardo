@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+file-types = { path = "../../xdg/file-types" }
 thiserror = { workspace = true }
 
 [[test]]

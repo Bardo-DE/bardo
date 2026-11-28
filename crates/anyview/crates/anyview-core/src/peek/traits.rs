@@ -2,10 +2,10 @@
 
 use super::PeekBudget;
 use crate::facts::Facts;
-use crate::kind::FormatKind;
 use crate::sniff::Sniffed;
 use crate::source::Input;
 use crate::units::PixelSize;
+use file_types::FormatKind;
 
 /// The light tier of one format: cheap, no GPU, no player.
 ///

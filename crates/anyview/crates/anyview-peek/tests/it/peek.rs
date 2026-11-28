@@ -3,9 +3,10 @@
 
 use crate::support;
 
-use anyview_core::{ByteLen, FormatKind};
+use anyview_core::ByteLen;
 use anyview_fs::OnDisk;
 use anyview_peek::{AnyPeeked, Body, Unavailable, peek};
+use file_types::FormatKind;
 use support::{Home, budget, fixture, on_disk, pane_budget, rows};
 
 fn peeked(home: Home, name: &str) -> AnyPeeked {

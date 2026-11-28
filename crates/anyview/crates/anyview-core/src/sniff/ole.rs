@@ -2,7 +2,8 @@
 //! names in its directory.
 
 use super::Sniffed;
-use crate::kind::{Family, FormatDetail, Mime, OfficeFormat};
+use crate::kind::FormatDetail;
+use file_types::{Family, MimeType, OfficeFormat};
 use std::collections::HashSet;
 use std::io;
 
@@ -154,7 +155,7 @@ pub fn sniff_ole(streams: &OleStreams) -> Option<Sniffed> {
     };
     Some(Sniffed::new(
         format.kind(),
-        Mime::known(format.mime()),
+        MimeType::from_static(format.mime()),
         FormatDetail::Office(format),
     ))
 }
@@ -162,8 +163,8 @@ pub fn sniff_ole(streams: &OleStreams) -> Option<Sniffed> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::kind::FormatKind;
     use crate::sniff::FileHead;
+    use file_types::FormatKind;
 
     /// A compound file of 512-byte sectors: sector 0 is the FAT, sector 1 the directory holding
     /// `names` (four entries to a sector, so at most four).

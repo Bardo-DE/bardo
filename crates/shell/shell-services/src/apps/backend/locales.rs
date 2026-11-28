@@ -1,6 +1,6 @@
 //! The locales a desktop entry's translated words are picked for.
 
-use ui_helpers::EntryLocale;
+use xdg_core::EntryLocale;
 
 /// The variable holding the session's language, read first.
 const LANG: &str = "LANG";
@@ -48,7 +48,7 @@ mod tests {
             };
             let got: Vec<String> = locales_from(var)
                 .iter()
-                .flat_map(ui_helpers::EntryLocale::variants)
+                .flat_map(xdg_core::EntryLocale::variants)
                 .collect();
             assert_eq!(got, want, "{lang:?} {languages:?}");
         }

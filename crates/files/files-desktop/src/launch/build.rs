@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use ui_helpers::mime::{Associations, MimeDb};
+use xdg_core::mime::{Associations, MimeDb};
 
 use super::activate::Activate;
 use super::desktop::DesktopLauncher;

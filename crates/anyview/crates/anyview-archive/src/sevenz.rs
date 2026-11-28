@@ -6,7 +6,8 @@ use crate::extract::ExtractLimits;
 use crate::limit::{Limited, pull};
 use crate::sevenz_header::{self, Fault};
 use anyview_core::work::Interrupt;
-use anyview_core::{ArchiveFormat, ByteLen, Input, ReadAtStream};
+use anyview_core::{ByteLen, Input, ReadAtStream};
+use file_types::ArchiveFormat;
 use sevenz_rust2::{ArchiveEntry, ArchiveReader, Error, Password};
 use std::io::{BufReader, Read};
 

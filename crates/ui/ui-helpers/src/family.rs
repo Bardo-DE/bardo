@@ -1,6 +1,6 @@
 //! The distro family, which decides whose package names to try.
 
-use crate::os_release::OsRelease;
+use xdg_core::OsRelease;
 
 /// A package-name family: the distros that share one set of package names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

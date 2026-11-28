@@ -37,6 +37,7 @@ percent-encoding = { workspace = true }
 http-reqwest = {path = "../../network/http-reqwest"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 zbus = {workspace = true, features = ["tokio"]}
+file-types = { path = "../../xdg/file-types" }
 
 [dev-dependencies]
 computer-use-action = {path = "../../models/computer-use-action"}

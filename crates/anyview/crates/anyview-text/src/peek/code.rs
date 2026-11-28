@@ -7,9 +7,9 @@ use crate::encoding::TextCodec;
 use crate::error::TextError;
 use crate::lines::split_start;
 use anyview_core::{
-    FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input, Peek, PeekBudget, Sniffed,
-    SyntaxName,
+    FactLabel, FactValue, Facts, FormatDetail, Input, Peek, PeekBudget, Sniffed, SyntaxName,
 };
+use file_types::FormatKind;
 
 /// What a peek of a source file holds.
 #[derive(Debug, Clone, PartialEq, Eq)]

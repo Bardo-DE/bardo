@@ -57,11 +57,7 @@ pub use facts::{
 pub use find::FindOptions;
 pub use form::{FormWidget, WidgetKind};
 pub use helper::Helper;
-pub use kind::{
-    ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatDetail, FormatKind, MediaContainer,
-    Mime, OfficeFormat, RasterFormat, SyntaxName, TextEncoding, TreeFormat, claimed_mimes,
-    kind_of_mime, opened_globs, opened_mimes,
-};
+pub use kind::{FormatDetail, SyntaxName, TextEncoding, claimed_mimes, opened_globs, opened_mimes};
 pub use markup::{
     FieldFill, Mark, MarkColor, MarkRef, MarkShape, MarkTool, MarkupSave, NOTE_SIZE, PagePoint,
     PageRect,

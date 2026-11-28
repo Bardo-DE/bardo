@@ -5,7 +5,7 @@
 pub enum EntryError {
     /// The text could not be read as a desktop entry.
     #[error("That isn\u{2019}t an app\u{2019}s description.")]
-    Unreadable(#[source] ui_helpers::DesktopFileError),
+    Unreadable(#[source] xdg_core::DesktopFileError),
     /// No `[Desktop Entry]` group.
     #[error("That isn\u{2019}t an app\u{2019}s description.")]
     NoEntry,

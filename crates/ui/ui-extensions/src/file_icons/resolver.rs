@@ -5,11 +5,12 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use base_words::Word;
+use file_types::{FileName, MimeType};
 use plugin_core::registry::{Installed, Origin};
 use settings_types::schema::Provided;
-use ui_helpers::mime::{FileName, MimeDb, MimeType};
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};
 use ui_style::icon::mime::{MimeFacts, kind_for_mime};
+use xdg_core::mime::MimeDb;
 
 use crate::capability::Capability;
 use crate::choices::{Stale, choices_for, chosen};

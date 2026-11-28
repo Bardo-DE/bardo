@@ -8,6 +8,10 @@
 
 use std::path::{Path, PathBuf};
 
+mod user_dirs;
+
+pub use user_dirs::{USER_DIRS_FILE, UserDirs};
+
 /// Why a directory could not be resolved.
 ///
 /// Neither `HOME` nor the XDG variable of a directory is set to an absolute path.
@@ -72,6 +76,15 @@ impl<F: Fn(&str) -> Option<String>> Xdg<F> {
     /// Neither the variable nor `HOME` is an absolute path.
     pub fn data_home(&self) -> Result<PathBuf, PathError> {
         self.dir("XDG_DATA_HOME", ".local/share")
+    }
+
+    /// The file that names the person's own folders: `user-dirs.dirs` in [`Xdg::config_home`].
+    /// Read it and give its text to [`UserDirs::parse`].
+    ///
+    /// # Errors
+    /// Neither `XDG_CONFIG_HOME` nor `HOME` is an absolute path.
+    pub fn user_dirs_file(&self) -> Result<PathBuf, PathError> {
+        Ok(self.config_home()?.join(USER_DIRS_FILE))
     }
 
     /// `$XDG_STATE_HOME`, else `~/.local/state`.

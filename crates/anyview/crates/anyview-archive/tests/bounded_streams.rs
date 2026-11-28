@@ -13,7 +13,8 @@
 mod support;
 
 use anyview_archive::{ExtractLimits, extract};
-use anyview_core::{ArchiveFormat, ByteLen};
+use anyview_core::ByteLen;
+use file_types::ArchiveFormat;
 use support::{bzip2, gzip, write, xz, zstd};
 
 /// Resident memory in KiB: the current size and the high-water mark since it was last reset.

@@ -21,6 +21,7 @@ infer = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 jiff = { workspace = true }
 thiserror = { workspace = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 # `ui_core::testing::word_matches_serde`, for the stored `Word` enums.

@@ -1,6 +1,7 @@
 //! The one error `anyview-font` returns, with variants a caller acts on.
 
-use anyview_core::{ByteLen, FormatKind};
+use anyview_core::ByteLen;
+use file_types::FormatKind;
 use std::path::PathBuf;
 
 /// Why a font could not be read.

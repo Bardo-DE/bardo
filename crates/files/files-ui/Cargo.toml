@@ -27,7 +27,7 @@ jiff = { workspace = true }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-extensions = {path = "../../ui/ui-extensions"}
-ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+xdg-core = { path = "../../xdg/xdg-core" }
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
@@ -41,6 +41,7 @@ serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 ui-host-hooks = {path = "../../ui/ui-host-hooks"}
+file-types = { path = "../../xdg/file-types" }
 
 [dev-dependencies]
 files-ui = { path = ".", features = ["testing"] }

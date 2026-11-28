@@ -2,10 +2,10 @@
 
 use super::*;
 use crate::facts::{FactLabel, FactValue, Facts};
-use crate::kind::FormatKind;
 use crate::sniff::{FileHead, SniffStep, Sniffed, sniff};
 use crate::source::{ByteLen, FileName, FileStamp, Input, ModTime};
 use crate::units::PixelArea;
+use file_types::FormatKind;
 use std::time::Duration;
 
 /// Peeks at plain text by counting the bytes the budget lets it read.

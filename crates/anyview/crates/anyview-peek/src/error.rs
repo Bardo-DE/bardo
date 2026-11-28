@@ -2,11 +2,12 @@
 
 use crate::pdf::PageTrouble;
 use anyview_archive::ArchiveError;
-use anyview_core::{ByteLen, FormatKind};
+use anyview_core::ByteLen;
 use anyview_font::FontError;
 use anyview_image::ImageError;
 use anyview_text::TextError;
 use base_words::Word;
+use file_types::FormatKind;
 use std::convert::Infallible;
 use std::path::PathBuf;
 use thiserror::Error;

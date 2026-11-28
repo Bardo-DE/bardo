@@ -192,7 +192,7 @@ fn viewed(
         .map_or(0, |since| since.as_secs());
     anyview_store::HistoryEntry {
         path: anyview_core::FilePath::new(path).unwrap_or_else(|e| panic!("{e}")),
-        kind: anyview_core::FormatKind::Pdf,
+        kind: file_types::FormatKind::Pdf,
         viewed: now - seconds_ago,
         label,
     }

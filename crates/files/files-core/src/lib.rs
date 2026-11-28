@@ -1,8 +1,8 @@
 //! The vocabulary of files: what a folder holds, how it is shown and what can be done to it, as
 //! plain data.
 //!
-//! `FileName` and `MimeType` (with their errors) are Bardo's, from `ui_helpers::mime`, so the file type
-//! database and this vocabulary speak the same types.
+//! `FileName` and `MimeType` (with their errors) are `file-types`', so the file type database and
+//! this vocabulary speak the same types.
 //!
 //! Nothing here reads the disk, the clock or the environment, and nothing names a runtime, a bus
 //! or a UI. Every other crate of the app speaks these types: `files-fs` fills them from the disk,
@@ -46,6 +46,7 @@ pub use conflict::{Answer, Bring, Conflict, Resolution};
 pub use entry::{Entry, EntryKind, LinkTo, Special};
 pub use error::{ItemError, PathError};
 pub use failure::OpError;
+pub use file_types::{FileName, MimeError, MimeType, NameError};
 pub use info::Info;
 pub use item::ItemRef;
 pub use keep_both::{Split, keep_both};
@@ -55,7 +56,6 @@ pub use progress::Progress;
 pub use report::{Finish, OpEvent, Outcome};
 pub use size::ByteSize;
 pub use trashed::{TrashId, TrashedItem};
-pub use ui_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use view::{FolderSettings, Sort, SortKey, SortOrder, ViewMode};
 pub use volume::{
     EjectError, MountError, ProgramName, Volume, VolumeCauseError, VolumeId, VolumeKind,

@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use key_remap_proto::ProfileName;
 use serde::{Deserialize, Serialize};
 use shell_launcher::{AppId, Mime};
-use ui_helpers::{AppKeys, match_app};
+use xdg_core::{AppKeys, match_app};
 
 /// The registered category of a file manager (Nautilus, Dolphin, Thunar, Nemo...).
 const FILE_MANAGER: &str = "FileManager";
@@ -55,7 +55,7 @@ impl AppIndex {
     }
 
     /// The entry a toplevel with Wayland `app_id` (and, through `XWayland`, `wm_class`) belongs to,
-    /// by the five rules of [`ui_helpers::match_app`], the one matcher every shell part shares.
+    /// by the five rules of [`xdg_core::match_app`], the one matcher every shell part shares.
     #[must_use]
     pub fn matching(&self, app_id: &str, wm_class: Option<&str>) -> Option<&App> {
         self.apps.get(match_app(app_id, wm_class, &self.keys)?)

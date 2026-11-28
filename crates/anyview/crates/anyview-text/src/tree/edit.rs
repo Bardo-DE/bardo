@@ -10,7 +10,8 @@ use super::{Located, Tree};
 use crate::edit::{EditStamp, EditText, Log};
 use crate::encoding::{Coverage, TextCodec};
 use crate::error::TextError;
-use anyview_core::{Deadline, TextEncoding, TreeFormat, TreePath};
+use anyview_core::{Deadline, TextEncoding, TreePath};
+use file_types::TreeFormat;
 use std::ops::Range;
 use std::sync::Arc;
 

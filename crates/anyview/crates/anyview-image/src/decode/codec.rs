@@ -1,7 +1,8 @@
 //! Which decoder a sniffed file goes to: the one match on `RasterFormat` in this crate.
 
 use crate::error::ImageError;
-use anyview_core::{FormatDetail, FormatKind, RasterFormat, Sniffed};
+use anyview_core::{FormatDetail, Sniffed};
+use file_types::{FormatKind, RasterFormat};
 use image::ImageFormat;
 
 /// The decoder for one file.

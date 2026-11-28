@@ -4,11 +4,10 @@
 
 use crate::support;
 
-use anyview_core::{
-    ByteLen, FactLabel, FileName, FilePath, FileStamp, FormatKind, Input, ModTime, ReadAt,
-};
+use anyview_core::{ByteLen, FactLabel, FileName, FilePath, FileStamp, Input, ModTime, ReadAt};
 use anyview_fs::OnDisk;
 use anyview_peek::{AnyPeeked, Body, PeekError, Unavailable, peek, probe};
+use file_types::FormatKind;
 use std::io::Write;
 use std::sync::Arc;
 use support::{Home, budget, pane_budget, path};

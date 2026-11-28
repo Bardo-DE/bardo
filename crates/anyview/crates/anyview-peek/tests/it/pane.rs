@@ -5,10 +5,10 @@
 
 use crate::support;
 
-use anyview_core::FormatKind;
 use anyview_peek::{AnyPeeked, Body, Card, PageLook, PdfPeeked, STYLE, peek};
 use anyview_text::{TokenClass, TokenLine, TokenSpan};
 use dioxus::prelude::*;
+use file_types::FormatKind;
 use std::sync::{Arc, OnceLock};
 use support::{Home, fixture, pane_budget};
 use ui_components::assembly::ds::Inject;

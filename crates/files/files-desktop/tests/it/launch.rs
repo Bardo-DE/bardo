@@ -7,7 +7,8 @@ use files_desktop::{
     ActivateCall, ActivationToken, AppChoice, AppEntry, Catalog, DesktopLauncher, EntryError,
     FakeActivate, FakeIcons, FakeSpawn, LaunchError, installed_check,
 };
-use ui_helpers::mime::{Associations, DesktopId, MimeApps, MimeDb, MimeLayer};
+use xdg_core::DesktopId;
+use xdg_core::mime::{Associations, MimeApps, MimeDb, MimeLayer};
 
 const GLOBS: &str = "50:text/plain:*.txt\n50:image/png:*.png\n50:application/pdf:*.pdf\n\
                      50:text/html:*.html\n50:application/x-a:*.amb\n50:application/x-b:*.amb\n";

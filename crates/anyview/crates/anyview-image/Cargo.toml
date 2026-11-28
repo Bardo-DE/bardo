@@ -33,6 +33,7 @@ kamadak-exif = { workspace = true }
 ravif = { workspace = true, optional = true }
 resvg = { workspace = true }
 thiserror = { workspace = true }
+file-types = { path = "../../../xdg/file-types" }
 
 [dev-dependencies]
 # The crate's own tests need its test-only features.

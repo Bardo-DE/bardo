@@ -3,7 +3,8 @@
 
 use super::cover::AudioCover;
 use crate::described::{Described, Describes, FactsPeek};
-use anyview_core::{FormatKind, Input, PeekBudget, PixelSize, Sniffed};
+use anyview_core::{Input, PeekBudget, PixelSize, Sniffed};
+use file_types::FormatKind;
 
 /// What a recording's peek holds without the header readers: the words for the file's type.
 pub type MediaLook = Described;

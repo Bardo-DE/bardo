@@ -1,6 +1,7 @@
 //! The one error `anyview-archive` returns, with variants a caller acts on.
 
-use anyview_core::{ArchiveFormat, ByteLen, Input, ReadAtStream};
+use anyview_core::{ByteLen, Input, ReadAtStream};
+use file_types::ArchiveFormat;
 use std::path::PathBuf;
 
 /// Why an archive could not be listed or one of its entries read.
@@ -18,7 +19,7 @@ pub enum ArchiveError {
     #[error("a {kind:?} file is not what this peek reads")]
     WrongKind {
         /// What the file was sniffed as.
-        kind: anyview_core::FormatKind,
+        kind: file_types::FormatKind,
     },
     /// A budget that allows no byte.
     #[error("the peek budget allows no bytes")]

@@ -1,7 +1,8 @@
 //! What a listing holds: entries with their kind and size, and how many there are.
 
-use anyview_core::{ArchiveFormat, ByteLen};
+use anyview_core::ByteLen;
 use base_words::Word;
+use file_types::ArchiveFormat;
 use std::ops::ControlFlow;
 
 /// What an entry is.

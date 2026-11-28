@@ -4,7 +4,8 @@ use crate::bytes::read_range;
 use crate::encoding::{Coverage, TextCodec, detect};
 use crate::error::TextError;
 use anyview_core::work::Interrupt;
-use anyview_core::{ByteLen, FormatKind, Input, PeekBudget, Sniffed};
+use anyview_core::{ByteLen, Input, PeekBudget, Sniffed};
+use file_types::FormatKind;
 
 /// The lines (or rows) a peek shows. Every pane shows about this many, so the limit is the
 /// pane's, not the budget's: the byte budget decides how much is read to find them.

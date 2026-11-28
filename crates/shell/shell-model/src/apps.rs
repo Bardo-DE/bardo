@@ -1,5 +1,5 @@
 //! The installed apps: desktop entries parsed, their exec lines expanded, and the index the
-//! launcher and dock match against (through `ui_helpers::match_app`).
+//! launcher and dock match against (through `xdg_core::match_app`).
 
 mod command;
 mod exec;
