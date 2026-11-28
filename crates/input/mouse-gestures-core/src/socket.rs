@@ -1,7 +1,8 @@
 //! The socket's decisions (12.3.10): whom to serve, what each subscriber is, what a reader's
-//! message does and when the reader is told. The daemon's socket thread gathers the facts that
-//! need a syscall, feeds them in as [`SocketEvent`]s and carries out the [`SocketEffect`]s that
-//! come back.
+//! message does and when the reader is told.
+//!
+//! The daemon's socket thread gathers the facts that need a syscall, feeds them in as
+//! [`SocketEvent`]s and carries out the [`SocketEffect`]s that come back.
 //!
 //! The socket turns subscribers' `PointerOver` reports into the one claim the tracker needs
 //! (11.3.14: while any subscriber has the pointer, foreign outputs are silent), and their

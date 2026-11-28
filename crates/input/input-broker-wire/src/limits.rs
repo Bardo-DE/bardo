@@ -1,7 +1,7 @@
-//! The caps the datagrams themselves carry: the protocol version, the largest datagram and the
-//! longest lists a request may hold. A peer that exceeds one is refused, never allowed to make the
-//! reader store more. The caps on connections, rates and devices are policy: they live in
-//! `input-broker-core`.
+//! The caps the datagrams themselves carry: version, size and list lengths.
+//!
+//! A peer that exceeds one is refused, never allowed to make the reader store more. The caps on
+//! connections, rates and devices are policy: they live in `input-broker-core`.
 
 /// The first byte of every datagram. A change of meaning bumps it; the service refuses others.
 pub const PROTOCOL_VERSION: u8 = 1;

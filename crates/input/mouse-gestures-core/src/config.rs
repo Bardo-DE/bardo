@@ -1,6 +1,7 @@
-//! `mouse-gestures/gestures.toml`: the settings a person chooses, their defaults, how the machine's
-//! and the person's layers combine, and the schema the Settings app reads. Where the file lives and
-//! how it is read and watched is the daemon's.
+//! `mouse-gestures/gestures.toml`: the settings a person chooses, their defaults and layering.
+//!
+//! Also the schema the Settings app reads. Where the file lives and how it is read and watched is
+//! the daemon's.
 
 pub mod file;
 pub mod layer;

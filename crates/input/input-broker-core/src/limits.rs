@@ -1,6 +1,7 @@
-//! The service's own caps, each with the reason it has this number. A peer that exceeds one is
-//! refused or cut, never allowed to make the service store or wait for more. The caps the
-//! datagrams carry (sizes, list lengths) are `input_broker_wire::limits`.
+//! The service's own caps, each with the reason it has this number.
+//!
+//! A peer that exceeds one is refused or cut, never allowed to make the service store or wait for
+//! more. The caps the datagrams carry (sizes, list lengths) are `input_broker_wire::limits`.
 
 /// Keys held at once on the mouse gestures daemon's keyboard: a combination is three or four.
 pub const MAX_KEYS_DOWN: usize = 8;

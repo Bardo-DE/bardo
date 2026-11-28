@@ -92,6 +92,7 @@ pub struct Subscribers {
 
 impl Subscribers {
     /// No subscriber yet, with `active` having the seat.
+    #[must_use]
     pub fn new(active: Option<u32>) -> Self {
         Self {
             members: BTreeMap::new(),
