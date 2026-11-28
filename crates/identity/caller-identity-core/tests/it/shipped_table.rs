@@ -21,6 +21,6 @@ fn units_are_services_and_unitless_rows_are_programs() {
         .collect();
     assert_eq!(
         program_roles,
-        ["updater_cli", "sandbox_launcher", "manager"]
+        ["settings", "updater_cli", "sandbox_launcher", "manager"]
     );
 }
