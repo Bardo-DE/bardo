@@ -1015,6 +1015,7 @@ shallow-module action_live::flows
 shallow-module action_vocab
 shallow-module agent_acp_core
 shallow-module agent_registry
+shallow-module agent_session
 shallow-module base_ids
 shallow-module base_machine
 shallow-module base_machine::time
@@ -1151,7 +1152,6 @@ wide-directory crates/actions/agent-acp-host/tests/it/client/
 wide-directory crates/actions/agent-acp-server/src/
 wide-directory crates/actions/agent-launch/src/
 wide-directory crates/actions/agent-planner/src/
-wide-directory crates/actions/agent-session/src/
 wide-directory crates/actions/companion-daemon/tests/it/
 wide-directory crates/actions/companion-tasks/src/
 wide-directory crates/actions/permission-core/src/
