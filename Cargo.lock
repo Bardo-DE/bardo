@@ -2351,6 +2351,7 @@ dependencies = [
  "anyview-fs",
  "base-words",
  "bzip2",
+ "file-types",
  "flate2",
  "lzma-rs",
  "lzma-rust2",
@@ -2370,6 +2371,7 @@ dependencies = [
  "anyview-archive",
  "anyview-core",
  "anyview-fs",
+ "file-types",
  "roxmltree 0.21.1",
  "rustix 1.1.6",
  "tempfile",
@@ -2383,6 +2385,7 @@ name = "anyview-core"
 version = "0.1.0"
 dependencies = [
  "base-words",
+ "file-types",
  "infer",
  "jiff",
  "keymap",
@@ -2398,6 +2401,7 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
+ "file-types",
  "miniz_oxide 0.8.9",
  "skrifa 0.49.0",
  "tempfile",
@@ -2422,6 +2426,7 @@ dependencies = [
  "anyview-fs",
  "anyview-image",
  "base-words",
+ "file-types",
  "icns",
  "image",
  "img-parts",
@@ -2453,6 +2458,7 @@ dependencies = [
  "base-words",
  "dioxus",
  "dioxus-ssr",
+ "file-types",
  "log",
  "matroska-demuxer",
  "mp4parse",
@@ -2505,6 +2511,7 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "base-fs",
+ "file-types",
  "serde",
  "serde_json",
  "tempfile",
@@ -2522,6 +2529,7 @@ dependencies = [
  "chardetng",
  "csv",
  "encoding_rs",
+ "file-types",
  "pulldown-cmark",
  "rustix 1.1.6",
  "serde_json",
@@ -4426,7 +4434,8 @@ dependencies = [
  "rustix 1.1.6",
  "tempfile",
  "thiserror 2.0.21",
- "ui-helpers",
+ "xdg-core",
+ "xdg-fs",
 ]
 
 [[package]]
@@ -6633,12 +6642,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59b16d394a9991c9b0fee89855daafc7c6cd341be9528ac8b45f9b7aed3d8be8"
 
 [[package]]
+name = "file-types"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "files"
 version = "0.1.0"
 dependencies = [
  "anyview-platform",
  "base-xdg",
- "dirs 6.0.0",
  "files-core",
  "files-desktop",
  "files-fs",
@@ -6653,15 +6671,16 @@ dependencies = [
  "tracing",
  "ui-blitz",
  "ui-extensions",
- "ui-helpers",
+ "xdg-core",
+ "xdg-fs",
 ]
 
 [[package]]
 name = "files-core"
 version = "0.1.0"
 dependencies = [
+ "file-types",
  "thiserror 2.0.21",
- "ui-helpers",
 ]
 
 [[package]]
@@ -6693,7 +6712,8 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-helpers",
+ "xdg-core",
+ "xdg-fs",
  "zbus",
 ]
 
@@ -6750,6 +6770,7 @@ dependencies = [
  "base-machine",
  "base-testkit",
  "dioxus",
+ "file-types",
  "files-core",
  "files-fs",
  "files-model",
@@ -6769,10 +6790,10 @@ dependencies = [
  "ui-components",
  "ui-extensions",
  "ui-harness",
- "ui-helpers",
  "ui-host-hooks",
  "ui-lint",
  "ui-settings",
+ "xdg-core",
 ]
 
 [[package]]
@@ -13850,8 +13871,8 @@ dependencies = [
  "toml_edit",
  "tracing",
  "ui-extensions",
- "ui-helpers",
  "ui-settings",
+ "xdg-core",
 ]
 
 [[package]]
@@ -13931,6 +13952,7 @@ dependencies = [
  "tailscale-types",
  "toml",
  "ui-helpers",
+ "xdg-core",
 ]
 
 [[package]]
@@ -14465,7 +14487,8 @@ dependencies = [
  "tokio",
  "toml",
  "ui-core",
- "ui-helpers",
+ "xdg-core",
+ "xdg-fs",
 ]
 
 [[package]]
@@ -14543,6 +14566,7 @@ dependencies = [
  "computer-use-bus",
  "emojis",
  "fend-core",
+ "file-types",
  "http-reqwest",
  "jiff",
  "memory-core",
@@ -14655,10 +14679,11 @@ dependencies = [
  "toml",
  "tracing",
  "ui-core",
- "ui-helpers",
  "upower_dbus",
  "wayland-client",
  "wayland-protocols",
+ "xdg-core",
+ "xdg-fs",
  "zbus",
 ]
 
@@ -16855,6 +16880,7 @@ dependencies = [
  "base-testkit",
  "base-words",
  "base-xdg",
+ "file-types",
  "plugin-core",
  "plugin-host",
  "serde",
@@ -16862,8 +16888,8 @@ dependencies = [
  "settings-store-fs",
  "settings-types",
  "thiserror 2.0.21",
- "ui-helpers",
  "ui-style",
+ "xdg-core",
 ]
 
 [[package]]
@@ -16925,15 +16951,14 @@ dependencies = [
 name = "ui-helpers"
 version = "0.1.0"
 dependencies = [
- "base-fs",
  "base-testkit",
  "base-time",
- "base-xdg",
  "dbus-kit",
  "serde",
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "xdg-core",
  "zbus",
 ]
 
@@ -19118,6 +19143,27 @@ name = "xdg"
 version = "2.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "213b7324336b53d2414b2db8537e56544d981803139155afa84f76eeebb7a546"
+
+[[package]]
+name = "xdg-core"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-xdg",
+ "file-types",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "xdg-fs"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-testkit",
+ "file-types",
+ "thiserror 2.0.21",
+ "xdg-core",
+]
 
 [[package]]
 name = "xkbcommon"
