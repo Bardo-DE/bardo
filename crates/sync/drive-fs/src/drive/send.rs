@@ -139,23 +139,6 @@ impl Content for FileContent {
     }
 }
 
-#[cfg(test)]
-mod file_content_tests {
-    use super::*;
-
-    #[test]
-    fn a_file_is_read_a_span_at_a_time_and_stops_at_its_size() {
-        let dir = base_testkit::Scratch::new("drive-content");
-        let path = dir.join("f");
-        std::fs::write(&path, b"0123456789").expect("write");
-        let content = FileContent::new(path, 8);
-        assert_eq!(content.size(), 8);
-        assert_eq!(content.read(2, 3).expect("read"), b"234");
-        assert_eq!(content.read(6, 10).expect("read"), b"67");
-        assert_eq!(content.read(9, 1).expect("read"), b"");
-    }
-}
-
 /// A test's way to know the sender has looked again at what is to send: it asks with a number,
 /// and the sender, each time it finds nothing ready, says the last number it saw before looking.
 #[cfg(test)]
@@ -1215,5 +1198,22 @@ impl Drive {
         .await
         .expect("the sender looked again")
         .expect("the drive is open");
+    }
+}
+
+#[cfg(test)]
+mod file_content_tests {
+    use super::*;
+
+    #[test]
+    fn a_file_is_read_a_span_at_a_time_and_stops_at_its_size() {
+        let dir = base_testkit::Scratch::new("drive-content");
+        let path = dir.join("f");
+        std::fs::write(&path, b"0123456789").expect("write");
+        let content = FileContent::new(path, 8);
+        assert_eq!(content.size(), 8);
+        assert_eq!(content.read(2, 3).expect("read"), b"234");
+        assert_eq!(content.read(6, 10).expect("read"), b"67");
+        assert_eq!(content.read(9, 1).expect("read"), b"");
     }
 }

@@ -34,7 +34,9 @@ impl std::fmt::Display for DeviceId {
     }
 }
 
-/// One stamp, and the clock of one device: the latest stamp it made or saw. The derived order
+/// One stamp, and the clock of one device.
+///
+/// The clock holds the latest stamp it made or saw. The derived order
 /// is the clock's: wall, counter, device. [`Hlc::tick`] makes the next stamp, strictly later
 /// than every one it made or [`observe`](Hlc::observe)d, whatever the wall clock does.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -70,6 +72,7 @@ impl Hlc {
     }
 
     /// The next stamp, the wall clock reading `now_ms`.
+    #[must_use]
     pub fn tick(&mut self, now_ms: u64) -> Hlc {
         if now_ms > self.wall {
             self.wall = now_ms;
