@@ -26,8 +26,7 @@ agent-client-protocol = { workspace = true }
 agent-registry = {path = "../agent-registry"}
 companion-model = {path = "../companion-model"}
 agent-acp-server = {path = "../agent-acp-server"}
-# `fake` is public (`agent_launch::fake`), and builds on the host's in-memory pipe.
-agent-acp-host = {path = "../agent-acp-host", features = ["testing"]}
+agent-acp-host = {path = "../agent-acp-host"}
 action-core = {path = "../action-core"}
 permission-core = {path = "../permission-core"}
 action-store = {path = "../action-store"}
@@ -51,6 +50,8 @@ tracing = { workspace = true }
 zbus = {workspace = true, features = ["tokio"], optional = true}
 
 [dev-dependencies]
+agent-acp-host = {path = "../agent-acp-host", features = ["testing"]}
+agent-launch-fake = {path = "../agent-launch-fake"}
 action-manifest = {path = "../action-manifest"}
 action-vocab = {path = "../action-vocab"}
 agent-acp-core = {path = "../agent-acp-core"}

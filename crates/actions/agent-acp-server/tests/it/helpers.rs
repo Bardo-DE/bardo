@@ -10,9 +10,9 @@ use action_core::{
 };
 use action_vocab::{Caller, LabelText, Seconds};
 use agent_acp_server::{ConversationTurns, HelperRefusal, HelperRow, Helpers};
-use agent_session::fake::MemoryLog;
 use agent_session::{BackendEvent, BackendKind, Opening, Seq, SessionEntry, SessionLog};
 use agent_session::{SheetChoice, TurnEnd};
+use agent_session_fake::fake::MemoryLog;
 use base_ids::Count;
 use base_path::AbsPath;
 use companion_model::helper::{HelperName, JobId};

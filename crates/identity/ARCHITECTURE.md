@@ -20,7 +20,7 @@ updater, a root input service) then say which roles a method accepts.
 
 The other role names are constants in the crate of the service that owns them (`roles` modules of
 `account-wire`, `sync-bus`, `memory-dbus`, `updater-dbus`, `compositor-dbus`, `action-dbus`,
-`input-broker-wire`, `compositor-ipc`), each checked against `dist/desktop-callers.toml` by a test of its own.
+`input-broker-wire`, `compositor-ipc`), each checked against `packaging/dist/desktop-callers.toml` by a test of its own.
 The five in `caller-roles` are named by services in layers below their owners, which may not depend on
 them.
 
@@ -34,7 +34,7 @@ from rustix.
 caller-identity-core/src/{lib, ids, cgroup, procinfo, unitfile, facts, standing, requirement, table, judge, procfs, probe, walk, error}.rs
 caller-identity-linux/src/{lib, pin, unix, procfs, owners, unit_files, tablefile, error, fixture, fake}.rs
 caller-identity-dbus/src/{lib, who, owner, manager, offload, timeout, error}.rs
-dist/desktop-callers.toml   .github/workflows/ci.yml
+.github/workflows/ci.yml
 ```
 
 `fixture.rs` and `fake.rs` exist only with feature `fake`.
@@ -91,7 +91,7 @@ path belongs to another mount namespace, so it is not read: its exe is `Hidden`.
 
 ## 4. The table
 
-`dist/desktop-callers.toml` is the sample (and this desktop's) table, installed root-owned at
+`packaging/dist/desktop-callers.toml` is the sample (and this desktop's) table, installed root-owned at
 `/etc/bardo/desktop-callers.toml` with additions in `/etc/bardo/desktop-callers.d/*.toml`.
 `TableFiles::load` merges the main file first and the drop-ins after it in name order; the first
 row for a unit wins, so a later file adds programs and cannot take over a unit. A file is refused

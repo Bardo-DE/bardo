@@ -1,4 +1,4 @@
-//! The roles of the services this crate names in the shipped caller table (`dist/desktop-callers.toml` of the identity folder).
+//! The roles of the services this crate names in the shipped caller table (`packaging/dist/desktop-callers.toml`).
 
 use caller_identity_core::RoleName;
 
@@ -12,7 +12,7 @@ mod tests {
     use super::*;
     use caller_identity_core::Table;
 
-    const SHIPPED: &str = include_str!("../../../identity/dist/desktop-callers.toml");
+    const SHIPPED: &str = include_str!("../../../../packaging/dist/desktop-callers.toml");
 
     #[test]
     fn the_shipped_table_has_a_row_for_each_role_here() {

@@ -22,7 +22,7 @@
 #
 # Role names are constants in the crate of the service that owns each role (the `roles` modules named in
 # crates/identity/ARCHITECTURE.md, and `caller-roles`); a test in each checks that its constants have a row in
-# crates/identity/dist/desktop-callers.toml. A test in caller-identity-core (tests/it/desktop_files.rs) checks this table
+# this file. A test in caller-identity-core (tests/it/desktop_files.rs) checks this table
 # against the unit files. One row per role is the rule; `settings` has two on purpose.
 
 # The shell: draws the desktop and asks the person on behalf of other programs.

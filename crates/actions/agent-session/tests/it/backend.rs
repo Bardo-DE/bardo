@@ -1,7 +1,7 @@
 use crate::support::*;
 use action_core::Reveal;
-use agent_session::fake::FakeBackend;
 use agent_session::*;
+use agent_session_fake::fake::FakeBackend;
 
 #[test]
 fn the_fake_backend_answers_each_turn_from_its_script_and_ends_it() {

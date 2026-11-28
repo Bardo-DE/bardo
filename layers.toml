@@ -216,6 +216,8 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.agent-launch]
 kind = "unclassified"
+[crate.agent-launch-fake]
+kind = "test-support"
 [crate.agent-loop]
 kind = "unclassified"
 [crate.agent-models]
@@ -232,6 +234,8 @@ kind = "unclassified"
 kind = "unclassified"
 [crate.agent-session]
 kind = "unclassified"
+[crate.agent-session-fake]
+kind = "test-support"
 [crate.agent-skills]
 kind = "unclassified"
 [crate.agent-skills-disk]
@@ -2173,7 +2177,7 @@ why = "what this crate reaches through any path is limited to its tier"
 name = "actions"
 tiers = [
   ["action-vocab", "action-manifest", "permission-core", "companion-model", "action-core", "action-gate-wire", "action-wire", "agent-skills", "permission-policy", "action-review", "action-context", "action-gate", "action-router", "companion-wire", "companion-core", "agent-loop", "agent-session", "action-checkpoint", "action-tools", "speech-wire", "speech-loop", "speech-audio", "companion-memory-core", "agent-acp-core", "agent-registry", "action-eval-core"],
-  ["action-store", "agent-skills-disk", "agent-planner", "companion-tasks", "companion-helpers", "agent-native", "companion-memory", "agent-models", "agent-reader", "action-fake", "action-checkpoint-git", "agent-acp-server", "agent-acp-host", "action-host", "agent-launch", "agent-install", "action-settings", "action-settings-fs", "action-dbus", "action-client", "action-provider", "companion-client", "speech-dbus", "speech-pipewire", "action-log", "action-procroot", "action-trace"],
+  ["action-store", "agent-skills-disk", "agent-planner", "companion-tasks", "companion-helpers", "agent-native", "companion-memory", "agent-models", "agent-reader", "action-fake", "agent-session-fake", "agent-launch-fake", "action-checkpoint-git", "agent-acp-server", "agent-acp-host", "action-host", "agent-launch", "agent-install", "action-settings", "action-settings-fs", "action-dbus", "action-client", "action-provider", "companion-client", "speech-dbus", "speech-pipewire", "action-log", "action-procroot", "action-trace"],
   ["agent-acp-bin", "action-eval", "action-accept", "action-live", "action-mcp", "action-cli", "action-daemon", "companion-daemon", "agent-reader-daemon", "speech-daemon"],
 ]
 why = "pure crates first, then client and IO crates, then programs: a crate depends only on its own tier or a lower one"
@@ -2339,7 +2343,7 @@ why = "pure tier: names no runtime, bus, system-call layer, HTTP client, program
 [[source]]
 path = "crates/actions/*/src"
 pattern = '\bstd::fs\b|\bstd::\{[^}]*\bfs\b|\bstd::env\b|\bstd::\{[^}]*\benv\b|\bstd::process\b|\bstd::\{[^}]*\bprocess\b|\bstd::net\b|\bstd::\{[^}]*\bnet\b|\bSystemTime::now\b|\bInstant::now\b|\bthread::sleep\b|\btokio::'
-except = ["crates/actions/action-store", "crates/actions/agent-skills-disk", "crates/actions/agent-planner", "crates/actions/companion-tasks", "crates/actions/companion-helpers", "crates/actions/agent-native", "crates/actions/companion-memory", "crates/actions/agent-models", "crates/actions/agent-reader", "crates/actions/action-fake", "crates/actions/action-checkpoint-git", "crates/actions/agent-acp-server", "crates/actions/agent-acp-host", "crates/actions/action-host", "crates/actions/agent-launch", "crates/actions/agent-install", "crates/actions/action-settings", "crates/actions/action-settings-fs", "crates/actions/action-dbus", "crates/actions/action-client", "crates/actions/action-provider", "crates/actions/companion-client", "crates/actions/action-log", "crates/actions/action-procroot", "crates/actions/action-trace", "crates/actions/agent-acp-bin", "crates/actions/action-eval", "crates/actions/action-accept", "crates/actions/action-live", "crates/actions/action-mcp", "crates/actions/action-cli", "crates/actions/action-daemon", "crates/actions/companion-daemon", "crates/actions/agent-reader-daemon", "crates/actions/fuzz"]
+except = ["crates/actions/action-store", "crates/actions/agent-skills-disk", "crates/actions/agent-planner", "crates/actions/companion-tasks", "crates/actions/companion-helpers", "crates/actions/agent-native", "crates/actions/companion-memory", "crates/actions/agent-models", "crates/actions/agent-reader", "crates/actions/action-fake", "crates/actions/agent-session-fake", "crates/actions/agent-launch-fake", "crates/actions/action-checkpoint-git", "crates/actions/agent-acp-server", "crates/actions/agent-acp-host", "crates/actions/action-host", "crates/actions/agent-launch", "crates/actions/agent-install", "crates/actions/action-settings", "crates/actions/action-settings-fs", "crates/actions/action-dbus", "crates/actions/action-client", "crates/actions/action-provider", "crates/actions/companion-client", "crates/actions/action-log", "crates/actions/action-procroot", "crates/actions/action-trace", "crates/actions/agent-acp-bin", "crates/actions/action-eval", "crates/actions/action-accept", "crates/actions/action-live", "crates/actions/action-mcp", "crates/actions/action-cli", "crates/actions/action-daemon", "crates/actions/companion-daemon", "crates/actions/agent-reader-daemon", "crates/actions/fuzz"]
 why = "pure tier: no file, environment, process, network, clock, sleep or tokio in src/"
 
 [[source]]

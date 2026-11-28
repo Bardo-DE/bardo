@@ -8,6 +8,12 @@ rust-version.workspace = true
 repository.workspace = true
 publish.workspace = true
 
+[features]
+# The second-line checks (`portal_may_connect`, `agent_may_lease`, `hand_out`) also let in a developer row's proof
+# (`Proof::Dev`), as compositor-ipc's `dev-rows` does on the bus thread. Only compositor-app's `testing` and
+# `debug-inject` builds turn it on; a shipped build never has it.
+dev-rows = []
+
 [dependencies]
 compositor-core = {path = "../compositor-core"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}

@@ -51,7 +51,8 @@ agent-launch = {path = "../agent-launch"}
 agent-models = {path = "../agent-models"}
 agent-planner = {path = "../agent-planner"}
 agent-reader = {path = "../agent-reader"}
-agent-session = {path = "../agent-session", features = ["testing"]}
+agent-session = {path = "../agent-session"}
+agent-session-fake = {path = "../agent-session-fake"}
 companion-tasks = {path = "../companion-tasks"}
 action-trace = {path = "../action-trace"}
 action-eval-core = {path = "../action-eval-core"}

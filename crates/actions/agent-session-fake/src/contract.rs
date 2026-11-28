@@ -7,9 +7,9 @@
 //! The turn they run makes one call and then says words: `Started`, `Ended`, `Words`, then
 //! `TurnEnd(Done)`.
 
-use crate::backend::{BackendError, BackendEvent, CallEvent, SessionBackend, TurnEnd};
 use action_core::{Reveal, UserTurn};
 use action_vocab::CallId;
+use agent_session::{BackendError, BackendEvent, CallEvent, SessionBackend, TurnEnd};
 use std::pin::pin;
 use std::task::{Context, Poll, Waker};
 

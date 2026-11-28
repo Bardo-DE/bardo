@@ -9,13 +9,13 @@
 //! for the person's own keystrokes (I8, C19). The composition root only stamps the time and
 //! feeds the model.
 //!
-//! Only the portal may ask ([`portal_may_connect`], by the role it proved); it holds no
+//! Only the portal may ask ([`portal_may_connect`], by the standing it proved); it holds no
 //! Wayland role.
 //! This is the only file that names `reis` (B14). The agent seat's EIS (P4) is not here.
 
 use crate::eis_keymap::{KeymapFile, KeymapText};
 use crate::remote::{Fit, Held, RemoteFor, RemoteHandle, RemoteSlot, releases, tagged};
-use caller_identity_core::{Proof, Requirement, RoleName};
+use caller_identity_core::Standing;
 use caller_roles::{AGENT_TIER, PORTAL};
 use compositor_core::DeviceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
@@ -34,23 +34,24 @@ use std::io;
 use std::os::fd::{AsFd, OwnedFd};
 use std::os::unix::net::UnixStream;
 
-/// Whether `held`, the role the caller proved, is the desktop portal's backend.
+/// Whether `standing`, what the bus thread proved of the caller, holds the desktop portal's
+/// backend role.
 ///
 /// The portal is the one caller that may ask for a remote EIS socket. The proof is made on the
 /// bus thread (`compositor_ipc::dbus`); this is the second line, so an ask that reaches the event
-/// loop with another role is refused there too.
+/// loop with another role, or with less proof, is refused there too.
 #[must_use]
-pub fn portal_may_connect(held: &RoleName) -> bool {
-    Requirement::new(PORTAL, Proof::Full).is_for(held)
+pub fn portal_may_connect(standing: &Standing) -> bool {
+    crate::socket::holds_role(standing, &PORTAL)
 }
 
-/// Whether `held`, the role the caller proved, is the agent tier.
+/// Whether `standing`, what the bus thread proved of the caller, holds the agent tier's role.
 ///
 /// The agent tier is the one caller that may lease a window for its input (`LeaseWindow`). The
 /// bus thread proves the role; this is the second line.
 #[must_use]
-pub fn agent_may_lease(held: &RoleName) -> bool {
-    Requirement::new(AGENT_TIER, Proof::Full).is_for(held)
+pub fn agent_may_lease(standing: &Standing) -> bool {
+    crate::socket::holds_role(standing, &AGENT_TIER)
 }
 
 /// A kind of device a remote session may offer.
@@ -668,6 +669,7 @@ fn touch_kind(which: TouchWhere, extent: LogicalRect, slot: u32, x: f32, y: f32)
 #[cfg(test)]
 mod tests {
     use super::*;
+    use caller_identity_core::{Pin, Proof};
     use caller_roles::{PORTAL_FRONTEND, SETTINGS, SHELL};
     use compositor_core::geometry::LogicalSize;
     use compositor_core::input::PortalSessionId;
@@ -683,19 +685,37 @@ mod tests {
         )
     }
 
+    /// A service standing for `role`, proved at `proof`.
+    fn standing(role: caller_identity_core::RoleName, proof: Proof) -> Standing {
+        Standing::Service {
+            app: caller_identity_core::AppKey::new("org.bardo.Test").expect("an app"),
+            role,
+            proof,
+            pin: Pin::AtConnect,
+        }
+    }
+
     #[test]
     fn only_the_portal_may_ask() {
-        assert!(portal_may_connect(&PORTAL));
+        assert!(portal_may_connect(&standing(PORTAL, Proof::Full)));
+        assert!(!portal_may_connect(&standing(PORTAL, Proof::Exe)));
         for other in [SHELL, AGENT_TIER, PORTAL_FRONTEND, SETTINGS] {
-            assert!(!portal_may_connect(&other), "{other}");
+            assert!(
+                !portal_may_connect(&standing(other.clone(), Proof::Full)),
+                "{other}"
+            );
         }
     }
 
     #[test]
     fn only_the_agent_tier_may_lease() {
-        assert!(agent_may_lease(&AGENT_TIER));
+        assert!(agent_may_lease(&standing(AGENT_TIER, Proof::Full)));
+        assert!(!agent_may_lease(&standing(AGENT_TIER, Proof::Exe)));
         for other in [SHELL, PORTAL, PORTAL_FRONTEND, SETTINGS] {
-            assert!(!agent_may_lease(&other), "{other}");
+            assert!(
+                !agent_may_lease(&standing(other.clone(), Proof::Full)),
+                "{other}"
+            );
         }
     }
 

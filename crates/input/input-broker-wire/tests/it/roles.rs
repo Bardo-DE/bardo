@@ -3,7 +3,7 @@
 use caller_identity_core::Table;
 use input_broker_wire::{KEYMAP_DAEMON, PAD_DAEMON};
 
-const SHIPPED: &str = include_str!("../../../../identity/dist/desktop-callers.toml");
+const SHIPPED: &str = include_str!("../../../../../packaging/dist/desktop-callers.toml");
 
 #[test]
 fn the_shipped_table_has_a_row_for_each_daemon_role() {

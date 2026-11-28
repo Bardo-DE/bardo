@@ -5,9 +5,9 @@
 use super::support::{ENDPOINT, LOGIN};
 use account_capability::{LoginFault, LoginOutcome, LoginRequestId};
 use account_core::AccountId;
-use agent_launch::fake::{Call, FakeAccounts};
 use agent_launch::login::{LoginRunner, VisibleLogin};
 use agent_launch::{AgentsFile, AskKind, Entry, Heard, LoginAsk, Registry, Supervisor};
+use agent_launch_fake::{Call, FakeAccounts};
 use std::sync::{Arc, Mutex};
 
 /// A runner that answers from a script and remembers what it was asked.
@@ -66,7 +66,7 @@ async fn the_launcher_registers_every_listed_program() {
     let supervisor = Supervisor::new(
         Arc::new(accounts.clone()),
         file,
-        Registry::<agent_launch::fake::FakeProc>::default(),
+        Registry::<agent_launch_fake::FakeProc>::default(),
         Scripted::ready(),
     );
     supervisor.register().await.expect("registered");
@@ -87,7 +87,7 @@ async fn a_login_request_runs_the_agents_own_command_and_reports_only_the_outcom
     let supervisor = Supervisor::new(
         Arc::new(accounts.clone()),
         file,
-        Registry::<agent_launch::fake::FakeProc>::default(),
+        Registry::<agent_launch_fake::FakeProc>::default(),
         runner.clone(),
     );
     accounts.say(Heard::Ask(ask(AskKind::Login, "claude-code")));
@@ -136,7 +136,7 @@ async fn a_login_nobody_finishes_neither_blocks_the_loop_nor_outlives_its_deadli
     let supervisor = Supervisor::new(
         Arc::new(accounts.clone()),
         file,
-        Registry::<agent_launch::fake::FakeProc>::default(),
+        Registry::<agent_launch_fake::FakeProc>::default(),
         Hangs,
     )
     .with_login_span(std::time::Duration::from_millis(20));

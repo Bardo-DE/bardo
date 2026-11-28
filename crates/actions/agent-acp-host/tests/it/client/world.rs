@@ -13,7 +13,7 @@ use action_host::{EditorDesk, SheetConfirmer};
 use action_vocab::UndoToken;
 use agent_acp_host::fake::{FakeFiles, FakeSpawn};
 use agent_acp_host::{Files, IntentsCourt, OsFiles, Performer, Seams};
-use agent_session::fake::MemoryLog;
+use agent_session_fake::fake::MemoryLog;
 use provenance::Actor;
 use sandbox_fake::FakeSandbox;
 use std::sync::Arc;

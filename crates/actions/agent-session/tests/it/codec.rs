@@ -60,7 +60,7 @@ fn bodies_that_do_not_fit_say_how() {
 
 #[test]
 fn a_session_log_page_reads_back_what_was_appended() {
-    use agent_session::fake::{LogMood, MemoryLog};
+    use agent_session_fake::fake::{LogMood, MemoryLog};
     let log = MemoryLog::new();
     let s = session("s-1");
     for (i, e) in canonical().iter().enumerate() {
@@ -99,7 +99,7 @@ fn a_session_log_page_reads_back_what_was_appended() {
 
 #[test]
 fn an_unknown_version_in_the_log_blocks_the_resume() {
-    use agent_session::fake::MemoryLog;
+    use agent_session_fake::fake::MemoryLog;
     let log = MemoryLog::new();
     let s = session("s-1");
     block_on(log.append(&s, Seq(0), &SessionEntry::Opened(opening()))).expect("append");

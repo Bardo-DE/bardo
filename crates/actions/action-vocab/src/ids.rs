@@ -1,36 +1,10 @@
 //! The ids the actions service mints or names. Slug ids use `prov`'s grammar; numeric ids are minted by the
 //! router and mean nothing outside it.
 
-use account_core::{AppName, CoreError};
+use account_core::AppName;
+use base_ids::text_id;
 use provenance::{ActionName, EntityId};
 use serde::{Deserialize, Serialize};
-
-macro_rules! text_id {
-    ($(#[$doc:meta])* $name:ident, $what:literal, $ok:expr) => {
-        $(#[$doc])*
-        #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-        #[serde(try_from = "String", into = "String")]
-        pub struct $name(String);
-
-        impl $name {
-            /// The id written as `text`, or why it is not one.
-            ///
-            /// # Errors
-            ///
-            /// Returns `CoreError` when `text` is not a valid id.
-            pub fn parse(text: &str) -> Result<Self, CoreError> {
-                let ok: fn(&str) -> bool = $ok;
-                if ok(text) {
-                    Ok(Self(text.to_owned()))
-                } else {
-                    Err(CoreError::MalformedId { what: $what, text: text.to_owned() })
-                }
-            }
-        }
-
-        base_ids::string_newtype!($name, CoreError);
-    };
-}
 
 macro_rules! number_id {
     ($(#[$doc:meta])* $name:ident) => {

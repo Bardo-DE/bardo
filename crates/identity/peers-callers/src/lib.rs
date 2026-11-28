@@ -48,7 +48,7 @@ pub fn peers_on(connection: Connection, table: Table) -> BusPeers {
 mod tests {
     use super::*;
 
-    const SHIPPED: &str = include_str!("../../dist/desktop-callers.toml");
+    const SHIPPED: &str = include_str!("../../../../packaging/dist/desktop-callers.toml");
 
     #[test]
     fn the_shipped_table_has_a_row_for_the_manager() {

@@ -5,8 +5,8 @@
 use super::support::{ALLOWLIST, ENDPOINT, HANDOFF, LOGIN, plan, rig};
 use account_core::ProcessCredentialId;
 use agent_acp_host::{AgentChild, Spawn, SpawnError};
-use agent_launch::fake::{Call, FakeAccounts, Mood};
 use agent_launch::{Heard, Supervisor};
+use agent_launch_fake::{Call, FakeAccounts, Mood};
 use sandbox_core::{Access, AgentNet, AgentRun, NetworkMode, Profile, agent_bwrap_args};
 use std::os::unix::fs::PermissionsExt;
 
@@ -259,7 +259,7 @@ async fn without_the_exec_stage_an_agent_starts_unlimited_by_the_kernel_and_says
 
 #[tokio::test]
 async fn a_child_says_how_far_it_is_held_once_the_exec_stage_reported() {
-    use agent_launch::fake::FakeProcs;
+    use agent_launch_fake::FakeProcs;
     let mut rig = rig(ALLOWLIST, Mood::Working, true);
     let (near, _far) = agent_acp_host::fake::pipe();
     let (procs, seen) = FakeProcs::new(vec![near]);

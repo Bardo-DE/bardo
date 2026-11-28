@@ -1,0 +1,18 @@
+[package]
+name = "agent-session-fake"
+description = "Test support for agent-session: a scripted `SessionBackend`, an in-memory `SessionLog`, a scripted `SessionHost`, and the contract every backend's tests run. Dev-only."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+action-core = {path = "../action-core"}
+action-vocab = {path = "../action-vocab"}
+agent-session = {path = "../agent-session"}
+provenance = {path = "../../provenance/provenance"}
+
+[lints]
+workspace = true

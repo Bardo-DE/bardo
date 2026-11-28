@@ -336,7 +336,7 @@ pub struct FakeSeams<
     R = ScriptedReviewer,
     W = ScriptedWriter,
     K = FixedClock,
-    L = std::sync::Arc<agent_session::fake::MemoryLog>,
+    L = std::sync::Arc<agent_session_fake::fake::MemoryLog>,
     C = ScriptedConfirmer,
     Rd = ScriptedReader,
 > {

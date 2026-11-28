@@ -247,7 +247,7 @@ enum Door {
 fn activation_table() -> Vec<(settings_app_callers::RoleName, Door)> {
     let admitted = [SHELL, SETTINGS, AGENT_TIER];
     let table = Table::from_toml(include_str!(
-        "../../../../identity/dist/desktop-callers.toml"
+        "../../../../../packaging/dist/desktop-callers.toml"
     ))
     .expect("the shipped table reads");
     let mut every: Vec<settings_app_callers::RoleName> = Vec::new();

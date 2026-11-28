@@ -3,7 +3,7 @@
 
 use super::support::{ALLOWLIST, ENDPOINT, HANDOFF, LOGIN, plan, rig};
 use agent_acp_host::{AgentChild, Spawn};
-use agent_launch::fake::Mood;
+use agent_launch_fake::Mood;
 use sandbox_core::{Access, AgentNet, Profile, agent_bwrap_args};
 
 #[tokio::test]

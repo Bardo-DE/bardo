@@ -17,7 +17,7 @@ Edges: every source crate depends on `keymap` (and a file-reading one on `base-f
 workspace crate. The core is I/O-free by design and `cargo xtask check layers` keeps it so (rules in `layers.toml` at the bardo root).
 `cargo xtask check layers` asserts the core reaches no I/O, runtime, bus,
 file-watching or plist crate (nor `base-fs`). The only file reads are in `KdeSource::load` and
-`GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. Our desktop's source is not here: the key remap daemon implements
+`GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. The core reads no environment either: `detect` takes the lookup, and the caller (`ui-blitz`'s `keymap_detect`) hands in `std::env::var`. Our desktop's source is not here: the key remap daemon implements
 `KeymapSource` in its own repo.
 
 ## 2. Core modules (`crates/keymap/src`)

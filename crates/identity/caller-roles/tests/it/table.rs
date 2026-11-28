@@ -3,7 +3,7 @@
 use caller_identity_core::Table;
 use caller_roles::{AGENT_TIER, PORTAL, PORTAL_FRONTEND, SETTINGS, SHELL};
 
-const SHIPPED: &str = include_str!("../../../dist/desktop-callers.toml");
+const SHIPPED: &str = include_str!("../../../../../packaging/dist/desktop-callers.toml");
 
 #[test]
 fn the_shipped_table_has_a_row_for_each_role() {

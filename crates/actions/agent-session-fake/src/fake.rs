@@ -1,13 +1,13 @@
 //! For tests only: a scripted `SessionBackend` and an in-memory `SessionLog`.
 
-use crate::backend::{
+use action_core::UserTurn;
+use agent_session::ResumePlan;
+use agent_session::{Appended, LogError, LogPage, PageSize, SessionLog};
+use agent_session::{
     BackendError, BackendEvent, CallEvent, Resumed, SessionBackend, StartSession, TurnEnd,
 };
-use crate::codec::{Logged, decode, encode};
-use crate::entry::{BackendKind, Seq, SessionEntry};
-use crate::log::{Appended, LogError, LogPage, PageSize, SessionLog};
-use crate::plan::ResumePlan;
-use action_core::UserTurn;
+use agent_session::{BackendKind, Seq, SessionEntry};
+use agent_session::{Logged, decode, encode};
 use provenance::SessionId;
 use std::collections::{BTreeMap, VecDeque};
 use std::sync::{Mutex, PoisonError};

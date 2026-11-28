@@ -1,12 +1,15 @@
-//! For tests: the accounts service as a script (`FakeAccounts`) and the process seam as a recorder
-//! (`FakeProcs`). No bus, no process, no clock.
+//! Test support for `agent-launch`, kept out of its production API: the accounts service as a
+//! script (`FakeAccounts`) and the process seam as a recorder (`FakeProcs`). No bus, no process,
+//! no clock.
 
-use crate::accounts::{AccountError, Accounts, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish};
-use crate::procs::{Proc, ProcError, Procs};
 use account_capability::LoginOutcome;
 use account_capability::{AgentProgram, AgentProtocol, EnvName};
 use account_core::{DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
 use agent_acp_host::fake::ChannelWire;
+use agent_launch::{
+    AccountError, Accounts, Heard, Issued, LoginAsk, OpenedEndpoint, Proc, ProcError, Procs,
+    RouteWish,
+};
 use sandbox_core::{AgentRun, LandlockLevel};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, MutexGuard};

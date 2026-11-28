@@ -29,7 +29,6 @@ futures-util = { workspace = true, features = ["std"] }
 futures-channel = { workspace = true, features = ["std"] }
 
 [dev-dependencies]
-agent-session = {path = "../agent-session", features = ["testing"]}
 action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
 serde_json = { workspace = true }
 

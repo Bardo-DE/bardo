@@ -2,7 +2,7 @@
 
 use caller_identity_core::Table;
 
-const SHIPPED: &str = include_str!("../../../dist/desktop-callers.toml");
+const SHIPPED: &str = include_str!("../../../../../packaging/dist/desktop-callers.toml");
 
 #[test]
 fn the_shipped_table_reads() {

@@ -17,5 +17,5 @@ pub use remote::{
     device_id as remote_device_id,
 };
 
-pub use caller_identity_core::{AppKey, RoleName};
+pub use caller_identity_core::{AppKey, RoleName, Standing};
 pub use socket::{Handed, RefuseWhy, connection_role, hand_out};

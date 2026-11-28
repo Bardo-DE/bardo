@@ -7,8 +7,8 @@ use action_core::SheetSurface;
 use agent_acp_core::court::{Court, OpenAgent};
 use agent_acp_host::AcpBackend;
 use agent_acp_host::fake::FakeFiles;
-use agent_session::contract::{self, Harness};
 use agent_session::{SessionBackend, StartSession};
+use agent_session_fake::contract::{self, Harness};
 
 struct Acp {
     files: FakeFiles,

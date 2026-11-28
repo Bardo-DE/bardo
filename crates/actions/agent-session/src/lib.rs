@@ -8,10 +8,6 @@
 //!   come back as labels, and a gap or an unreadable entry fails closed.
 //! - `checkpoint_rows`: the log's restore-point notes folded into a list's rows.
 //! - `fork` and `export`: a child's first entries, and a stable JSON document.
-//! - `contract` (feature `testing`): the rules every backend keeps, written once for each
-//!   backend's test to run. Its checks panic by design, so a release build does not carry them.
-//! - `fake` and `fake_host` (feature `testing`): a scripted backend, an in-memory log and a
-//!   scripted host, for tests.
 //! - `may_restore`: who may bring a stored session back by naming it (the opener rule).
 //! - `SessionLog`, `SessionBackend` and `SessionHost`: the seams. The native and ACP backends
 //!   and the host are later lanes.
@@ -21,15 +17,9 @@
 mod backend;
 mod checkpoints;
 mod codec;
-#[cfg(feature = "testing")]
-pub mod contract;
 mod desk;
 mod entry;
 mod export;
-#[cfg(feature = "testing")]
-pub mod fake;
-#[cfg(feature = "testing")]
-pub mod fake_host;
 mod fork;
 mod log;
 mod plan;

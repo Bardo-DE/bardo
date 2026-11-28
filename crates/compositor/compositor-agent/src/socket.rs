@@ -8,7 +8,7 @@
 //! only it can build a client's data (its key, its gone queue). Frozen at P2-Z; filled by
 //! P2-Q2.
 
-use caller_identity_core::{Proof, Requirement, RoleName};
+use caller_identity_core::{Proof, Requirement, RoleName, Standing};
 use caller_roles::{AGENT_TIER, PORTAL, SHELL};
 use compositor_core::policy::ConnectionRole;
 use std::os::fd::OwnedFd;
@@ -36,21 +36,21 @@ pub enum RefuseWhy {
     NoSocket,
 }
 
-/// Hands a caller that holds `held` a connection with `wanted`, if that role is the one `held`
-/// stands for.
+/// Hands a caller whose proven `standing` holds a role a connection with `wanted`, if that role is
+/// the one `standing` stands for.
 ///
-/// The connection is a socket pair, the role kept with it. `held` is what the bus thread proved
+/// The connection is a socket pair, the role kept with it. `standing` is what the bus thread proved
 /// of the caller (`compositor_ipc::dbus`), never anything the caller said; this check is the
 /// second line should a caller of this function ask for more than the proof gave. The caller of
 /// this function inserts the server end into the display.
 ///
 /// # Errors
 ///
-/// Returns [`RefuseWhy::UnknownUnit`] when `held` stands for no connection role,
+/// Returns [`RefuseWhy::UnknownUnit`] when `standing` stands for no connection role,
 /// [`RefuseWhy::RoleNotAllowed`] when it does not stand for `wanted`, and
 /// [`RefuseWhy::NoSocket`] when the socket pair cannot be made.
-pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, RefuseWhy> {
-    match connection_role(held) {
+pub fn hand_out(wanted: &ConnectionRole, standing: &Standing) -> Result<Handed, RefuseWhy> {
+    match connection_role(standing) {
         None => Err(RefuseWhy::UnknownUnit),
         Some(allowed) if allowed != *wanted => Err(RefuseWhy::RoleNotAllowed),
         Some(allowed) => match UnixStream::pair().and_then(|pair| {
@@ -68,38 +68,78 @@ pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, Refu
     }
 }
 
-/// The connection role a proven caller role stands for.
+/// The connection role a proven caller's `standing` stands for.
 ///
 /// The shell the shell's, the agent tier the agent's, the portal the portal's, every other role
-/// none. The role comes from the shipped caller table (the caller-identity library), never from a
-/// unit name.
+/// (and any standing that is not a service held in full) none. The role comes from the shipped
+/// caller table (the caller-identity library), never from a unit name.
 #[must_use]
-pub fn connection_role(held: &RoleName) -> Option<ConnectionRole> {
+pub fn connection_role(standing: &Standing) -> Option<ConnectionRole> {
     [
         (SHELL, ConnectionRole::Shell),
         (AGENT_TIER, ConnectionRole::Agent),
         (PORTAL, ConnectionRole::Portal),
     ]
     .into_iter()
-    .find(|(role, _)| Requirement::new(role.clone(), Proof::Full).is_for(held))
+    .find(|(role, _)| holds_role(standing, role))
     .map(|(_, connection)| connection)
+}
+
+/// Whether `standing` meets the requirement the bus thread made for `role`: the role proved in
+/// full (image and unit), and, only in a build with feature `dev-rows`, a developer row's proof.
+pub(crate) fn holds_role(standing: &Standing, role: &RoleName) -> bool {
+    let need = [
+        Requirement::new(role.clone(), Proof::Full),
+        Requirement::dev(role.clone()),
+    ];
+    let wanted = if cfg!(feature = "dev-rows") {
+        &need[..]
+    } else {
+        &need[..1]
+    };
+    standing.holds(wanted).is_ok()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use caller_identity_core::{AppKey, Pin};
 
     fn role(name: &str) -> RoleName {
         RoleName::new(name).expect("a role name")
     }
 
+    /// A service standing for `held` at `proof`.
+    fn standing(held: RoleName, proof: Proof) -> Standing {
+        Standing::Service {
+            app: AppKey::new("org.bardo.Test").expect("an app"),
+            role: held,
+            proof,
+            pin: Pin::AtConnect,
+        }
+    }
+
+    fn full(held: RoleName) -> Standing {
+        standing(held, Proof::Full)
+    }
+
     #[test]
     fn only_the_shell_the_agent_tier_and_the_portal_stand_for_privileged_roles() {
-        assert_eq!(connection_role(&SHELL), Some(ConnectionRole::Shell));
-        assert_eq!(connection_role(&AGENT_TIER), Some(ConnectionRole::Agent));
-        assert_eq!(connection_role(&PORTAL), Some(ConnectionRole::Portal));
+        assert_eq!(connection_role(&full(SHELL)), Some(ConnectionRole::Shell));
+        assert_eq!(
+            connection_role(&full(AGENT_TIER)),
+            Some(ConnectionRole::Agent)
+        );
+        assert_eq!(connection_role(&full(PORTAL)), Some(ConnectionRole::Portal));
         for other in ["settings", "compositor", "companion", "shell_helper"] {
-            assert_eq!(connection_role(&role(other)), None, "{other}");
+            assert_eq!(connection_role(&full(role(other))), None, "{other}");
+        }
+    }
+
+    #[test]
+    fn a_role_held_in_less_than_full_stands_for_nothing() {
+        for proof in [Proof::Cgroup, Proof::Exe, Proof::Unit] {
+            assert_eq!(connection_role(&standing(SHELL, proof)), None, "{proof:?}");
         }
     }
 
@@ -157,7 +197,7 @@ mod tests {
             ),
         ];
         for (case, held, wanted, refused) in cases {
-            match (hand_out(&wanted, &held), refused) {
+            match (hand_out(&wanted, &full(held)), refused) {
                 (Ok(handed), None) => assert_eq!(handed.role, wanted, "{case}"),
                 (Err(why), Some(want)) => assert_eq!(why, want, "{case}"),
                 (other, _) => panic!("{case}: {other:?}"),

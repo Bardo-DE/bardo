@@ -14,7 +14,7 @@ use crate::clients::{Vetting, insert_client};
 use crate::core_loop::{feed, tty::desktop_extent};
 use account_core::PeerIdentity;
 use compositor_agent::{
-    KeymapText, RefuseWhy, RemoteEvent, RemoteFor, RemoteHandle, RemoteKinds, RoleName,
+    KeymapText, RefuseWhy, RemoteEvent, RemoteFor, RemoteHandle, RemoteKinds, Standing,
     agent_may_lease, hand_out, open_remote_eis, portal_may_connect,
 };
 use compositor_core::input::{InputEvent, PortalSessionId};
@@ -50,7 +50,7 @@ pub fn attach(
     Ok(())
 }
 
-/// Decides one `Connect`: the role `ask.caller` proved against `ask.role`.
+/// Decides one `Connect`: the standing `ask.caller` proved against `ask.role`.
 ///
 /// On a grant the server end of a new socket pair is inserted as a client with that role (the model
 /// hears `ClientConnected`), and the client end is the reply.
@@ -58,22 +58,23 @@ pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply {
     if let Some(gone) = ask.gone {
         return answer_gone(state, &gone);
     }
+    let caller = ask.caller.standing();
     if let Some(remote) = ask.remote {
-        return answer_remote(state, remote, ask.owner, &ask.caller.role);
+        return answer_remote(state, remote, ask.owner, &caller);
     }
     if let Some(end) = ask.end {
-        return answer_end(state, end, &ask.caller.role);
+        return answer_end(state, end, &caller);
     }
     if let Some(lease) = ask.lease {
-        return answer_lease(state, &lease, ask.owner, &ask.caller.role);
+        return answer_lease(state, &lease, ask.owner, &caller);
     }
     if let Some(focus) = ask.focus_lease {
-        return answer_focus_lease(state, focus, ask.owner.as_deref(), &ask.caller.role);
+        return answer_focus_lease(state, focus, ask.owner.as_deref(), &caller);
     }
     if let Some(end) = ask.end_lease {
-        return answer_end_lease(state, end, ask.owner.as_deref(), &ask.caller.role);
+        return answer_end_lease(state, end, ask.owner.as_deref(), &caller);
     }
-    let handed = match hand_out(&ask.role, &ask.caller.role) {
+    let handed = match hand_out(&ask.role, &caller) {
         Ok(handed) => handed,
         Err(why) => return ConnectReply::Refused(refusal_of(why)),
     };
@@ -114,7 +115,7 @@ fn refusal_of(why: RefuseWhy) -> ConnectRefusal {
 
 /// Whether the caller holds the portal's role: the one caller that may open or end a remote EIS
 /// socket (the bus thread proved the role; this is the second line).
-fn portal_only(caller: &RoleName) -> Result<(), ConnectRefusal> {
+fn portal_only(caller: &Standing) -> Result<(), ConnectRefusal> {
     if portal_may_connect(caller) {
         Ok(())
     } else {
@@ -131,7 +132,7 @@ pub fn answer_remote(
     state: &mut State,
     remote: RemoteAsk,
     owner: Option<String>,
-    caller: &RoleName,
+    caller: &Standing,
 ) -> ConnectReply {
     if let Err(why) = portal_only(caller) {
         return ConnectReply::Refused(why);
@@ -203,7 +204,7 @@ const POINTER: u32 = 2;
 
 /// Whether the caller holds the agent tier's role: the one caller that may lease a window
 /// (the bus thread proved the role; this is the second line).
-fn agent_only(caller: &RoleName) -> Result<(), ConnectRefusal> {
+fn agent_only(caller: &Standing) -> Result<(), ConnectRefusal> {
     if agent_may_lease(caller) {
         Ok(())
     } else {
@@ -220,7 +221,7 @@ pub fn answer_lease(
     state: &mut State,
     ask: &LeaseAsk,
     owner: Option<String>,
-    caller: &RoleName,
+    caller: &Standing,
 ) -> ConnectReply {
     if let Err(why) = agent_only(caller) {
         return ConnectReply::Refused(why);
@@ -271,7 +272,7 @@ pub fn answer_focus_lease(
     state: &mut State,
     ask: FocusLeaseAsk,
     owner: Option<&str>,
-    caller: &RoleName,
+    caller: &Standing,
 ) -> ConnectReply {
     if let Err(why) = agent_only(caller) {
         return ConnectReply::Refused(why);
@@ -301,7 +302,7 @@ pub fn answer_end_lease(
     state: &mut State,
     end: EndLeaseAsk,
     owner: Option<&str>,
-    caller: &RoleName,
+    caller: &Standing,
 ) -> ConnectReply {
     if let Err(why) = agent_only(caller) {
         return ConnectReply::Refused(why);
@@ -332,7 +333,7 @@ fn end_lease_of(state: &mut State, owner_of: RemoteFor) {
 /// the app is disconnected and sends nothing more), and the keys and buttons it still held are
 /// released. A session with no open socket is not an error: the portal may end one that already
 /// hung up.
-pub fn answer_end(state: &mut State, end: EndAsk, caller: &RoleName) -> ConnectReply {
+pub fn answer_end(state: &mut State, end: EndAsk, caller: &Standing) -> ConnectReply {
     if let Err(why) = portal_only(caller) {
         return ConnectReply::Refused(why);
     }

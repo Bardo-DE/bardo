@@ -10,8 +10,8 @@ use action_core::{
 };
 use action_vocab::{LabelText, Seconds};
 use agent_acp_server::always_words;
-use agent_session::fake::MemoryLog;
 use agent_session::{BackendEvent, SheetChoice, TurnEnd};
+use agent_session_fake::fake::MemoryLog;
 use base_ids::Count;
 use base_path::AbsPath;
 use permission_core::{AlwaysOffer, CommandPrefix, Domain, Recipient, StandingScope, Withheld};

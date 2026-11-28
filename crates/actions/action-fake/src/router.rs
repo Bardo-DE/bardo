@@ -17,7 +17,7 @@ use action_review::Reviewer;
 use action_router::Router;
 use action_vocab::Clock;
 use agent_session::SessionLog;
-use agent_session::fake::MemoryLog;
+use agent_session_fake::fake::MemoryLog;
 use permission_policy::{PolicyError, Presets};
 use provenance::{SpaceId, UnixSeconds};
 use std::sync::Arc;

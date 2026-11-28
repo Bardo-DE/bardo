@@ -380,21 +380,21 @@ pub fn apply_failed(book, session, why: CaptureError) -> Result<(), WaylandFault
 pub fn apply_window_gone(book, window) -> Vec<ToplevelSessionId>;
 pub fn capture_size(logical: LogicalSize, scale: Scale) -> PhysicalSize;  // implemented: round(l x s)
 
-// compositor-agent: the role check on what the bus thread proved, and the socket pair (the root inserts the server end)
-pub fn connection_role(held: &RoleName) -> Option<ConnectionRole>;         // shell -> Shell, agent_tier -> Agent, portal -> Portal
-pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, RefuseWhy>;      // Handed { role, server, client } | RefuseWhy
-pub fn portal_may_connect(held: &RoleName) -> bool;                        // role portal
+// compositor-agent: the second-line check (`Requirement` + `Standing::holds`) on the standing the bus thread proved, and the socket pair (the root inserts the server end)
+pub fn connection_role(standing: &Standing) -> Option<ConnectionRole>;         // shell -> Shell, agent_tier -> Agent, portal -> Portal
+pub fn hand_out(wanted: &ConnectionRole, standing: &Standing) -> Result<Handed, RefuseWhy>;      // Handed { role, server, client } | RefuseWhy
+pub fn portal_may_connect(standing: &Standing) -> bool;                    // role portal, held in full (+ Proof::Dev, feature dev-rows only)
 
 // compositor-ipc::dbus (CASW-05): who calls, proven on the bus thread
 pub trait CallerCheck: Debug + Send + Sync + 'static { fn who<'a>(&'a self, sender: &'a str) -> WhoFuture<'a>; }  // BusPeers implements it
 pub struct CallerSetup;   // ::desktop(Table), ::with(|connection| Arc<dyn CallerCheck>), .window(d), .with_privacy(PrivacyLink)
 pub async fn require(check: &dyn CallerCheck, sender: Option<&str>, roles: &[RoleName]) -> fdo::Result<Proven>;  // Proof::Full, any pin (+ Proof::Dev of the role asked, feature dev-rows only)
-pub struct Proven { pub app: AppKey, pub role: RoleName }                  // what ConnectAsk carries instead of a cgroup text
+pub struct Proven { pub app: AppKey, pub role: RoleName, pub proof: Proof, pub pin: Pin }  // what ConnectAsk carries instead of a cgroup text; .standing() is the Standing it proved
 pub const CONNECT_QUEUE: usize = 8;  pub const CALLS_PER_WINDOW: u32 = 4;  pub const RATE_WINDOW: Duration = 1 s;
 
 // compositor::connect: the loop's side of Compositor1.Connect
 pub fn attach(handle: &LoopHandle<'static, State>, calls: Channel<ConnectCall>) -> Result<(), LoopError>;
-pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply;   // hand_out(&ask.role, &ask.caller.role); AgentState::handed: ClientKey -> AppKey
+pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply;   // hand_out(&ask.role, &ask.caller.standing()); AgentState::handed: ClientKey -> AppKey
 
 // compositor::clients (pa2-croot): every client enters here
 pub fn insert_client(state: &mut State, stream: UnixStream, role: ConnectionRole, peer: PeerIdentity, standing: Standing) -> io::Result<Client>;

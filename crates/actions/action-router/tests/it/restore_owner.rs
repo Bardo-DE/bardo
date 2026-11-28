@@ -7,7 +7,7 @@ use action_fake::{FixedClock, ScriptedReviewer, ScriptedWriter, fake_router_on};
 use action_router::Router;
 use action_vocab::{CallerRole, Origin};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen, WireRefusal};
-use agent_session::fake::MemoryLog;
+use agent_session_fake::fake::MemoryLog;
 use provenance::{AgentRef, SessionId, UnixSeconds};
 use std::sync::Arc;
 

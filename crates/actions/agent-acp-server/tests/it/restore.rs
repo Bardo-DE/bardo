@@ -3,8 +3,8 @@
 
 use crate::support::*;
 use action_vocab::Workspace;
-use agent_session::fake::MemoryLog;
 use agent_session::{BackendKind, Opening, Seq, SessionEntry, SessionLog, TurnEnd};
+use agent_session_fake::fake::MemoryLog;
 use permission_core::DenyCode;
 use provenance::{AgentRef, Effect, SessionId, SpaceId, TaskId};
 use serde_json::{Value, json};

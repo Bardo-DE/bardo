@@ -2,7 +2,7 @@
 //! question ([`ConnectAsk`], with the caller already proven), where the answer goes
 //! ([`ConnectCall`]) and the answer ([`ConnectReply`], [`ConnectRefusal`]).
 
-use caller_identity_dbus::caller_identity_core::{AppKey, RoleName, Standing};
+use caller_identity_dbus::caller_identity_core::{AppKey, Pin, Proof, RoleName, Standing};
 use compositor_core::policy::ConnectionRole;
 use std::os::fd::OwnedFd;
 use zbus::fdo;
@@ -12,17 +12,23 @@ use zbus::fdo;
 pub const NOT_THE_CALLER: &str = "not the caller this method answers";
 
 /// Who the caller proved to be on the bus thread: the app and the role of the table row it
-/// matched, at the proof the call needed. Never read from the caller's own words.
+/// matched, with the proof and the pin it was held at. Never read from the caller's own words.
+/// [`Proven::standing`] is the caller-identity library's standing again, so a second line of
+/// defence checks it as the first did (`Requirement` and `Standing::holds`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Proven {
     /// The row's app.
     pub app: AppKey,
     /// The row's role.
     pub role: RoleName,
+    /// What was shown.
+    pub proof: Proof,
+    /// How firmly the process was held.
+    pub pin: Pin,
 }
 
 impl Proven {
-    /// The caller `app` holding `role`.
+    /// The caller `app` holding `role` in full, pinned at connect: what a fixture stands in for.
     ///
     /// ```
     /// use compositor_ipc::dbus::Proven;
@@ -34,15 +40,41 @@ impl Proven {
     /// ```
     #[must_use]
     pub fn new(app: AppKey, role: RoleName) -> Proven {
-        Proven { app, role }
+        Proven {
+            app,
+            role,
+            proof: Proof::Full,
+            pin: Pin::AtConnect,
+        }
     }
 
-    /// The app and role of a table row's standing; nothing for any other standing.
+    /// The app, role, proof and pin of a table row's standing; nothing for any other standing.
     #[must_use]
     pub fn of(standing: &Standing) -> Option<Proven> {
         match standing {
-            Standing::Service { app, role, .. } => Some(Proven::new(app.clone(), role.clone())),
+            Standing::Service {
+                app,
+                role,
+                proof,
+                pin,
+            } => Some(Proven {
+                app: app.clone(),
+                role: role.clone(),
+                proof: *proof,
+                pin: *pin,
+            }),
             _ => None,
+        }
+    }
+
+    /// The standing this caller proved, to check against a `Requirement`.
+    #[must_use]
+    pub fn standing(&self) -> Standing {
+        Standing::Service {
+            app: self.app.clone(),
+            role: self.role.clone(),
+            proof: self.proof,
+            pin: self.pin,
         }
     }
 }

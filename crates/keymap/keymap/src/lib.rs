@@ -36,7 +36,7 @@ pub use action::{Action, ActionIdError, AppAction, AppId};
 pub use chord::{Chord, DefaultChord};
 pub use chord_text::ChordError;
 pub use convention::{Convention, ConventionTable};
-pub use detect::{HostOs, OVERRIDE_VAR, detect, detect_process};
+pub use detect::{HostOs, OVERRIDE_VAR, detect};
 pub use key::Key;
 pub use key_input::KeyInput;
 pub use keymap::{ConflictError, Keymap, Registration};

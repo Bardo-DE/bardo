@@ -21,7 +21,7 @@ use action_vocab::{CallerRole, LabelText};
 use action_wire::CallerId;
 use agent_native::NativeHost;
 use agent_planner::PlannerModel;
-use agent_session::fake::MemoryLog;
+use agent_session_fake::fake::MemoryLog;
 use base_ids::Count;
 use companion_tasks::{Companion, Quiet};
 use infer::{Say, ScriptedInfer};

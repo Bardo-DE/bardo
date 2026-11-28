@@ -114,8 +114,8 @@ impl AppConfig {
         self
     }
 
-    /// Where the app's keymap comes from, loaded for the platform `keymap::detect_process`
-    /// finds (default: the chord keymap's own source for that platform: kdeglobals on KDE, a saved
+    /// Where the app's keymap comes from, loaded for the platform the environment names
+    /// (default: the chord keymap's own source for that platform: kdeglobals on KDE, a saved
     /// dconf dump on GNOME, else the platform's conventions). Our desktop's launcher passes
     /// The key remap daemon's source here. The source is called from any thread when its settings change
     /// (`KeymapSource::watch`), so it is `Send + Sync`.

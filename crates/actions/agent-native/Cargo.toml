@@ -29,7 +29,7 @@ account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
 base-ids = { path = "../../base/base-ids" }
 companion-model = {path = "../companion-model"}
-agent-session = {path = "../agent-session", features = ["testing"]}
+agent-session-fake = {path = "../agent-session-fake"}
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}

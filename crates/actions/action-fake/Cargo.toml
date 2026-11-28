@@ -19,7 +19,8 @@ action-core = {path = "../action-core"}
 action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
-agent-session = {path = "../agent-session", features = ["testing"]}
+agent-session = {path = "../agent-session"}
+agent-session-fake = {path = "../agent-session-fake"}
 action-context = {path = "../action-context"}
 action-router = {path = "../action-router"}
 action-provider = {path = "../action-provider"}

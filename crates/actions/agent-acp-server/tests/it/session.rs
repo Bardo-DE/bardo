@@ -5,7 +5,7 @@ use crate::support::*;
 use action_core::StepEnd;
 use action_vocab::Caller;
 use agent_session::TurnEnd;
-use agent_session::fake::MemoryLog;
+use agent_session_fake::fake::MemoryLog;
 use permission_core::DenyCode;
 use provenance::Effect;
 use serde_json::{Value, json};

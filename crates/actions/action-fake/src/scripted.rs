@@ -126,7 +126,7 @@ pub trait Forget {
     fn forget(&self);
 }
 
-impl Forget for std::sync::Arc<agent_session::fake::MemoryLog> {
+impl Forget for std::sync::Arc<agent_session_fake::fake::MemoryLog> {
     fn forget(&self) {
         self.clear();
     }

@@ -11,11 +11,11 @@ use action_fake::{
 use action_router::{RestoreError, Router};
 use action_vocab::{Handle, Value};
 use action_wire::{IntentsReply, IntentsRequest, SessionOpen, SessionOpened, WireRefusal};
-use agent_session::fake::{LogMood, MemoryLog};
 use agent_session::{
     BackendKind, HandleLabel, Opening, PageSize, Read, SessionEntry, SessionLog, Standing,
     TaintCause,
 };
+use agent_session_fake::fake::{LogMood, MemoryLog};
 use base_ids::Count;
 use permission_core::TaskPolicy;
 use provenance::{AgentRef, Integrity, SessionId, Source, TaskId, UnixSeconds};

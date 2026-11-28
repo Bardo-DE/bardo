@@ -1,7 +1,7 @@
 //! The role names of the desktop programs that lower layers must name.
 //!
 //! A service says who may call it with a [`RoleName`] and the caller table
-//! (`dist/desktop-callers.toml`) says which program has that role. The service that owns a role
+//! (`packaging/dist/desktop-callers.toml`) says which program has that role. The service that owns a role
 //! defines its constant in its own lowest crate, where the layers allow it: the touchpad daemon's
 //! role in `input-broker-wire`, the accounts service's in `account-core`, and so on. The five
 //! roles here are different: the compositor, the input daemons, the portal, the updater and the

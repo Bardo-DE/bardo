@@ -35,7 +35,7 @@ use action_wire::{CallerId, SessionOpen};
 use agent_models::{TransportModel, TransportWriter};
 use agent_planner::PlannerModel;
 use agent_reader::TransportReader;
-use agent_session::fake::MemoryLog;
+use agent_session_fake::fake::MemoryLog;
 use base_clock::SystemClock;
 use base_time::Clock as _;
 use companion_tasks::{Companion, Quiet};
@@ -108,7 +108,7 @@ pub enum AttackError {
     NotAnApp(String, #[source] account_core::CoreError),
     /// The window's name does not parse.
     #[error("the window's name")]
-    WindowName(#[source] account_core::CoreError),
+    WindowName(#[source] base_ids::IdError),
     /// The shell's name does not parse.
     #[error("the shell's name")]
     ShellName(#[source] account_core::CoreError),

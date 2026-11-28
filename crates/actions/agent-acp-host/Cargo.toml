@@ -53,7 +53,7 @@ action-client = {path = "../action-client", default-features = false, features =
 action-fake = {path = "../action-fake"}
 action-host = {path = "../action-host"}
 action-router = {path = "../action-router"}
-agent-session = {path = "../agent-session", features = ["testing"]}
+agent-session-fake = {path = "../agent-session-fake"}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 jsonschema = { workspace = true }
 sandbox-fake = {path = "../../sandbox/sandbox-fake"}

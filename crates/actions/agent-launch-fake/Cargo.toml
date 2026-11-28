@@ -1,0 +1,19 @@
+[package]
+name = "agent-launch-fake"
+description = "Test support for agent-launch: the accounts service as a script and the process seam as a recorder. Dev-only."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-core = {path = "../../accounts/account-core"}
+agent-acp-host = {path = "../agent-acp-host", features = ["testing"]}
+agent-launch = {path = "../agent-launch"}
+sandbox-core = {path = "../../sandbox/sandbox-core"}
+
+[lints]
+workspace = true

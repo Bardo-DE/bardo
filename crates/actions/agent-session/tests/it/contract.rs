@@ -3,9 +3,9 @@
 
 use crate::support::*;
 use action_core::{Reveal, UserTurn};
-use agent_session::contract::{self, Harness};
-use agent_session::fake::FakeBackend;
 use agent_session::*;
+use agent_session_fake::contract::{self, Harness};
+use agent_session_fake::fake::FakeBackend;
 use provenance::Effect;
 
 /// A fake whose every turn calls `archive` and then says "Archived.".

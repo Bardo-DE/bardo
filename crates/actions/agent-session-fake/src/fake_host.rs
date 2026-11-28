@@ -3,16 +3,16 @@
 //! It writes the log the way a real host does (opening, turn, call, step, close, each before it
 //! answers) and hands each session the next scripted backend. Fork is not scripted.
 
-use crate::backend::{
+use crate::fake::{FakeBackend, MemoryLog};
+use action_core::{ConfirmId, UserTurn};
+use agent_session::ResumePlan;
+use agent_session::resume_plan;
+use agent_session::{
     AgentHostError, BackendEvent, CallEvent, SessionBackend, SessionHost, SheetChoice, StartSession,
 };
-use crate::entry::{EndCause, Opening, Seq, SessionEntry};
-use crate::export::{SessionExport, export};
-use crate::fake::{FakeBackend, MemoryLog};
-use crate::log::{SessionLog, read_all};
-use crate::plan::ResumePlan;
-use crate::resume::resume_plan;
-use action_core::{ConfirmId, UserTurn};
+use agent_session::{EndCause, Opening, Seq, SessionEntry};
+use agent_session::{SessionExport, export};
+use agent_session::{SessionLog, read_all};
 use provenance::SessionId;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::Arc;

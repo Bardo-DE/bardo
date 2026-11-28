@@ -8,9 +8,10 @@ that declares and handles actions. Neither reads modifiers or decides Command ve
 ### 1. Pick the platform once
 
 ```rust
-use keymap::{detect_process, Platform};
+use keymap::{detect, HostOs, Platform};
 
-let platform: Platform = detect_process(); // BARDO_KEYMAP_PLATFORM overrides; tests use `detect(os, lookup)`
+// The caller reads the environment and hands the lookup in; BARDO_KEYMAP_PLATFORM overrides.
+let platform: Platform = detect(HostOs::compiled(), |name| std::env::var(name).ok());
 ```
 
 ### 2. Load a keymap from a source

@@ -24,7 +24,6 @@ serde_json = { workspace = true }
 
 [dev-dependencies]
 permission-core = {path = "../permission-core"}
-agent-session = {path = "../agent-session", features = ["testing"]}
 memory-client = {default-features = false, features = ["in_process"], path = "../../memory/memory-client"}
 memory-fake = {path = "../../memory/memory-fake"}
 memory-service = {path = "../../memory/memory-service"}

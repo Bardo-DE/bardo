@@ -48,7 +48,7 @@ Other limits, stated rather than hidden:
 
 ## The table
 
-`dist/desktop-callers.toml` is a sample of the format and of this desktop's own table. A row has `app`, `exe` (a non-empty list of absolute patterns; one `*` per segment, never `**`), `role`, and optionally `unit` and `name`. A row with a `unit` is a service; a row without is a program matched by its image alone, whose ceiling is `Exe`. The loader refuses a file that is not owned by root alone, or whose directory anyone else can write. The caller-identity library reads no user file: nothing a person's file says makes a process more trusted. (The one exception is the crate `caller-identity-dev` below, whose rows reach `Proof::Dev` and no higher.)
+`packaging/dist/desktop-callers.toml` is a sample of the format and of this desktop's own table. A row has `app`, `exe` (a non-empty list of absolute patterns; one `*` per segment, never `**`), `role`, and optionally `unit` and `name`. A row with a `unit` is a service; a row without is a program matched by its image alone, whose ceiling is `Exe`. The loader refuses a file that is not owned by root alone, or whose directory anyone else can write. The caller-identity library reads no user file: nothing a person's file says makes a process more trusted. (The one exception is the crate `caller-identity-dev` below, whose rows reach `Proof::Dev` and no higher.)
 
 ## Developer rows
 
