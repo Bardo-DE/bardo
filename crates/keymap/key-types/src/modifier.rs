@@ -112,8 +112,8 @@ impl Modifiers {
 }
 
 impl FromIterator<Modifier> for Modifiers {
-    fn from_iter<I: IntoIterator<Item = Modifier>>(members: I) -> Self {
-        members.into_iter().fold(Modifiers::EMPTY, Modifiers::with)
+    fn from_iter<I: IntoIterator<Item = Modifier>>(iter: I) -> Self {
+        iter.into_iter().fold(Modifiers::EMPTY, Modifiers::with)
     }
 }
 

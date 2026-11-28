@@ -81,7 +81,6 @@ impl KeyCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::names::NAMES;
 
     #[test]
     fn names_resolve_to_known_codes() {
