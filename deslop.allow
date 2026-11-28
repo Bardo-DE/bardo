@@ -1030,6 +1030,7 @@ shallow-module companion_model::helper
 shallow-module companion_tasks::helpers
 shallow-module compositor_app::handlers::capture_source
 shallow-module compositor_core::gpu
+shallow-module compositor_core::input
 shallow-module compositor_core::layer
 shallow-module compositor_core::space
 shallow-module compositor_core::window
