@@ -1207,6 +1207,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "agent-session",
+ "agent-session-fake",
  "base-ids",
  "base-path",
  "base-time",
@@ -1305,6 +1306,7 @@ dependencies = [
  "agent-reader",
  "agent-registry",
  "agent-session",
+ "agent-session-fake",
  "base-clock",
  "base-fs",
  "base-ids",
@@ -1453,6 +1455,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "agent-session",
+ "agent-session-fake",
  "agent-skills",
  "base-ids",
  "base-path",
@@ -1734,6 +1737,7 @@ dependencies = [
  "agent-acp-host",
  "agent-client-protocol",
  "agent-session",
+ "agent-session-fake",
  "base-ids",
  "base-path",
  "base-random",
@@ -1768,6 +1772,7 @@ dependencies = [
  "agent-acp-core",
  "agent-client-protocol",
  "agent-session",
+ "agent-session-fake",
  "base-ids",
  "base-path",
  "base-testkit",
@@ -1863,6 +1868,7 @@ dependencies = [
  "agent-acp-host",
  "agent-acp-server",
  "agent-client-protocol",
+ "agent-launch-fake",
  "agent-registry",
  "agent-session",
  "base-path",
@@ -1883,6 +1889,17 @@ dependencies = [
  "toml",
  "tracing",
  "zbus",
+]
+
+[[package]]
+name = "agent-launch-fake"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "agent-acp-host",
+ "agent-launch",
+ "sandbox-core",
 ]
 
 [[package]]
@@ -1943,6 +1960,7 @@ dependencies = [
  "agent-loop",
  "agent-planner",
  "agent-session",
+ "agent-session-fake",
  "base-ids",
  "companion-model",
  "companion-tasks",
@@ -2061,7 +2079,7 @@ dependencies = [
  "action-core",
  "action-vocab",
  "action-wire",
- "agent-session",
+ "agent-session-fake",
  "base-ids",
  "companion-model",
  "companion-wire",
@@ -2072,6 +2090,16 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "agent-session-fake"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-vocab",
+ "agent-session",
+ "provenance",
 ]
 
 [[package]]
